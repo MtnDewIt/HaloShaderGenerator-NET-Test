@@ -35,19 +35,20 @@ float3 reconstruct_normal(float2 normal)
 float3 sample_normal_2d(sampler bump_map, float2 texcoord)
 {
     float2 bump_sample = sample_bump_map_2d(bump_map, texcoord);
-
     return reconstruct_normal(bump_sample);
 }
 
+/*
+* Convert surface normal from model space to tangent space using the tangent, binormal and normal
+*/
 float3 normal_transform(
-	float3 tangentspace_x,
-	float3 tangentspace_y,
-	float3 tangentspace_z,
+	float3 tangent_space_tangent,
+	float3 tangent_space_binormal,
+	float3 tangent_space_normal,
 	float3 normal
 )
 {
-    //TODO: normal may need to be pre normalized
-    float3 surface_normal = tangentspace_x * normal.x + tangentspace_y * normal.y + tangentspace_z * normal.z;
+    float3 surface_normal = tangent_space_tangent * normal.x + tangent_space_binormal * normal.y + tangent_space_normal * normal.z;
     float3 result = normalize(surface_normal);
 
     return result;
