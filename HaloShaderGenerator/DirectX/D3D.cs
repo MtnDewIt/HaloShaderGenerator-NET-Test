@@ -18,6 +18,9 @@ namespace HaloShaderGenerator.DirectX
             D3D_INCLUDE_FORCE_DWORD = 0x7fffffff
         }
 
+        /// <summary>
+        /// C# wrapper for D3D9 shader macro
+        /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct SHADER_MACRO
         {
@@ -27,6 +30,9 @@ namespace HaloShaderGenerator.DirectX
             public string Definition;
         }
 
+        /// <summary>
+        /// C# wrapper for the interface ID3DBlob used to store data in a buffer
+        /// </summary>
         [Guid("8BA5FB08-5195-40e2-AC58-0D989C3A0102")]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         public interface ID3DBlob
