@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace HaloShaderGenerator
 {
-
     public static class HaloShaderGenerator
     {
         public static bool LibraryLoaded = HaloShaderGeneratorPrivate.HaloShaderGeneratorAssembly != null;

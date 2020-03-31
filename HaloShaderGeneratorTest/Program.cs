@@ -1,5 +1,6 @@
 ﻿using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Enums;
+using HaloShaderGenerator.Shader;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,12 +12,13 @@ namespace HaloShaderGenerator
 {
     class Application
     {
+        /*
         static void Benchmark()
         {
             Int64 size = 0;
             var then = DateTime.Now;
             List<Task<byte[]>> tasks = new List<Task<byte[]>>();
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 1; i++)
             {
                 var task = ShaderGenerator.GenerateAsync(
                 ShaderStage.Static_Prt_Ambient,
@@ -45,72 +47,30 @@ namespace HaloShaderGenerator
             Console.WriteLine(size);
             Console.WriteLine($"{1000.0 / delta.TotalSeconds} shaders/s");
         }
+        */
 
         static int Main()
         {
-            //var bytecode = ShaderGenerator.Generate(
-            //    ShaderStage.Static_Prt_Ambient,
-            //    Albedo.Default, 
-            //    Bump_Mapping.Detail, 
-            //    Alpha_Test.None, 
-            //    Specular_Mask.Specular_Mask_From_Diffuse, 
-            //    Material_Model.Two_Lobe_Phong, 
-            //    Environment_Mapping.Dynamic, 
-            //    Self_Illumination.Simple, 
-            //    Blend_Mode.Opaque, 
-            //    Parallax.Off,
-            //    Misc.First_Person_Always,
-            //    Distortion.Off,
-            //    Soft_fade.Off
-            //    );
-            //var bytecode = ShaderGenerator.Generate(
-            //    ShaderStage.Static_Prt_Ambient,
-            //    Albedo.Default,
-            //    Bump_Mapping.Off,
-            //    Alpha_Test.None,
-            //    Specular_Mask.No_Specular_Mask,
-            //    Material_Model.Diffuse_Only,
-            //    Environment_Mapping.Dynamic,
-            //    Self_Illumination.Off,
-            //    Blend_Mode.Additive,
-            //    Parallax.Off,
-            //    Misc.First_Person_Always,
-            //    Distortion.Off,
-            //    Soft_fade.Off
-            //    );
-            //var bytecode = ShaderGenerator.Generate(
-            //    ShaderStage.Static_Prt_Ambient,
-            //    Albedo.Default,
-            //    Bump_Mapping.Off,
-            //    Alpha_Test.None,
-            //    Specular_Mask.No_Specular_Mask,
-            //    Material_Model.Diffuse_Only,
-            //    Environment_Mapping.None,
-            //    Self_Illumination.Plasma,
-            //    Blend_Mode.Additive,
-            //    Parallax.Off,
-            //    Misc.First_Person_Always,
-            //    Distortion.Off,
-            //    Soft_fade.Off
-            //    );
-            //var bytecode = ShaderGenerator.Generate(
-            //     ShaderStage.Static_Prt_Ambient,
-            //     Albedo.Default,
-            //     Bump_Mapping.Off,
-            //     Alpha_Test.None,
-            //     Specular_Mask.No_Specular_Mask,
-            //     Material_Model.Cook_Torrance,
-            //     Environment_Mapping.None,
-            //     Self_Illumination.Off,
-            //     Blend_Mode.Opaque,
-            //     Parallax.Off,
-            //     Misc.First_Person_Never,
-            //     Distortion.Off,
-            //     Soft_fade.Off
-            //     );
-            //var str = D3DCompiler.Disassemble(bytecode);
+            //Benchmark();
+            var bytecode = ShaderGenerator.GenerateShader(
+                ShaderStage.Albedo,
+                Albedo.Detail_Blend, 
+                Bump_Mapping.Detail, 
+                Alpha_Test.None, 
+                Specular_Mask.Specular_Mask_From_Diffuse, 
+                Material_Model.Two_Lobe_Phong, 
+                Environment_Mapping.None, 
+                Self_Illumination.Simple, 
+                Blend_Mode.Opaque, 
+                Parallax.Off,
+                Misc.First_Person_Always,
+                Distortion.Off,
+                Soft_fade.Off
+                );
+            
+            var str = D3DCompiler.Disassemble(bytecode);
 
-            //Console.WriteLine(str);
+            Console.WriteLine(str);
 
             return 0;
         }

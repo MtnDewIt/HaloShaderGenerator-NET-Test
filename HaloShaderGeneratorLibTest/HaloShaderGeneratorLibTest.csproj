@@ -60,7 +60,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>cd $(SolutionDir)
-xcopy HaloShaderGenerator\bin\$(ConfigurationName)\HaloShaderGenerator.dll HaloShaderGeneratorTest\bin\$(ConfigurationName)\ /Y</PostBuildEvent>
+    <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>
   </PropertyGroup>
 </Project>

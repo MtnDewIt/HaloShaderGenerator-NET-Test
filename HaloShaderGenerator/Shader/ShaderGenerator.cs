@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Enums;
+using HaloShaderGenerator.Generator;
 
-namespace HaloShaderGenerator
+namespace HaloShaderGenerator.Shader
 {
     public partial class ShaderGenerator
     {
@@ -33,49 +35,6 @@ namespace HaloShaderGenerator
                     return true;
             }
             return false;
-        }
-
-        public static bool IsShaderCortanaStageSupported(ShaderStage stage)
-        {
-            switch (stage)
-            {
-                case ShaderStage.Active_Camo:
-                    return true;
-            }
-            return false;
-        }
-
-        public static Task<byte[]> GenerateAsync(
-            ShaderStage stage,
-            Albedo albedo,
-            Bump_Mapping bump_mapping,
-            Alpha_Test alpha_test,
-            Specular_Mask specular_mask,
-            Material_Model material_model,
-            Environment_Mapping environment_mapping,
-            Self_Illumination self_illumination,
-            Blend_Mode blend_mode,
-            Parallax parallax,
-            Misc misc,
-            Distortion distortion,
-            Soft_fade soft_fade
-            )
-        {
-            return Task.Run(() => GenerateShader(
-                stage,
-                albedo,
-                bump_mapping,
-                alpha_test,
-                specular_mask,
-                material_model,
-                environment_mapping,
-                self_illumination,
-                blend_mode,
-                parallax,
-                misc,
-                distortion,
-                soft_fade
-            ));
         }
 
         public static byte[] GenerateShader(
@@ -174,31 +133,15 @@ namespace HaloShaderGenerator
             macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type_arg", environment_mapping, "k_environment_mapping_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", blend_mode, "k_blend_mode_"));
 
-            var shader_bytecode = ShaderGeneratorBase.GenerateSource(template, macros, "entry_" + stage.ToString().ToLower(), "ps_3_0");
-            return shader_bytecode;
-        }
+            byte[] shaderBytecode;
 
-        public static byte[] GenerateShaderCortana(
-            ShaderStage stage
-            )
-        {
-            string template = $"shader_cortana.hlsl";
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            switch (stage)
+            using(FileStream test = new FileInfo("test.hlsl").Create())
+            using(StreamWriter writer = new StreamWriter(test))
             {
-                case ShaderStage.Active_Camo:
-                    break;
-                default:
-                    return null;
+                shaderBytecode = ShaderGeneratorBase.GenerateSource(template, macros, "entry_" + stage.ToString().ToLower(), "ps_3_0", writer);
             }
 
-            // prevent the definition helper from being included
-            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-
-            var shader_bytecode = ShaderGeneratorBase.GenerateSource(template, macros, "entry_" + stage.ToString().ToLower(), "ps_3_0");
-            return shader_bytecode;
+            return shaderBytecode;
         }
     }
 }

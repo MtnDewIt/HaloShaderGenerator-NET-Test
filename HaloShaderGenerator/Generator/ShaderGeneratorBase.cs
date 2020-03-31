@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HaloShaderGenerator
+namespace HaloShaderGenerator.Generator
 {
     static class ShaderGeneratorBase
     {
@@ -33,7 +33,7 @@ namespace HaloShaderGenerator
                 relative_path = relativeUri.ToString();
                 if (relative_path.StartsWith("./")) relative_path = relative_path.Substring(2);
 
-                string path = Path.Combine("HaloShaderGenerator\\shader_code", relative_path);
+                string path = Path.Combine("HaloShaderGenerator\\hlsl", relative_path);
                 string directory = Path.GetDirectoryName(path);
 
                 var resourceName = path.Replace('\\', '.').Replace('/', '.');
@@ -67,8 +67,8 @@ namespace HaloShaderGenerator
             }
         }
 
-        public static byte[] GenerateSource(string template, IEnumerable<D3D.SHADER_MACRO> macros, string entry, string version)
-        {
+        public static byte[] GenerateSource(string template, IEnumerable<D3D.SHADER_MACRO> macros, string entry, string version, StreamWriter sourceStream = null)
+        { 
             // Macros should never be duplicated
             for (var i = 0; i < macros.Count(); i++)
             {
@@ -85,6 +85,8 @@ namespace HaloShaderGenerator
             IncludeManager include = new IncludeManager();
 
             string shader_source = include.ReadResource(template);
+            sourceStream.WriteLine(shader_source);
+            
 
             D3DCompiler.D3DCOMPILE flags = 0;
 #if DEBUG

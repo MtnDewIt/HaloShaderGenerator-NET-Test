@@ -46,42 +46,43 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cortana\CortanaShaderGenerator.cs" />
     <Compile Include="DirectX\D3D.cs" />
     <Compile Include="DirectX\D3DCompiler.cs" />
     <Compile Include="DirectX\Include.cs" />
-    <Compile Include="ShaderGenerator.cs" />
-    <Compile Include="ShaderGeneratorBase.cs" />
+    <Compile Include="Shader\ShaderGenerator.cs" />
+    <Compile Include="Generator\ShaderGeneratorBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="shader_code\methods\albedo.hlsli" />
-    <EmbeddedResource Include="shader_code\methods\alpha_test.hlsli" />
-    <EmbeddedResource Include="shader_code\methods\blend_mode.hlsli" />
-    <EmbeddedResource Include="shader_code\methods\bump_mapping.hlsli" />
-    <EmbeddedResource Include="shader_code\methods\distortion.hlsli" />
-    <EmbeddedResource Include="shader_code\methods\environment_mapping.hlsli" />
-    <EmbeddedResource Include="shader_code\methods\material_model.hlsli" />
-    <EmbeddedResource Include="shader_code\methods\misc.hlsli" />
-    <EmbeddedResource Include="shader_code\methods\parallax.hlsli" />
-    <EmbeddedResource Include="shader_code\methods\parameters.hlsli" />
-    <EmbeddedResource Include="shader_code\methods\self_illumination.hlsli" />
-    <EmbeddedResource Include="shader_code\methods\soft_fade.hlsli" />
-    <EmbeddedResource Include="shader_code\methods\specular_mask.hlsli" />
+    <EmbeddedResource Include="hlsl\methods\albedo.hlsli" />
+    <EmbeddedResource Include="hlsl\methods\alpha_test.hlsli" />
+    <EmbeddedResource Include="hlsl\methods\blend_mode.hlsli" />
+    <EmbeddedResource Include="hlsl\methods\bump_mapping.hlsli" />
+    <EmbeddedResource Include="hlsl\methods\distortion.hlsli" />
+    <EmbeddedResource Include="hlsl\methods\environment_mapping.hlsli" />
+    <EmbeddedResource Include="hlsl\methods\material_model.hlsli" />
+    <EmbeddedResource Include="hlsl\methods\misc.hlsli" />
+    <EmbeddedResource Include="hlsl\methods\parallax.hlsli" />
+    <EmbeddedResource Include="hlsl\methods\parameters.hlsli" />
+    <EmbeddedResource Include="hlsl\methods\self_illumination.hlsli" />
+    <EmbeddedResource Include="hlsl\methods\soft_fade.hlsli" />
+    <EmbeddedResource Include="hlsl\methods\specular_mask.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="shader_code\beam.hlsl" />
-    <EmbeddedResource Include="shader_code\contrail.hlsl" />
-    <EmbeddedResource Include="shader_code\decal.hlsl" />
-    <EmbeddedResource Include="shader_code\halogram.hlsl" />
-    <EmbeddedResource Include="shader_code\light_volume.hlsl" />
-    <EmbeddedResource Include="shader_code\particle.hlsl" />
-    <EmbeddedResource Include="shader_code\screen.hlsl" />
-    <EmbeddedResource Include="shader_code\shader.hlsl" />
-    <EmbeddedResource Include="shader_code\terrain.hlsl" />
-    <EmbeddedResource Include="shader_code\water.hlsl" />
-    <EmbeddedResource Include="shader_code\zonly.hlsl" />
+    <EmbeddedResource Include="hlsl\beam.hlsl" />
+    <EmbeddedResource Include="hlsl\contrail.hlsl" />
+    <EmbeddedResource Include="hlsl\decal.hlsl" />
+    <EmbeddedResource Include="hlsl\halogram.hlsl" />
+    <EmbeddedResource Include="hlsl\light_volume.hlsl" />
+    <EmbeddedResource Include="hlsl\particle.hlsl" />
+    <EmbeddedResource Include="hlsl\screen.hlsl" />
+    <EmbeddedResource Include="hlsl\shader.hlsl" />
+    <EmbeddedResource Include="hlsl\terrain.hlsl" />
+    <EmbeddedResource Include="hlsl\water.hlsl" />
+    <EmbeddedResource Include="hlsl\zonly.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="shader_code\helpers\math.hlsli" />
+    <EmbeddedResource Include="hlsl\helpers\math.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HaloShaderGeneratorLib\HaloShaderGeneratorLib.csproj">
@@ -90,40 +91,43 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="shader_code\registers\shader.hlsli" />
+    <EmbeddedResource Include="hlsl\registers\shader.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="shader_code\helpers\types.hlsli" />
+    <EmbeddedResource Include="hlsl\helpers\types.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="shader_code\helpers\bumpmap_math.hlsli" />
+    <EmbeddedResource Include="hlsl\helpers\bumpmap_math.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="shader_code\helpers\color_processing.hlsli" />
+    <EmbeddedResource Include="hlsl\helpers\color_processing.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="shader_code\shader_satic_prt_ambient.hlsl" />
+    <EmbeddedResource Include="hlsl\shader_satic_prt_ambient.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="shader_code\helpers\input_output.hlsli" />
+    <EmbeddedResource Include="hlsl\helpers\input_output.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="shader_code\helpers\definition_helper.hlsli" />
+    <EmbeddedResource Include="hlsl\helpers\definition_helper.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="shader_code\helpers\lighting.hlsli" />
+    <EmbeddedResource Include="hlsl\helpers\lighting.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="shader_code\shader_cortana.hlsl" />
+    <EmbeddedResource Include="hlsl\shader_cortana.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Beam\" />
+    <Folder Include="Globals\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)
-xcopy HaloShaderGenerator\bin\$(ConfigurationName)\HaloShaderGenerator.dll C:\Users\me\MEGAsync\Documents\GitHub\TagTool\Tools\ /Y
-xcopy HaloShaderGenerator\bin\$(ConfigurationName)\HaloShaderGenerator.dll C:\Users\me\MEGAsync\Documents\GitHub\TagTool\TagTool\bin\x64\Debug\ /Y
-xcopy HaloShaderGenerator\bin\$(ConfigurationName)\HaloShaderGenerator.dll C:\Users\me\MEGAsync\Documents\GitHub\TagTool\TagTool\bin\x64\Release\ /Y</PostBuildEvent>
+xcopy HaloShaderGenerator\bin\$(ConfigurationName)\HaloShaderGenerator.dll D:\Halo\Repositories\TagTool\TagTool\bin\x64\Debug\ /Y
+xcopy HaloShaderGenerator\bin\$(ConfigurationName)\HaloShaderGenerator.dll D:\Halo\Repositories\TagTool\TagTool\bin\x64\Release\ /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

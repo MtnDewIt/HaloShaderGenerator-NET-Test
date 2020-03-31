@@ -24,7 +24,7 @@ float3 bungie_color_processing(float3 color)
     r1.xyz = r2.xyz * 1.055 - 0.055;
     r2.xyz = r0.xyz;
     r0.xyz = r0.xyz * 12.92;
-    return r2.xyz <= 0.00313 ? r0.xyz : r1.xyz
+    return r2.xyz <= 0.00313 ? r0.xyz : r1.xyz;
     // this was the original code, not sure if it's intended to be ugly like that but that's not standard linear to sRGB conversion
     //r2.xyz = (-r0.xyz) * 12.92; 
     //r0.xyz = r0.xyz * 12.92;
