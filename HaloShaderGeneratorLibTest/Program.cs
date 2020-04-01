@@ -36,7 +36,7 @@ namespace HaloShaderGenerator
 
             //    size += bytecode?.Length ?? 0;
             //}
-
+            /*
             bool active_camo_support = HaloShaderGenerator.IsShaderSuppored(ShaderType.Cortana, ShaderStage.Active_Camo);
 
             if (active_camo_support)
@@ -44,7 +44,7 @@ namespace HaloShaderGenerator
                 var result = HaloShaderGenerator.GenerateShaderCortana(ShaderStage.Active_Camo);
                 size += result?.Bytecode?.Length ?? 0;
             }
-
+            */
             return size;
         }
     }

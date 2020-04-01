@@ -50,6 +50,8 @@
     <Compile Include="DirectX\D3D.cs" />
     <Compile Include="DirectX\D3DCompiler.cs" />
     <Compile Include="DirectX\Include.cs" />
+    <Compile Include="Globals\ShaderStage.cs" />
+    <Compile Include="Globals\ShaderType.cs" />
     <Compile Include="Shader\ShaderGenerator.cs" />
     <Compile Include="Generator\ShaderGeneratorBase.cs" />
   </ItemGroup>
@@ -122,7 +124,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Beam\" />
-    <Folder Include="Globals\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

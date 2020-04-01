@@ -6,37 +6,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using HaloShaderGenerator.DirectX;
-using HaloShaderGenerator.Enums;
 using HaloShaderGenerator.Generator;
 
 namespace HaloShaderGenerator.Shader
 {
     public partial class ShaderGenerator
     {
-        public static bool IsShaderStageSupported(ShaderStage stage)
-        {
-            switch (stage)
-            {
-                //case ShaderStage.Default:
-                case ShaderStage.Albedo:
-                //case ShaderStage.Static_Per_Pixel:
-                //case ShaderStage.Static_Per_Vertex:
-                //case ShaderStage.Static_Sh:
-                case ShaderStage.Static_Prt_Ambient:
-                case ShaderStage.Static_Prt_Linear:
-                case ShaderStage.Static_Prt_Quadratic:
-                //case ShaderStage.Dynamic_Light:
-                //case ShaderStage.Shadow_Generate:
-                case ShaderStage.Active_Camo:
-                //case ShaderStage.Lightmap_Debug_Mode:
-                //case ShaderStage.Static_Per_Vertex_Color:
-                //case ShaderStage.Dynamic_Light_Cinematic:
-                //case ShaderStage.Sfx_Distort:
-                    return true;
-            }
-            return false;
-        }
-
         public static byte[] GenerateShader(
             ShaderStage stage,
             Albedo albedo,
@@ -59,25 +34,31 @@ namespace HaloShaderGenerator.Shader
 
             switch (stage)
             {
-                //case ShaderStage.Default:
+                
                 case ShaderStage.Albedo:
-                //case ShaderStage.Static_Per_Pixel:
-                //case ShaderStage.Static_Per_Vertex:
-                //case ShaderStage.Static_Sh:
                 case ShaderStage.Static_Prt_Ambient:
                 case ShaderStage.Static_Prt_Linear:
                 case ShaderStage.Static_Prt_Quadratic:
-                //case ShaderStage.Dynamic_Light:
-                //case ShaderStage.Shadow_Generate:
                 case ShaderStage.Active_Camo:
-                //case ShaderStage.Lightmap_Debug_Mode:
-                //case ShaderStage.Static_Per_Vertex_Color:
-                //case ShaderStage.Dynamic_Light_Cinematic:
-                //case ShaderStage.Sfx_Distort:
                     break;
                 default:
+                    case ShaderStage.Default:
+                    case ShaderStage.Static_Per_Pixel:
+                    case ShaderStage.Static_Per_Vertex:
+                    case ShaderStage.Static_Sh:
+                    case ShaderStage.Dynamic_Light:
+                    case ShaderStage.Shadow_Generate:
+                    case ShaderStage.Lightmap_Debug_Mode:
+                    case ShaderStage.Static_Per_Vertex_Color:
+                    case ShaderStage.Dynamic_Light_Cinematic:
+                    case ShaderStage.Sfx_Distort:
+                    Console.Error.WriteLine($"Shader stage {stage} not supported in Shader generator");
                     return null;
             }
+
+            //
+            // Create all the macros required
+            //
 
             // prevent the definition helper from being included
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
@@ -94,8 +75,13 @@ namespace HaloShaderGenerator.Shader
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Blend_Mode>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Parallax>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Misc>());
+            //macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Distortion>());
 
+            //
+            // The following code properly names the macros (like in rmdf)
+            //
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", albedo, "calc_albedo_", "_ps"));
+
             if (albedo == Albedo.Constant_Color)
             {
                 macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", albedo, "calc_albedo_", "_vs"));
@@ -133,6 +119,12 @@ namespace HaloShaderGenerator.Shader
             macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type_arg", environment_mapping, "k_environment_mapping_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", blend_mode, "k_blend_mode_"));
 
+            // add misc option macros here
+
+            //macros.Add(ShaderGeneratorBase.CreateMacro("distort_proc_ps", distortion, "distort_", "_ps"));
+            //macros.Add(ShaderGeneratorBase.CreateMacro("distort_proc_vs", "nocolor", "distort_", "_vs"));
+
+
             byte[] shaderBytecode;
 
             using(FileStream test = new FileInfo("test.hlsl").Create())
@@ -144,4 +136,141 @@ namespace HaloShaderGenerator.Shader
             return shaderBytecode;
         }
     }
+
+    public enum ShaderMethods
+    {
+        Albedo,
+        Bump_Mapping,
+        Alpha_Test,
+        Specular_Mask,
+        Material_Model,
+        Environment_Mapping,
+        Self_Illumination,
+        Blend_Mode,
+        Parallax,
+        Misc,
+        Distortion,
+        //Soft_Fade
+    }
+
+    public enum Albedo
+    {
+        Default,
+        Detail_Blend,
+        Constant_Color,
+        Two_Change_Color,
+        Four_Change_Color,
+        Three_Detail_Blend,
+        Two_Detail_Overlay,
+        Two_Detail,
+        Color_Mask,
+        Two_Detail_Black_Point,
+        Two_Change_Color_Anim_Overlay,
+        Chameleon,
+        Two_Change_Color_Chameleon,
+        Chameleon_Masked,
+        Color_Mask_Hard_Light,
+        //Two_Change_Color_Tex_Overlay,
+        //Chameleon_Albedo_Masked
+    }
+
+    public enum Bump_Mapping
+    {
+        Off,
+        Standard,
+        Detail,
+        Detail_Masked,
+        //Detail_Plus_Detail_Masked
+    }
+
+    public enum Alpha_Test
+    {
+        None,
+        Simple
+    }
+
+    public enum Specular_Mask
+    {
+        No_Specular_Mask,
+        Specular_Mask_From_Diffuse,
+        Specular_Mask_From_Texture,
+        Specular_Mask_From_Color_Texture
+    }
+
+    public enum Material_Model
+    {
+        Diffuse_Only,
+        Cook_Torrance,
+        Two_Lobe_Phong,
+        Foliage,
+        None,
+        Glass,
+        Organism,
+        Single_Lobe_Phong,
+        Car_Paint,
+        //Hair
+    }
+
+    public enum Environment_Mapping
+    {
+        None,
+        Per_Pixel,
+        Dynamic,
+        From_Flat_Texture,
+        Custom_Map
+    }
+
+    public enum Self_Illumination
+    {
+        Off,
+        Simple,
+        _3_Channel_Self_Illum,
+        Plasma,
+        From_Diffuse,
+        Illum_Detail,
+        Meter,
+        Self_Illum_Times_Diffuse,
+        Simple_With_Alpha_Mask,
+        Simple_Four_Change_Color,
+        //Illum_Detail_World_Space_Four_Cc
+    }
+
+    public enum Blend_Mode
+    {
+        Opaque,
+        Additive,
+        Multiply,
+        Alpha_Blend,
+        Double_Multiply,
+        Pre_Multiplied_Alpha
+    }
+
+    public enum Parallax
+    {
+        Off,
+        Simple,
+        Interpolated,
+        Simple_Detail
+    }
+
+    public enum Misc
+    {
+        First_Person_Never,
+        First_Person_Sometimes,
+        First_Person_Always,
+        First_Person_Never_With_rotating_Bitmaps
+    }
+
+    public enum Distortion
+    {
+        Off,
+        On
+    }
+
+    public enum Soft_fade
+    {
+        Off,
+        On
+    }
+
 }

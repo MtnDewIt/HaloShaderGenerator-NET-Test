@@ -1,5 +1,4 @@
 ﻿using HaloShaderGenerator.DirectX;
-using HaloShaderGenerator.Enums;
 using HaloShaderGenerator.Shader;
 using System;
 using System.Collections.Generic;
