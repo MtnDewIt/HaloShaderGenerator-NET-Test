@@ -50,7 +50,7 @@ float max_component3(float3 v) {
 	return max(max(v.x, v.y), v.z);
 }
 
-float max_component3(float4 v) {
+float max_component4(float4 v) {
 	return max(max(v.x, v.y), max(v.z, v.w));
 }
 

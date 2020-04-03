@@ -59,12 +59,11 @@ namespace HaloShaderGenerator
                 Specular_Mask.Specular_Mask_From_Diffuse, 
                 Material_Model.Two_Lobe_Phong, 
                 Environment_Mapping.None, 
-                Self_Illumination.Simple, 
+                Self_Illumination.Off, 
                 Blend_Mode.Opaque, 
                 Parallax.Off,
-                Misc.First_Person_Always,
-                Distortion.Off,
-                Soft_fade.Off
+                Misc.First_Person_Never,
+                Distortion.Off
                 );
             
             var str = D3DCompiler.Disassemble(bytecode);

@@ -24,8 +24,7 @@ namespace HaloShaderGenerator.Shader
             Blend_Mode blend_mode,
             Parallax parallax,
             Misc misc,
-            Distortion distortion,
-            Soft_fade soft_fade
+            Distortion distortion
             )
         {
             string template = $"shader.hlsl";

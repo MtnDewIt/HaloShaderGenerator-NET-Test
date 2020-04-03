@@ -108,7 +108,7 @@
     <EmbeddedResource Include="hlsl\helpers\color_processing.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\shader_satic_prt_ambient.hlsl" />
+    <EmbeddedResource Include="hlsl\shader_static_prt_ambient.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\input_output.hlsli" />

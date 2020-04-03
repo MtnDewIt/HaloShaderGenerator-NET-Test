@@ -39,8 +39,6 @@ PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
     return output;
 }
 
-
-
 PS_OUTPUT_DEFAULT entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input) : COLOR
 {
     //note: vpos is in range [0, viewportsize]
@@ -75,7 +73,7 @@ PS_OUTPUT_DEFAULT entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input) : COLOR
     return output;
 }
 
-#include "shader_satic_prt_ambient.hlsl"
+#include "shader_static_prt_ambient.hlsl"
 
 float4 entry_static_prt_linear(VS_OUTPUT_ALBEDO input) : COLOR
 {

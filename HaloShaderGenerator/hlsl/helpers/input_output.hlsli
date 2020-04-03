@@ -1,6 +1,11 @@
 ﻿#ifndef _INPUT_OUTPUT_HLSLI
 #define _INPUT_OUTPUT_HLSLI
 
+/* This include file defines all the input and ouputs for the vertex and pixel shaders. Generating vertex shaders will require automatic vertex struct generation but code exists
+*  in ms23 to do exactly that at runtime. 
+*/
+
+
 struct VS_OUTPUT_ALBEDO
 {
     float4 TexCoord : TEXCOORD;
@@ -53,5 +58,17 @@ struct VS_OUTPUT_STATIC_PTR_AMBIENT
     float4 Color : COLOR;
     float4 Color1 : COLOR1;
 };
+
+// hlsl doesn't support union so we'll have to macro the vs_input depending on the vertex and draw mode
+struct VS_INPUT_WORLD_VERTEX
+{
+    float4 position : POSITION;
+    float4 texcoord : TEXCOORD;
+    float4 normal : NORMAL;
+    float4 tangent : TANGENT;
+    float4 binormal : BINORMAL;
+};
+
+
 
 #endif
