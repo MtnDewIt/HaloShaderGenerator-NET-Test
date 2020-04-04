@@ -17,15 +17,13 @@
 #include "methods\parallax.hlsli"
 #include "methods\misc.hlsli"
 
-
 PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
 {
-    float2 texcoord = input.TexCoord.xy;
-    float2 texcoord_tiled = input.TexCoord.zw;
-    float3 tangentspace_x = input.TexCoord3.xyz;
-    float3 tangentspace_y = input.TexCoord2.xyz;
-    float3 tangentspace_z = input.TexCoord1.xyz;
-    float3 unknown = input.TexCoord1.w;
+    float2 texcoord = input.texcoord.xy;
+    float3 tangentspace_x = input.tangent.xyz;
+    float3 tangentspace_y = input.binormal.xyz;
+    float3 tangentspace_z = input.normal.xyz;
+    float3 unknown = input.normal.w;
     
     float4 diffuse_and_alpha = calc_albedo_ps(texcoord);
     float3 normal = calc_bumpmap_ps(tangentspace_x, tangentspace_y, tangentspace_z, texcoord);

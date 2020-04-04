@@ -125,6 +125,12 @@
   <ItemGroup>
     <Folder Include="Beam\" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\vertex_shader\registers\vertex_shader.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\vertex_shader\shader.hlsl" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)

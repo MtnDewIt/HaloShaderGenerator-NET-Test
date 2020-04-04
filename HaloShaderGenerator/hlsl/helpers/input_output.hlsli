@@ -8,10 +8,12 @@
 
 struct VS_OUTPUT_ALBEDO
 {
-    float4 TexCoord : TEXCOORD;
-    float4 TexCoord1 : TEXCOORD1;
-    float4 TexCoord2 : TEXCOORD2;
-    float4 TexCoord3 : TEXCOORD3;
+    float4 position : VPOS;
+    float4 texcoord : TEXCOORD;
+    float4 normal : TEXCOORD1;
+    float4 binormal : TEXCOORD2;
+    float4 tangent : TEXCOORD3;
+    float vertex_to_camera : TEXCOORD4;
 };
 
 struct PS_OUTPUT_ALBEDO
@@ -60,7 +62,7 @@ struct VS_OUTPUT_STATIC_PTR_AMBIENT
 };
 
 // hlsl doesn't support union so we'll have to macro the vs_input depending on the vertex and draw mode
-struct VS_INPUT_WORLD_VERTEX
+struct VS_INPUT_RIGID_VERTEX
 {
     float4 position : POSITION;
     float4 texcoord : TEXCOORD;
