@@ -20,13 +20,13 @@
 PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
 {
     float2 texcoord = input.texcoord.xy;
-    float3 tangentspace_x = input.tangent.xyz;
-    float3 tangentspace_y = input.binormal.xyz;
-    float3 tangentspace_z = input.normal.xyz;
+    float3 tangent = input.tangent.xyz;
+    float3 binormal = input.binormal.xyz;
+    float3 normal = input.normal.xyz;
     float3 unknown = input.normal.w;
     
     float4 diffuse_and_alpha = calc_albedo_ps(texcoord);
-    float3 normal = calc_bumpmap_ps(tangentspace_x, tangentspace_y, tangentspace_z, texcoord);
+	normal = calc_bumpmap_ps(tangent, binormal, normal, texcoord);
 
 	diffuse_and_alpha.xyz = apply_debug_tint(diffuse_and_alpha.xyz);
     diffuse_and_alpha.xyz = rgb_to_srgb(diffuse_and_alpha.xyz);

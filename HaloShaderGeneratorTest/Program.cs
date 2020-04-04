@@ -53,11 +53,11 @@ namespace HaloShaderGenerator
             //Benchmark();
             var bytecode = ShaderGenerator.GenerateShader(
                 ShaderStage.Albedo,
-                Albedo.Detail_Blend, 
-                Bump_Mapping.Detail, 
+                Albedo.Default, 
+                Bump_Mapping.Off, 
                 Alpha_Test.None, 
-                Specular_Mask.Specular_Mask_From_Diffuse, 
-                Material_Model.Two_Lobe_Phong, 
+                Specular_Mask.No_Specular_Mask, 
+                Material_Model.Diffuse_Only, 
                 Environment_Mapping.None, 
                 Self_Illumination.Off, 
                 Blend_Mode.Opaque, 
@@ -67,6 +67,12 @@ namespace HaloShaderGenerator
                 );
             
             var str = D3DCompiler.Disassemble(bytecode);
+
+            using (FileStream test = new FileInfo($"generated_{ShaderStage.Albedo.ToString()}_0_0_0_0_0_0_0_0_0_0_0.pixel_shader").Create())
+            using (StreamWriter writer = new StreamWriter(test))
+            {
+                writer.WriteLine(str);
+            }
 
             Console.WriteLine(str);
 
