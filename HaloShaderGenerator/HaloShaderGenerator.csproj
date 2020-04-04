@@ -137,6 +137,9 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\vertex_shader\helpers\projection_math.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="hlsl\sh\sh.hlsl" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)

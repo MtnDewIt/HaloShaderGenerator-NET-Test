@@ -5,7 +5,7 @@
 #define PI 3.141592653589793238462643383279
 #define EPSILON 0.001
 #define RAND_COEFFICIENTS float3(12.9898, 78.233, 4.1414)
-
+#define SQRT3 1.7320508080
 float rand2(float2 co)
 {
 	float a = 12.9898;
