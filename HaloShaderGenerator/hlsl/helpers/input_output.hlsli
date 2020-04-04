@@ -45,16 +45,13 @@ struct PS_OUTPUT_DEFAULT
 struct VS_OUTPUT_STATIC_PTR_AMBIENT
 {
     // These are from VS_OUTPUT_ALBEDO
-    float4 TexCoord : TEXCOORD;
-    float4 TexCoord1 : TEXCOORD1;
-    float4 TexCoord2 : TEXCOORD2;
-    float4 TexCoord3 : TEXCOORD3;
+	float4 position : VPOS;
+    
+    float4 texcoord : TEXCOORD;
+    float4 normal : TEXCOORD3;
+    float4 binormal : TEXCOORD4;
+    float4 tangent : TEXCOORD5;
 
-
-
-
-
-    float4 vPos : VPOS;
     float4 TexCoord6 : TEXCOORD6;
     float4 TexCoord7 : TEXCOORD7;
     float4 Color : COLOR;
@@ -62,7 +59,7 @@ struct VS_OUTPUT_STATIC_PTR_AMBIENT
 };
 
 // hlsl doesn't support union so we'll have to macro the vs_input depending on the vertex and draw mode
-struct VS_INPUT_RIGID_VERTEX
+struct VS_INPUT_RIGID_VERTEX_ALBEDO
 {
     float4 position : POSITION;
     float4 texcoord : TEXCOORD;
@@ -71,6 +68,35 @@ struct VS_INPUT_RIGID_VERTEX
     float4 binormal : BINORMAL;
 };
 
+struct VS_INPUT_RIGID_VERTEX_AMBIENT_PRT
+{
+	float4 position : POSITION;
+	float4 texcoord : TEXCOORD;
+	float4 normal : NORMAL;
+	float4 tangent : TANGENT;
+	float4 binormal : BINORMAL;
+	float coefficient : BLENDWEIGHT1;
+};
 
+struct VS_INPUT_RIGID_VERTEX_LINEAR_PRT
+{
+	float4 position : POSITION;
+	float4 texcoord : TEXCOORD;
+	float4 normal : NORMAL;
+	float4 tangent : TANGENT;
+	float4 binormal : BINORMAL;
+	float4 coefficients : BLENDWEIGHT1;
+};
 
+struct VS_INPUT_RIGID_VERTEX_QUADRATIC_PRT
+{
+	float4 position : POSITION;
+	float4 texcoord : TEXCOORD;
+	float4 normal : NORMAL;
+	float4 tangent : TANGENT;
+	float4 binormal : BINORMAL;
+	float3 coefficients1 : BLENDWEIGHT1;
+	float3 coefficients2 : BLENDWEIGHT2;
+	float3 coefficients3 : BLENDWEIGHT3;
+};
 #endif

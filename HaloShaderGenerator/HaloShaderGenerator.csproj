@@ -124,12 +124,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Beam\" />
+    <Folder Include="hlsl\vertex_shader\helpers\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\vertex_shader\registers\vertex_shader.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\vertex_shader\shader.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\vertex_shader\static_prt_ambient.hlsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

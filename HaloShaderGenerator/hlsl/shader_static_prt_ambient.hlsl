@@ -75,11 +75,10 @@ ALBEDO_PASS_RESULT get_albedo_and_normal(float2 fragcoord, float2 texcoord, floa
 PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PTR_AMBIENT input) : COLOR
 {
     // These are from albedo, not 100% sure if correct
-    float2 texcoord = input.TexCoord.xy;
-    float2 texcoord_tiled = input.TexCoord.zw;
-    float3 tangentspace_x = input.TexCoord3.xyz;
-    float3 tangentspace_y = input.TexCoord2.xyz;
-    float3 tangentspace_z = input.TexCoord1.xyz;
+    float2 texcoord = input.texcoord.xy;
+    float3 tangentspace_x = input.tangent.xyz;
+    float3 tangentspace_y = input.binormal.xyz;
+    float3 tangentspace_z = input.normal.xyz;
 
     PS_OUTPUT_DEFAULT output;
 
@@ -93,7 +92,7 @@ PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PTR_AMBIENT input) :
     float unknown_vertex_value0 = input.TexCoord7.x;
     float3 v2 = input.Color.xyz; // some kind of vertex baked ao? not sure cause of shadows gotta investigate
     float3 unknown_vertex_color1 = input.Color1.xyz;
-    float2 vPos = input.vPos.xy;
+    float2 vPos = input.position.xy;
 
     float2 fragcoord = (vPos + 0.5) / texture_size;
     
