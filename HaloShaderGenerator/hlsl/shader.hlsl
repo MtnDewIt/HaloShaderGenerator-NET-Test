@@ -28,7 +28,8 @@ PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
     float4 diffuse_and_alpha = calc_albedo_ps(texcoord);
     float3 normal = calc_bumpmap_ps(tangentspace_x, tangentspace_y, tangentspace_z, texcoord);
 
-    diffuse_and_alpha.xyz = bungie_color_processing(diffuse_and_alpha.xyz);
+	diffuse_and_alpha.xyz = apply_debug_tint(diffuse_and_alpha.xyz);
+    diffuse_and_alpha.xyz = rgb_to_srgb(diffuse_and_alpha.xyz);
 
     PS_OUTPUT_ALBEDO output;
     output.Diffuse = blend_type(float4(diffuse_and_alpha));

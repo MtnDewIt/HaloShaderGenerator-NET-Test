@@ -44,15 +44,6 @@ struct ALBEDO_PASS_RESULT
 #define k_environment_mapping_custom_map_none 0
 #endif
 
-// finally we have this crazy code!!!!
-float3 apply_debug_tint(float3 color)
-{
-    float debug_tint_factor = 4.595;
-    float3 negative_tinted_color = color * (-debug_tint_factor) + debug_tint.rgb;
-    float3 positive_color = color * debug_tint_factor;
-    return positive_color + negative_tinted_color * debug_tint.a;
-}
-
 
 ALBEDO_PASS_RESULT get_albedo_and_normal(float2 fragcoord, float2 texcoord, float3 tangentspace_x, float3 tangentspace_y, float3 tangentspace_z)
 {
