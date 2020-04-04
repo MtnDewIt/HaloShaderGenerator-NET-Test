@@ -3,7 +3,7 @@
 
 //TODO This number is not 100% accurate
 #define PI 3.141592653589793238462643383279
-
+#define EPSILON 0.001
 #define RAND_COEFFICIENTS float3(12.9898, 78.233, 4.1414)
 
 float rand2(float2 co)
