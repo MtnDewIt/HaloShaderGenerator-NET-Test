@@ -13,109 +13,74 @@ VS_OUTPUT_STATIC_PTR_AMBIENT global_entry_rigid_static_prt_ambient(VS_INPUT_RIGI
 	output.normal = transform_value(input.normal.xyz, nodes[0], nodes[1], nodes[2]);
 	output.binormal = transform_value(input.binormal.xyz, nodes[0], nodes[1], nodes[2]);
 	output.texcoord.xy = input.texcoord.xy * uv_compression_scale_offset.xy + uv_compression_scale_offset.zw;
-	
-	float4 vertex_position = input.position * position_compression_scale + position_compression_offset;
-	vertex_position.xyz = transform_value(vertex_position.xyz, nodes[0], nodes[1], nodes[2]);
-	vertex_position.w = 1.0;
-	// r2 = vertex_position
-	float4 r0 = camera_position - vertex_position.xyz;
-	float4 r1;
-	float4 r3;
-	r3.w = 0.0;
+	float4 vertex_position = input.position * position_compression_scale + position_compression_offset; //model space
+	vertex_position.xyz = transform_value(vertex_position.xyz, nodes[0], nodes[1], nodes[2]); // world space
+	float3 camera_dir = camera_position.xyz - vertex_position.xyz;
+	output.camera_dir = camera_dir;
 	
 	if (v_atmosphere_constant_1.w < 0.0)
 	{
-		output.TexCoord6.xyz = 1.0;
-		output.TexCoord7.xyz = 0.0;
+		output.sky_radiance.xyz = 1.0;
+		output.extinction_factor.xyz = 0.0;
 	}
 	else
 	{
-		// reverse this huge thing
+		float camera_dist;		// distance from camera to vertex
+		float overall_distance; // distance travelled by the light to get to the camera
+		float3 n_camera_dir;	// vector from vertex to camera, normalized
+		float costheta;			// cos of angle between camera dir and sun dir
 		
-		float4 r4;
-		float4 r5;
-		r0.w = max(vertex_position.z - v_atmosphere_constant_3.w, 0);
-		r3.x = distance(r0, 0);
-		r1.w = 1.0 / r3.x;
-		r3.yzww = r0.xxyw * r1.w;
-		r1.w = dot(r3.yzww, v_atmosphere_constant_0);
-		r3.x = r3.x + v_atmosphere_constant_0.w;
-		r3.x = max(r3.x, 0);
-		r3.x = max(r3.x, v_atmosphere_constant_1.w);
-		r3.w = v_atmosphere_constant_2.w;
-		r3.y = v_atmosphere_constant_extra.x * r1.w + r3.w;
-		r4.x = pow(r3.y, -1.5);
-		r3.w = v_atmosphere_constant_3.w;
-		r3.y = camera_position.z - r3.w;
-		r3.y = max(r3.y, 0);
-		r3.z = r3.y * 1.44269502;
-		r3.y = -r0.w + r3.y;
-		r3.w = r3.y * r3.y;
+		camera_dist = length(camera_dir);
+		n_camera_dir = camera_dir / camera_dist;
+		costheta = dot(n_camera_dir, v_atmosphere_constant_0.xyz);
+		overall_distance = camera_dist + v_atmosphere_constant_0.w;
+		overall_distance = clamp(overall_distance, 0, v_atmosphere_constant_1.w);
 
-		if (r3.w >= EPSILON)
+		float unknown_power = pow((v_atmosphere_constant_extra.x * costheta + v_atmosphere_constant_2.w), -1.5);
+		float atmosphere_height_at_vertex = max(vertex_position.z - v_atmosphere_constant_3.w, 0);
+		float atmosphere_height_at_camera = max(camera_position.z - v_atmosphere_constant_3.w, 0);
+		float unknown_height = atmosphere_height_at_camera * LOG2_E;
+		float atmosphere_thickness = atmosphere_height_at_camera - atmosphere_height_at_vertex;
+		
+		// scattering coefficient Beta_0 at Earth's surface for 2 types of particle
+		// v_atmosphere_constant_3.rgb, v_atmosphere_constant_2.rgb
+		
+		// atmosphere thickness v_atmosphere_constant_0.w ? this is not in the paper
+		// sun position v_atmosphere_constant_0.xyz
+		// maximial distance travelled by light: v_atmosphere_constant_1.w
+		
+		// exponential decay constant, one for each particle type, seems to be 1/alpha relative to the paper
+		// v_atmosphere_constant_4.w v_atmosphere_constant_5.w
+
+		// atmosphere start height? v_atmosphere_constant_3.w
+		
+		// compute the extinction factor for the 2 types of particles for the specified distance
+		float3 extinction_factor;
+		if (atmosphere_height_at_camera * atmosphere_height_at_camera >= EPSILON) // if enough thickness
 		{
 		
-			r0.w = r0.w * 1.44269502;
-			r3.y = 1.0 / r3.y;
-			r3.w = 1.0 / v_atmosphere_constant_5.w;
-			r4.y = r3.w * -r0.w;
-			r4.y = exp(r4.y);
-			r3.w = r3.w * -r3.z;
-			r3.w = exp(r3.w);
-			r3.w = r3.w - r4.y;
-			r3.w = r3.x * -r3.w;
-			r3.w = r3.w * v_atmosphere_constant_5.w;
-			r3.w = r3.y * r3.w;
-			r4.y = 1.0 / v_atmosphere_constant_4.w;
-			r0.w = r4.y * -r0.w;
-			r0.w = exp(r0.w);
-			r4.y = r4.y * -r3.z;
-			r4.y = exp(r4.y);
-			r0.w = -r0.w + r4.y;
-			r0.w = r3.x * -r0.w;
-			r0.w = r0.w * v_atmosphere_constant_4.w;
-			r0.w = r3.y * r0.w;
-			r4.yzw = r0.w * v_atmosphere_constant_3.xxyz;
-			r4.yzw = v_atmosphere_constant_2.xxyz * r3.w + r4;
-			r5.x = exp(-r4.y);
-			r5.y = exp(-r4.z);
-			r5.z = exp(-r4.w);
+			float scale1 = -overall_distance * v_atmosphere_constant_5.w * (exp(-unknown_height / v_atmosphere_constant_5.w) - exp(-atmosphere_height_at_vertex * LOG2_E / v_atmosphere_constant_5.w)) * (1.0 / atmosphere_thickness);
+			float scale2 = -overall_distance * v_atmosphere_constant_4.w * (exp(-unknown_height / v_atmosphere_constant_4.w) - exp(-atmosphere_height_at_vertex * LOG2_E / v_atmosphere_constant_4.w)) * (1.0 / atmosphere_thickness);
+			extinction_factor = exp(-(scale2 * v_atmosphere_constant_3.xyz + v_atmosphere_constant_2.xyz * scale1));
 		}
-		else
+		else // |s * cos(theta) | << 1 (i.e close to 0
 		{
-			r0.w = 1.0 / v_atmosphere_constant_5.w;
-			r0.w = r0.w * -r3.z;
-			r0.w = exp(r0.w);
-			r0.w = r3.x * r0.w;
-			
-			r3.y = 1.0 / v_atmosphere_constant_4.w;
-			r3.y = r3.y * -r3.z;
-			r3.y = exp(r3.y);
-			r3.x = r3.x * r3.y;
-			r3.xyz = r3.x * v_atmosphere_constant_3.xyz;
-			r3.xyz = v_atmosphere_constant_2.xyz * r0.w + r3.xyz;
-			r5.x = exp(-r3.x);
-			r5.y = exp(-r3.y);
-			r5.z = exp(-r3.z);
+			// r3.z = alpha, h_0 = 1 / atm_param for type then scale1 = H_1, scale2 = H_2
+			float scale1 = overall_distance * exp(-unknown_height / v_atmosphere_constant_5.w);
+			float scale2 = overall_distance * exp(-unknown_height / v_atmosphere_constant_4.w);
+			extinction_factor = exp(-(scale2 * v_atmosphere_constant_3.rgb + v_atmosphere_constant_2.rgb * scale1));
 		}
-		
-		r0.w = r1.w * r1.w + 1.0;
-		r3.xyz = r4.x * v_atmosphere_constant_5.xyz;
-		r3.xyz = r0.w * v_atmosphere_constant_4.xyz + r3.xyz;
-		r3.xyz = r3.xyz * v_atmosphere_constant_1.xyz;
-		r4.xyz = -r5.xyz + 1.0;
-		output.Color = r5;
-		output.Color1 = r3 * r4;
+		output.extinction_factor = extinction_factor;
+		output.sky_radiance = (v_atmosphere_constant_1.rgb * (costheta * costheta + 1.0 * v_atmosphere_constant_4.xyz + unknown_power * v_atmosphere_constant_5.xyz)) * (1.0 - extinction_factor);
 	}
-	
-	output.TexCoord6 = r0.xyz;
-	
+
 	vertex_position.w = 1.0;
 	output.position.x = dot(vertex_position, view_projection[0]);
 	output.position.y = dot(vertex_position, view_projection[1]);
 	output.position.z = dot(vertex_position, view_projection[2]);
 	output.position.w = dot(vertex_position, view_projection[3]);
 	
+	float4 r0;
 	// sh stuff begins here
 	r0.y = 0.333333333;
 	r0.x = dot(v_lighting_constant_0, r0.yyyy);
@@ -128,10 +93,10 @@ VS_OUTPUT_STATIC_PTR_AMBIENT global_entry_rigid_static_prt_ambient(VS_INPUT_RIGI
 	r0.xzw = vertex_position.xyyz + v_lighting_constant_2.xyyz;
 	r0.xzw = r0 + v_lighting_constant_3.xyyz;
 	vertex_position.xyz = normalize(r0.xzww);
-	r0.x = dot(r1, -vertex_position);
-	output.TexCoord6.w = min(r0.y, r0.x);
-	output.TexCoord6.y = r0.y;
-	output.TexCoord6.z = input.coefficient.x * 3.54490733;
+	r0.x = dot(output.normal, -vertex_position);
+	output.TexCoord7.w = min(r0.y, r0.x);
+	output.TexCoord7.y = r0.y;
+	output.TexCoord7.z = input.coefficient.x * 3.54490733;
 
 	return output;
 }

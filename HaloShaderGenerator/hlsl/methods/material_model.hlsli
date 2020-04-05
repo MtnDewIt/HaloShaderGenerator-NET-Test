@@ -4,20 +4,20 @@
 #include "../helpers/math.hlsli"
 #include "../registers/shader.hlsli"
 #include "../helpers/lighting.hlsli"
-
+#include "../helpers/sh.hlsli"
 
 #define MATERIAL_TYPE_ARGS float3 diffuse, float3 normal, float3 eye_world, float2 texcoord, float3 unknown_vertex_color1, float3 fragment_world_position, float3 unknown_vertex_value0
 #define MATERIAL_TYPE_ARGNAMES diffuse, normal, eye_world, texcoord, unknown_vertex_color1, fragment_world_position, unknown_vertex_value0
 
 float3 material_type_diffuse_only(MATERIAL_TYPE_ARGS)
 {
-    float3 unknown_lighting_value = calculate_unknown_lighting_value(normal);
+	float3 diffuse_ref = diffuse_reflectance(normal);
 
     float3 lighting = float3(0, 0, 0);
 
     if (no_dynamic_lights)
     {
-        lighting = unknown_lighting_value.xyz * unknown_vertex_value0;
+        lighting = diffuse_ref.xyz * unknown_vertex_value0;
     }
     else
     {
@@ -59,7 +59,7 @@ float3 material_type_diffuse_only(MATERIAL_TYPE_ARGS)
             }
         }
 
-        lighting = unknown_lighting_value.xyz * unknown_vertex_value0 + accumulation;
+        lighting = diffuse_ref.xyz * unknown_vertex_value0 + accumulation;
     }
 
     return diffuse * lighting;

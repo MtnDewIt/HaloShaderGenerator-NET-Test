@@ -4,63 +4,6 @@
 #include "../helpers/math.hlsli"
 #include "../registers/shader.hlsli"
 
-float3 calculate_unknown_lighting_value(float3 normal)
-{
-    //TODO: Clean this up
-    float4 c11 = float4(0.5, 2, -1, 0.333333343);
-    float4 c12 = float4(0, 0, 9.99999975e-005, 0.0500000007);
-    float4 c58 = float4(-1.02332795, 0.886227012, -0.85808599, 0.429042995);
-
-    // Matirx multiplications, on normals. Maybe a screen space normal? Dunno.
-    float3 unknown_lighting_value;
-
-    float3 r1 = float3(0, 0, 0);
-    float3 r4 = float3(0, 0, 0);
-    float4 r3 = float4(0, 0, 0, 0);
-
-        //dp3 r1.x, r2, c2
-    r1.x = dot(normal, p_lighting_constant_1.xyz);
-        //dp3 r1.y, r2, c3
-    r1.y = dot(normal, p_lighting_constant_2.xyz);
-        //dp3 r1.z, r2, c4
-    r1.z = dot(normal, p_lighting_constant_3.xyz);
-        //mul r1.xyz, r1, c58.x
-    r1.xyz = (r1 * c58.xxx).xyz;
-        //mov r3.y, c58.y
-    r3.y = c58.y;
-        //mad r1.xyz, c1, r3.y, r1
-    r1.xyz = (p_lighting_constant_0.xyz * r3.yyy + r1).xyz;
-        //mul r3.xyz, r2.yzxw, r2
-    r3.xyz = normal.yzx * normal;
-        //dp3 r4.x, r3, c5
-    r4.x = dot(r3.xyz, p_lighting_constant_4.xyz);
-        //dp3 r4.y, r3, c6
-    r4.y = dot(r3.xyz, p_lighting_constant_5.xyz);
-        //dp3 r4.z, r3, c7
-    r4.z = dot(r3.xyz, p_lighting_constant_6.xyz);
-        //mad r1.xyz, r4, c58.z, r1
-    r1.xyz = (r4 * c58.zzz + r1.xyz).xyz;
-        //mov r3.w, c11.w
-    r3.w = c11.w;
-        //mul r3.xyz, r2, r2
-    r3.xyz = (normal * normal).xyz;
-        //dp4 r4.x, r3, c8
-    r4.x = dot(r3, p_lighting_constant_7);
-        //dp4 r4.y, r3, c9
-    r4.y = dot(r3, p_lighting_constant_8);
-        //dp4 r4.z, r3, c10
-    r4.z = dot(r3, p_lighting_constant_9);
-
-        //mad r1.xyz, r4, -c58.w, r1
-    r1.xyz = (r4 * (-c58.www) + r1.xyz).xyz;
-        //mul r1.xyz, r1, c12.x
-    r1.xyz = r1.xyz / PI;
-
-    unknown_lighting_value = r1.xyz;
-
-    return unknown_lighting_value;
-}
-
 float3 calculate_simple_light(SimpleLight simple_light, float3 previous_illumination, float3 normal, float3 relative_position)
 {
     //def c11, 0.5, 2, -1, 0.333333343
@@ -83,7 +26,7 @@ float3 calculate_simple_light(SimpleLight simple_light, float3 previous_illumina
     float temporary2 = 0.0;
 
     //add r5.xyz, -r4, simple_light.unknown0
-    r5.xyz = ((-relative_position) + simple_light.unknown0.xyz).xyz;
+	r5.xyz = ((-relative_position) + simple_light.position.xyz).xyz;
     //dp3 temporary0, r5, r5
     temporary0 = dot(r5.xyz, r5.xyz);
     //rsq temporary1, temporary0
@@ -93,7 +36,7 @@ float3 calculate_simple_light(SimpleLight simple_light, float3 previous_illumina
     //dp3 temporary1, r2, r5
     temporary1 = dot(normal, r5.xyz);
     //add temporary2, temporary0, simple_light.unknown0.w
-    temporary2 = temporary0 + simple_light.unknown0.w;
+	temporary2 = temporary0 + simple_light.position.w;
     //rcp r6.x, temporary2
     r6.x = 1.0 / temporary2;
     //dp3 r6.y, r5, simple_light.unknown1

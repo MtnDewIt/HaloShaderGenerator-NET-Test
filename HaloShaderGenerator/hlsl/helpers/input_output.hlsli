@@ -44,18 +44,15 @@ struct PS_OUTPUT_DEFAULT
 
 struct VS_OUTPUT_STATIC_PTR_AMBIENT
 {
-    // These are from VS_OUTPUT_ALBEDO
 	float4 position : VPOS;
-    
     float4 texcoord : TEXCOORD;
     float4 normal : TEXCOORD3;
     float4 binormal : TEXCOORD4;
     float4 tangent : TEXCOORD5;
-
-    float4 TexCoord6 : TEXCOORD6;
+    float4 camera_dir : TEXCOORD6;
     float4 TexCoord7 : TEXCOORD7;
-    float4 Color : COLOR;
-    float4 Color1 : COLOR1;
+	float4 sky_radiance : COLOR;
+    float4 extinction_factor : COLOR1;
 };
 
 // hlsl doesn't support union so we'll have to macro the vs_input depending on the vertex and draw mode

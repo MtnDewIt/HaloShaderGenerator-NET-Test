@@ -2,31 +2,31 @@
 #define _SH_HLSL
 
 #include "../registers/shader.hlsli"
-#include "../helpers/math.hlsli"
+#include "math.hlsli"
 
 // Lighting and materials of Halo 3
 
-float3 diffuse_reflectance(float3 normal, float4 lighting_constants[10])
+float3 diffuse_reflectance(float3 normal)
 {
 	float c1 = 0.429043f;
 	float c2 = 0.511664f;
 	float c4 = 0.886227f;
 	float3 x1, x2, x3;
 	//linear
-	x1.r = dot(normal, lighting_constants[1].rgb);
-	x1.g = dot(normal, lighting_constants[2].rgb);
-	x1.b = dot(normal, lighting_constants[3].rgb);
+	x1.r = dot(normal, p_lighting_constant_1.rgb);
+	x1.g = dot(normal, p_lighting_constant_2.rgb);
+	x1.b = dot(normal, p_lighting_constant_3.rgb);
 	//quadratic
 	float3 a = normal.xyz * normal.yzx;
-	x2.r = dot(a.xyz, lighting_constants[4].rgb);
-	x2.g = dot(a.xyz, lighting_constants[5].rgb);
-	x2.b = dot(a.xyz, lighting_constants[6].rgb);
+	x2.r = dot(a.xyz, p_lighting_constant_4.rgb);
+	x2.g = dot(a.xyz, p_lighting_constant_5.rgb);
+	x2.b = dot(a.xyz, p_lighting_constant_6.rgb);
 	float4 b = float4(normal.xyz * normal.xyz, 1.f / 3.f);
-	x3.r = dot(b.xyzw, lighting_constants[7].rgba);
-	x3.g = dot(b.xyzw, lighting_constants[8].rgba);
-	x3.b = dot(b.xyzw, lighting_constants[9].rgba);
+	x3.r = dot(b.xyzw, p_lighting_constant_7.rgba);
+	x3.g = dot(b.xyzw, p_lighting_constant_8.rgba);
+	x3.b = dot(b.xyzw, p_lighting_constant_9.rgba);
 	float3 lightprobe_color =
-	c4 * lighting_constants[0].rgb + (-2.f * c2) * x1 + (-2.f * c1) * x2 - c1 * x3;
+	c4 * p_lighting_constant_0.rgb + (-2.f * c2) * x1 + (-2.f * c1) * x2 - c1 * x3;
 	
 	return lightprobe_color / 3.1415926535f;
 }

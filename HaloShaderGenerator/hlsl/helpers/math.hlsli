@@ -6,6 +6,7 @@
 #define EPSILON 0.001
 #define RAND_COEFFICIENTS float3(12.9898, 78.233, 4.1414)
 #define SQRT3 1.7320508080
+#define LOG2_E 1.44269502
 float rand2(float2 co)
 {
 	float a = 12.9898;

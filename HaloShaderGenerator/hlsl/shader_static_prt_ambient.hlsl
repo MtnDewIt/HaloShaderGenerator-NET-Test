@@ -88,10 +88,10 @@ PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PTR_AMBIENT input) :
     float4 c58 = float4(-1.02332795, 0.886227012, -0.85808599, 0.429042995);
 
     //TODO: Better name these, not 100% sure what they do yet
-    float3 fragment_world_position = input.TexCoord6.xyz; // camera direction in world space
+    float3 fragment_world_position = input.camera_dir.xyz; // camera direction in world space
     float unknown_vertex_value0 = input.TexCoord7.x;
-    float3 v2 = input.Color.xyz; // some kind of vertex baked ao? not sure cause of shadows gotta investigate
-    float3 unknown_vertex_color1 = input.Color1.xyz;
+    float3 v2 = input.sky_radiance.xyz; // some kind of vertex baked ao? not sure cause of shadows gotta investigate
+    float3 unknown_vertex_color1 = input.extinction_factor.xyz;
     float2 vPos = input.position.xy;
 
     float2 fragcoord = (vPos + 0.5) / texture_size;

@@ -45,7 +45,7 @@ uniform float4 simple_lights[40] : register(c18);
 
 struct SimpleLight
 {
-    float4 unknown0;
+    float4 position;
     float4 unknown1;
     float4 unknown2;
     float4 unknown3;
@@ -54,7 +54,7 @@ struct SimpleLight
 SimpleLight get_simple_light(int index)
 {
     SimpleLight light;
-    light.unknown0 = simple_lights[index * 5 + 0];
+	light.position = simple_lights[index * 5 + 0];
     light.unknown1 = simple_lights[index * 5 + 1];
     light.unknown2 = simple_lights[index * 5 + 2];
     light.unknown3 = simple_lights[index * 5 + 3];
@@ -228,7 +228,7 @@ uniform float4 k_ps_active_camo_factor : register(c212);
 
 
 
-
+uniform float k_f0; // figure out what this is
 
 
 

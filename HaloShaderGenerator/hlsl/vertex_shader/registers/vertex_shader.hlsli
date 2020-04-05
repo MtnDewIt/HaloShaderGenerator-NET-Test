@@ -2,6 +2,7 @@
 #define _VS_SHADER_HLSLI
 
 uniform float4x4 view_projection : register(c0);
+uniform float3 camera_forward : register(c4);
 uniform float3 camera_left : register(c5);
 uniform float3 camera_up : register(c6);
 uniform float3 camera_position : register(c7);
