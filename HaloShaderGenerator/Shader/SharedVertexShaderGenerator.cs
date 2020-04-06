@@ -17,9 +17,9 @@ namespace HaloShaderGenerator.Shader
         {
             switch (type)
             {
-                //case VertexType.World:
+                case VertexType.World:
                 case VertexType.Rigid:
-                //case VertexType.Skinned:
+                case VertexType.Skinned:
                 //case VertexType.DualQuat: //HO only
                     return true;
                 default:

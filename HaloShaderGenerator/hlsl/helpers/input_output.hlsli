@@ -65,6 +65,26 @@ struct VS_INPUT_RIGID_VERTEX_ALBEDO
     float4 binormal : BINORMAL;
 };
 
+struct VS_INPUT_WORLD_VERTEX_ALBEDO
+{
+	float4 position : POSITION;
+	float4 texcoord : TEXCOORD;
+	float4 normal : NORMAL;
+	float4 tangent : TANGENT;
+	float4 binormal : BINORMAL;
+};
+
+struct VS_INPUT_SKINNED_VERTEX_ALBEDO
+{
+	float4 position : POSITION;
+	float4 texcoord : TEXCOORD;
+	float4 normal : NORMAL;
+	float4 tangent : TANGENT;
+	float4 binormal : BINORMAL;
+	float4 node_indices : BLENDINDICES;
+	float4 node_weights : BLENDWEIGHT;
+};
+
 struct VS_INPUT_RIGID_VERTEX_AMBIENT_PRT
 {
 	float4 position : POSITION;

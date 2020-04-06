@@ -40,10 +40,12 @@ namespace HaloShaderGenerator
 
         static void TestSharedVertexShader()
         {
-            var bytecode = ShartedVertexShaderGenerator.GenerateSharedVertexShader(VertexType.Rigid, ShaderStage.Albedo);
+            var vertexType = VertexType.Skinned;
+            var stage = ShaderStage.Albedo;
+            var bytecode = ShartedVertexShaderGenerator.GenerateSharedVertexShader(vertexType, stage);
             var str = D3DCompiler.Disassemble(bytecode);
 
-            using (FileStream test = new FileInfo($"generated_{ShaderStage.Albedo.ToString().ToLower()}_rigid.glvs").Create())
+            using (FileStream test = new FileInfo($"generated_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}.glvs").Create())
             using (StreamWriter writer = new StreamWriter(test))
             {
                 writer.WriteLine(str);
