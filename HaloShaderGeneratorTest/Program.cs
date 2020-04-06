@@ -40,8 +40,8 @@ namespace HaloShaderGenerator
 
         static void TestSharedVertexShader()
         {
-            var vertexType = VertexType.Skinned;
-            var stage = ShaderStage.Albedo;
+            var vertexType = VertexType.Rigid;
+            var stage = ShaderStage.Static_Prt_Ambient;
             var bytecode = ShartedVertexShaderGenerator.GenerateSharedVertexShader(vertexType, stage);
             var str = D3DCompiler.Disassemble(bytecode);
 
