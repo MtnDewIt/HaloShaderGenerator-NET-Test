@@ -136,7 +136,7 @@
     <EmbeddedResource Include="hlsl\glvs_shader.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\helpers\projection_math.hlsli" />
+    <EmbeddedResource Include="hlsl\helpers\transform_math.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\sh.hlsli" />
