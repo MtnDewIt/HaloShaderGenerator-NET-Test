@@ -1,4 +1,5 @@
 ﻿using HaloShaderGenerator.DirectX;
+using HaloShaderGenerator.Globals;
 using HaloShaderGenerator.Shader;
 using System;
 using System.Collections.Generic;
@@ -11,61 +12,21 @@ namespace HaloShaderGenerator
 {
     class Application
     {
-        /*
-        static void Benchmark()
+        static void TestPixelShader()
         {
-            Int64 size = 0;
-            var then = DateTime.Now;
-            List<Task<byte[]>> tasks = new List<Task<byte[]>>();
-            for (int i = 0; i < 1; i++)
-            {
-                var task = ShaderGenerator.GenerateAsync(
-                ShaderStage.Static_Prt_Ambient,
+            var bytecode = PixelShaderGenerator.GeneratePixelShader(ShaderStage.Albedo,
                 Albedo.Default,
                 Bump_Mapping.Off,
                 Alpha_Test.None,
                 Specular_Mask.No_Specular_Mask,
-                Material_Model.None,
+                Material_Model.Diffuse_Only,
                 Environment_Mapping.None,
                 Self_Illumination.Off,
                 Blend_Mode.Opaque,
                 Parallax.Off,
-                Misc.First_Person_Always,
-                Distortion.Off,
-                Soft_fade.Off
-                );
-                tasks.Add(task);
-            }
-            Task.WaitAll(tasks.ToArray());
-            foreach(var task in tasks)
-            {
-                size += task.Result.LongLength;
-            }
-            TimeSpan delta = DateTime.Now - then;
-            Console.WriteLine(delta.TotalSeconds);
-            Console.WriteLine(size);
-            Console.WriteLine($"{1000.0 / delta.TotalSeconds} shaders/s");
-        }
-        */
-
-        static int Main()
-        {
-            //Benchmark();
-            var bytecode = ShaderGenerator.GenerateShader(
-                ShaderStage.Albedo,
-                Albedo.Default, 
-                Bump_Mapping.Off, 
-                Alpha_Test.None, 
-                Specular_Mask.No_Specular_Mask, 
-                Material_Model.Diffuse_Only, 
-                Environment_Mapping.None, 
-                Self_Illumination.Off, 
-                Blend_Mode.Opaque, 
-                Parallax.Off,
                 Misc.First_Person_Never,
-                Distortion.Off
-                );
-            
+                Distortion.Off);
+
             var str = D3DCompiler.Disassemble(bytecode);
 
             using (FileStream test = new FileInfo($"generated_{ShaderStage.Albedo.ToString()}_0_0_0_0_0_0_0_0_0_0_0.pixel_shader").Create())
@@ -75,6 +36,26 @@ namespace HaloShaderGenerator
             }
 
             Console.WriteLine(str);
+        }
+
+        static void TestSharedVertexShader()
+        {
+            var bytecode = ShartedVertexShaderGenerator.GenerateSharedVertexShader(VertexType.Rigid, ShaderStage.Albedo);
+            var str = D3DCompiler.Disassemble(bytecode);
+
+            using (FileStream test = new FileInfo($"generated_{ShaderStage.Albedo.ToString().ToLower()}_rigid.glvs").Create())
+            using (StreamWriter writer = new StreamWriter(test))
+            {
+                writer.WriteLine(str);
+            }
+
+            Console.WriteLine(str);
+        }
+
+        static int Main()
+        {
+            //TestPixelShader();
+            TestSharedVertexShader();
 
             return 0;
         }

@@ -1,9 +1,9 @@
 ﻿#define shader_template
 
 #include "registers/vertex_shader.hlsli"
-#include "../helpers/input_output.hlsli"
+#include "helpers/input_output.hlsli"
 #include "helpers/projection_math.hlsli"
-#include "../helpers/math.hlsli"
+#include "helpers/math.hlsli"
 
 // temporary definition, will have to macro the hell out of this
 VS_OUTPUT_STATIC_PTR_AMBIENT global_entry_rigid_static_prt_ambient(VS_INPUT_RIGID_VERTEX_AMBIENT_PRT input)
@@ -14,6 +14,7 @@ VS_OUTPUT_STATIC_PTR_AMBIENT global_entry_rigid_static_prt_ambient(VS_INPUT_RIGI
 	output.binormal = transform_value(input.binormal.xyz, nodes[0], nodes[1], nodes[2]);
 	output.texcoord.xy = input.texcoord.xy * uv_compression_scale_offset.xy + uv_compression_scale_offset.zw;
 	float4 vertex_position = input.position * position_compression_scale + position_compression_offset; //model space
+	vertex_position.w = 1.0;
 	vertex_position.xyz = transform_value(vertex_position.xyz, nodes[0], nodes[1], nodes[2]); // world space
 	float3 camera_dir = camera_position.xyz - vertex_position.xyz;
 	output.camera_dir = camera_dir;
@@ -66,15 +67,14 @@ VS_OUTPUT_STATIC_PTR_AMBIENT global_entry_rigid_static_prt_ambient(VS_INPUT_RIGI
 		else // |s * cos(theta) | << 1 (i.e close to 0
 		{
 			// r3.z = alpha, h_0 = 1 / atm_param for type then scale1 = H_1, scale2 = H_2
-			float scale1 = overall_distance * exp(-unknown_height / v_atmosphere_constant_5.w);
-			float scale2 = overall_distance * exp(-unknown_height / v_atmosphere_constant_4.w);
+			float scale1 = -overall_distance * exp(-unknown_height / v_atmosphere_constant_5.w);
+			float scale2 = -overall_distance * exp(-unknown_height / v_atmosphere_constant_4.w);
 			extinction_factor = exp(-(scale2 * v_atmosphere_constant_3.rgb + v_atmosphere_constant_2.rgb * scale1));
 		}
 		output.extinction_factor = extinction_factor;
 		output.sky_radiance = (v_atmosphere_constant_1.rgb * (costheta * costheta + 1.0 * v_atmosphere_constant_4.xyz + unknown_power * v_atmosphere_constant_5.xyz)) * (1.0 - extinction_factor);
 	}
 
-	vertex_position.w = 1.0;
 	output.position.x = dot(vertex_position, view_projection[0]);
 	output.position.y = dot(vertex_position, view_projection[1]);
 	output.position.z = dot(vertex_position, view_projection[2]);

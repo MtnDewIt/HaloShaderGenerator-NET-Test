@@ -52,7 +52,10 @@
     <Compile Include="DirectX\Include.cs" />
     <Compile Include="Globals\ShaderStage.cs" />
     <Compile Include="Globals\ShaderType.cs" />
-    <Compile Include="Shader\ShaderGenerator.cs" />
+    <Compile Include="Globals\VertexType.cs" />
+    <Compile Include="Shader\MethodOptions.cs" />
+    <Compile Include="Shader\SharedVertexShaderGenerator.cs" />
+    <Compile Include="Shader\PixelShaderGenerator.cs" />
     <Compile Include="Generator\ShaderGeneratorBase.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -71,17 +74,17 @@
     <EmbeddedResource Include="hlsl\methods\specular_mask.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\beam.hlsl" />
-    <EmbeddedResource Include="hlsl\contrail.hlsl" />
-    <EmbeddedResource Include="hlsl\decal.hlsl" />
-    <EmbeddedResource Include="hlsl\halogram.hlsl" />
-    <EmbeddedResource Include="hlsl\light_volume.hlsl" />
-    <EmbeddedResource Include="hlsl\particle.hlsl" />
-    <EmbeddedResource Include="hlsl\screen.hlsl" />
-    <EmbeddedResource Include="hlsl\shader.hlsl" />
-    <EmbeddedResource Include="hlsl\terrain.hlsl" />
-    <EmbeddedResource Include="hlsl\water.hlsl" />
-    <EmbeddedResource Include="hlsl\zonly.hlsl" />
+    <EmbeddedResource Include="hlsl\pixl_beam.hlsl" />
+    <EmbeddedResource Include="hlsl\pixl_contrail.hlsl" />
+    <EmbeddedResource Include="hlsl\pixl_decal.hlsl" />
+    <EmbeddedResource Include="hlsl\pixl_halogram.hlsl" />
+    <EmbeddedResource Include="hlsl\pixl_light_volume.hlsl" />
+    <EmbeddedResource Include="hlsl\pixl_particle.hlsl" />
+    <EmbeddedResource Include="hlsl\pixl_screen.hlsl" />
+    <EmbeddedResource Include="hlsl\pixl_shader.hlsl" />
+    <EmbeddedResource Include="hlsl\pixl_terrain.hlsl" />
+    <EmbeddedResource Include="hlsl\pixl_water.hlsl" />
+    <EmbeddedResource Include="hlsl\pixl_zonly.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\math.hlsli" />
@@ -108,7 +111,7 @@
     <EmbeddedResource Include="hlsl\helpers\color_processing.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\shader_static_prt_ambient.hlsl" />
+    <EmbeddedResource Include="hlsl\pixl_shader_static_prt_ambient.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\input_output.hlsli" />
@@ -120,22 +123,20 @@
     <EmbeddedResource Include="hlsl\helpers\lighting.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\shader_cortana.hlsl" />
+    <EmbeddedResource Include="hlsl\pixl_shader_cortana.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Beam\" />
+    <Folder Include="Black\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\vertex_shader\registers\vertex_shader.hlsli" />
+    <EmbeddedResource Include="hlsl\registers\vertex_shader.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\vertex_shader\shader.hlsl" />
+    <EmbeddedResource Include="hlsl\glvs_shader.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\vertex_shader\static_prt_ambient.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="hlsl\vertex_shader\helpers\projection_math.hlsli" />
+    <EmbeddedResource Include="hlsl\helpers\projection_math.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\sh.hlsli" />

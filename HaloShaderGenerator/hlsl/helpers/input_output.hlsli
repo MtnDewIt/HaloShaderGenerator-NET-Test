@@ -8,12 +8,12 @@
 
 struct VS_OUTPUT_ALBEDO
 {
-    float4 position : VPOS;
-    float4 texcoord : TEXCOORD;
+    float4 position : POSITION;
+    float2 texcoord : TEXCOORD;
     float4 normal : TEXCOORD1;
-    float4 binormal : TEXCOORD2;
-    float4 tangent : TEXCOORD3;
-    float vertex_to_camera : TEXCOORD4;
+    float3 binormal : TEXCOORD2;
+    float3 tangent : TEXCOORD3;
+    float3 camera_dir : TEXCOORD4;
 };
 
 struct PS_OUTPUT_ALBEDO
@@ -25,7 +25,7 @@ struct PS_OUTPUT_ALBEDO
 
 struct VS_OUTPUT_ACTIVE_CAMO
 {
-    float4 vPos : VPOS;
+	float4 vPos : POSITION;
     float4 TexCoord : TEXCOORD0;
     float4 TexCoord1 : TEXCOORD1;
     float4 TexCoord2 : TEXCOORD2;

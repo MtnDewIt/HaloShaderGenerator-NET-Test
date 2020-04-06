@@ -1,4 +1,5 @@
 ﻿using HaloShaderGenerator.DirectX;
+using HaloShaderGenerator.Globals;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,6 +35,7 @@ namespace HaloShaderGenerator.Generator
                 if (relative_path.StartsWith("./")) relative_path = relative_path.Substring(2);
 
                 string path = Path.Combine("HaloShaderGenerator\\hlsl", relative_path);
+
                 string directory = Path.GetDirectoryName(path);
 
                 var resourceName = path.Replace('\\', '.').Replace('/', '.');

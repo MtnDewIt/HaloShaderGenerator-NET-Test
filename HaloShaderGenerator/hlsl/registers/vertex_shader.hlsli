@@ -10,7 +10,7 @@ uniform float4 position_compression_scale : register(c12);
 uniform float4 position_compression_offset : register(c13);
 uniform float4 uv_compression_scale_offset : register(c14);
 uniform float4 v_atmosphere_constant_extra : register(c15);
-uniform float3 nodes[210] : register(c16); // node transformations, supports up to 70 nodes
+uniform float4 nodes[210] : register(c16); // node transformations, supports up to 70 nodes
 
 
 uniform float4 v_atmosphere_constant_0 : register(c233);
