@@ -46,13 +46,13 @@ struct VS_OUTPUT_STATIC_PTR_AMBIENT
 {
 	float4 position : POSITION;
     float2 texcoord : TEXCOORD;
-    float4 normal : TEXCOORD3;
+    float3 normal : TEXCOORD3;
     float3 binormal : TEXCOORD4;
     float3 tangent : TEXCOORD5;
     float3 camera_dir : TEXCOORD6;
     float4 TexCoord7 : TEXCOORD7;
-	float3 sky_radiance : COLOR;
-    float3 extinction_factor : COLOR1;
+	float3 extinction_factor : COLOR;
+	float3 sky_radiance : COLOR1;
 };
 
 // hlsl doesn't support union so we'll have to macro the vs_input depending on the vertex and draw mode
