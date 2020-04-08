@@ -111,9 +111,6 @@
     <EmbeddedResource Include="hlsl\helpers\color_processing.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\pixl_shader_static_prt_ambient.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\input_output.hlsli" />
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +143,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\prt.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\helpers\albedo_pass.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

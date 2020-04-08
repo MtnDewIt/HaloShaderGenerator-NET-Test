@@ -8,7 +8,7 @@
 
 struct VS_OUTPUT_ALBEDO
 {
-    float4 position : POSITION;
+    float4 position : VPOS;
     float2 texcoord : TEXCOORD;
     float4 normal : TEXCOORD1;
     float3 binormal : TEXCOORD2;
@@ -25,7 +25,7 @@ struct PS_OUTPUT_ALBEDO
 
 struct VS_OUTPUT_ACTIVE_CAMO
 {
-	float4 vPos : POSITION;
+	float4 vPos : VPOS;
     float4 TexCoord : TEXCOORD0;
     float4 TexCoord1 : TEXCOORD1;
     float4 TexCoord2 : TEXCOORD2;
@@ -44,7 +44,7 @@ struct PS_OUTPUT_DEFAULT
 
 struct VS_OUTPUT_STATIC_PTR_AMBIENT
 {
-	float4 position : POSITION;
+	float4 position : VPOS;
     float2 texcoord : TEXCOORD;
     float3 normal : TEXCOORD3;
     float3 binormal : TEXCOORD4;

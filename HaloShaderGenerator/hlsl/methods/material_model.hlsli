@@ -1,4 +1,4 @@
-﻿#ifndef _MATERIAL_MODEL_HLSLI
+﻿#ifndef _MATERIAL_MODEL_HLSLItempx
 #define _MATERIAL_MODEL_HLSLI
 
 #include "../helpers/math.hlsli"
@@ -6,8 +6,8 @@
 #include "../helpers/lighting.hlsli"
 #include "../helpers/sh.hlsli"
 
-#define MATERIAL_TYPE_ARGS float3 diffuse, float3 normal, float3 eye_world, float2 texcoord, float3 unknown_vertex_color1, float3 fragment_world_position, float3 unknown_vertex_value0
-#define MATERIAL_TYPE_ARGNAMES diffuse, normal, eye_world, texcoord, unknown_vertex_color1, fragment_world_position, unknown_vertex_value0
+#define MATERIAL_TYPE_ARGS float3 diffuse, float3 normal, float3 eye_world, float2 texcoord, float3 extinction_factor, float3 sky_radiance, float3 camera_dir, float3 prt_result
+#define MATERIAL_TYPE_ARGNAMES diffuse, normal, eye_world, texcoord, extinction_factor, sky_radiance, camera_dir, prt_result
 
 float3 material_type_diffuse_only(MATERIAL_TYPE_ARGS)
 {
@@ -17,39 +17,39 @@ float3 material_type_diffuse_only(MATERIAL_TYPE_ARGS)
 
     if (no_dynamic_lights)
     {
-        lighting = diffuse_ref.xyz * unknown_vertex_value0;
+        lighting = diffuse_ref.xyz * prt_result;
     }
     else
     {
         // not 100% sure if this is correct
-        float3 relative_position = Camera_Position_PS - fragment_world_position;
+        float3 vertex_world_position = Camera_Position_PS - camera_dir;
 
         float3 accumulation = float3(0, 0, 0);
 
         if (simple_light_count > 0)
         {
-            accumulation = calculate_simple_light(get_simple_light(0), accumulation, normal, relative_position);
+            accumulation = calculate_simple_light(get_simple_light(0), accumulation, normal, vertex_world_position);
             if (simple_light_count > 1)
             {
-                accumulation = calculate_simple_light(get_simple_light(1), accumulation, normal, relative_position);
+                accumulation = calculate_simple_light(get_simple_light(1), accumulation, normal, vertex_world_position);
                 if (simple_light_count > 2)
                 {
-                    accumulation = calculate_simple_light(get_simple_light(2), accumulation, normal, relative_position);
+                    accumulation = calculate_simple_light(get_simple_light(2), accumulation, normal, vertex_world_position);
                     if (simple_light_count > 3)
                     {
-                        accumulation = calculate_simple_light(get_simple_light(3), accumulation, normal, relative_position);
+                        accumulation = calculate_simple_light(get_simple_light(3), accumulation, normal, vertex_world_position);
                         if (simple_light_count > 4)
                         {
-                            accumulation = calculate_simple_light(get_simple_light(4), accumulation, normal, relative_position);
+                            accumulation = calculate_simple_light(get_simple_light(4), accumulation, normal, vertex_world_position);
                             if (simple_light_count > 5)
                             {
-                                accumulation = calculate_simple_light(get_simple_light(5), accumulation, normal, relative_position);
+                                accumulation = calculate_simple_light(get_simple_light(5), accumulation, normal, vertex_world_position);
                                 if (simple_light_count > 6)
                                 {
-                                    accumulation = calculate_simple_light(get_simple_light(6), accumulation, normal, relative_position);
+                                    accumulation = calculate_simple_light(get_simple_light(6), accumulation, normal, vertex_world_position);
                                     if (simple_light_count > 7)
                                     {
-                                        accumulation = calculate_simple_light(get_simple_light(7), accumulation, normal, relative_position);
+                                        accumulation = calculate_simple_light(get_simple_light(7), accumulation, normal, vertex_world_position);
                                     }
                                 }
                             }
@@ -59,10 +59,10 @@ float3 material_type_diffuse_only(MATERIAL_TYPE_ARGS)
             }
         }
 
-        lighting = diffuse_ref.xyz * unknown_vertex_value0 + accumulation;
+        lighting = diffuse_ref.xyz * prt_result + accumulation;
     }
 
-    return diffuse * lighting;
+    return diffuse * lighting * extinction_factor + sky_radiance;
 }
 
 //TODO: This is likely a structure of floats
@@ -167,7 +167,7 @@ float3 material_type_foliage(MATERIAL_TYPE_ARGS)
 
 float3 material_type_none(MATERIAL_TYPE_ARGS)
 {
-    return unknown_vertex_color1;
+    return extinction_factor;
 }
 
 float3 material_type_glass(MATERIAL_TYPE_ARGS)

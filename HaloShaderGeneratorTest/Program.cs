@@ -12,9 +12,9 @@ namespace HaloShaderGenerator
 {
     class Application
     {
-        static void TestPixelShader()
+        static void TestPixelShader(ShaderStage stage)
         {
-            var bytecode = PixelShaderGenerator.GeneratePixelShader(ShaderStage.Albedo,
+            var bytecode = PixelShaderGenerator.GeneratePixelShader(stage,
                 Albedo.Default,
                 Bump_Mapping.Off,
                 Alpha_Test.None,
@@ -29,7 +29,7 @@ namespace HaloShaderGenerator
 
             var str = D3DCompiler.Disassemble(bytecode);
 
-            using (FileStream test = new FileInfo($"generated_{ShaderStage.Albedo.ToString()}_0_0_0_0_0_0_0_0_0_0_0.pixel_shader").Create())
+            using (FileStream test = new FileInfo($"generated_{stage.ToString().ToLower()}_0_0_0_0_0_0_0_0_0_0_0.pixl").Create())
             using (StreamWriter writer = new StreamWriter(test))
             {
                 writer.WriteLine(str);
@@ -56,8 +56,8 @@ namespace HaloShaderGenerator
 
         static int Main()
         {
-            //TestPixelShader();
-            TestSharedVertexShader();
+            TestPixelShader(ShaderStage.Static_Prt_Ambient);
+            //TestSharedVertexShader();
 
             return 0;
         }

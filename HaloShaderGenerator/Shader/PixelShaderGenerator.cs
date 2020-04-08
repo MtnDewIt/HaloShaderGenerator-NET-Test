@@ -28,7 +28,7 @@ namespace HaloShaderGenerator.Shader
             Distortion distortion
             )
         {
-            string template = $"shader.hlsl";
+            string template = $"pixl_shader.hlsl";
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 

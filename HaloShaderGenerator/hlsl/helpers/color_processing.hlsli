@@ -3,15 +3,14 @@
 
 #include "../registers/shader.hlsli"
 
-/*
-* Not sure what this do yet,
-*/
+#define DEBUG_TINT_FACTOR 4.595
+
 float3 apply_debug_tint(float3 color)
 {
-	float debug_tint_factor = 4.595;
-	float3 negative_tinted_color = color * (-debug_tint_factor) + debug_tint.rgb;
+	float debug_tint_factor = DEBUG_TINT_FACTOR;
 	float3 positive_color = color * debug_tint_factor;
-	return positive_color + negative_tinted_color * debug_tint.a;
+	float3 negative_tinted_color = debug_tint.rgb - color * debug_tint_factor;
+	return positive_color + debug_tint.a * negative_tinted_color;
 }
 
 /*
@@ -20,8 +19,7 @@ float3 apply_debug_tint(float3 color)
 float3 rgb_to_srgb(float3 color)
 {
 	float3 color1 = 1.05499995 * exp(log(color) * 0.416666657) - 0.0549999997;
-	float3 color2 = 12.9200001 * color;
-	return color <= 0.00313080009 ? color2 : color1;
+	return color <= 0.00313080009 ? 12.9200001 * color : color1;
 }
 
 float3 expose_color(float3 input)
