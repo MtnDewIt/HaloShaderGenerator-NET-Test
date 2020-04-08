@@ -110,7 +110,7 @@ PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PTR_AMBIENT input) :
 
 	float3 color = (environment + self_illumination.xyz) * input.sky_radiance.xyz + material_lighting;
 
-	color = overwrite(color, material_lighting);
+	//color = overwrite(color, material_lighting);
 
 	float3 exposed_color = expose_color(color);
 

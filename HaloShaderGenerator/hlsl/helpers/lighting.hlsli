@@ -4,16 +4,12 @@
 #include "../helpers/math.hlsli"
 #include "../registers/shader.hlsli"
 
-float3 calculate_simple_light(SimpleLight simple_light, float3 previous_illumination, float3 normal, float3 relative_position)
+float3 calculate_simple_light(SimpleLight simple_light, float3 accumulation, float3 normal, float3 vertex_world_position)
 {
     //def c11, 0.5, 2, -1, 0.333333343
     float4 c11 = float4(0.5, 2, -1, 0.333333343);
     //def c12, 0.318309873, 0, 9.99999975e-005, 0.0500000007
     float4 c12 = float4(0.318309873, 0, 9.99999975e-005, 0.0500000007);
-    //def c13, 3, 4, 5, 6
-    float4 c13 = float4(3, 4, 5, 6);
-    //def c15, 7, 0, 0, 0
-    float4 c15 = float4(7, 0, 0, 0);
     //def c58, -1.02332795, 0.886227012, -0.85808599, 0.429042995
     float4 c58 = float4(-1.02332795, 0.886227012, -0.85808599, 0.429042995);
 
@@ -26,7 +22,7 @@ float3 calculate_simple_light(SimpleLight simple_light, float3 previous_illumina
     float temporary2 = 0.0;
 
     //add r5.xyz, -r4, simple_light.unknown0
-	r5.xyz = ((-relative_position) + simple_light.position.xyz).xyz;
+	r5.xyz = ((-vertex_world_position) + simple_light.position.xyz).xyz;
     //dp3 temporary0, r5, r5
     temporary0 = dot(r5.xyz, r5.xyz);
     //rsq temporary1, temporary0
@@ -63,21 +59,21 @@ float3 calculate_simple_light(SimpleLight simple_light, float3 previous_illumina
     r5.xyz = (r5 * r3.w).xyz;
 
     // we need to accumulate here
-    r5.xyz += previous_illumination;
+    r5.xyz += accumulation;
 
     //cmp r5.xyz, temporary0, c12.y, r5
-    r5.xyz = (temporary0.xxx >= 0 ? previous_illumination : r5.xyz).xyz;
+    r5.xyz = (temporary0.xxx >= 0 ? accumulation : r5.xyz).xyz;
 
     return r5.xyz;
 }
 
-float3 calculate_cook_torrance_light(SimpleLight simple_light, float3 previous_illumination, float3 normal, float3 relative_position)
+float3 calculate_cook_torrance_light(SimpleLight simple_light, float3 accumulation, float3 normal, float3 vertex_world_position)
 {
     float3 lighting = float3(0, 0, 0);
 
 
 
-    return previous_illumination + lighting;
+    return accumulation + lighting;
 
 }
 
