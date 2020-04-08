@@ -46,8 +46,8 @@ uniform float4 simple_lights[40] : register(c18);
 struct SimpleLight
 {
     float4 position;
-    float4 unknown1;
-    float4 unknown2;
+    float4 direction;
+    float4 color;
     float4 unknown3;
     float4 unknown4;
 };
@@ -55,8 +55,8 @@ SimpleLight get_simple_light(int index)
 {
     SimpleLight light;
 	light.position = simple_lights[index * 5 + 0];
-    light.unknown1 = simple_lights[index * 5 + 1];
-    light.unknown2 = simple_lights[index * 5 + 2];
+	light.direction = simple_lights[index * 5 + 1];
+	light.color    = simple_lights[index * 5 + 2];
     light.unknown3 = simple_lights[index * 5 + 3];
     light.unknown4 = simple_lights[index * 5 + 4];
     return light;
