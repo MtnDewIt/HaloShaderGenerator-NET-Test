@@ -50,7 +50,7 @@ struct VS_OUTPUT_STATIC_PTR_AMBIENT
     float3 binormal : TEXCOORD4;
     float3 tangent : TEXCOORD5;
     float3 camera_dir : TEXCOORD6;
-    float4 TexCoord7 : TEXCOORD7;
+	float4 prt_radiance_vector : TEXCOORD7;
 	float3 extinction_factor : COLOR;
 	float3 sky_radiance : COLOR1;
 };

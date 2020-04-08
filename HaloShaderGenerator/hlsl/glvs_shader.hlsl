@@ -3,6 +3,7 @@
 #include "helpers\transform_math.hlsli"
 #include "helpers\math.hlsli"
 #include "helpers\atmosphere.hlsli"
+#include "helpers\prt.hlsli"
 
 // TODO: figure out dual quaternion skinned vertices
 
@@ -77,31 +78,13 @@ VS_OUTPUT_STATIC_PTR_AMBIENT entry_static_prt_ambient_rigid(VS_INPUT_RIGID_VERTE
 	output.binormal.xyz = transform_vector(transform_binormal(input.normal.xyz, input.tangent.xyz, input.binormal.xyz), node_transformation);
 	output.texcoord.xy = calculate_texcoord(input.texcoord);
 	output.tangent.xyz = transform_vector(input.tangent.xyz, node_transformation);
-	float3 normal = transform_vector(input.normal.xyz, node_transformation);
-	output.normal.xyz = normal;
-	
-	
+	output.normal.xyz = transform_vector(input.normal.xyz, node_transformation);
 	float4 vertex_position = float4(decompress_vertex_position(input.position.xyz), 1.0);
 	vertex_position.xyz = mul(v_node_transformation, vertex_position.xyzw).xyz;
-	float3 camera_dir = camera_position - vertex_position.xyz;
-	output.camera_dir = camera_dir;
+	output.camera_dir = camera_position - vertex_position.xyz;
+	calculate_atmosphere_radiance(vertex_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
+	output.position = calculate_screenspace_position(vertex_position);
+	output.prt_radiance_vector = calculate_ambient_radiance_vector(input.coefficient.x, output.normal);
 	
-	float3 extinction_factor, sky_radiance;
-	calculate_atmosphere_radiance(vertex_position, camera_dir, extinction_factor, sky_radiance);
-	output.extinction_factor.rgb = extinction_factor;
-	output.sky_radiance.rgb = sky_radiance;
-	
-	float4 screen_position = calculate_screenspace_position(vertex_position);
-	
-	output.position = screen_position.xyzw;
-
-	float tempx = dot(v_lighting_constant_0, 0.333333333);
-	float tempy = tempx * input.coefficient.x;
-	tempx = tempx * 0.282094806;
-	output.TexCoord7.x = max(tempy, EPSILON) / max(tempx, 0.01);
-	output.TexCoord7.w = min(tempy, dot(normal, -normalize(v_lighting_constant_3.rgb + v_lighting_constant_1.rgb + v_lighting_constant_2.rgb)));
-	output.TexCoord7.y = tempy;
-	output.TexCoord7.z = input.coefficient.x * 3.54490733;
-
 	return output;
 }

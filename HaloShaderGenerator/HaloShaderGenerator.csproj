@@ -144,6 +144,9 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\atmosphere.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\helpers\prt.hlsli" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)
