@@ -12,7 +12,6 @@
 float3 material_type_diffuse_only(MATERIAL_TYPE_ARGS)
 {
 	float3 diffuse_ref = diffuse_reflectance(normal);
-
     float3 lighting = float3(0, 0, 0);
 
     if (no_dynamic_lights)
@@ -21,9 +20,7 @@ float3 material_type_diffuse_only(MATERIAL_TYPE_ARGS)
     }
     else
     {
-        // not 100% sure if this is correct
         float3 vertex_world_position = Camera_Position_PS - camera_dir;
-
         float3 accumulation = float3(0, 0, 0);
 
         if (simple_light_count > 0)
@@ -58,10 +55,8 @@ float3 material_type_diffuse_only(MATERIAL_TYPE_ARGS)
                 }
             }
         }
-
         lighting = diffuse_ref.xyz * prt_result + accumulation;
     }
-
     return diffuse * lighting * extinction_factor + sky_radiance;
 }
 

@@ -4,10 +4,12 @@
 #include "helpers\math.hlsli"
 #include "helpers\atmosphere.hlsli"
 #include "helpers\prt.hlsli"
+#include "vertices\vertices.hlsli"
+#include "vertices\prt.hlsli"
 
 // TODO: figure out dual quaternion skinned vertices
 
-VS_OUTPUT_ALBEDO entry_albedo_rigid(VS_INPUT_RIGID_VERTEX_ALBEDO input)
+VS_OUTPUT_ALBEDO entry_albedo_rigid(RIGID_VERTEX input)
 {
     VS_OUTPUT_ALBEDO output;
 
@@ -26,7 +28,7 @@ VS_OUTPUT_ALBEDO entry_albedo_rigid(VS_INPUT_RIGID_VERTEX_ALBEDO input)
 	return output;
 }
 
-VS_OUTPUT_ALBEDO entry_albedo_skinned(VS_INPUT_SKINNED_VERTEX_ALBEDO input)
+VS_OUTPUT_ALBEDO entry_albedo_skinned(SKINNED_VERTEX input)
 {
 	VS_OUTPUT_ALBEDO output;
 
@@ -53,7 +55,7 @@ VS_OUTPUT_ALBEDO entry_albedo_skinned(VS_INPUT_SKINNED_VERTEX_ALBEDO input)
 	return output;
 }
 
-VS_OUTPUT_ALBEDO entry_albedo_world(VS_INPUT_WORLD_VERTEX_ALBEDO input)
+VS_OUTPUT_ALBEDO entry_albedo_world(WORLD_VERTEX input)
 {
 	VS_OUTPUT_ALBEDO output;
 	output.binormal.xyz = transform_binormal(input.normal.xyz, input.tangent.xyz, input.binormal.xyz);
@@ -68,9 +70,9 @@ VS_OUTPUT_ALBEDO entry_albedo_world(VS_INPUT_WORLD_VERTEX_ALBEDO input)
 	return output;
 }
 
-VS_OUTPUT_STATIC_PTR_AMBIENT entry_static_prt_ambient_rigid(VS_INPUT_RIGID_VERTEX_AMBIENT_PRT input)
+VS_OUTPUT_STATIC_PTR entry_static_prt_ambient_rigid(RIGID_VERTEX input, AMBIENT_PRT input_prt)
 {
-	VS_OUTPUT_STATIC_PTR_AMBIENT output;
+	VS_OUTPUT_STATIC_PTR output;
 	
 	float3x3 node_transformation = float3x3(nodes[0].xyz, nodes[1].xyz, nodes[2].xyz);
 	float4x4 v_node_transformation = float4x4(nodes[0], nodes[1], nodes[2], float4(0, 0, 0, 0));
@@ -84,7 +86,7 @@ VS_OUTPUT_STATIC_PTR_AMBIENT entry_static_prt_ambient_rigid(VS_INPUT_RIGID_VERTE
 	output.camera_dir = camera_position - vertex_position.xyz;
 	calculate_atmosphere_radiance(vertex_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
 	output.position = calculate_screenspace_position(vertex_position);
-	output.prt_radiance_vector = calculate_ambient_radiance_vector(input.coefficient.x, output.normal);
+	output.prt_radiance_vector = calculate_ambient_radiance_vector(input_prt.coefficient, output.normal);
 	
 	return output;
 }

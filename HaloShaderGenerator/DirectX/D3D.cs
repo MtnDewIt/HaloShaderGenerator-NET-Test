@@ -1,14 +1,21 @@
-﻿using System;
+﻿
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
+
+
 namespace HaloShaderGenerator.DirectX
 {
     public static class D3D
     {
+        const string d3dx9_43 = "D3DCompiler_43.dll";
+        const string d3dx9_47 = "D3DCompiler_47.dll";
+
         public enum INCLUDE_TYPE : int
         {
             D3D_INCLUDE_LOCAL = 0,
@@ -44,7 +51,7 @@ namespace HaloShaderGenerator.DirectX
         }
 
         [PreserveSig]
-        [DllImport("D3DCompiler_47.dll")]
+        [DllImport(d3dx9_43)]
         public extern static int D3DCompileFromFile(
             [MarshalAs(UnmanagedType.LPTStr)] string pFilename,
             [In, Out] SHADER_MACRO[] pDefines,
@@ -58,7 +65,7 @@ namespace HaloShaderGenerator.DirectX
 
 
         [PreserveSig]
-        [DllImport("D3DCompiler_47.dll")]
+        [DllImport(d3dx9_43)]
         public extern static int D3DAssemble(
             [In] byte[] pSrcData,
             [In] UIntPtr SrcDataSize,
@@ -70,7 +77,7 @@ namespace HaloShaderGenerator.DirectX
             ref ID3DBlob ppErrorMsgs);
 
         [PreserveSig]
-        [DllImport("D3DCompiler_47.dll")]
+        [DllImport(d3dx9_43)]
         public extern static int D3DCompile(
             [In] byte[] pSrcData,
             [In] UIntPtr SrcDataSize,
@@ -85,7 +92,7 @@ namespace HaloShaderGenerator.DirectX
             ref ID3DBlob ppErrorMsgs);
 
         [PreserveSig]
-        [DllImport("D3DCompiler_47.dll")]
+        [DllImport(d3dx9_43)]
         public extern static int D3DDisassemble(
             [In] byte[] pSrcData,
             [In] UIntPtr SrcDataSize,

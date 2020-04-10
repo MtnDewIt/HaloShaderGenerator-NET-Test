@@ -38,10 +38,8 @@ namespace HaloShaderGenerator
             Console.WriteLine(str);
         }
 
-        static void TestSharedVertexShader()
+        static void TestSharedVertexShader(VertexType vertexType, ShaderStage stage)
         {
-            var vertexType = VertexType.Rigid;
-            var stage = ShaderStage.Static_Prt_Ambient;
             var bytecode = ShartedVertexShaderGenerator.GenerateSharedVertexShader(vertexType, stage);
             var str = D3DCompiler.Disassemble(bytecode);
 
@@ -56,8 +54,14 @@ namespace HaloShaderGenerator
 
         static int Main()
         {
+            
+            TestPixelShader(ShaderStage.Albedo);
             TestPixelShader(ShaderStage.Static_Prt_Ambient);
-            //TestSharedVertexShader();
+            TestPixelShader(ShaderStage.Static_Prt_Linear);
+            TestPixelShader(ShaderStage.Static_Prt_Quadratic);
+            
+            TestSharedVertexShader(VertexType.Rigid, ShaderStage.Albedo);
+            TestSharedVertexShader(VertexType.Rigid, ShaderStage.Static_Prt_Ambient);
 
             return 0;
         }

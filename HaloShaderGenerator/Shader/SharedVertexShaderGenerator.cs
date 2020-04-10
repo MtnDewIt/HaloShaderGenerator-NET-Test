@@ -32,11 +32,10 @@ namespace HaloShaderGenerator.Shader
             switch (stage)
             {
                 case ShaderStage.Albedo:
-                case ShaderStage.Static_Prt_Ambient:             
-                    return true;
-                
+                case ShaderStage.Static_Prt_Ambient:
                 case ShaderStage.Static_Prt_Linear:
                 case ShaderStage.Static_Prt_Quadratic:
+                    return true;
                 case ShaderStage.Active_Camo:
                 case ShaderStage.Static_Per_Pixel:
                 case ShaderStage.Static_Per_Vertex:

@@ -76,21 +76,7 @@ PS_OUTPUT_DEFAULT entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input) : COLOR
 #define overwrite(old, new) (clamp(old * 0.0001, 0, 0.0001) + new)
 
 
-//TODO: This is poor mans templateing for the time being
-
-float4 material_type_diffuse_only(float2 fragcoord)
-{
-	return float4(0, 0, 0, 0);
-}
-
-#ifndef envmap_type_arg
-#define envmap_type_arg 0
-#endif
-#ifndef k_environment_mapping_custom_map_none
-#define k_environment_mapping_custom_map_none 0
-#endif
-
-PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PTR_AMBIENT input) : COLOR
+PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PTR input) : COLOR
 {
 	PS_OUTPUT_DEFAULT output;
 
@@ -125,12 +111,12 @@ PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PTR_AMBIENT input) :
 	return output;
 }
 
-float4 entry_static_prt_linear(VS_OUTPUT_ALBEDO input) : COLOR
+float4 entry_static_prt_linear(VS_OUTPUT_STATIC_PTR input) : COLOR
 {
     return float4(0.0, 1.0, 0.0, 0.15);
 }
 
-float4 entry_static_prt_quadratic(VS_OUTPUT_ALBEDO input) : COLOR
+float4 entry_static_prt_quadratic(VS_OUTPUT_STATIC_PTR input) : COLOR
 {
     return float4(0.0, 0.0, 1.0, 0.15);
 }
