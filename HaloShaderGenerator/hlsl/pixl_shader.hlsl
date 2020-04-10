@@ -75,8 +75,7 @@ PS_OUTPUT_DEFAULT entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input) : COLOR
 
 #define overwrite(old, new) (clamp(old * 0.0001, 0, 0.0001) + new)
 
-
-PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PTR input) : COLOR
+PS_OUTPUT_ALBEDO entry_static_prt(VS_OUTPUT_STATIC_PTR input) : COLOR
 {
 	PS_OUTPUT_DEFAULT output;
 
@@ -103,20 +102,26 @@ PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PTR input) : COLOR
     //TODO: No transparency so far, we're going to need this!!!
 	float4 output_color = blend_type(float4(exposed_color, 1.0));
 
-	output.LowFrequency = export_low_frequency(output_color); //oC0
-	output.HighFrequency = export_high_frequency(output_color); //oC1
+	output.LowFrequency = export_low_frequency(output_color);
+	output.HighFrequency = export_high_frequency(output_color);
 
-	output.Unknown = float4(0, 0, 0, 0); //oC2
+	output.Unknown = float4(0, 0, 0, 0);
 
 	return output;
 }
 
-float4 entry_static_prt_linear(VS_OUTPUT_STATIC_PTR input) : COLOR
+PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PTR input) : COLOR
 {
-    return float4(0.0, 1.0, 0.0, 0.15);
+	return entry_static_prt(input);
+
 }
 
-float4 entry_static_prt_quadratic(VS_OUTPUT_STATIC_PTR input) : COLOR
+PS_OUTPUT_DEFAULT entry_static_prt_linear(VS_OUTPUT_STATIC_PTR input) : COLOR
 {
-    return float4(0.0, 0.0, 1.0, 0.15);
+	return entry_static_prt(input);
+}
+
+PS_OUTPUT_DEFAULT entry_static_prt_quadratic(VS_OUTPUT_STATIC_PTR input) : COLOR
+{
+	return entry_static_prt(input);
 }

@@ -55,13 +55,27 @@ namespace HaloShaderGenerator
         static int Main()
         {
             
-            TestPixelShader(ShaderStage.Albedo);
-            TestPixelShader(ShaderStage.Static_Prt_Ambient);
-            TestPixelShader(ShaderStage.Static_Prt_Linear);
-            TestPixelShader(ShaderStage.Static_Prt_Quadratic);
             
+            
+            
+            /*
+            TestPixelShader(ShaderStage.Albedo);
+            TestSharedVertexShader(VertexType.World, ShaderStage.Albedo);
             TestSharedVertexShader(VertexType.Rigid, ShaderStage.Albedo);
+            TestSharedVertexShader(VertexType.Skinned, ShaderStage.Albedo);
+            */
+
+
             TestSharedVertexShader(VertexType.Rigid, ShaderStage.Static_Prt_Ambient);
+            TestSharedVertexShader(VertexType.World, ShaderStage.Static_Prt_Ambient);
+            TestSharedVertexShader(VertexType.Skinned, ShaderStage.Static_Prt_Ambient);
+            TestPixelShader(ShaderStage.Static_Prt_Ambient);
+
+
+
+            //TestPixelShader(ShaderStage.Static_Prt_Linear);
+            //TestPixelShader(ShaderStage.Static_Prt_Quadratic);
+
 
             return 0;
         }

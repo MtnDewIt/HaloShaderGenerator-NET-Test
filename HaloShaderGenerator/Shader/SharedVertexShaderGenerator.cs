@@ -74,12 +74,15 @@ namespace HaloShaderGenerator.Shader
             // prevent the definition helper from being included
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
 
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_vertex_transform", vertexType, "calc_vertex_transform_", ""));
+            macros.Add(ShaderGeneratorBase.CreateVertexMacro("input_vertex_format", vertexType));
+
             byte[] shaderBytecode;
 
             using(FileStream test = new FileInfo("test.hlsl").Create())
             using(StreamWriter writer = new StreamWriter(test))
             {
-                shaderBytecode = ShaderGeneratorBase.GenerateSource(template, macros, $"entry_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}", "vs_3_0", writer);
+                shaderBytecode = ShaderGeneratorBase.GenerateSource(template, macros, $"entry_{stage.ToString().ToLower()}", "vs_3_0", writer);
             }
 
             return shaderBytecode;

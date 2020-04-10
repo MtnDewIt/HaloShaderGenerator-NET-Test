@@ -134,6 +134,11 @@ namespace HaloShaderGenerator.Generator
             return new D3D.SHADER_MACRO { Name = name, Definition = CreateMethodDefinition(method, prefix, suffix) };
         }
 
+        public static D3D.SHADER_MACRO CreateVertexMacro(string name, VertexType type)
+        {
+            return new D3D.SHADER_MACRO { Name = name, Definition = $"{type.ToString().ToUpper()}_VERTEX" };
+        }
+
         public static D3D.SHADER_MACRO CreateMacroFromArgs<MethodType>(string name, IEnumerable<object> args, string prefix = "", string suffix = "") where MethodType : struct, IConvertible
         {
             return new D3D.SHADER_MACRO { Name = name, Definition = CreateMethodDefinitionFromArgs<MethodType>(args, prefix, suffix) };
