@@ -11,7 +11,7 @@ struct VS_OUTPUT_ALBEDO
     float3 camera_dir : TEXCOORD4;
 };
 
-struct VS_OUTPUT_STATIC_PTR
+struct VS_OUTPUT_STATIC_PRT
 {
 	float4 position : SV_Position;
 	float2 texcoord : TEXCOORD;

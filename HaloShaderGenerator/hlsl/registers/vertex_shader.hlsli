@@ -1,6 +1,8 @@
 ﻿#ifndef _VS_SHADER_HLSLI
 #define _VS_SHADER_HLSLI
 
+uniform bool v_mesh_squished : register(b8);
+
 uniform float4x4 view_projection : register(c0);
 uniform float3 camera_forward : register(c4);
 uniform float3 camera_left : register(c5);

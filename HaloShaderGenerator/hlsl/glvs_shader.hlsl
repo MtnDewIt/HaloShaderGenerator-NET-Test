@@ -16,10 +16,9 @@ VS_OUTPUT_ALBEDO entry_albedo(input_vertex_format input)
 	return output;
 }
 
-// TODO: check skinned and world vertex transformation, they seem to have extra parameters (boolean for squish?)
-VS_OUTPUT_STATIC_PTR entry_static_prt_ambient(input_vertex_format input, AMBIENT_PRT input_prt)
+VS_OUTPUT_STATIC_PRT entry_static_prt_ambient(input_vertex_format input, AMBIENT_PRT input_prt)
 {
-	VS_OUTPUT_STATIC_PTR output;
+	VS_OUTPUT_STATIC_PRT output;
 	float4 world_position;
 	
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord, output.camera_dir);
@@ -28,3 +27,15 @@ VS_OUTPUT_STATIC_PTR entry_static_prt_ambient(input_vertex_format input, AMBIENT
 
 	return output;
 }
+// TODO: verify compiled shaders because they are a bit different but I can't see why
+VS_OUTPUT_STATIC_PRT entry_static_prt_linear(input_vertex_format input, LINEAR_PRT input_prt)
+{
+	VS_OUTPUT_STATIC_PRT output;
+	float4 world_position;
+	
+	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord, output.camera_dir);
+	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
+	output.prt_radiance_vector = calculate_linear_radiance_vector(input, input_prt.coefficients, output.normal);
+	return output;
+}
+

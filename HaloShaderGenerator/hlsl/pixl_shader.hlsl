@@ -75,7 +75,7 @@ PS_OUTPUT_DEFAULT entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input) : COLOR
 
 #define overwrite(old, new) (clamp(old * 0.0001, 0, 0.0001) + new)
 
-PS_OUTPUT_ALBEDO entry_static_prt(VS_OUTPUT_STATIC_PTR input) : COLOR
+PS_OUTPUT_ALBEDO entry_static_prt(VS_OUTPUT_STATIC_PRT input) : COLOR
 {
 	PS_OUTPUT_DEFAULT output;
 
@@ -110,18 +110,18 @@ PS_OUTPUT_ALBEDO entry_static_prt(VS_OUTPUT_STATIC_PTR input) : COLOR
 	return output;
 }
 
-PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PTR input) : COLOR
+PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PRT input) : COLOR
 {
 	return entry_static_prt(input);
 
 }
 
-PS_OUTPUT_DEFAULT entry_static_prt_linear(VS_OUTPUT_STATIC_PTR input) : COLOR
+PS_OUTPUT_DEFAULT entry_static_prt_linear(VS_OUTPUT_STATIC_PRT input) : COLOR
 {
 	return entry_static_prt(input);
 }
 
-PS_OUTPUT_DEFAULT entry_static_prt_quadratic(VS_OUTPUT_STATIC_PTR input) : COLOR
+PS_OUTPUT_DEFAULT entry_static_prt_quadratic(VS_OUTPUT_STATIC_PRT input) : COLOR
 {
 	return entry_static_prt(input);
 }
