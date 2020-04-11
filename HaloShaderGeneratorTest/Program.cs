@@ -66,10 +66,10 @@ namespace HaloShaderGenerator
             */
 
 
-            TestSharedVertexShader(VertexType.Rigid, ShaderStage.Static_Prt_Linear);
-            TestSharedVertexShader(VertexType.World, ShaderStage.Static_Prt_Linear);
-            TestSharedVertexShader(VertexType.Skinned, ShaderStage.Static_Prt_Linear);
-            TestPixelShader(ShaderStage.Static_Prt_Linear);
+            //TestSharedVertexShader(VertexType.Rigid, ShaderStage.Static_Prt_Linear);
+            TestSharedVertexShader(VertexType.World, ShaderStage.Sfx_Distort);
+            //TestSharedVertexShader(VertexType.Skinned, ShaderStage.Static_Prt_Linear);
+            //TestPixelShader(ShaderStage.Static_Prt_Linear);
 
 
 

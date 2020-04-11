@@ -153,6 +153,9 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\vertices\prt.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\helpers\sfx_distortion.hlsli" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)

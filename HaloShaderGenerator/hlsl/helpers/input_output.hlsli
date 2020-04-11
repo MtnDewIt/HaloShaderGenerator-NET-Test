@@ -36,6 +36,13 @@ struct VS_OUTPUT_ACTIVE_CAMO
     float4 TexCoord6 : TEXCOORD6;
 };
 
+struct VS_OUTPUT_SFX_DISTORT
+{
+	float4 position : SV_Position;
+	float4 texcoord1 : TEXCOORD;
+	float texcoord2 : TEXCOORD1;
+};
+
 struct PS_OUTPUT_ALBEDO
 {
 	float4 Diffuse;

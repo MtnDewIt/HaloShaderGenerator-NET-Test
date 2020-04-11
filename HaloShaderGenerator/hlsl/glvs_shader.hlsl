@@ -6,6 +6,7 @@
 #include "helpers\prt.hlsli"
 #include "vertices\vertices.hlsli"
 #include "vertices\prt.hlsli"
+#include "helpers\sfx_distortion.hlsli"
 
 VS_OUTPUT_ALBEDO entry_albedo(input_vertex_format input)
 {
@@ -48,5 +49,10 @@ VS_OUTPUT_STATIC_PRT entry_static_prt_quadratic(input_vertex_format input, QUADR
 	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
 	output.prt_radiance_vector = calculate_quadratic_radiance_vector(input, input_prt, output.normal);
 	return output;
+}
+
+VS_OUTPUT_SFX_DISTORT entry_sfx_distort(input_vertex_format input)
+{
+	return calculate_distortion_world(input);
 }
 
