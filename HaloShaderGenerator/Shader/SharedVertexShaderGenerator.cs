@@ -76,6 +76,7 @@ namespace HaloShaderGenerator.Shader
 
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_vertex_transform", vertexType, "calc_vertex_transform_", ""));
             macros.Add(ShaderGeneratorBase.CreateMacro("transform_unknown_vector", vertexType, "transform_unknown_vector_", ""));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_distortion", vertexType, "calc_distortion_", ""));
             macros.Add(ShaderGeneratorBase.CreateVertexMacro("input_vertex_format", vertexType));
 
             byte[] shaderBytecode;

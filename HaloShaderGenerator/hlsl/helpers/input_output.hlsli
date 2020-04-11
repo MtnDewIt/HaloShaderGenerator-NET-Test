@@ -39,8 +39,8 @@ struct VS_OUTPUT_ACTIVE_CAMO
 struct VS_OUTPUT_SFX_DISTORT
 {
 	float4 position : SV_Position;
-	float4 texcoord1 : TEXCOORD;
-	float texcoord2 : TEXCOORD1;
+	float4 texcoord : TEXCOORD;
+	float distortion : TEXCOORD1;
 };
 
 struct PS_OUTPUT_ALBEDO

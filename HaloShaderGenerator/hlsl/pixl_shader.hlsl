@@ -125,3 +125,12 @@ PS_OUTPUT_DEFAULT entry_static_prt_quadratic(VS_OUTPUT_STATIC_PRT input) : COLOR
 {
 	return entry_static_prt(input);
 }
+
+PS_OUTPUT_DEFAULT entry_sfx_distort(VS_OUTPUT_SFX_DISTORT input) : COLOR
+{
+	PS_OUTPUT_DEFAULT output;
+	output.LowFrequency = 0;
+	output.HighFrequency = 0;
+	output.Unknown = 0;
+	return output;
+}

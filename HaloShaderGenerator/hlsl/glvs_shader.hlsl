@@ -53,6 +53,9 @@ VS_OUTPUT_STATIC_PRT entry_static_prt_quadratic(input_vertex_format input, QUADR
 
 VS_OUTPUT_SFX_DISTORT entry_sfx_distort(input_vertex_format input)
 {
-	return calculate_distortion_world(input);
+	VS_OUTPUT_SFX_DISTORT output;
+	calc_distortion(input, output);
+	return output;
+
 }
 
