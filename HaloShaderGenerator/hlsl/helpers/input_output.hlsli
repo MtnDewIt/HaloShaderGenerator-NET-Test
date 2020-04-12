@@ -26,14 +26,9 @@ struct VS_OUTPUT_STATIC_PRT
 
 struct VS_OUTPUT_ACTIVE_CAMO
 {
-	float4 vPos : SV_Position;
-    float4 TexCoord : TEXCOORD0;
-    float4 TexCoord1 : TEXCOORD1;
-    float4 TexCoord2 : TEXCOORD2;
-    float4 TexCoord3 : TEXCOORD3;
-    float4 TexCoord4 : TEXCOORD4;
-    float4 TexCoord5 : TEXCOORD5;
-    float4 TexCoord6 : TEXCOORD6;
+	float4 position : SV_Position;
+    float4 texcoord2 : TEXCOORD1;
+	float2 texcoord1 : TEXCOORD0;
 };
 
 struct VS_OUTPUT_SFX_DISTORT
@@ -45,16 +40,16 @@ struct VS_OUTPUT_SFX_DISTORT
 
 struct PS_OUTPUT_ALBEDO
 {
-	float4 Diffuse;
-	float4 Normal;
-	float4 Unknown;
+	float4 diffuse;
+	float4 normal;
+	float4 unknown;
 };
 
 struct PS_OUTPUT_DEFAULT
 {
-    float4 LowFrequency;
-    float4 HighFrequency;
-    float4 Unknown;
+    float4 low_frequency;
+    float4 high_frequency;
+	float4 unknown;
 };
 
 #endif

@@ -20,15 +20,15 @@ float3 decompress_vertex_position(float3 position)
 	return (position * position_compression_scale.xyz) + position_compression_offset.xyz;
 }
 
-float calculate_z_squish(float4 screen_position)
+void calculate_z_squish(inout float4 screen_position)
 {
-	return v_squish_params.w * ((v_squish_params.x * screen_position.w - v_squish_params.y) * v_squish_params.z - screen_position.z) + screen_position.z;
+	screen_position.z = v_squish_params.w * ((v_squish_params.x * screen_position.w - v_squish_params.y) * v_squish_params.z - screen_position.z) + screen_position.z;
 }
 
-float4 unknown_z_squish(float4 screen_position)
+void calculate_z_squish_2(inout float4 screen_position)
 {
-	float result = calculate_z_squish(screen_position);
-	/* this appears in skinned ambient glvs for shader
+	calculate_z_squish(screen_position);
+	// this appears in skinned ambient glvs for shader
 	if (v_mesh_squished)
 	{
 		screen_position.z = screen_position.z - 0.000005;
@@ -36,15 +36,12 @@ float4 unknown_z_squish(float4 screen_position)
 	else
 	{
 		screen_position.z = screen_position.z - 0.00002;
-	}*/
-	return screen_position;
+	}
 }
 
 float4 calculate_screenspace_position(float4 vertex_position)
 {
-	float4 screen_position = mul(vertex_position, view_projection);
-	screen_position.z = calculate_z_squish(screen_position);
-	return screen_position;
+	return mul(vertex_position, view_projection);
 }
 
 float2 calculate_texcoord(float4 texcoord)

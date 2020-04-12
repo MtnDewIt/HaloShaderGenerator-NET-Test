@@ -18,6 +18,8 @@
 #include "methods\parallax.hlsli"
 #include "methods\misc.hlsli"
 
+#define aspect_ratio float2(16,9) // this is unusual, there should be a global variable, gotta check h3 (could be 4,3 or other)
+
 PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
 {
     float2 texcoord = input.texcoord.xy;
@@ -33,43 +35,32 @@ PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
     diffuse_and_alpha.xyz = rgb_to_srgb(diffuse_and_alpha.xyz);
 
     PS_OUTPUT_ALBEDO output;
-    output.Diffuse = blend_type(float4(diffuse_and_alpha));
-    output.Normal = blend_type(float4(normal_export(normal), diffuse_and_alpha.w));
-    output.Unknown = unknown.xxxx;
+    output.diffuse = blend_type(float4(diffuse_and_alpha));
+    output.normal = blend_type(float4(normal_export(normal), diffuse_and_alpha.w));
+	output.unknown = unknown.xxxx;
     return output;
 }
 
 PS_OUTPUT_DEFAULT entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input) : COLOR
 {
-    //note: vpos is in range [0, viewportsize]
-    // add a half pixel offset
-    float2 vpos = input.vPos.xy;
-    float2 screen_location = vpos + 0.5; // half pixel offset
-    float2 texel_size = float2(1.0, 1.0) / texture_size.xy;
-    float2 fragcoord = screen_location * texel_size; // converts to [0, 1] range
+	float2 fragcoord = input.position.xy + 0.5;
+	float2 camo_texcoord_offset = (k_ps_active_camo_factor.yz) * input.texcoord1.xy;
+	camo_texcoord_offset.x /= (4 * aspect_ratio).x;
+	camo_texcoord_offset.y /= (4 * aspect_ratio).y;
+	float camo_scale = 0.5 - input.texcoord2.w < 0 ? 1.0 / input.texcoord2.w : 2.0;
+	
+	fragcoord.x /= texture_size.x;
+	fragcoord.y /= texture_size.y;
+	
+	float2 ldr_texcoord = camo_texcoord_offset * camo_scale + fragcoord;
 
-    // I'm not sure what is happening here with these three
-    // but I think its a depth value, and this is a kind of
-    // clamp of the effect at a distance
-    float unknown0 = 0.5 - input.TexCoord1.w;
-    float unknown1 = 1.0 / input.TexCoord1.w;
-    float unknown2 = unknown0 >= 0 ? 2.0 : unknown1;
+	float4 sample = tex2D(scene_ldr_texture, ldr_texcoord.xy);
 
-    // not sure where these values come from
-    // however, the aspect ratio is 16:9 multiplied by 4
-    float2 unknown3 = input.TexCoord.xy * k_ps_active_camo_factor.yz / float2(64, 36);
-
-    float2 texcoord = unknown3 * unknown2 + fragcoord;
-
-    float4 sample = tex2D(scene_ldr_texture, texcoord);
-    float3 color = sample.xyz;
-
-    float alpha = k_ps_active_camo_factor.x;
-    
     PS_OUTPUT_DEFAULT output;
-    output.HighFrequency = export_high_frequency(float4(color, alpha));
-    output.LowFrequency = export_low_frequency(float4(color, alpha));
-    output.Unknown = float4(0, 0, 0, 0);
+	float4 final_color = float4(sample.rgb, k_ps_active_camo_factor.x);
+	output.high_frequency = export_high_frequency(final_color);
+	output.low_frequency = export_low_frequency(final_color);
+	output.unknown = 0;
     return output;
 }
 
@@ -102,10 +93,10 @@ PS_OUTPUT_ALBEDO entry_static_prt(VS_OUTPUT_STATIC_PRT input) : COLOR
     //TODO: No transparency so far, we're going to need this!!!
 	float4 output_color = blend_type(float4(exposed_color, 1.0));
 
-	output.LowFrequency = export_low_frequency(output_color);
-	output.HighFrequency = export_high_frequency(output_color);
+	output.low_frequency = export_low_frequency(output_color);
+	output.high_frequency = export_high_frequency(output_color);
 
-	output.Unknown = float4(0, 0, 0, 0);
+	output.unknown = 0;
 
 	return output;
 }
@@ -129,8 +120,8 @@ PS_OUTPUT_DEFAULT entry_static_prt_quadratic(VS_OUTPUT_STATIC_PRT input) : COLOR
 PS_OUTPUT_DEFAULT entry_sfx_distort(VS_OUTPUT_SFX_DISTORT input) : COLOR
 {
 	PS_OUTPUT_DEFAULT output;
-	output.LowFrequency = 0;
-	output.HighFrequency = 0;
-	output.Unknown = 0;
+	output.low_frequency = 0;
+	output.high_frequency = 0;
+	output.unknown = 0;
 	return output;
 }

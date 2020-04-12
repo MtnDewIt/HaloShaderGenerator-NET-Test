@@ -3,7 +3,7 @@
 
 #include "../registers/shader.hlsli"
 
-#define DEBUG_TINT_FACTOR 4.595
+#define DEBUG_TINT_FACTOR 4.59479
 
 float3 apply_debug_tint(float3 color)
 {
@@ -18,29 +18,22 @@ float3 apply_debug_tint(float3 color)
 */
 float3 rgb_to_srgb(float3 color)
 {
-	float3 color1 = 1.05499995 * exp(log(color) * 0.416666657) - 0.0549999997;
-	return color <= 0.00313080009 ? 12.9200001 * color : color1;
+	return color <= 0.00313080009 ? 12.9200001 * color : 1.05499995 * exp(log(color) * 0.416666657) - 0.0549999997;
 }
 
 float3 expose_color(float3 input)
 {
-	return max(input * g_exposure.x, float3(0.0, 0.0, 0.0));
+	return max(input.rgb * g_exposure.x, float3(0.0, 0.0, 0.0));
 }
 
 float4 export_high_frequency(float4 input)
 {
-	float alpha = input.w;
-	float3 color = input.xyz;
-
-	return float4(color / g_exposure.y, alpha * g_exposure.z);
+	return float4(input.rgb / g_exposure.y, input.a * g_exposure.z);
 }
 
 float4 export_low_frequency(float4 input)
 {
-	float alpha = input.w;
-	float3 color = input.xyz;
-
-	return float4(color, alpha * g_exposure.w);
+	return float4(input.rgb, input.a * g_exposure.w);
 }
 
 #endif

@@ -56,7 +56,6 @@ void calculate_atmosphere_radiance(float4 vertex_position, float3 camera_dir, ou
 		float atmosphere_height_at_camera = max(camera_position.z - v_atmosphere_constant_3.w, 0);
 		float atmosphere_height_at_camera_log2e = atmosphere_height_at_camera * LOG2_E;
 		float atmosphere_thickness = atmosphere_height_at_camera - atmosphere_height_at_vertex;
-		
 		// compute the extinction factor for the 2 types of particles for the specified distance
 		float scale1, scale2;
 		if (EPSILON < atmosphere_thickness * atmosphere_thickness) // if atmosphere height difference is large enough between camera and vertex, use extra calculations
@@ -73,6 +72,7 @@ void calculate_atmosphere_radiance(float4 vertex_position, float3 camera_dir, ou
 			scale2 = calculate_atmosphere_particle_factor_without_thickness(overall_distance, atmosphere_height_at_camera_log2e, v_atmosphere_constant_4.w);
 			extinction_factor.rgb = exp2(-(v_atmosphere_constant_2.rgb * scale1 + scale2 * v_atmosphere_constant_3.rgb));
 		}
+		
 		sky_radiance.rgb = (v_atmosphere_constant_1.rgb * (v_atmosphere_constant_4.xyz * (costheta * costheta + 1.0) + unknown_power * v_atmosphere_constant_5.xyz)) * (1.0 - extinction_factor);
 	}
 }

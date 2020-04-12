@@ -10,6 +10,10 @@
 #define transform_unknown_vector transform_unknown_vector_rigid
 #endif
 
+// cosine lobe 0 ? = 0.886226925 = sqrt(pi/4)
+// cosine lobe 1 ? = 1.023326708 = sqrt(pi/3)
+// cosine lobe 2 ? = 0.495415912 = sqrt(5pi/64)
+
 // normalization factor for ambient and directional light
 #define ambient_light_norm 3.54490770
 #define dir_light_norm 2.956793086
@@ -31,7 +35,7 @@ float4 calculate_ambient_radiance_vector(float coefficient, float3 normal)
 	tempy = 0.333333333;
 	tempx = dot(v_lighting_constant_0.xyz, tempy);
 	tempy = tempx * coefficient;
-	tempx = tempx * 0.282094806;
+	tempx = tempx * h_0_0;
 	tempy = max(tempy, 0.01);
 	tempx = max(tempx, 0.01);
 	tempx = 1.0 / tempx;
@@ -42,7 +46,7 @@ float4 calculate_ambient_radiance_vector(float coefficient, float3 normal)
 	
 	result.w = min(tempy, tempx);
 	result.y = tempy;
-	result.z = conv_0 * coefficient;
+	result.z = conv_0 * coefficient; // 
 	
 	return result;
 }

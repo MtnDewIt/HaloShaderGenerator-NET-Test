@@ -15,8 +15,8 @@ void calc_distortion_world(WORLD_VERTEX input, out VS_OUTPUT_SFX_DISTORT output)
 	float4 world_position = float4(input.position.xyz, 1.0);
 	float4 screen_position = mul(world_position, view_projection);
 	output.position = screen_position;
-	output.position.z = calculate_z_squish(screen_position);
-	
+	calculate_z_squish(screen_position);
+	output.position.z = screen_position.z;
 	float3 camera_dir = normalize(world_position.xyz - camera_position);
 	float n_dot_c = dot(input.normal.xyz, camera_dir);
 	float distortion_factor = min(abs(n_dot_c), 1.0);
@@ -40,7 +40,8 @@ void calc_distortion_rigid(RIGID_VERTEX input, out VS_OUTPUT_SFX_DISTORT output)
 	float4 screen_position = mul(world_position, view_projection);
 	
 	output.position = screen_position;
-	output.position.z = calculate_z_squish(screen_position);
+	calculate_z_squish(screen_position);
+	output.position.z = screen_position.z;
 	float3 camera_dir = normalize(world_position.xyz - camera_position);
 	float n_dot_c = dot(normal, camera_dir);
 	float distortion_factor = min(abs(n_dot_c), 1.0);
@@ -72,7 +73,8 @@ void calc_distortion_skinned(SKINNED_VERTEX input, out VS_OUTPUT_SFX_DISTORT out
 	float4 screen_position = mul(world_position, view_projection);
 	
 	output.position = screen_position;
-	output.position.z = calculate_z_squish(screen_position);
+	calculate_z_squish(screen_position);
+	output.position.z = screen_position.z;
 	float3 camera_dir = normalize(world_position.xyz - camera_position);
 	float n_dot_c = dot(normal, camera_dir);
 	float distortion_factor = min(abs(n_dot_c), 1.0);
