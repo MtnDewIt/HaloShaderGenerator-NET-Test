@@ -141,41 +141,85 @@ PS_OUTPUT_DEFAULT entry_dynamic_light(VS_OUTPUT_DYNAMIC_LIGHT input) : COLOR
 	float3 light_dir = light.direction.xyz;
 	float light_angle = dot(v_to_light, light_dir);
 	
-	attenuation = max(attenuation * light.unknown3.x + light.unknown3.z, 0.0001);
-	light_angle = max(light_angle * light.unknown3.y + light.unknown3.w, 0.0001);
-	float specular_power = pow(light_angle, light.unknown3.w);
-	attenuation = saturate(attenuation);
-	float specular_intensity = saturate(specular_power + light.direction.w);
+	float2 packed_light_values = float2(attenuation, light_angle);
+	packed_light_values = max(0.0001, packed_light_values * light.unknown3.xy + light.unknown3.zw);
+	float specular_power = pow(packed_light_values.y, light.color.w);
 	
-	float intensity = attenuation * specular_intensity;
+
+	float intensity = saturate(specular_power + light.direction.w) * saturate(packed_light_values.x);
+	float2 scale = 1.0 / texture_size;
+	float2 fragcoord = (input.position.xy + 0.5) * scale;
 	
-	float2 fragcoord = (input.position.xy + 0.5) / texture_size;
+	float3 normal = 2 * tex2D(normal_texture, fragcoord).xyz - 1;
+
+	float angle2 = dot(v_to_light, normal);
 	
-	float3 normal = tex2D(normal_texture, fragcoord).xyz;
-	normal = 2 * normal - 1;
+	float2 shadowmap_texcoord = (1.0 / input.shadowmap_texcoord.w) * input.shadowmap_texcoord.xy;
+	float2 gel_texcoord = apply_xform2d(shadowmap_texcoord, p_dynamic_light_gel_xform);
+	float4 gel_sample = tex2D(dynamic_light_gel_texture, gel_texcoord);
 	
-	float angle2 = dot(normal, v_to_light);
-	
-	float2 gel_coord = input.shadowmap_texcoord.xy / input.shadowmap_texcoord.w;
-	
-	float3 gel_sample = tex2D(dynamic_light_gel_texture, apply_xform2d(gel_coord, p_dynamic_light_gel_xform)).rgb;
-	
-	float3 diffuse = light.color.rgb * intensity * gel_sample.rgb * angle2;
-	float3 albedo = tex2D(albedo_texture, gel_coord).rgb;
+	float3 diffuse = gel_sample.rgb * light.color.rgb * intensity * angle2;
+	float3 albedo = tex2D(albedo_texture, fragcoord).rgb;
 	diffuse *= albedo;
 	
-	float unknown = 0;
+	float sc1 = -0.001953125; // c2x -1/512
+	float sc2 = 0.001953125; //c2w 1/512
+	
+	float shadow_coefficient = 0.0;
+	
 	if (dynamic_light_shadowing)
 	{
-		unknown =tex2D(shadow_depth_map_1, gel_coord).x;
+		// compute the mean of the 3x3 grid in the shadow map (all this can be optimzed a bit more, test ingame first)
+		float2 texcoord = shadowmap_texcoord;
+		float map_offset = 1.0 / 512.0;
+		float scale = 1.0 / input.shadowmap_texcoord.w;
+		float depth = 0;
+		
+		float3 sample1;
+		sample1.x = tex2D(shadow_depth_map_1, texcoord + float2(0, 0)).x;
+		sample1.x = sample1.x - input.shadowmap_texcoord.z * scale;
+		
+		
+		
+		sample1.y = tex2D(shadow_depth_map_1, texcoord + float2(-map_offset, -map_offset)).x;
+		sample1.z = tex2D(shadow_depth_map_1, texcoord + float2(0, -map_offset)).x;
+		sample1.y = sample1.y - input.shadowmap_texcoord.z * scale;
+		sample1.z = sample1.z - input.shadowmap_texcoord.z * scale;
+		
+		sample1.xyz = depth < sample1.xyz ? float3(1, 1, 1) : float3(0, 0, 0);
+		sample1.y = sample1.y + sample1.z;
+		
+		float sample7 = tex2D(shadow_depth_map_1, texcoord + float2(map_offset, -map_offset)).x;
+		float sample5 = tex2D(shadow_depth_map_1, texcoord + float2(-map_offset, 0)).x;
+		depth = sample7 - input.shadowmap_texcoord.z * scale;
+		shadow_coefficient += depth < 1.0 ? 1.0 : 0.0;
+		depth = sample5 - input.shadowmap_texcoord.z * scale;
+		shadow_coefficient += depth < 1.0 ? 1.0 : 0.0;
+		shadow_coefficient += sample1.x;
+		float sample8 = tex2D(shadow_depth_map_1, texcoord + float2(map_offset, 0)).x;
+		float sample6 = tex2D(shadow_depth_map_1, texcoord + float2(-map_offset, map_offset)).x;
+		depth = sample6 - input.shadowmap_texcoord.z * scale;
+		shadow_coefficient += depth < 1.0 ? 1.0 : 0.0;
+		depth = sample8 - input.shadowmap_texcoord.z * scale;
+		shadow_coefficient += depth < 1.0 ? 1.0 : 0.0;
+		
+		float sample2 = tex2D(shadow_depth_map_1, texcoord + float2(0, map_offset)).x;
+		float sample9 = tex2D(shadow_depth_map_1, texcoord + float2(map_offset, map_offset)).x;
+		depth = sample2 - input.shadowmap_texcoord.z * scale;
+		shadow_coefficient += depth < 1.0 ? 1.0 : 0.0;
+		depth = sample9 - input.shadowmap_texcoord.z * scale;
+		shadow_coefficient += depth < 1.0 ? 1.0 : 0.0;
+
+		shadow_coefficient = shadow_coefficient * (1.0 / 9.0);
+		shadow_coefficient = -dot(diffuse.rgb, diffuse.rgb) >= 0 ? 1.0 : shadow_coefficient;
 	}
 	else
 	{
-		unknown = 1.0;
+		shadow_coefficient = 1.0;
 	}
-	diffuse *= unknown;
-	float4 result = float4(expose_color(diffuse), 0);
 	
+	diffuse *= shadow_coefficient;
+	float4 result = float4(expose_color(diffuse), 0);
 	
 	PS_OUTPUT_DEFAULT output;
 	output.low_frequency = export_low_frequency(result);
