@@ -16,7 +16,7 @@ uniform bool actually_calc_albedo : register(b12);
 #define actually_calc_albedo false
 #endif
 
-uniform bool dynamic_light_shadowing;
+
 uniform bool k_is_lightmap_exist;
 uniform bool k_is_water_interaction;
 
@@ -61,6 +61,11 @@ SimpleLight get_simple_light(int index)
     light.unknown4 = simple_lights[index * 5 + 4];
     return light;
 }
+
+uniform bool dynamic_light_shadowing : register(b13);
+uniform xform2d p_dynamic_light_gel_xform : register(c5);
+uniform sampler dynamic_light_gel_texture : register(s4);
+uniform sampler shadow_depth_map_1 : register(s3);
 
 /*
 This region here is where dynamically created uniforms are allowed
@@ -120,7 +125,6 @@ uniform xform2d detail_map_overlay_xform;
 uniform sampler color_mask_map;
 uniform xform2d color_mask_map_xform;
 uniform float4 neutral_gray;
-
 
 /*
 -------------------------------------------------- END ALBEDO
@@ -224,8 +228,6 @@ uniform samplerCUBE dynamic_environment_map_1;
 uniform float4 primary_change_color_old : register(c190); // TODO Figure this one out
 uniform float4 secondary_change_color_old : register(c191); // TODO Figure this one out
 uniform float4 k_ps_active_camo_factor : register(c212);
-
-
 
 
 uniform float k_f0; // figure out what this is

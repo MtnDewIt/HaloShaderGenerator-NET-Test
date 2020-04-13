@@ -63,8 +63,23 @@ VS_OUTPUT_SFX_DISTORT entry_sfx_distort(input_vertex_format input)
 
 }
 
+VS_OUTPUT_DYNAMIC_LIGHT entry_dynamic_light(input_vertex_format input)
+{
+	VS_OUTPUT_DYNAMIC_LIGHT output;
+	float4 world_position;
+	
+	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord, output.camera_dir);
+	calculate_z_squish(output.position);
+	
+	output.shadowmap_texcoord = mul(world_position, shadow_projection);
+	
+	return output;
+
+}
+
 VS_OUTPUT_ACTIVE_CAMO entry_active_camo(input_vertex_format input)
 {
-	
+	VS_OUTPUT_ACTIVE_CAMO output;
+	return output;
 }
 

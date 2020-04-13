@@ -120,8 +120,66 @@ PS_OUTPUT_DEFAULT entry_static_prt_quadratic(VS_OUTPUT_STATIC_PRT input) : COLOR
 PS_OUTPUT_DEFAULT entry_sfx_distort(VS_OUTPUT_SFX_DISTORT input) : COLOR
 {
 	PS_OUTPUT_DEFAULT output;
+	
 	output.low_frequency = 0;
 	output.high_frequency = 0;
+	output.unknown = 0;
+	return output;
+}
+
+PS_OUTPUT_DEFAULT entry_dynamic_light(VS_OUTPUT_DYNAMIC_LIGHT input) : COLOR
+{
+	float3 world_position = Camera_Position_PS - input.camera_dir;
+	SimpleLight light = get_simple_light(0);
+	
+	float3 v_to_light = light.position.xyz - world_position;
+	float light_distance_squared = dot(v_to_light, v_to_light);
+	v_to_light = normalize(v_to_light);
+	
+	float attenuation = 1.0 / (light_distance_squared + light.position.w);
+	
+	float3 light_dir = light.direction.xyz;
+	float light_angle = dot(v_to_light, light_dir);
+	
+	attenuation = max(attenuation * light.unknown3.x + light.unknown3.z, 0.0001);
+	light_angle = max(light_angle * light.unknown3.y + light.unknown3.w, 0.0001);
+	float specular_power = pow(light_angle, light.unknown3.w);
+	attenuation = saturate(attenuation);
+	float specular_intensity = saturate(specular_power + light.direction.w);
+	
+	float intensity = attenuation * specular_intensity;
+	
+	float2 fragcoord = (input.position.xy + 0.5) / texture_size;
+	
+	float3 normal = tex2D(normal_texture, fragcoord).xyz;
+	normal = 2 * normal - 1;
+	
+	float angle2 = dot(normal, v_to_light);
+	
+	float2 gel_coord = input.shadowmap_texcoord.xy / input.shadowmap_texcoord.w;
+	
+	float3 gel_sample = tex2D(dynamic_light_gel_texture, apply_xform2d(gel_coord, p_dynamic_light_gel_xform)).rgb;
+	
+	float3 diffuse = light.color.rgb * intensity * gel_sample.rgb * angle2;
+	float3 albedo = tex2D(albedo_texture, gel_coord).rgb;
+	diffuse *= albedo;
+	
+	float unknown = 0;
+	if (dynamic_light_shadowing)
+	{
+		unknown =tex2D(shadow_depth_map_1, gel_coord).x;
+	}
+	else
+	{
+		unknown = 1.0;
+	}
+	diffuse *= unknown;
+	float4 result = float4(expose_color(diffuse), 0);
+	
+	
+	PS_OUTPUT_DEFAULT output;
+	output.low_frequency = export_low_frequency(result);
+	output.high_frequency = export_high_frequency(result);
 	output.unknown = 0;
 	return output;
 }

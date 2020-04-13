@@ -22,8 +22,9 @@ uniform float4 v_atmosphere_constant_3 : register(c236);
 uniform float4 v_atmosphere_constant_4 : register(c237);
 uniform float4 v_atmosphere_constant_5 : register(c238);
 
-// this seems to only appear for dynamic lights, need macros
-//uniform float4x4 shadow_projection : register(c240);
+
+uniform float4x4 shadow_projection : register(c240);
+
 
 uniform float4 v_lighting_constant_0 : register(c240);
 uniform float4 v_lighting_constant_1 : register(c241);

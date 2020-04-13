@@ -41,13 +41,14 @@ namespace HaloShaderGenerator.Shader
                 case ShaderStage.Static_Prt_Quadratic:
                 case ShaderStage.Active_Camo:
                 case ShaderStage.Sfx_Distort:
+                case ShaderStage.Dynamic_Light:
                     break;
                 default:
                     case ShaderStage.Default:
                     case ShaderStage.Static_Per_Pixel:
                     case ShaderStage.Static_Per_Vertex:
                     case ShaderStage.Static_Sh:
-                    case ShaderStage.Dynamic_Light:
+                    
                     case ShaderStage.Shadow_Generate:
                     case ShaderStage.Lightmap_Debug_Mode:
                     case ShaderStage.Static_Per_Vertex_Color:

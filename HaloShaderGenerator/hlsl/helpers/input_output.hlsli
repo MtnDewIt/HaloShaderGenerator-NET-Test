@@ -31,6 +31,17 @@ struct VS_OUTPUT_ACTIVE_CAMO
 	float2 texcoord1 : TEXCOORD0;
 };
 
+struct VS_OUTPUT_DYNAMIC_LIGHT
+{
+	float4 position : SV_Position;
+	float2 texcoord : TEXCOORD0;
+	float3 normal : TEXCOORD1;
+	float3 binormal : TEXCOORD2;
+	float3 tangent : TEXCOORD3;
+	float3 camera_dir : TEXCOORD4;
+	float4 shadowmap_texcoord : TEXCOORD5;
+};
+
 struct VS_OUTPUT_SFX_DISTORT
 {
 	float4 position : SV_Position;

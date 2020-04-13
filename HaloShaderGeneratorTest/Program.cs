@@ -56,7 +56,7 @@ namespace HaloShaderGenerator
         {
 
 
-            var stage = ShaderStage.Sfx_Distort;
+            var stage = ShaderStage.Dynamic_Light;
             
             
             TestPixelShader(stage);
