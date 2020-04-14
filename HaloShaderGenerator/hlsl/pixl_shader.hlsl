@@ -247,3 +247,49 @@ PS_OUTPUT_DEFAULT entry_dynamic_light_cinematic(VS_OUTPUT_DYNAMIC_LIGHT input) :
 	output.unknown = 0;
 	return output;
 }
+
+PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input) : COLOR
+{
+	PS_OUTPUT_DEFAULT output;
+	
+	float3 result_color;
+	
+	[branch]
+	if (p_render_debug_mode < 1)
+	{
+		result_color = float3(input.lightmap_texcoord, 0);
+	}
+	else
+	{
+		[branch]
+		if (p_render_debug_mode < 2)
+		{
+			float2 temp = floor(1024 * input.lightmap_texcoord);
+			temp = floor(0.5 * temp);
+			float4 unknown = -abs(temp.y) < 0 ? float4(1, 0.7, 0.3, 0) : float4(1, 0, 0, 0);
+			float3 temp2 = float3(unknown.w, temp);
+			result_color.xyz = -abs(temp.x) < 0 ? temp2 :  unknown.xyz;
+
+		}
+		else
+		{
+			float3 temp_color = float3(input.texcoord, 0);
+			float4 offset = p_render_debug_mode + float4(-7, -8, -9, -10);
+			temp_color = temp_color < offset.w ? 0 : temp_color;
+			temp_color = temp_color < offset.z ? temp_color : 0;
+			temp_color = temp_color < offset.y ? temp_color : 0;
+			temp_color = temp_color < offset.x ? temp_color : 0;
+			
+			offset = p_render_debug_mode + float4(-3, -4, -5, -6);
+			temp_color.xyz = temp_color < offset.w ? temp_color : input.binormal;
+			temp_color.xyz = temp_color < offset.z ? temp_color : input.tangent;
+			temp_color.xyz = temp_color < offset.y ? temp_color : input.normal;
+			result_color.xyz = temp_color < offset.x ? temp_color : input.normal;
+		}
+	}
+	result_color = max(result_color, 0);
+	output.low_frequency = export_low_frequency(float4(result_color, 0));
+	output.high_frequency = export_high_frequency(float4(result_color, 0));
+	output.unknown = 0;
+	return output;
+}

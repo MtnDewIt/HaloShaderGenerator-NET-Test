@@ -106,3 +106,15 @@ VS_OUTPUT_ACTIVE_CAMO entry_active_camo(input_vertex_format input)
 	return output;
 }
 
+VS_OUTPUT_LIGHTMAP_DEBUG_MODE entry_lightmap_debug_mode(input_vertex_format input, float2 lightmap_texcoord : TEXCOORD1)
+{
+	VS_OUTPUT_LIGHTMAP_DEBUG_MODE output;
+	float4 world_position;
+	
+	calc_vertex_transform(input, world_position, output.position, output.normal.xyz, output.tangent, output.binormal, output.texcoord, output.camera_dir);
+	calculate_z_squish(output.position);
+	output.lightmap_texcoord = lightmap_texcoord;
+	
+	return output;
+}
+

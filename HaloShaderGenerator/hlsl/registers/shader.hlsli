@@ -67,6 +67,8 @@ uniform xform2d p_dynamic_light_gel_xform : register(c5);
 uniform sampler dynamic_light_gel_texture : register(s4);
 uniform sampler shadow_depth_map_1 : register(s3);
 
+uniform float p_render_debug_mode : register(c94);
+
 /*
 This region here is where dynamically created uniforms are allowed
 Not entirely sure where this ends

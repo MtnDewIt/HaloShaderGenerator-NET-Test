@@ -49,6 +49,18 @@ struct VS_OUTPUT_SFX_DISTORT
 	float distortion : TEXCOORD1;
 };
 
+struct VS_OUTPUT_LIGHTMAP_DEBUG_MODE
+{
+	float4 position : SV_Position;
+	float2 lightmap_texcoord : TEXCOORD;
+	float3 normal : TEXCOORD1;
+	float2 texcoord : TEXCOORD2;
+	float3 tangent : TEXCOORD3;
+	float3 binormal : TEXCOORD4;
+	float3 camera_dir : TEXCOORD5;
+};
+
+
 struct PS_OUTPUT_ALBEDO
 {
 	float4 diffuse;

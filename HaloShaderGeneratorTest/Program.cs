@@ -54,7 +54,7 @@ namespace HaloShaderGenerator
 
         static int Main()
         {
-            var stage = ShaderStage.Active_Camo;
+            var stage = ShaderStage.Lightmap_Debug_Mode;
 
             TestPixelShader(stage);
             TestSharedVertexShader(VertexType.World, stage);
