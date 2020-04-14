@@ -59,8 +59,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>cd $(SolutionDir)
-xcopy HaloShaderGenerator\bin\$(ConfigurationName)\HaloShaderGenerator.dll D:\Halo\Repositories\TagTool\TagTool\bin\x64\Debug\ /Y
-xcopy HaloShaderGenerator\bin\$(ConfigurationName)\HaloShaderGenerator.dll D:\Halo\Repositories\TagTool\TagTool\bin\x64\Release\ /Y</PostBuildEvent>
+    <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>
   </PropertyGroup>
 </Project>
