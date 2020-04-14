@@ -87,7 +87,8 @@ namespace HaloShaderGenerator.Generator
             IncludeManager include = new IncludeManager();
 
             string shader_source = include.ReadResource(template);
-            sourceStream.WriteLine(shader_source);
+            if (sourceStream != null)
+                sourceStream.WriteLine(shader_source);
             
 
             D3DCompiler.D3DCOMPILE flags = 0;

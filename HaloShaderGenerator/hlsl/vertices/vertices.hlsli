@@ -37,29 +37,6 @@ struct RIGID_VERTEX
 	float4 binormal : BINORMAL;
 };
 
-
-struct VS_INPUT_RIGID_VERTEX_LINEAR_PRT
-{
-	float4 position : POSITION;
-	float4 texcoord : TEXCOORD;
-	float4 normal : NORMAL;
-	float4 tangent : TANGENT;
-	float4 binormal : BINORMAL;
-	float4 coefficients : BLENDWEIGHT1;
-};
-
-struct VS_INPUT_RIGID_VERTEX_QUADRATIC_PRT
-{
-	float4 position : POSITION;
-	float4 texcoord : TEXCOORD;
-	float4 normal : NORMAL;
-	float4 tangent : TANGENT;
-	float4 binormal : BINORMAL;
-	float3 coefficients1 : BLENDWEIGHT1;
-	float3 coefficients2 : BLENDWEIGHT2;
-	float3 coefficients3 : BLENDWEIGHT3;
-};
-
 void calc_vertex_transform_rigid(RIGID_VERTEX input, out float4 world_position, out float4 screen_position, out float3 normal, out float3 tangent, out float3 binormal, out float2 texcoord, out float3 camera_dir)
 {
 	float3x3 node_transformation = float3x3(nodes[0].xyz, nodes[1].xyz, nodes[2].xyz);
