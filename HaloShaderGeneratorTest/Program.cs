@@ -54,29 +54,13 @@ namespace HaloShaderGenerator
 
         static int Main()
         {
-
-
             var stage = ShaderStage.Dynamic_Light;
-            
-            
+
             TestPixelShader(stage);
             TestSharedVertexShader(VertexType.World, stage);
             TestSharedVertexShader(VertexType.Rigid, stage);
             TestSharedVertexShader(VertexType.Skinned, stage);
             
-
-
-            //TestSharedVertexShader(VertexType.Rigid, ShaderStage.Sfx_Distort);
-            //TestSharedVertexShader(VertexType.World, ShaderStage.Sfx_Distort);
-            //TestSharedVertexShader(VertexType.Skinned, ShaderStage.Sfx_Distort);
-            //TestPixelShader(ShaderStage.Active_Camo);
-
-
-
-            //TestPixelShader(ShaderStage.Static_Prt_Linear);
-            //TestPixelShader(ShaderStage.Static_Prt_Quadratic);
-
-
             return 0;
         }
     }

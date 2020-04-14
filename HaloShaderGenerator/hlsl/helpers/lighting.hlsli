@@ -3,6 +3,15 @@
 
 #include "../helpers/math.hlsli"
 #include "../registers/shader.hlsli"
+
+float get_light_diffuse_intensity(SimpleLight light, float3 normal, float3 light_dir)
+{
+	return max(0.05, dot(normal, light_dir));
+}
+
+
+
+
 // TODO: fix this crap while maintaining compiled code the same
 float3 calculate_simple_light(SimpleLight simple_light, float3 accumulation, float3 normal, float3 vertex_world_position)
 {

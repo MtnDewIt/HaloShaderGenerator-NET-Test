@@ -77,6 +77,11 @@ VS_OUTPUT_DYNAMIC_LIGHT entry_dynamic_light(input_vertex_format input)
 
 }
 
+VS_OUTPUT_DYNAMIC_LIGHT entry_dynamic_light_cinematic(input_vertex_format input)
+{
+	return entry_dynamic_light(input);
+}
+
 VS_OUTPUT_ACTIVE_CAMO entry_active_camo(input_vertex_format input)
 {
 	VS_OUTPUT_ACTIVE_CAMO output;
