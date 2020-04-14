@@ -45,10 +45,10 @@ PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
 PS_OUTPUT_DEFAULT entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input) : COLOR
 {
 	float2 fragcoord = input.position.xy + 0.5;
-	float2 camo_texcoord_offset = (k_ps_active_camo_factor.yz) * input.texcoord1.xy;
+	float2 camo_texcoord_offset = (k_ps_active_camo_factor.yz) * input.texcoord.xy;
 	camo_texcoord_offset.x /= (4 * aspect_ratio).x;
 	camo_texcoord_offset.y /= (4 * aspect_ratio).y;
-	float camo_scale = 0.5 - input.texcoord2.w < 0 ? 1.0 / input.texcoord2.w : 2.0;
+	float camo_scale = 0.5 - input.camo_param.w < 0 ? 1.0 / input.camo_param.w : 2.0;
 	
 	fragcoord.x /= texture_size.x;
 	fragcoord.y /= texture_size.y;

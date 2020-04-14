@@ -38,8 +38,9 @@ namespace HaloShaderGenerator.Shader
                 case ShaderStage.Sfx_Distort:
                 case ShaderStage.Dynamic_Light:
                 case ShaderStage.Dynamic_Light_Cinematic:
-                    return true;
                 case ShaderStage.Active_Camo:
+                    return true;
+                
                 case ShaderStage.Static_Per_Pixel:
                 case ShaderStage.Static_Per_Vertex:
                 case ShaderStage.Static_Sh:

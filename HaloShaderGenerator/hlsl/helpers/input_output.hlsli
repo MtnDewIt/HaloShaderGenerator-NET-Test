@@ -27,8 +27,8 @@ struct VS_OUTPUT_STATIC_PRT
 struct VS_OUTPUT_ACTIVE_CAMO
 {
 	float4 position : SV_Position;
-    float4 texcoord2 : TEXCOORD1;
-	float2 texcoord1 : TEXCOORD0;
+    float4 texcoord : TEXCOORD1;
+	float4 camo_param : TEXCOORD0;
 };
 
 struct VS_OUTPUT_DYNAMIC_LIGHT

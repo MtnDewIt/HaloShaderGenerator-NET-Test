@@ -85,6 +85,24 @@ VS_OUTPUT_DYNAMIC_LIGHT entry_dynamic_light_cinematic(input_vertex_format input)
 VS_OUTPUT_ACTIVE_CAMO entry_active_camo(input_vertex_format input)
 {
 	VS_OUTPUT_ACTIVE_CAMO output;
+	float4 world_position;
+	float3 normal, tangent, binormal, camera_dir;
+	
+	float3 unknown_pos = input.position.xyz - 0.5;
+	unknown_pos.xy *= position_compression_scale.xy;
+	
+	output.camo_param.x = dot(input.normal.xyz, camera_left);
+	output.camo_param.y = dot(input.normal.xyz, camera_up);
+	output.camo_param.z = atan2(unknown_pos.x, unknown_pos.y);
+	output.camo_param.w = acos(unknown_pos.z) * (position_compression_scale.z / length(position_compression_scale.xy));
+
+	calc_vertex_transform(input, world_position, output.position, normal, tangent, binormal, output.texcoord.xy, camera_dir);
+	calculate_z_squish(output.position);
+	output.position.z -= 0.00002;
+	// there may be a sign issue in camera_dir, doesn't compile exactly the same
+	output.texcoord.w = length(camera_dir);
+	output.texcoord.z = 0;
+	
 	return output;
 }
 
