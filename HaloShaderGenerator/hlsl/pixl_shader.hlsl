@@ -163,10 +163,7 @@ PS_OUTPUT_DEFAULT entry_dynamic_light(VS_OUTPUT_DYNAMIC_LIGHT input) : COLOR
 	float3 diffuse = gel_sample.rgb * light.color.rgb * intensity * angle2;
 	float3 albedo = tex2D(albedo_texture, fragcoord).rgb;
 	diffuse *= albedo;
-	
-	float sc1 = -0.001953125; // c2x -1/512
-	float sc2 = 0.001953125; //c2w 1/512
-	
+
 	float shadow_coefficient = 0.0;
 	
 	if (dynamic_light_shadowing)
@@ -224,9 +221,6 @@ PS_OUTPUT_DEFAULT entry_dynamic_light_cinematic(VS_OUTPUT_DYNAMIC_LIGHT input) :
 	float3 albedo = tex2D(albedo_texture, fragcoord).rgb;
 	diffuse *= albedo;
 	
-	float sc1 = -0.001953125; // c2x -1/512
-	float sc2 = 0.001953125; //c2w 1/512
-	
 	float shadow_coefficient = 0.0;
 	
 	if (dynamic_light_shadowing)
@@ -250,41 +244,75 @@ PS_OUTPUT_DEFAULT entry_dynamic_light_cinematic(VS_OUTPUT_DYNAMIC_LIGHT input) :
 
 PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input) : COLOR
 {
+	// compiled is not 1-1 but close enough. It's probably the order of operations
 	PS_OUTPUT_DEFAULT output;
 	
-	float3 result_color;
-	
+	float3 result_color = float3(0, 0, 0);
+	float debug_mode = p_render_debug_mode.x;
 	[branch]
-	if (p_render_debug_mode < 1)
+	if (debug_mode < 1)
 	{
-		result_color = float3(input.lightmap_texcoord, 0);
+		result_color.rg = input.lightmap_texcoord.xy;
 	}
 	else
 	{
 		[branch]
-		if (p_render_debug_mode < 2)
+		if (debug_mode < 2)
 		{
-			float2 temp = floor(1024 * input.lightmap_texcoord);
-			temp = floor(0.5 * temp);
-			float4 unknown = -abs(temp.y) < 0 ? float4(1, 0.7, 0.3, 0) : float4(1, 0, 0, 0);
-			float3 temp2 = float3(unknown.w, temp);
-			result_color.xyz = -abs(temp.x) < 0 ? temp2 :  unknown.xyz;
+			float2 temp = floor(1024 * input.lightmap_texcoord.xy);
+			temp = temp * 0.5 - floor(0.5 * temp);
+			temp = abs(temp);
 
+			[unbranch]
+			if (temp.x > 0)
+			{
+				[unbranch]
+				if (temp.y > 0)
+				{
+					result_color.rgb = float3(1, 0.7, 0.3);
+				}
+				else
+				{
+					result_color.rgb = float3(0, 0, 0);
+				}
+			}
+			else
+			{
+				[unbranch]
+				if (temp.y > 0)
+				{
+					result_color.rgb = float3(0, 0, 0);
+				}
+				else
+				{
+					result_color.rgb = float3(1.0, 0.7, 0.3);
+				}
+			}
 		}
 		else
 		{
-			float3 temp_color = float3(input.texcoord, 0);
-			float4 offset = p_render_debug_mode + float4(-7, -8, -9, -10);
-			temp_color = temp_color < offset.w ? 0 : temp_color;
-			temp_color = temp_color < offset.z ? temp_color : 0;
-			temp_color = temp_color < offset.y ? temp_color : 0;
-			temp_color = temp_color < offset.x ? temp_color : 0;
+			float3 default_color = float3(input.texcoord.xy, 0);
 			
-			offset = p_render_debug_mode + float4(-3, -4, -5, -6);
-			temp_color.xyz = temp_color < offset.w ? temp_color : input.binormal;
-			temp_color.xyz = temp_color < offset.z ? temp_color : input.tangent;
-			temp_color.xyz = temp_color < offset.y ? temp_color : input.normal;
-			result_color.xyz = temp_color < offset.x ? temp_color : input.normal;
+			[unbranch]
+			if (debug_mode < 3)
+				result_color.xyz = input.normal;
+			else if (debug_mode < 4)
+				result_color.xyz = input.tangent;
+			else if (debug_mode < 5)
+				result_color.xyz = input.binormal;
+			else if (debug_mode < 6)
+				result_color.xyz = default_color;
+			else if (debug_mode < 7)
+				result_color.xyz = default_color;
+			else if (debug_mode < 8)
+				result_color.xyz = default_color;
+			else if (debug_mode < 9)
+				result_color.xyz = default_color;
+			else if (debug_mode < 10)
+				result_color.xyz = default_color;
+			else
+				result_color.xyz = input.normal;
+			
 		}
 	}
 	result_color = max(result_color, 0);
