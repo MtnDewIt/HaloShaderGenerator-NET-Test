@@ -50,8 +50,24 @@ VS_OUTPUT_STATIC_PRT entry_static_prt_quadratic(input_vertex_format input, QUADR
 	float4 world_position;
 	
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord, output.camera_dir);
+	calculate_z_squish(output.position);
 	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
 	output.prt_radiance_vector = calculate_quadratic_radiance_vector(input, input_prt, output.normal);
+	return output;
+}
+
+VS_OUTPUT_STATIC_SH entry_static_sh(input_vertex_format input)
+{
+	VS_OUTPUT_STATIC_SH output;
+	float4 world_position;
+	
+	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord.xy, output.camera_dir);
+	calculate_z_squish(output.position);
+	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
+
+	float3 light_dir = normalize(v_lighting_constant_1.xyz + v_lighting_constant_2.xyz + v_lighting_constant_3.xyz);
+	output.texcoord.z = dot(output.normal, -light_dir);
+	
 	return output;
 }
 

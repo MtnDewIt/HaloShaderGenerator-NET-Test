@@ -75,4 +75,16 @@ struct PS_OUTPUT_DEFAULT
 	float4 unknown;
 };
 
+struct VS_OUTPUT_STATIC_SH
+{
+	float4 position : SV_Position;
+	float3 texcoord : TEXCOORD; //z is used for the angle of the dominant light dir?
+	float3 normal : TEXCOORD3; 
+	float3 binormal : TEXCOORD4;
+	float3 tangent : TEXCOORD5;
+	float3 camera_dir : TEXCOORD6;
+	float3 extinction_factor : COLOR;
+	float3 sky_radiance : COLOR1;
+};
+
 #endif

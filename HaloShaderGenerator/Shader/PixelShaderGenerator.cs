@@ -44,6 +44,7 @@ namespace HaloShaderGenerator.Shader
                 case ShaderStage.Dynamic_Light:
                 case ShaderStage.Dynamic_Light_Cinematic:
                 case ShaderStage.Lightmap_Debug_Mode:
+                case ShaderStage.Static_Sh:
                     break;
                 default:
                     case ShaderStage.Z_Only:
@@ -52,10 +53,10 @@ namespace HaloShaderGenerator.Shader
                     case ShaderStage.Shadow_Apply:
                     case ShaderStage.Static_Default:
                     case ShaderStage.Default:
+                    case ShaderStage.Shadow_Generate:
 
                     case ShaderStage.Static_Per_Pixel:
                     case ShaderStage.Static_Per_Vertex:
-                    case ShaderStage.Static_Sh:
                     case ShaderStage.Static_Per_Vertex_Color:
                     
                     Console.Error.WriteLine($"Shader stage {stage} not supported in Shader generator");

@@ -65,7 +65,37 @@ PS_OUTPUT_DEFAULT entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input) : COLOR
     return output;
 }
 
-#define overwrite(old, new) (clamp(old * 0.0001, 0, 0.0001) + new)
+PS_OUTPUT_DEFAULT entry_static_sh(VS_OUTPUT_STATIC_SH input) : COLOR
+{
+	PS_OUTPUT_DEFAULT output;
+	float3 camera_dir = input.camera_dir.xyz;
+	float2 fragcoord = (input.position.xy + 0.5) / texture_size;
+    
+    // TODO: this may be overkill, check other shaders to see if it always use the diffuse/normal texture or it can compute the albedo again
+	ALBEDO_PASS_RESULT albedo_and_normal = get_albedo_and_normal(fragcoord, input.texcoord.xy, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
+	float3 albedo = albedo_and_normal.albedo;
+	float3 normal = albedo_and_normal.normal;
+
+	float3 n_camera_dir = normalize(camera_dir);
+    
+	float3 material_lighting = material_type(albedo, normal, n_camera_dir, input.texcoord.xy, input.extinction_factor.rgb, input.sky_radiance.rgb, camera_dir, 1.0);
+	float3 environment = envmap_type(n_camera_dir, normal);
+	float4 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo);
+
+	float3 color = (environment + self_illumination.xyz) * input.sky_radiance.xyz + material_lighting;
+
+	float3 exposed_color = expose_color(color);
+
+    //TODO: No transparency so far, we're going to need this!!!
+	float4 output_color = blend_type(float4(exposed_color, 1.0));
+
+	output.low_frequency = export_low_frequency(output_color);
+	output.high_frequency = export_high_frequency(output_color);
+
+	output.unknown = 0;
+
+	return output;
+}
 
 PS_OUTPUT_ALBEDO entry_static_prt(VS_OUTPUT_STATIC_PRT input) : COLOR
 {
@@ -86,8 +116,6 @@ PS_OUTPUT_ALBEDO entry_static_prt(VS_OUTPUT_STATIC_PRT input) : COLOR
 	float4 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo);
 
 	float3 color = (environment + self_illumination.xyz) * input.sky_radiance.xyz + material_lighting;
-
-	//color = overwrite(color, material_lighting);
 
 	float3 exposed_color = expose_color(color);
 

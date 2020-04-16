@@ -67,16 +67,16 @@ namespace HaloShaderGenerator
 
         static int Main()
         {
-            TestVertexShader("chud_cortana_composite");
+            //TestVertexShader("chud_cortana_composite");
 
-            /*
-            var stage = ShaderStage.Albedo;
+            
+            var stage = ShaderStage.Static_Sh;
 
             TestPixelShader(stage);
             TestSharedVertexShader(VertexType.World, stage);
             TestSharedVertexShader(VertexType.Rigid, stage);
             TestSharedVertexShader(VertexType.Skinned, stage);
-            */
+            
             return 0;
         }
     }

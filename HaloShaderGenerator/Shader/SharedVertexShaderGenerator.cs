@@ -40,11 +40,12 @@ namespace HaloShaderGenerator.Shader
                 case ShaderStage.Dynamic_Light_Cinematic:
                 case ShaderStage.Active_Camo:
                 case ShaderStage.Lightmap_Debug_Mode:
+                case ShaderStage.Static_Sh:
                     return true;
                 
                 case ShaderStage.Static_Per_Pixel:
                 case ShaderStage.Static_Per_Vertex:
-                case ShaderStage.Static_Sh:
+                
                 case ShaderStage.Shadow_Generate:
                 case ShaderStage.Static_Per_Vertex_Color:
 
