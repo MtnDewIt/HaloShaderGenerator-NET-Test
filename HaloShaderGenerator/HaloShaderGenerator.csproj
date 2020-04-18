@@ -92,12 +92,6 @@
     <EmbeddedResource Include="hlsl\helpers\math.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HaloShaderGeneratorLib\HaloShaderGeneratorLib.csproj">
-      <Project>{ac09cce8-ca0b-403a-9d9d-6eb56fab289c}</Project>
-      <Name>HaloShaderGeneratorLib</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="hlsl\registers\shader.hlsli" />
   </ItemGroup>
   <ItemGroup>

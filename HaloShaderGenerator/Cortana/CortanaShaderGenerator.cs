@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using HaloShaderGenerator.DirectX;
-using HaloShaderGenerator.Enums;
 using HaloShaderGenerator.Generator;
+using HaloShaderGenerator.Globals;
 
 namespace HaloShaderGenerator.Shader
 {
