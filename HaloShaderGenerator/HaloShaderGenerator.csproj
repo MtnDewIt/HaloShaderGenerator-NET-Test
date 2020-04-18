@@ -50,6 +50,7 @@
     <Compile Include="DirectX\D3D.cs" />
     <Compile Include="DirectX\D3DCompiler.cs" />
     <Compile Include="DirectX\Include.cs" />
+    <Compile Include="Generator\ShaderGeneratorResult.cs" />
     <Compile Include="Generic\GenericVertexShaderGenerator.cs" />
     <Compile Include="Globals\ShaderStage.cs" />
     <Compile Include="Globals\ShaderType.cs" />
