@@ -324,7 +324,7 @@ namespace HaloShaderGenerator
                         var register_line = reader.ReadLine().Replace("//", "").Trim();
                         if (string.IsNullOrWhiteSpace(register_line)) break;
 
-                        var register_components = register_line.Split(new char[] { ' ', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                        var register_components = register_line.Split(new char[] { ' ', ';', '[', ']' }, StringSplitOptions.RemoveEmptyEntries);
 
                         result[register_components[1]] = register_components[0];
                     }
