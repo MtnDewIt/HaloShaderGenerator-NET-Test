@@ -65,18 +65,31 @@ namespace HaloShaderGenerator
             Console.WriteLine(str);
         }
 
+        static void TestPixelShader(string name)
+        {
+            var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(name);
+            var str = D3DCompiler.Disassemble(bytecode);
+            using (FileStream test = new FileInfo($"generated_{name}.vtsh").Create())
+            using (StreamWriter writer = new StreamWriter(test))
+            {
+                writer.WriteLine(str);
+            }
+
+            Console.WriteLine(str);
+        }
+
         static int Main()
         {
             //TestVertexShader("chud_cortana_composite");
-
-            
+            TestPixelShader("chud_cortana_composite");
+            /*
             var stage = ShaderStage.Static_Sh;
 
             TestPixelShader(stage);
             TestSharedVertexShader(VertexType.World, stage);
             TestSharedVertexShader(VertexType.Rigid, stage);
             TestSharedVertexShader(VertexType.Skinned, stage);
-            
+            */
             return 0;
         }
     }

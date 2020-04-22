@@ -18,7 +18,12 @@ float3 apply_debug_tint(float3 color)
 */
 float3 rgb_to_srgb(float3 color)
 {
-	return color <= 0.00313080009 ? 12.9200001 * color : 1.05499995 * exp(log(color) * 0.416666657) - 0.0549999997;
+	return color <= 0.00313080009 ? 12.9200001 * color : 1.055 * exp(log(color) / 2.4) - 0.055;
+}
+
+float3 srgb_to_rgb(float3 color)
+{
+	return color <= 0.04045 ? 0.07739938 * color : exp(log((color + 0.055) / 1.055) * 2.4);
 }
 
 float3 expose_color(float3 input)
