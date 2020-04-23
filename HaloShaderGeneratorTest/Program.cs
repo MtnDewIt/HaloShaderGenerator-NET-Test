@@ -69,7 +69,7 @@ namespace HaloShaderGenerator
         {
             var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(name);
             var str = D3DCompiler.Disassemble(bytecode);
-            using (FileStream test = new FileInfo($"generated_{name}.vtsh").Create())
+            using (FileStream test = new FileInfo($"generated_{name}.pixl").Create())
             using (StreamWriter writer = new StreamWriter(test))
             {
                 writer.WriteLine(str);
