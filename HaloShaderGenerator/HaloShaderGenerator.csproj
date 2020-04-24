@@ -90,6 +90,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Black\PixelShaderBlackGenerator.cs" />
+    <Compile Include="Black\SharedVertexShaderBlackGenerator.cs" />
     <Compile Include="Cortana\CortanaShaderGenerator.cs" />
     <Compile Include="DirectX\D3D.cs" />
     <Compile Include="DirectX\D3DCompiler.cs" />
@@ -165,7 +167,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Beam\" />
-    <Folder Include="Black\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\registers\vertex_shader.hlsli" />
@@ -214,6 +215,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\registers\chud_pixl_shader.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\pixl_shader_black.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\glvs_shader_black.hlsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

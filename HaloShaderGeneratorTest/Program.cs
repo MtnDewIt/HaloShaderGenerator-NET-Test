@@ -1,6 +1,7 @@
 ﻿using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Globals;
 using HaloShaderGenerator.Shader;
+using HaloShaderGenerator.Black;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -81,7 +82,7 @@ namespace HaloShaderGenerator
         static int Main()
         {
             //TestVertexShader("chud_cortana_composite");
-            TestPixelShader("chud_cortana_composite");
+            //TestPixelShader("chud_cortana_composite");
             /*
             var stage = ShaderStage.Static_Sh;
 
@@ -90,7 +91,38 @@ namespace HaloShaderGenerator
             TestSharedVertexShader(VertexType.Rigid, stage);
             TestSharedVertexShader(VertexType.Skinned, stage);
             */
+
+            TestPixelBlack(ShaderStage.Albedo);
+            TestSharedVertexBlack(VertexType.World, ShaderStage.Albedo);
+            TestSharedVertexBlack(VertexType.Rigid, ShaderStage.Albedo);
+            TestSharedVertexBlack(VertexType.Skinned, ShaderStage.Albedo);
+
             return 0;
+        }
+
+        static void TestPixelBlack(ShaderStage stage)
+        {
+            var bytecode = PixelShaderBlackGenerator.GeneratePixelShader(stage);
+
+            var str = D3DCompiler.Disassemble(bytecode);
+
+            using (FileStream test = new FileInfo($"generated_shader_black_{stage.ToString().ToLower()}_0.pixl").Create())
+            using (StreamWriter writer = new StreamWriter(test))
+            {
+                writer.WriteLine(str);
+            }
+        }
+
+        static void TestSharedVertexBlack(VertexType vertexType, ShaderStage stage)
+        {
+            var bytecode = SharedVertexBlackGenerator.GenerateSharedVertexShaderBlack(vertexType, stage);
+            var str = D3DCompiler.Disassemble(bytecode);
+
+            using (FileStream test = new FileInfo($"generated_shader_black_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}.glvs").Create())
+            using (StreamWriter writer = new StreamWriter(test))
+            {
+                writer.WriteLine(str);
+            }
         }
     }
 }
