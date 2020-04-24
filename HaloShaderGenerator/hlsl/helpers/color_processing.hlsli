@@ -23,7 +23,8 @@ float3 rgb_to_srgb(float3 color)
 
 float3 srgb_to_rgb(float3 color)
 {
-	return color <= 0.04045 ? 0.07739938 * color : exp(log((color + 0.055) / 1.055) * 2.4);
+	float3 color1 = exp(log((color + 0.055) / 1.055) * 2.4);
+	return color <= 0.04045 ? 0.07739938 * color : color1;
 }
 
 float3 expose_color(float3 input)
