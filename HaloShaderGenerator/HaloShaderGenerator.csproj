@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Black\PixelShaderBlackGenerator.cs" />
+    <Compile Include="Black\Globals.cs" />
     <Compile Include="Black\SharedVertexShaderBlackGenerator.cs" />
     <Compile Include="Cortana\CortanaShaderGenerator.cs" />
     <Compile Include="DirectX\D3D.cs" />

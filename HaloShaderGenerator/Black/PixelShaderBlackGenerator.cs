@@ -13,24 +13,13 @@ namespace HaloShaderGenerator.Black
 {
     public partial class PixelShaderBlackGenerator
     {
-        public static bool IsShaderStageSupported(ShaderStage stage)
-        {
-            switch (stage)
-            {
-                case ShaderStage.Albedo:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public static byte[] GeneratePixelShader(ShaderStage stage)
         {
             string template = $"pixl_shader_black.hlsl";
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
-            if (!IsShaderStageSupported(stage))
+            if (!Globals.IsShaderStageSupported(stage))
                 return null;
 
             //

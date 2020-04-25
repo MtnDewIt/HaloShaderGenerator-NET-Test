@@ -13,33 +13,9 @@ namespace HaloShaderGenerator.Black
 {
     public class SharedVertexBlackGenerator
     {
-        public static bool IsVertexTypeSupported(VertexType type)
-        {
-            switch (type)
-            {
-                case VertexType.World:
-                case VertexType.Rigid:
-                case VertexType.Skinned:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public static bool IsShaderStageSupported(ShaderStage stage)
-        {
-            switch (stage)
-            {
-                case ShaderStage.Albedo:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public static byte[] GenerateSharedVertexShaderBlack(VertexType vertexType, ShaderStage stage)
         {
-            if (!IsVertexTypeSupported(vertexType) || !IsShaderStageSupported(stage))
+            if (!Globals.IsVertexTypeSupported(vertexType) || !Globals.IsShaderStageSupported(stage))
                 return null;
 
             string template = @"glvs_shader_black.hlsl";
