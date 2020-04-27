@@ -14,14 +14,14 @@ uniform float4 uv_compression_scale_offset : register(c14);
 uniform float4 v_atmosphere_constant_extra : register(c15);
 uniform float4 nodes[210] : register(c16); // node transformations, supports up to 70 nodes
 
-
+uniform float4 g_exposure : register(c232);
 uniform float4 v_atmosphere_constant_0 : register(c233);
 uniform float4 v_atmosphere_constant_1 : register(c234);
 uniform float4 v_atmosphere_constant_2 : register(c235);
 uniform float4 v_atmosphere_constant_3 : register(c236);
 uniform float4 v_atmosphere_constant_4 : register(c237);
 uniform float4 v_atmosphere_constant_5 : register(c238);
-
+uniform float4 g_alt_exposure : register(c239);
 
 uniform float4x4 shadow_projection : register(c240);
 

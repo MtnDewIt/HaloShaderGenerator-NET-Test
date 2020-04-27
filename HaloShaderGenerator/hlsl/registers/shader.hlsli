@@ -232,6 +232,10 @@ uniform float4 secondary_change_color_old : register(c191); // TODO Figure this 
 uniform float4 k_ps_active_camo_factor : register(c212);
 
 
+uniform float4 p_atmosphere_constant_0 : register(c215);
+uniform float4 p_atmosphere_constant_extra : register(c221);
+
+
 uniform float k_f0; // figure out what this is
 
 
