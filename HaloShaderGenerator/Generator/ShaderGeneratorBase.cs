@@ -69,7 +69,7 @@ namespace HaloShaderGenerator.Generator
             }
         }
 
-        public static byte[] GenerateSource(string template, IEnumerable<D3D.SHADER_MACRO> macros, string entry, string version, StreamWriter sourceStream = null)
+        public static byte[] GenerateSource(string template, IEnumerable<D3D.SHADER_MACRO> macros, string entry, string version)
         { 
             // Macros should never be duplicated
             for (var i = 0; i < macros.Count(); i++)
@@ -87,9 +87,6 @@ namespace HaloShaderGenerator.Generator
             IncludeManager include = new IncludeManager();
 
             string shader_source = include.ReadResource(template);
-            if (sourceStream != null)
-                sourceStream.WriteLine(shader_source);
-            
 
             D3DCompiler.D3DCOMPILE flags = 0;
 #if DEBUG

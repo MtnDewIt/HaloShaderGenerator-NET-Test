@@ -22,44 +22,24 @@ namespace HaloShaderGenerator
             }
         }
 
-        static void TestPixelShader(ShaderStage stage)
+        static void TestPixelShader(ShaderStage stage, Albedo albedo, Bump_Mapping bump_mapping, Alpha_Test alpha_test, Specular_Mask specular_mask, Material_Model material_model,
+            Environment_Mapping environment_mapping, Self_Illumination self_illumination, Blend_Mode blend_mode, Parallax parallax, Misc misc, Distortion distortion)
         {
-            var bytecode = PixelShaderGenerator.GeneratePixelShader(stage,
-                Albedo.Default,
-                Bump_Mapping.Off,
-                Alpha_Test.None,
-                Specular_Mask.No_Specular_Mask,
-                Material_Model.Diffuse_Only,
-                Environment_Mapping.None,
-                Self_Illumination.Off,
-                Blend_Mode.Opaque,
-                Parallax.Off,
-                Misc.First_Person_Never,
-                Distortion.Off);
+            var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion);
+            var bytecode = gen.GeneratePixelShader(stage).Bytecode;
 
-            var str = D3DCompiler.Disassemble(bytecode);
-
-            using (FileStream test = new FileInfo($"generated_{stage.ToString().ToLower()}_0_0_0_0_0_0_0_0_0_0_0.pixl").Create())
-            using (StreamWriter writer = new StreamWriter(test))
-            {
-                writer.WriteLine(str);
-            }
-
-            Console.WriteLine(str);
+            var disassembly = D3DCompiler.Disassemble(bytecode);
+            string filename = $"generated_{stage.ToString().ToLower()}_{(int)albedo}_{(int)bump_mapping}_{(int)alpha_test}_{(int)specular_mask}_{(int)material_model}_{(int)environment_mapping}_{(int)self_illumination}_{(int)blend_mode}_{(int)parallax}_{(int)misc}_{(int)distortion}.pixl";
+            WriteShaderFile(filename, disassembly);
         }
 
         static void TestSharedVertexShader(VertexType vertexType, ShaderStage stage)
         {
-            var bytecode = ShartedVertexShaderGenerator.GenerateSharedVertexShader(vertexType, stage);
-            var str = D3DCompiler.Disassemble(bytecode);
+            var gen = new ShaderGenerator();
+            var bytecode = gen.GenerateSharedVertexShader(vertexType, stage).Bytecode;
 
-            using (FileStream test = new FileInfo($"generated_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}.glvs").Create())
-            using (StreamWriter writer = new StreamWriter(test))
-            {
-                writer.WriteLine(str);
-            }
-
-            Console.WriteLine(str);
+            var disassembly = D3DCompiler.Disassemble(bytecode);
+            WriteShaderFile($"generated_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}.glvs", disassembly);
         }
 
         static void TestVertexShader(string name)

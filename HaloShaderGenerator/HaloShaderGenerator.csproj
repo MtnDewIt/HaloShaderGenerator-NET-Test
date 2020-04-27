@@ -103,8 +103,7 @@
     <Compile Include="Globals\ShaderType.cs" />
     <Compile Include="Globals\VertexType.cs" />
     <Compile Include="Shader\MethodOptions.cs" />
-    <Compile Include="Shader\SharedVertexShaderGenerator.cs" />
-    <Compile Include="Shader\PixelShaderGenerator.cs" />
+    <Compile Include="Shader\ShaderGenerator.cs" />
     <Compile Include="Generator\ShaderGeneratorBase.cs" />
   </ItemGroup>
   <ItemGroup>
