@@ -90,13 +90,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Black\PixelShaderBlackGenerator.cs" />
-    <Compile Include="Black\Globals.cs" />
-    <Compile Include="Black\SharedVertexShaderBlackGenerator.cs" />
+    <Compile Include="Black\ShaderBlackGenerator.cs" />
     <Compile Include="Cortana\CortanaShaderGenerator.cs" />
     <Compile Include="DirectX\D3D.cs" />
     <Compile Include="DirectX\D3DCompiler.cs" />
     <Compile Include="DirectX\Include.cs" />
+    <Compile Include="Generator\ShaderGeneratorInterfaces.cs" />
     <Compile Include="Generator\ShaderGeneratorResult.cs" />
     <Compile Include="Generic\GenericPixelShaderGenerator.cs" />
     <Compile Include="Generic\GenericVertexShaderGenerator.cs" />

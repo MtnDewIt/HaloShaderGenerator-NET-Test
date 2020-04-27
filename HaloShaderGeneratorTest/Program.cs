@@ -13,6 +13,15 @@ namespace HaloShaderGenerator
 {
     class Application
     {
+        static void WriteShaderFile(string name, string disassembly)
+        {
+            using (FileStream test = new FileInfo(name).Create())
+            using (StreamWriter writer = new StreamWriter(test))
+            {
+                writer.WriteLine(disassembly);
+            }
+        }
+
         static void TestPixelShader(ShaderStage stage)
         {
             var bytecode = PixelShaderGenerator.GeneratePixelShader(stage,
@@ -102,27 +111,16 @@ namespace HaloShaderGenerator
 
         static void TestPixelBlack(ShaderStage stage)
         {
-            var bytecode = PixelShaderBlackGenerator.GeneratePixelShader(stage);
-
-            var str = D3DCompiler.Disassemble(bytecode);
-
-            using (FileStream test = new FileInfo($"generated_shader_black_{stage.ToString().ToLower()}_0.pixl").Create())
-            using (StreamWriter writer = new StreamWriter(test))
-            {
-                writer.WriteLine(str);
-            }
+            var gen = new ShaderBlackGenerator();
+            var bytecode = gen.GeneratePixelShader(stage).Bytecode;
+            WriteShaderFile($"generated_shader_black_{stage.ToString().ToLower()}_0.pixl", D3DCompiler.Disassemble(bytecode));
         }
 
         static void TestSharedVertexBlack(VertexType vertexType, ShaderStage stage)
         {
-            var bytecode = SharedVertexBlackGenerator.GenerateSharedVertexShaderBlack(vertexType, stage);
-            var str = D3DCompiler.Disassemble(bytecode);
-
-            using (FileStream test = new FileInfo($"generated_shader_black_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}.glvs").Create())
-            using (StreamWriter writer = new StreamWriter(test))
-            {
-                writer.WriteLine(str);
-            }
+            var gen = new ShaderBlackGenerator();
+            var bytecode = gen.GenerateSharedVertexShader(vertexType, stage).Bytecode;
+            WriteShaderFile($"generated_shader_black_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}.glvs", D3DCompiler.Disassemble(bytecode));
         }
     }
 }
