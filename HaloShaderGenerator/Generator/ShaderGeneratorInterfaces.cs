@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HaloShaderGenerator.Generator
 {
-    public interface IShaderGenerator : IPixelShaderGenerator, IVertexShaderGenerator
+    public interface IShaderGenerator
     {
         /// <summary>
         /// Returns true when entry point is supported in the shading pipeline. The pixel shader and vertex shader are either in the shared tag or in the pixl,vtsh.
@@ -15,10 +15,7 @@ namespace HaloShaderGenerator.Generator
         /// <param name="entryPoint"></param>
         /// <returns></returns>
         bool IsEntryPointSupported(ShaderStage entryPoint);
-    }
 
-    public interface IPixelShaderGenerator
-    {
         /// <summary>
         /// Generate pixel shader from HLSL given the entry point and method options provided by the implementing class.
         /// </summary>
@@ -34,7 +31,7 @@ namespace HaloShaderGenerator.Generator
         /// <param name="method_index"></param>
         /// <param name="option_index"></param>
         /// <returns></returns>
-        ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int method_index, int option_index);
+        ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex);
 
         /// <summary>
         /// Returns true if the pixel shader should be stored in the global pixel shader tag.
@@ -49,11 +46,8 @@ namespace HaloShaderGenerator.Generator
         /// <param name="entryPoint"></param>
         /// <param name="method_index"></param>
         /// <returns></returns>
-        bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index);
-    }
+        bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int methodIndex);
 
-    public interface IVertexShaderGenerator
-    {
         /// <summary>
         /// Generate vertex shader from HLSL given vertex type and entry point.
         /// </summary>
@@ -82,5 +76,9 @@ namespace HaloShaderGenerator.Generator
         /// <param name="entryPoint"></param>
         /// <returns></returns>
         bool IsVertexShaderShared(ShaderStage entryPoint);
+
+        int GetMethodCount();
+
+        int GetMethodOptionCount(int methodIndex);
     }
 }

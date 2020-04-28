@@ -22,7 +22,7 @@ namespace HaloShaderGenerator.Black
             return new ShaderGeneratorResult(shaderBytecode);
         }
 
-        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int method_index, int option_index)
+        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
         {
             return null;
         }
@@ -47,6 +47,16 @@ namespace HaloShaderGenerator.Black
             return null;
         }
 
+        public int GetMethodCount()
+        {
+            return 1;
+        }
+
+        public int GetMethodOptionCount(int methodIndex)
+        {
+            return 1;
+        }
+
         public bool IsEntryPointSupported(ShaderStage entryPoint)
         {
             switch (entryPoint)
@@ -58,7 +68,7 @@ namespace HaloShaderGenerator.Black
             }
         }
 
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
+        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int methodIndex)
         {
             return false;
         }

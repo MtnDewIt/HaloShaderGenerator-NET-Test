@@ -133,7 +133,7 @@ namespace HaloShaderGenerator.Shader
             return new ShaderGeneratorResult(shaderBytecode);
         }
 
-        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int method_index, int option_index)
+        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
         {
             return null;
         }
@@ -161,6 +161,41 @@ namespace HaloShaderGenerator.Shader
             if (!TemplateGenerationValid)
                 throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
             return null;
+        }
+
+        public int GetMethodCount()
+        {
+            return 11;
+        }
+
+        public int GetMethodOptionCount(int methodIndex)
+        {
+            switch ((ShaderMethods)methodIndex)
+            {
+                case ShaderMethods.Albedo:
+                    return 15;
+                case ShaderMethods.Bump_Mapping:
+                    return 4;
+                case ShaderMethods.Alpha_Test:
+                    return 2;
+                case ShaderMethods.Specular_Mask:
+                    return 4;
+                case ShaderMethods.Material_Model:
+                    return 9;
+                case ShaderMethods.Environment_Mapping:
+                    return 5;
+                case ShaderMethods.Self_Illumination:
+                    return 10;
+                case ShaderMethods.Blend_Mode:
+                    return 6;
+                case ShaderMethods.Parallax:
+                    return 4;
+                case ShaderMethods.Misc:
+                    return 2;
+                case ShaderMethods.Distortion:
+                    return 2;
+            }
+            return -1;
         }
 
         public bool IsEntryPointSupported(ShaderStage entryPoint)
