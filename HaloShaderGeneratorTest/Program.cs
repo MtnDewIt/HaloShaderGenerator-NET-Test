@@ -72,20 +72,22 @@ namespace HaloShaderGenerator
         {
             //TestVertexShader("chud_cortana_composite");
             //TestPixelShader("chud_cortana_composite");
-            /*
+  
+            
             var stage = ShaderStage.Static_Sh;
 
-            TestPixelShader(stage);
+            TestPixelShader(stage, Albedo.Default, Bump_Mapping.Off, Alpha_Test.None, Specular_Mask.No_Specular_Mask, Material_Model.Diffuse_Only, Environment_Mapping.None, Self_Illumination.Off, Blend_Mode.Opaque, Parallax.Off, Misc.First_Person_Never, Distortion.Off);
             TestSharedVertexShader(VertexType.World, stage);
             TestSharedVertexShader(VertexType.Rigid, stage);
             TestSharedVertexShader(VertexType.Skinned, stage);
-            */
+            
 
+            /*
             TestPixelBlack(ShaderStage.Albedo);
             TestSharedVertexBlack(VertexType.World, ShaderStage.Albedo);
             TestSharedVertexBlack(VertexType.Rigid, ShaderStage.Albedo);
             TestSharedVertexBlack(VertexType.Skinned, ShaderStage.Albedo);
-
+            */
             return 0;
         }
 

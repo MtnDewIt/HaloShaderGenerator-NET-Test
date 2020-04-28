@@ -29,7 +29,7 @@ namespace HaloShaderGenerator.Black
 
         public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)
         {
-            if (!IsVertexFormatSupported(vertexType) || IsEntryPointSupported(entryPoint))
+            if (!IsVertexFormatSupported(vertexType) || !IsEntryPointSupported(entryPoint))
                 return null;
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
