@@ -5,7 +5,7 @@ using HaloShaderGenerator.Globals;
 
 namespace HaloShaderGenerator.Black
 {
-    public class ShaderBlackGenerator : IPixelShaderGenerator, IVertexShaderGenerator
+    public class ShaderBlackGenerator : IShaderGenerator
     {
         public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
         {

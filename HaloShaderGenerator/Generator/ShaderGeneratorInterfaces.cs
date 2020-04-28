@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HaloShaderGenerator.Generator
 {
-    public interface IShaderGenerator
+    public interface IShaderGenerator : IPixelShaderGenerator, IVertexShaderGenerator
     {
         /// <summary>
         /// Returns true when entry point is supported in the shading pipeline. The pixel shader and vertex shader are either in the shared tag or in the pixl,vtsh.
@@ -17,7 +17,7 @@ namespace HaloShaderGenerator.Generator
         bool IsEntryPointSupported(ShaderStage entryPoint);
     }
 
-    public interface IPixelShaderGenerator : IShaderGenerator
+    public interface IPixelShaderGenerator
     {
         /// <summary>
         /// Generate pixel shader from HLSL given the entry point and method options provided by the implementing class.
@@ -52,7 +52,7 @@ namespace HaloShaderGenerator.Generator
         bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index);
     }
 
-    public interface IVertexShaderGenerator : IShaderGenerator
+    public interface IVertexShaderGenerator
     {
         /// <summary>
         /// Generate vertex shader from HLSL given vertex type and entry point.

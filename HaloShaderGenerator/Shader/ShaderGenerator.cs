@@ -5,8 +5,10 @@ using HaloShaderGenerator.Globals;
 
 namespace HaloShaderGenerator.Shader
 {
-    public class ShaderGenerator : IPixelShaderGenerator, IVertexShaderGenerator
+    public class ShaderGenerator : IShaderGenerator
     {
+        private bool TemplateGenerationValid;
+
         Albedo albedo;
         Bump_Mapping bump_mapping;
         Alpha_Test alpha_test;
@@ -22,7 +24,7 @@ namespace HaloShaderGenerator.Shader
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
         /// </summary>
-        public ShaderGenerator() { }
+        public ShaderGenerator() { TemplateGenerationValid = false; }
 
         /// <summary>
         /// Generator instantiation for method specific shaders.
@@ -52,11 +54,15 @@ namespace HaloShaderGenerator.Shader
             this.parallax = parallax;
             this.misc = misc;
             this.distortion = distortion;
+            TemplateGenerationValid = true;
         }
 
 
         public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
         {
+            if (!TemplateGenerationValid)
+                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
+
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
@@ -152,6 +158,8 @@ namespace HaloShaderGenerator.Shader
 
         public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)
         {
+            if (!TemplateGenerationValid)
+                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
             return null;
         }
 
