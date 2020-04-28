@@ -53,7 +53,7 @@ float4 calculate_ambient_radiance_vector(float coefficient, float3 normal)
 
 float3 transform_unknown_vector_rigid(RIGID_VERTEX vert, float3 input)
 {
-	return input.x * nodes[0] + input.y * nodes[1] + input.z * nodes[2];
+	return input.x * nodes[0].xyz + input.y * nodes[1].xyz + input.z * nodes[2].xyz;
 }
 
 float3 transform_unknown_vector_world(WORLD_VERTEX vert, float3 input)
@@ -61,7 +61,7 @@ float3 transform_unknown_vector_world(WORLD_VERTEX vert, float3 input)
 	return input;
 }
 
-float transform_unknown_vector_skinned(SKINNED_VERTEX vert, float3 input)
+float3 transform_unknown_vector_skinned(SKINNED_VERTEX vert, float3 input)
 {
 	int4 indices = int4(3 * floor(vert.node_indices)); // offset into the matrix by 3
 	float4 weights = vert.node_weights * (1.0 / dot(vert.node_weights, 1)); // make sure weights sum to 1
@@ -69,7 +69,7 @@ float transform_unknown_vector_skinned(SKINNED_VERTEX vert, float3 input)
 	float4 basis1 = weights.x * nodes[indices.x + 0] + weights.y * nodes[indices.y + 0] + weights.z * nodes[indices.z + 0] + weights.w * nodes[indices.w + 0];
 	float4 basis2 = weights.x * nodes[indices.x + 1] + weights.y * nodes[indices.y + 1] + weights.z * nodes[indices.z + 1] + weights.w * nodes[indices.w + 1];
 	float4 basis3 = weights.x * nodes[indices.x + 2] + weights.y * nodes[indices.y + 2] + weights.z * nodes[indices.z + 2] + weights.w * nodes[indices.w + 2];
-	return input.x * basis1 + input.y * basis2 + input.z * basis3;
+	return input.x * basis1.xyz + input.y * basis2.xyz + input.z * basis3.xyz;
 }
 
 float4 calculate_linear_radiance_vector(input_vertex_format vert, float4 coefficients, float3 normal)
@@ -79,13 +79,13 @@ float4 calculate_linear_radiance_vector(input_vertex_format vert, float4 coeffic
 	float4 r0 = float4(0, 0, 0, 0);
 	float4 r1 = float4(0, 0, 0, 0);
 	float4 r2 = float4(0, 0, 0, 0);
-	float3 r3 = float4(0, 0, 0, 0);
+	float3 r3 = float3(0, 0, 0);
 
 	result.z = 3.54490733 * (2.0 * coefficients.x - 1.0);
 	r0.w = 0.33333333333;
 	r0.x = dot(v_lighting_constant_0.xyz, 0.333333333);
 	r2.xyz = v_lighting_constant_1.xyz + v_lighting_constant_3.xyz + v_lighting_constant_2.xyz; // dominant light direction perhaps? doesn't have the luminance scaling
-	r3.xyz = normalize(r2);
+	r3.xyz = normalize(r2).xyz;
 	r1.w = dot(normal, -r3.xyz);
 	r2.xyz = 0.333333333 * r2.xyz;
 	r1.x = dot(normal, r2.xyz);
@@ -174,11 +174,11 @@ float4 calculate_quadratic_radiance_vector(input_vertex_format vert, QUADRATIC_P
 	r10.zw = prt.coefficients3.xy;
 	r2.w = dot(r9, r10);
 	r1.x = dot(r1.xyz, r7.xyz);
-	r7.xyz = normalize(r6);
+	r7.xyz = normalize(r6).xyz;
 	r1.y = dot(normal, -r7.xyz);
 	r0.w = r0.w - r8.w * 0.85808599;
-	r0.xyz = r0 * r0.yzxw;
-	r0.xyz = r2 * r2.yzxw - r0;
+	r0.xyz = (r0 * r0.yzxw).xyz;
+	r0.xyz = (r2 * r2.yzxw - r0).xyz;
 	r0.x = dot(r0.xyz, r5.xyz);
 	r0.x = -r1.x - r0.x;
 	r0.y = r1.w + r2.w;
