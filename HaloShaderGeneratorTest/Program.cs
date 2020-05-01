@@ -42,6 +42,14 @@ namespace HaloShaderGenerator
             WriteShaderFile($"generated_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}.glvs", disassembly);
         }
 
+        static void TestSharedPixelShader(ShaderStage stage, int methodIndex, int optionIndex)
+        {
+            var gen = new ShaderGenerator();
+            var bytecode = gen.GenerateSharedPixelShader(stage, methodIndex, optionIndex).Bytecode;
+            var disassembly = D3DCompiler.Disassemble(bytecode);
+            WriteShaderFile($"generated_{stage.ToString().ToLower()}_{methodIndex}_{optionIndex}.glps", disassembly);
+        }
+
         static void TestVertexShader(string name)
         {
             var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(name);
@@ -74,13 +82,14 @@ namespace HaloShaderGenerator
             //TestPixelShader("chud_cortana_composite");
   
             
-            var stage = ShaderStage.Static_Sh;
+            var stage = ShaderStage.Shadow_Generate;
 
-            TestPixelShader(stage, Albedo.Default, Bump_Mapping.Off, Alpha_Test.None, Specular_Mask.No_Specular_Mask, Material_Model.Diffuse_Only, Environment_Mapping.None, Self_Illumination.Off, Blend_Mode.Opaque, Parallax.Off, Misc.First_Person_Never, Distortion.Off);
+            //TestPixelShader(stage, Albedo.Default, Bump_Mapping.Off, Alpha_Test.None, Specular_Mask.No_Specular_Mask, Material_Model.Diffuse_Only, Environment_Mapping.None, Self_Illumination.Off, Blend_Mode.Opaque, Parallax.Off, Misc.First_Person_Never, Distortion.Off);
             TestSharedVertexShader(VertexType.World, stage);
             TestSharedVertexShader(VertexType.Rigid, stage);
             TestSharedVertexShader(VertexType.Skinned, stage);
-            
+            TestSharedPixelShader(stage, (int)Shader.ShaderMethods.Alpha_Test, (int)Shader.Alpha_Test.Off);
+            TestSharedPixelShader(stage, (int)Shader.ShaderMethods.Alpha_Test, (int)Shader.Alpha_Test.On);
 
             /*
             TestPixelBlack(ShaderStage.Albedo);

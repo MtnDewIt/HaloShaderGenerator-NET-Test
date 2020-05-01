@@ -135,7 +135,34 @@ namespace HaloShaderGenerator.Shader
 
         public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
         {
-            return null;
+            if (!IsEntryPointSupported(entryPoint) || !IsPixelShaderShared(entryPoint))
+                return null;
+
+            Alpha_Test alphaTestOption;
+
+            switch ((ShaderMethods)methodIndex)
+            {
+                case ShaderMethods.Alpha_Test:
+
+                    alphaTestOption = (Alpha_Test)optionIndex;
+
+                    break;
+                default:
+                    return null;
+            }
+
+            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
+
+            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Alpha_Test>());
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", alphaTestOption, "calc_alpha_test_", "_ps"));
+            
+            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"glps_shader.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
+
+            return new ShaderGeneratorResult(shaderBytecode);
         }
 
         public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)

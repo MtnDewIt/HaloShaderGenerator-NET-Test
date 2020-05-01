@@ -54,8 +54,8 @@ namespace HaloShaderGenerator.Shader
 
     public enum Alpha_Test
     {
-        None,
-        Simple
+        Off,
+        On
     }
 
     public enum Specular_Mask

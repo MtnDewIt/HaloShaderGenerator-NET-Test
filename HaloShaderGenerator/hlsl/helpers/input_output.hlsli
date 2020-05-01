@@ -7,6 +7,13 @@ struct VS_OUTPUT_BLACK_ALBEDO
 	float3 color : COLOR0;
 };
 
+struct VS_OUTPUT_SHADOW_GENERATE
+{
+	float4 position : SV_Position;
+	float depth : TEXCOORD;
+	float2 texcoord : TEXCOORD1;
+};
+
 struct VS_OUTPUT_ALBEDO
 {
     float4 position : SV_Position;
@@ -91,6 +98,12 @@ struct VS_OUTPUT_STATIC_SH
 	float3 camera_dir : TEXCOORD6;
 	float3 extinction_factor : COLOR;
 	float3 sky_radiance : COLOR1;
+};
+
+struct PS_OUTPUT_SHADOW_GENERATE
+{
+	float4 unknown;
+	float4 depth;
 };
 
 #endif

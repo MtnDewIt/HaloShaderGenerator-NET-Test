@@ -278,7 +278,10 @@ namespace HaloShaderGenerator
                 {
                     if (!found_registers)
                     {
-                        found_registers = reader.ReadLine().Contains("Registers:");
+                        var line = reader.ReadLine();
+                        if (line == null)
+                            break;
+                        found_registers = line.Contains("Registers:");
                         if (found_registers)
                         {
                             reader.ReadLine();
@@ -313,7 +316,10 @@ namespace HaloShaderGenerator
                 {
                     if (!found_registers)
                     {
-                        found_registers = reader.ReadLine().Contains("Parameters:");
+                        var line = reader.ReadLine();
+                        if (line == null)
+                            break;
+                        found_registers = line.Contains("Parameters:");
                         if (found_registers)
                         {
                             reader.ReadLine();

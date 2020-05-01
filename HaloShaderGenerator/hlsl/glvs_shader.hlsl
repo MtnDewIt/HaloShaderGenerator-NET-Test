@@ -134,3 +134,16 @@ VS_OUTPUT_LIGHTMAP_DEBUG_MODE entry_lightmap_debug_mode(input_vertex_format inpu
 	return output;
 }
 
+VS_OUTPUT_SHADOW_GENERATE entry_shadow_generate(input_vertex_format input)
+{
+	VS_OUTPUT_SHADOW_GENERATE output;
+	float4 world_position;
+	float3 normal, tangent, binormal, camera_dir;
+
+	calc_vertex_transform(input, world_position, output.position, normal.xyz, tangent, binormal, output.texcoord, camera_dir);
+	calculate_z_squish(output.position);
+	output.depth = output.position.w;
+	
+	return output;
+}
+
