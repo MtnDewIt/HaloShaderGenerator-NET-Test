@@ -71,7 +71,7 @@ VS_OUTPUT_STATIC_SH entry_static_sh(input_vertex_format input)
 	return output;
 }
 
-VS_OUTPUT_PER_PIXEL entry_static_per_pixel(input_vertex_format input, float2 per_pixel : TEXCOORD1)
+VS_OUTPUT_PER_PIXEL entry_static_per_pixel(input_vertex_format input, STATIC_PER_PIXEL_DATA per_pixel)
 {
 	VS_OUTPUT_PER_PIXEL output;
 	float4 world_position;
@@ -79,7 +79,57 @@ VS_OUTPUT_PER_PIXEL entry_static_per_pixel(input_vertex_format input, float2 per
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord.xy, output.camera_dir);
 	calculate_z_squish(output.position);
 	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
-	output.per_pixel_unknown = per_pixel;
+	output.lightmap_texcoord = per_pixel.lightmap_texcoord;
+	
+	return output;
+}
+
+VS_OUTPUT_PER_VERTEX_COLOR entry_static_per_vertex_color(input_vertex_format input, STATIC_PER_VERTEX_COLOR_DATA per_vertex_color)
+{
+	VS_OUTPUT_PER_VERTEX_COLOR output;
+	float4 world_position;
+	
+	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord.xy, output.camera_dir);
+	calculate_z_squish(output.position);
+	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
+	output.vertex_color = per_vertex_color.color;
+	
+	return output;
+}
+
+VS_OUTPUT_PER_VERTEX entry_static_per_vertex(input_vertex_format input, STATIC_PER_VERTEX_DATA per_vertex)
+{
+	VS_OUTPUT_PER_VERTEX output;
+	float4 world_position;
+	float3 extinction_factor;
+	
+	// pack 5 rgb colors into 4  values
+	output.color4 = rgbe_to_rgb(per_vertex.color_1);
+	
+	float3 rgb_2 = rgbe_to_rgb(per_vertex.color_2);
+	output.color1.r = rgb_2.r;
+	output.color2.r = rgb_2.g;
+	output.color3.r = rgb_2.b;
+	float3 rgb_3 = rgbe_to_rgb(per_vertex.color_3);
+	output.color1.g = rgb_3.r;
+	output.color2.g = rgb_3.g;
+	output.color3.g = rgb_3.b;
+	float3 rgb_4 = rgbe_to_rgb(per_vertex.color_4);
+	output.color1.b = rgb_4.r;
+	output.color2.b = rgb_4.g;
+	output.color3.b = rgb_4.b;
+	float3 rgb_5 = rgbe_to_rgb(per_vertex.color_5);
+	output.color1.a = rgb_5.r;
+	output.color2.a = rgb_5.g;
+	output.color3.a = rgb_5.b;
+	
+	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord.xy, output.camera_dir);
+	calculate_z_squish(output.position);
+	calculate_atmosphere_radiance(world_position, output.camera_dir, extinction_factor.rgb, output.sky_radiance.rgb);
+	
+	// pack sky_radiance and extinction factor into the texcoord and radiance outputs
+	output.sky_radiance.w = extinction_factor.z;
+	output.texcoord.zw = extinction_factor.xy;
 	
 	return output;
 }

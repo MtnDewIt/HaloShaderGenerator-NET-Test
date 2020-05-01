@@ -37,6 +37,25 @@ struct RIGID_VERTEX
 	float4 binormal : BINORMAL;
 };
 
+struct STATIC_PER_VERTEX_DATA
+{
+	float4 color_1 : TEXCOORD3;
+	float4 color_2 : TEXCOORD4;
+	float4 color_3 : TEXCOORD5;
+	float4 color_4 : TEXCOORD6;
+	float4 color_5 : TEXCOORD7;
+};
+
+struct STATIC_PER_PIXEL_DATA
+{
+	float2 lightmap_texcoord : TEXCOORD1;
+};
+
+struct STATIC_PER_VERTEX_COLOR_DATA
+{
+	float4 color : TEXCOORD3;
+};
+
 void calc_vertex_transform_rigid(RIGID_VERTEX input, out float4 world_position, out float4 screen_position, out float3 normal, out float3 tangent, out float3 binormal, out float2 texcoord, out float3 camera_dir)
 {
 	float3x3 node_transformation = float3x3(nodes[0].xyz, nodes[1].xyz, nodes[2].xyz);

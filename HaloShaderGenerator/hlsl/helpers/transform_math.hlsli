@@ -53,5 +53,12 @@ float2 calculate_texcoord(float4 texcoord)
 	return texcoord.xy * uv_compression_scale_offset.xy + uv_compression_scale_offset.zw;
 }
 
+float3 rgbe_to_rgb(float4 rgbe)
+{
+	rgbe = 2.0 * rgbe - 1.0; // original data encoded with signed bytes so convert to unsigned scale
+	float exponent = pow(2.0, 31.75 * rgbe.w);
+	float3 rgb = exponent * rgbe.rgb;
+	return rgb;
+}
 
 #endif

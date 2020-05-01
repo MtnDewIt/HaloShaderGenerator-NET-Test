@@ -113,8 +113,39 @@ struct VS_OUTPUT_PER_PIXEL
 	float3 normal : TEXCOORD3;
 	float3 binormal : TEXCOORD4;
 	float3 tangent : TEXCOORD5;
-	float2 per_pixel_unknown : TEXCOORD6;
+	float2 lightmap_texcoord : TEXCOORD6;
 	float3 camera_dir : TEXCOORD7;
+	float3 extinction_factor : COLOR;
+	float3 sky_radiance : COLOR1;
+};
+
+struct VS_OUTPUT_PER_VERTEX
+{
+	float4 position : SV_Position;
+	float4 texcoord : TEXCOORD;
+	float3 camera_dir : TEXCOORD1;
+	float3 tangent : TEXCOORD2;
+	float3 normal : TEXCOORD3;
+	float3 binormal : TEXCOORD4;
+	
+	float4 color1 : TEXCOORD5;
+	float4 color2 : TEXCOORD6;
+	float4 color3 : TEXCOORD7;
+	float3 color4 : TEXCOORD8;
+	
+	float4 sky_radiance : COLOR;
+};
+
+struct VS_OUTPUT_PER_VERTEX_COLOR
+{
+	float4 position : SV_Position;
+	float2 texcoord : TEXCOORD;
+	float3 vertex_color : TEXCOORD1;
+	float3 camera_dir : TEXCOORD2;
+	float3 normal : TEXCOORD3;
+	float3 binormal : TEXCOORD4;
+	float3 tangent : TEXCOORD5;
+	
 	float3 extinction_factor : COLOR;
 	float3 sky_radiance : COLOR1;
 };
