@@ -10,10 +10,11 @@ float3 transform_vector(float3 dir, float3x3 transform)
 
 float3 transform_binormal(float3 normal, float3 tangent, float3 binormal)
 {
-	/* This is Halo Online broken tangent space binormal, just return the actual binormal
+	//This is Halo Online broken tangent space binormal, just return the actual binormal
 	float3 computed_binormal = cross(normal, tangent);
 	float bin_sign = sign(dot(computed_binormal, binormal));
-	return bin_sign * binormal;*/
+	return bin_sign * binormal;
+	
 	return binormal;
 	
 }

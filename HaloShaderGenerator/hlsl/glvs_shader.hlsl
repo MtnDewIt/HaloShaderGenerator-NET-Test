@@ -71,6 +71,20 @@ VS_OUTPUT_STATIC_SH entry_static_sh(input_vertex_format input)
 	return output;
 }
 
+VS_OUTPUT_PER_PIXEL entry_static_per_pixel(input_vertex_format input, float2 per_pixel : TEXCOORD1)
+{
+	VS_OUTPUT_PER_PIXEL output;
+	float4 world_position;
+	
+	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord.xy, output.camera_dir);
+	calculate_z_squish(output.position);
+	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
+	output.per_pixel_unknown = per_pixel;
+	
+	return output;
+}
+
+
 VS_OUTPUT_SFX_DISTORT entry_sfx_distort(input_vertex_format input)
 {
 	VS_OUTPUT_SFX_DISTORT output;

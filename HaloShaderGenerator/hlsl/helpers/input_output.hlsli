@@ -106,4 +106,17 @@ struct PS_OUTPUT_SHADOW_GENERATE
 	float4 depth;
 };
 
+struct VS_OUTPUT_PER_PIXEL
+{
+	float4 position : SV_Position;
+	float2 texcoord : TEXCOORD;
+	float3 normal : TEXCOORD3;
+	float3 binormal : TEXCOORD4;
+	float3 tangent : TEXCOORD5;
+	float2 per_pixel_unknown : TEXCOORD6;
+	float3 camera_dir : TEXCOORD7;
+	float3 extinction_factor : COLOR;
+	float3 sky_radiance : COLOR1;
+};
+
 #endif
