@@ -17,6 +17,7 @@ ALBEDO_PASS_RESULT get_albedo_and_normal(float2 fragcoord, float2 texcoord, floa
 {
 	ALBEDO_PASS_RESULT result = (ALBEDO_PASS_RESULT) 0;
 
+	// this is set by a b12 if misc is sometimes or always, otherwise it samples from the frame buffer
 	if (actually_calc_albedo)
 	{
 		float4 diffuse_and_alpha = calc_albedo_ps(texcoord);

@@ -27,6 +27,7 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_shaderstage_dynamic_light_cinematic 17
 #define k_shaderstage_z_only 18
 #define k_shaderstage_sfx_distort 19
+
 #define k_shadertype_shader 0
 #define k_shadertype_beam 1
 #define k_shadertype_contrail 2
@@ -35,6 +36,7 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_shadertype_lightvolume 5
 #define k_shadertype_particle 6
 #define k_shadertype_terrain 7
+#define k_shadertype_black 8
 
 // Method Enums
 
@@ -133,5 +135,5 @@ This file contains a list of blank definitions to help with Intellisense
 #define material_model_arg 0
 #define envmap_type_arg 0
 #define blend_type_arg 0
-
+#define misc_arg 0
 #endif

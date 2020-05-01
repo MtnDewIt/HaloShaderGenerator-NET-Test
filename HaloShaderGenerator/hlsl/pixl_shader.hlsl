@@ -78,7 +78,9 @@ PS_OUTPUT_DEFAULT entry_static_sh(VS_OUTPUT_STATIC_SH input) : COLOR
 
 	float3 n_camera_dir = normalize(camera_dir);
     
-	float3 material_lighting = material_type(albedo, normal, n_camera_dir, input.texcoord.xy, input.extinction_factor.rgb, input.sky_radiance.rgb, camera_dir, 1.0);
+	float3 material_lighting = material_type(albedo, normal, n_camera_dir, input.texcoord.xy, camera_dir, 1.0, 0.0);
+	material_lighting = material_lighting * input.extinction_factor + input.sky_radiance;
+	
 	float3 environment = envmap_type(n_camera_dir, normal);
 	float4 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo);
 
@@ -104,14 +106,14 @@ PS_OUTPUT_ALBEDO entry_static_prt(VS_OUTPUT_STATIC_PRT input) : COLOR
 	float3 camera_dir = input.camera_dir.xyz;
 	float2 fragcoord = (input.position.xy + 0.5) / texture_size;
     
-    // TODO: this may be overkill, check other shaders to see if it always use the diffuse/normal texture or it can compute the albedo again
 	ALBEDO_PASS_RESULT albedo_and_normal = get_albedo_and_normal(fragcoord, input.texcoord.xy, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
 	float3 albedo = albedo_and_normal.albedo;
 	float3 normal = albedo_and_normal.normal;
 
 	float3 n_camera_dir = normalize(camera_dir);
     
-	float3 material_lighting = material_type(albedo, normal, n_camera_dir, input.texcoord.xy, input.extinction_factor.rgb, input.sky_radiance.rgb, camera_dir, input.prt_radiance_vector.x);
+	float3 material_lighting = material_type(albedo, normal, n_camera_dir, input.texcoord.xy, camera_dir, input.prt_radiance_vector.x, 0.0);
+	material_lighting = material_lighting * input.extinction_factor + input.sky_radiance;
 	float3 environment = envmap_type(n_camera_dir, normal);
 	float4 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo);
 
@@ -297,7 +299,7 @@ PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input)
 				[unbranch]
 				if (temp.y > 0)
 				{
-					result_color.rgb = float3(1, 0.7, 0.3);
+					result_color.rgb = float3(1.0, 0.7, 0.3);
 				}
 				else
 				{
@@ -347,5 +349,161 @@ PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input)
 	output.low_frequency = export_low_frequency(float4(result_color, 0));
 	output.high_frequency = export_high_frequency(float4(result_color, 0));
 	output.unknown = 0;
+	return output;
+}
+
+PS_OUTPUT_DEFAULT entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLOR input) : COLOR
+{
+	PS_OUTPUT_DEFAULT output;
+	float3 camera_dir = input.camera_dir.xyz;
+	float2 fragcoord = (input.position.xy + 0.5) / texture_size;
+    
+    // TODO: this may be overkill, check other shaders to see if it always use the diffuse/normal texture or it can compute the albedo again
+	ALBEDO_PASS_RESULT albedo_and_normal = get_albedo_and_normal(fragcoord, input.texcoord.xy, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
+	float3 albedo = albedo_and_normal.albedo;
+
+	float3 n_camera_dir = normalize(camera_dir);
+    
+	float3 material_lighting = material_type(albedo, input.normal, n_camera_dir, input.texcoord.xy, camera_dir, 0.0, input.vertex_color);
+	material_lighting = material_lighting * input.extinction_factor + input.sky_radiance;
+	float3 environment = envmap_type(n_camera_dir, input.normal);
+	float4 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo);
+
+	float3 color = (environment + self_illumination.xyz) * input.sky_radiance.xyz + material_lighting;
+
+	float3 exposed_color = expose_color(color);
+
+    //TODO: No transparency so far, we're going to need this!!!
+	float4 output_color = blend_type(float4(exposed_color, 1.0));
+
+	output.low_frequency = export_low_frequency(output_color);
+	output.high_frequency = export_high_frequency(output_color);
+
+	output.unknown = 0;
+
+	return output;
+}
+
+PS_OUTPUT_DEFAULT entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input) : COLOR
+{
+	float4 sh_0, sh_1, sh_2, sh_3;
+	float4 sample1, sample2;
+	
+	sample1 = tex3D(lightprobe_texture_array, float3(input.lightmap_texcoord, 0.0625 + 0.00 * 0.25));
+	sample2 = tex3D(lightprobe_texture_array, float3(input.lightmap_texcoord, 0.1875 + 0.00 * 0.25));
+	sh_0.xyz = sample1.xyz + sample2.xyz;
+	sh_0.w = sample1.w * sample2.w * p_lightmap_compress_constant_0.x;
+	
+	sample1 = tex3D(lightprobe_texture_array, float3(input.lightmap_texcoord, 0.0625 + 1.00 * 0.25));
+	sample2 = tex3D(lightprobe_texture_array, float3(input.lightmap_texcoord, 0.1875 + 1.00 * 0.25));
+	sh_1.xyz = sample1.xyz + sample2.xyz;
+	sh_1.w = sample1.w * sample2.w * p_lightmap_compress_constant_0.y;
+	
+	sample1 = tex3D(lightprobe_texture_array, float3(input.lightmap_texcoord, 0.0625 + 2.00 * 0.25));
+	sample2 = tex3D(lightprobe_texture_array, float3(input.lightmap_texcoord, 0.1875 + 2.00 * 0.25));
+	sh_2.xyz = sample1.xyz + sample2.xyz;
+	sh_2.w = sample1.w * sample2.w * p_lightmap_compress_constant_0.z;
+	
+	sample1 = tex3D(lightprobe_texture_array, float3(input.lightmap_texcoord, 0.0625 + 3.00 * 0.25));
+	sample2 = tex3D(lightprobe_texture_array, float3(input.lightmap_texcoord, 0.1875 + 3.00 * 0.25));
+	sh_3.xyz = sample1.xyz + sample2.xyz;
+	sh_3.w = sample1.w * sample2.w * p_lightmap_compress_constant_1.x;
+	
+	float4 dominant_light_intensity;
+	
+	sample1 = tex3D(dominant_light_intensity_map, float3(input.lightmap_texcoord, 0.25));
+	sample2 = tex3D(dominant_light_intensity_map, float3(input.lightmap_texcoord, 0.75));
+	dominant_light_intensity.xyz = sample1.xyz + sample2.xyz;
+	dominant_light_intensity.w = sample1.w * sample2.w * p_lightmap_compress_constant_1.y;
+	
+	sh_0.xyz = 2.0 * sh_0.xyz - 2.0;
+	sh_1.xyz = 2.0 * sh_1.xyz - 2.0;
+	sh_2.xyz = 2.0 * sh_2.xyz - 2.0;
+	sh_3.xyz = 2.0 * sh_3.xyz - 2.0;
+	dominant_light_intensity.xyz = 2.0 * dominant_light_intensity.xyz - 2.0;
+	
+	sh_1.xyz = sh_1.w * sh_1.xzy;
+	sh_2.xyz = sh_2.w * sh_2.xyz;
+	sh_3.xyz = sh_3.w * sh_3.yxz;
+	
+	dominant_light_intensity.xyz = dominant_light_intensity.w * dominant_light_intensity.xyz;
+	
+	
+	float3 dominant_light_dir;
+	
+	
+	float4 r3;
+	r3.x = sh_3.x;
+	r3.y = sh_1.z;
+	r3.z = sh_2.y;
+	r3.w = -sh_2.y;
+	
+	float4 r5;
+	r5.x = sh_3.y;
+	r5.y = sh_1.x;
+	r5.z = sh_2.x;
+	r5.w = -sh_2.x;
+	
+	float4 r1;
+	r1.x = sh_3.z;
+	r1.y = sh_1.y;
+	r1.z = sh_2.z;
+	r1.w = -sh_2.z;
+	
+	dominant_light_dir.xyz =  r3.xyz * float3(-0.715157986, -0.715157986, 0.715157986);
+	dominant_light_dir.xyz += r5.xyz * float3(-0.212656006, -0.212656006, 0.212656006);
+	dominant_light_dir.xyz += r1.xyz * float3(-0.0721855983, -0.0721855983, 0.0721855983);
+	dominant_light_dir.xyz = normalize(dominant_light_dir);
+	
+	PS_OUTPUT_DEFAULT output;
+	float3 camera_dir = input.camera_dir.xyz;
+	float2 fragcoord = (input.position.xy + 0.5) / texture_size;
+	
+	ALBEDO_PASS_RESULT albedo_and_normal = get_albedo_and_normal(fragcoord, input.texcoord.xy, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
+	float3 albedo = albedo_and_normal.albedo;
+	float3 normal = albedo_and_normal.normal;
+	
+	
+	float3 temp = dominant_light_dir * -0.488602489;
+	float3 lightmap_contrib;
+	float4 r0;
+	r1.xyz = temp.xyz * (-dominant_light_intensity.z) + r1.xyw;
+	r0.xyz = sh_0.xyz * sh_0.w - (dominant_light_intensity.xyz * 0.282094806);
+	r3.xyz = temp.xyz * (-dominant_light_intensity.y) + r3.xyw;
+	
+	r1.z = dot(normal, r1.xyz);
+	r1.y = dot(normal, r3.xyz);
+	r3.xyz = temp.xyz * (-dominant_light_intensity.x) + r5.xyw;
+	r1.x = dot(normal, r3.xyz);
+    
+	r1.xyz = r1.xyz * -1.02332795;
+	r0.xyz = r0.xyz * 0.886227012 + r1.xyz;
+	r0.w = dot(dominant_light_dir, normal);
+	r1.xyz = dominant_light_intensity.xyz * r0.w;
+	r1.xyz *= 0.280999988;
+	r1.xyz = r0.w < 0 ? r1.xyz : 0;
+	r0.xyz = r0.xyz * 0.318309873 + r1.xyz;
+	lightmap_contrib = r0.xyz;
+	
+	float3 n_camera_dir = normalize(camera_dir);
+    
+	float3 material_lighting = material_type(albedo, normal, n_camera_dir, input.texcoord.xy, camera_dir, 0.0, lightmap_contrib);
+	material_lighting = material_lighting * input.extinction_factor + input.sky_radiance;
+	
+	float3 environment = envmap_type(n_camera_dir, normal);
+	float4 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo);
+
+	float3 color = (environment + self_illumination.xyz) * input.sky_radiance.xyz + material_lighting;
+
+	float3 exposed_color = expose_color(color);
+
+    //TODO: No transparency so far, we're going to need this!!!
+	float4 output_color = blend_type(float4(exposed_color, 1.0));
+
+	output.low_frequency = export_low_frequency(output_color);
+	output.high_frequency = export_high_frequency(output_color);
+
+	output.unknown = 0;
+
 	return output;
 }

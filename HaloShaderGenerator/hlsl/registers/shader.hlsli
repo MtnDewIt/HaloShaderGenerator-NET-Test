@@ -10,7 +10,7 @@ bool use_material_texture;
 uniform bool order3_area_specular;
 uniform bool no_dynamic_lights;
 
-#if blend_type_arg != k_blend_mode_opaque
+#if misc_arg == k_misc_first_person_sometimes || misc_arg == k_misc_first_person_always
 uniform bool actually_calc_albedo : register(b12);
 #else
 #define actually_calc_albedo false
@@ -69,6 +69,12 @@ uniform sampler shadow_depth_map_1 : register(s3);
 
 uniform float4 p_render_debug_mode : register(c94);
 
+
+
+uniform float4 p_lightmap_compress_constant_0 : register(c210);
+uniform float4 p_lightmap_compress_constant_1 : register(c211);
+uniform sampler3D lightprobe_texture_array : register(s3);
+uniform sampler3D dominant_light_intensity_map : register(s4);
 /*
 This region here is where dynamically created uniforms are allowed
 Not entirely sure where this ends

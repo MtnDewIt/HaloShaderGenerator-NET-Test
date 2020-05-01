@@ -113,7 +113,7 @@ struct VS_OUTPUT_PER_PIXEL
 	float3 normal : TEXCOORD3;
 	float3 binormal : TEXCOORD4;
 	float3 tangent : TEXCOORD5;
-	float2 lightmap_texcoord : TEXCOORD6;
+	float2 lightmap_texcoord : TEXCOORD6_CENTROID;
 	float3 camera_dir : TEXCOORD7;
 	float3 extinction_factor : COLOR;
 	float3 sky_radiance : COLOR1;
