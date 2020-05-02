@@ -42,4 +42,9 @@ float4 export_low_frequency(float4 input)
 	return float4(input.rgb, input.a * g_exposure.w);
 }
 
+float luminance(float3 color)
+{
+	return color.r * 0.21265601 + color.g * 0.71515799 + color.b * 0.07218560;
+}
+
 #endif

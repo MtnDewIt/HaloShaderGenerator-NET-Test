@@ -3,6 +3,77 @@
 
 #include "../registers/shader.hlsli"
 #include "math.hlsli"
+#include "color_processing.hlsli"
+
+float4 sample_lightprobe_texture_array(int band_index, float2 texcoord, float compression_factor)
+{
+	float4 result;
+	float4 sample1 = tex3D(lightprobe_texture_array, float3(texcoord, 0.0625 + band_index * 0.25));
+	float4 sample2 = tex3D(lightprobe_texture_array, float3(texcoord, 0.1875 + band_index * 0.25));
+	result.xyz = 2.0 * (sample1.xyz + sample2.xyz) - 2.0;
+	result.w = sample1.w * sample2.w * compression_factor;
+	result.xyz = result.w * result.xyz;
+	return result;
+}
+
+float4 sample_dominant_light_intensity_texture_array(float2 texcoord, float compression_factor)
+{
+	float4 result;
+	float4 sample1 = tex3D(dominant_light_intensity_map, float3(texcoord, 0.25));
+	float4 sample2 = tex3D(dominant_light_intensity_map, float3(texcoord, 0.75));
+	result.xyz = 2.0 * (sample1.xyz + sample2.xyz) - 2.0;
+	result.w = sample1.w * sample2.w * compression_factor;
+	result.xyz = result.w * result.xyz;
+	return result;
+}
+
+float3 calc_dominant_light_dir(float4 sh[4])
+{
+	return normalize(float3(-luminance(sh[3].rgb), -luminance(sh[1].rgb), luminance(sh[2].rgb)));
+}
+
+float3 lightmap_diffuse_reflectance(float3 normal, float2 lightmap_texcoord)
+{
+	float4 sh[4];
+	float4 sh_0;
+	float4 sh_312[3];
+	float4 dominant_light_intensity;
+	float3 dominant_light_dir;
+
+	sh[0] = sample_lightprobe_texture_array(0, lightmap_texcoord, p_lightmap_compress_constant_0.x);
+	sh[1] = sample_lightprobe_texture_array(1, lightmap_texcoord, p_lightmap_compress_constant_0.y);
+	sh[2] = sample_lightprobe_texture_array(2, lightmap_texcoord, p_lightmap_compress_constant_0.z);
+	sh[3] = sample_lightprobe_texture_array(3, lightmap_texcoord, p_lightmap_compress_constant_1.x);
+	
+	dominant_light_intensity = sample_dominant_light_intensity_texture_array(lightmap_texcoord, p_lightmap_compress_constant_1.y);
+	dominant_light_dir = calc_dominant_light_dir(sh);
+	
+	sh_0 = sh[0];
+	
+	sh_312[0] = float4(sh[3].r, sh[1].r, -sh[2].r, 1.0f);
+	sh_312[1] = float4(sh[3].g, sh[1].g, -sh[2].g, 1.0f);
+	sh_312[2] = float4(sh[3].b, sh[1].b, -sh[2].b, 1.0f);
+	
+	// add dominant light contribution
+	sh_0.rgb += 0.28209478f * -dominant_light_intensity.rgb;
+	sh_312[0].xyz += -0.4886025f * dominant_light_dir.xyz * -dominant_light_intensity.r;
+	sh_312[1].xyz += -0.4886025f * dominant_light_dir.xyz * -dominant_light_intensity.g;
+	sh_312[2].xyz += -0.4886025f * dominant_light_dir.xyz * -dominant_light_intensity.b;
+	
+	float c2 = 0.511664f;
+	float c4 = 0.886227f;
+	float3 x1;
+	//linear
+	x1.r = dot(normal, sh_312[0].xyz);
+	x1.g = dot(normal, sh_312[1].xyz);
+	x1.b = dot(normal, sh_312[2].xyz);
+	
+	float3 lightprobe_color = c4 * sh_0.rgb + (-2.f * c2) * x1;
+	lightprobe_color /= PI;
+	
+	float3 intensity_unknown = 0.280999988 * dominant_light_intensity * dot(normal, dominant_light_dir);
+	return lightprobe_color + intensity_unknown;
+}
 
 // Lighting and materials of Halo 3
 
