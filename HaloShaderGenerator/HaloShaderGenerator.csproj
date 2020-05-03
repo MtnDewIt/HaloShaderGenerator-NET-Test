@@ -228,6 +228,9 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\glps_shader.hlsl" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\material_models\cook_torrance.hlsli" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>
