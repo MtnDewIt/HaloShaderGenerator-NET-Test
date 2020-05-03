@@ -22,32 +22,32 @@ float3 material_type_diffuse_only(MATERIAL_TYPE_ARGS)
     else
     {
         float3 vertex_world_position = Camera_Position_PS - camera_dir;
-        float3 accumulation = float3(0, 0, 0);
-        
+		float3 accumulation = 0;
+		float3 specular_accumulation = 0;
 		if (simple_light_count > 0)
 		{
-			accumulation = calculate_simple_light(get_simple_light(0), accumulation, normal, vertex_world_position);
+			calculate_simple_light(get_simple_light(0), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
 			if (simple_light_count > 1)
 			{
-				accumulation = calculate_simple_light(get_simple_light(1), accumulation, normal, vertex_world_position);
+				calculate_simple_light(get_simple_light(1), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
 				if (simple_light_count > 2)
 				{
-					accumulation = calculate_simple_light(get_simple_light(2), accumulation, normal, vertex_world_position);
+					calculate_simple_light(get_simple_light(2), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
 					if (simple_light_count > 3)
 					{
-						accumulation = calculate_simple_light(get_simple_light(3), accumulation, normal, vertex_world_position);
+						calculate_simple_light(get_simple_light(3), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
 						if (simple_light_count > 4)
 						{
-							accumulation = calculate_simple_light(get_simple_light(4), accumulation, normal, vertex_world_position);
+							calculate_simple_light(get_simple_light(4), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
 							if (simple_light_count > 5)
 							{
-								accumulation = calculate_simple_light(get_simple_light(5), accumulation, normal, vertex_world_position);
+								calculate_simple_light(get_simple_light(5), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
 								if (simple_light_count > 6)
 								{
-									accumulation = calculate_simple_light(get_simple_light(6), accumulation, normal, vertex_world_position);
+									calculate_simple_light(get_simple_light(6), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
 									if (simple_light_count > 7)
 									{
-										accumulation = calculate_simple_light(get_simple_light(7), accumulation, normal, vertex_world_position);
+										calculate_simple_light(get_simple_light(7), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
 									}
 								}
 							}
@@ -63,28 +63,136 @@ float3 material_type_diffuse_only(MATERIAL_TYPE_ARGS)
 }
 
 
-float3 material_type_cook_torrance(MATERIAL_TYPE_ARGS)
+float3 material_type_cook_torrance(
+float3 diffuse, 
+float3 normal, 
+float3 view_dir, 
+float2 texcoord, 
+float3 camera_dir, 
+float3 prt_result,
+float4 sh_0, 
+float4 sh_312[3], 
+float4 sh_457[3], 
+float4 sh_8866[3],
+float3 light_dir,
+float3 light_intensity,
+float3 lightmap_diffuse)
 {
 	float c_specular_coefficient;
 	float c_albedo_blend;
 	float c_roughness;
-    float3 color = float3(1, 0, 0);
+	float3 color = 0;
 
 	get_material_parameters(texcoord, c_specular_coefficient, c_albedo_blend, c_roughness);
 	// to verify
-    float3 specular_color = fresnel_color;
-    if (albedo_blend_with_specular_tint.x)
-    {
+	float3 specular_color = fresnel_color;
+	
+
+	bool use_albedo_blend_with_specular_tint = albedo_blend_with_specular_tint.x > 0 ? true : false;
+	bool use_analytical_antishadow_control = analytical_anti_shadow_control.x > 0 ? true : false;
+	
+	if (use_albedo_blend_with_specular_tint)
+	{
 		specular_color = lerp(fresnel_color, diffuse, c_albedo_blend);
 	}
+	
+	float3 reflect_dir = 2 * dot(normalize(view_dir), normal) * normal - camera_dir;
+	
+	float3 analytic_specular;
+	
+	calc_material_analytic_specular_cook_torrance_ps(view_dir, normal, reflect_dir, light_dir, light_intensity, specular_color, c_roughness, analytic_specular);
+	
+	
+	float r_dot_l = dot(reflect_dir, light_dir);
+	
+	float3 area_specular;
+	if (order3_area_specular)
+	{
+		area_specular_cook_torrance(view_dir, view_dir, sh_0, sh_312, sh_457, sh_8866, c_roughness, r_dot_l, area_specular);
+	}
+	else
+	{
+		// sh457, 8866 supposed to be 0 in this case, maybe use custom function
+		area_specular_cook_torrance(view_dir, view_dir, sh_0, sh_312, sh_457, sh_8866, c_roughness, r_dot_l, area_specular);
+	}
+	// appearrs to be some code related to rim coefficients missing here
+	
+	float3 r3, r4, r7;
+	
+	float3 diffuse_accumulation;
+	float3 specular_accumulation;
+	if (no_dynamic_lights)
+	{
+		diffuse_accumulation = 0;
+		specular_accumulation = 0;
+	}
+	else
+	{
+		float3 vertex_world_position = Camera_Position_PS - camera_dir;
+		diffuse_accumulation = 0;
+		specular_accumulation = 0;
+		float roughness_unknown = 0.272909999 * pow(roughness.x, -2.19729996);
 
-    // diffuse cook torrance?
+		if (simple_light_count > 0)
+		{
+			calculate_simple_light(get_simple_light(0), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+			if (simple_light_count > 1)
+			{
+				calculate_simple_light(get_simple_light(1), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+				if (simple_light_count > 2)
+				{
+					calculate_simple_light(get_simple_light(2), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+					if (simple_light_count > 3)
+					{
+						calculate_simple_light(get_simple_light(3), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+						if (simple_light_count > 4)
+						{
+							calculate_simple_light(get_simple_light(4), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+							if (simple_light_count > 5)
+							{
+								calculate_simple_light(get_simple_light(5), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+								if (simple_light_count > 6)
+								{
+									calculate_simple_light(get_simple_light(6), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+									if (simple_light_count > 7)
+									{
+										calculate_simple_light(get_simple_light(7), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			diffuse_accumulation = 0;
+			specular_accumulation = 0;
+		}
+		specular_accumulation *= roughness_unknown;
+	}
 	
-	// area specular (order 3 or not)
+	float3 c_specular_tint = specular_tint;
 	
-	// calc_material_analytic_specular_cook_torrance_ps
+	if (use_albedo_blend_with_specular_tint)
+	{
+		c_specular_tint = lerp(specular_tint, diffuse, c_albedo_blend);
+	}
+	c_specular_tint *= c_specular_coefficient;
 	
-	// iterate on all the lights
+	
+	color = area_specular * area_specular_contribution.x;
+	color = color < 0 ? 0 : color;
+	color += (analytic_specular + specular_accumulation) * specular_color * analytical_specular_contribution.x;
+	
+
+	float fresnel_coefficient = rim_fresnel_coefficient.x * c_specular_coefficient;
+	float3 fresnel_contrib = fresnel_coefficient * (rim_fresnel_color + rim_fresnel_albedo_blend.x * diffuse - rim_fresnel_color);
+	
+	color += c_specular_tint * (color) + fresnel_contrib * area_specular;
+	color += diffuse * (diffuse_accumulation + lightmap_diffuse) * diffuse_coefficient.x;
+	
 	return color;
 }
 

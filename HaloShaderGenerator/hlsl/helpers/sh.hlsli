@@ -71,7 +71,7 @@ float3 lightmap_diffuse_reflectance(float3 normal, float2 lightmap_texcoord)
 	float3 lightprobe_color = c4 * sh_0.rgb + (-2.f * c2) * x1;
 	lightprobe_color /= PI;
 	
-	float3 intensity_unknown = 0.280999988 * dominant_light_intensity * dot(normal, dominant_light_dir);
+	float3 intensity_unknown = 0.280999988 * dominant_light_intensity.rgb * dot(normal, dominant_light_dir);
 	return lightprobe_color + intensity_unknown;
 }
 
