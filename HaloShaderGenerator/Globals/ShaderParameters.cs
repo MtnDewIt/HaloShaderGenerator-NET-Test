@@ -8,18 +8,124 @@ namespace HaloShaderGenerator.Globals
 {
     public class ShaderParameters
     {
-        public List<ShaderParameter> Parameters = new List<ShaderParameter>();
+        public List<ShaderParameter> Parameters;
 
-
-        public void AddSamplerParameters(string parameterName)
+        public ShaderParameters()
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.sampler2D));
-            Parameters.Add(new ShaderParameter(parameterName, parameterName + "_xform", HLSLType.Xform_2d));
+            Parameters = new List<ShaderParameter>();
         }
 
-        public void AddVectorParameters(string parameterName)
+        public void AddSamplerWithoutXFormParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.FLoat4));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.sampler2D, rmExtern));
+        }
+
+        public void AddSamplerParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.sampler2D, rmExtern));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName + "_xform", HLSLType.Xform_2d, rmExtern));
+        }
+
+        public void AddFloat4Parameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.FLoat4, rmExtern));
+        }
+
+        public void AddFloatParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float, rmExtern));
+        }
+
+        public void AddBooleanParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Bool, rmExtern));
+        }
+
+        public void AddInteger4Parameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Int4, rmExtern));
+        }
+
+        public void AddIntegerParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Int, rmExtern));
+        }
+
+        public List<ShaderParameter> GetRealParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach(var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern == RenderMethodExtern.none)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
+        public List<ShaderParameter> GetBooleanParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Boolean && parameter.RenderMethodExtern == RenderMethodExtern.none)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
+        public List<ShaderParameter> GetIntegerParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern == RenderMethodExtern.none)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
+        public List<ShaderParameter> GetSamplerParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern == RenderMethodExtern.none)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
+        public List<ShaderParameter> GetRealExternParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern != RenderMethodExtern.none)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
+        public List<ShaderParameter> GetIntegerExternParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern != RenderMethodExtern.none)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
+        public List<ShaderParameter> GetSamplerExternParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern != RenderMethodExtern.none)
+                    result.Add(parameter);
+            }
+            return result;
         }
     }
 
@@ -28,16 +134,20 @@ namespace HaloShaderGenerator.Globals
     {
         public string ParameterName;
         public string RegisterName;
+        public string ExternParameterName;
         public RegisterType RegisterType;
         public HLSLType CodeType;
+        public RenderMethodExtern RenderMethodExtern;
+
         // TODO: add default values
 
-        public ShaderParameter(string parameterName, string registerName, HLSLType type)
+        public ShaderParameter(string parameterName, string registerName, HLSLType type, RenderMethodExtern renderMethodExtern = RenderMethodExtern.none)
         {
             ParameterName = parameterName;
             RegisterName = registerName;
             CodeType = type;
             RegisterType = GetRegisterType(type);
+            RenderMethodExtern = renderMethodExtern;
         }
 
         public string GenerateHLSLCode()
@@ -78,26 +188,6 @@ namespace HaloShaderGenerator.Globals
                     return RegisterType.Vector;
             }
         }
-
-
-        public static string GetParameterNameFromRegister(string registerName)
-        {
-            switch (registerName)
-            {
-                case "category_albedo":
-                case "albedo":
-                    return "albedo";
-
-                case "base_map":
-                case "base_map_xform":
-                    return "base_map";
-            }
-
-
-            return "";
-        }
-
-
 
     }
 }

@@ -27,6 +27,12 @@ namespace HaloShaderGenerator
         {
             var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion);
             var bytecode = gen.GeneratePixelShader(stage).Bytecode;
+            var parameters = gen.GetPixelShaderParameters();
+
+            foreach(var param in parameters.GetRealParameters())
+            {
+                Console.WriteLine(param.ParameterName);
+            }
 
             var disassembly = D3DCompiler.Disassemble(bytecode);
             string filename = $"generated_{stage.ToString().ToLower()}_{(int)albedo}_{(int)bump_mapping}_{(int)alpha_test}_{(int)specular_mask}_{(int)material_model}_{(int)environment_mapping}_{(int)self_illumination}_{(int)blend_mode}_{(int)parallax}_{(int)misc}_{(int)distortion}.pixl";
@@ -82,9 +88,9 @@ namespace HaloShaderGenerator
             //TestPixelShader("chud_cortana_composite");
   
             
-            var stage = ShaderStage.Static_Per_Pixel;
+            var stage = ShaderStage.Static_Prt_Ambient;
 
-            TestPixelShader(stage, Albedo.Default, Bump_Mapping.Off, Alpha_Test.Off, Specular_Mask.No_Specular_Mask, Material_Model.Diffuse_Only, Environment_Mapping.None, Self_Illumination.Off, Blend_Mode.Opaque, Parallax.Off, Misc.First_Person_Never, Distortion.Off);
+            TestPixelShader(stage, Albedo.Default, Bump_Mapping.Detail_Masked, Alpha_Test.On, Specular_Mask.No_Specular_Mask, Material_Model.Diffuse_Only, Environment_Mapping.None, Self_Illumination.Off, Blend_Mode.Opaque, Parallax.Off, Misc.First_Person_Never, Distortion.Off);
             TestSharedVertexShader(VertexType.World, stage);
             TestSharedVertexShader(VertexType.Rigid, stage);
             TestSharedVertexShader(VertexType.Skinned, stage);

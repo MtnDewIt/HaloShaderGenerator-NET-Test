@@ -289,5 +289,310 @@ namespace HaloShaderGenerator.Shader
         {
             return true;
         }
+
+        public ShaderParameters GetPixelShaderParameters()
+        {
+            if (!TemplateGenerationValid)
+                return null;
+            var result = new ShaderParameters();
+
+            switch (albedo)
+            {
+                case Albedo.Default:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("detail_map");
+                    result.AddFloat4Parameter("albedo_color");
+                    break;
+                case Albedo.Detail_Blend:
+                    break;
+            }
+
+            switch (bump_mapping)
+            {
+                case Bump_Mapping.Off:
+                    break;
+                case Bump_Mapping.Standard:
+                    result.AddSamplerParameter("bump_map");
+                    break;
+                case Bump_Mapping.Detail:
+                    result.AddSamplerParameter("bump_map");
+                    result.AddSamplerParameter("bump_detail_map");
+                    result.AddFloatParameter("bump_detail_coefficient");
+                    break;
+                case Bump_Mapping.Detail_Masked:
+                    result.AddSamplerParameter("bump_map");
+                    result.AddSamplerParameter("bump_detail_map");
+                    result.AddSamplerParameter("bump_detail_mask_map");
+                    result.AddFloatParameter("bump_detail_coefficient");
+                    break;
+            }
+
+            switch (alpha_test)
+            {
+                case Alpha_Test.Off:
+                    break;
+                case Alpha_Test.On:
+                    result.AddSamplerParameter("alpha_test_map");
+                    break;
+            }
+
+            switch (specular_mask)
+            {
+                case Specular_Mask.No_Specular_Mask:
+                    break;
+                case Specular_Mask.Specular_Mask_From_Diffuse:
+                    break;
+                case Specular_Mask.Specular_Mask_From_Texture:
+                case Specular_Mask.Specular_Mask_From_Color_Texture:
+                    result.AddSamplerParameter("specular_mask_texture");
+                    break;
+            }
+
+            switch (material_model)
+            {
+                case Material_Model.Diffuse_Only:
+                    result.AddBooleanParameter("no_dynamic_lights");
+                    break;
+                case Material_Model.Cook_Torrance:
+                    result.AddFloatParameter("diffuse_coefficient");
+                    result.AddFloatParameter("specular_coefficient");
+                    result.AddFloat4Parameter("specular_tint");
+                    result.AddFloat4Parameter("fresnel_color");
+                    result.AddBooleanParameter("use_fresnel_color_environment");
+                    result.AddFloat4Parameter("fresnel_color_environment");
+                    result.AddFloatParameter("fresnel_power");
+                    result.AddFloatParameter("roughness");
+                    result.AddFloatParameter("area_specular_contribution");
+                    result.AddFloatParameter("analytical_specular_contribution");
+                    result.AddFloatParameter("environment_map_specular_contribution");
+                    result.AddBooleanParameter("order3_area_specular");
+                    result.AddBooleanParameter("use_material_texture");
+                    result.AddSamplerParameter("material_texture");
+                    result.AddBooleanParameter("no_dynamic_lights");
+                    result.AddSamplerWithoutXFormParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
+                    result.AddSamplerWithoutXFormParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
+                    result.AddSamplerWithoutXFormParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                    result.AddBooleanParameter("albedo_blend_with_specular_tint");
+                    result.AddFloatParameter("albedo_blend");
+                    result.AddFloatParameter("analytical_anti_shadow_control");
+                    result.AddFloatParameter("rim_fresnel_coefficient");
+                    result.AddFloat4Parameter("rim_fresnel_color");
+                    result.AddFloatParameter("rim_fresnel_power");
+                    result.AddFloatParameter("rim_fresnel_albedo_blend");
+                    break;
+                case Material_Model.Two_Lobe_Phong:
+                    result.AddFloatParameter("diffuse_coefficient");
+                    result.AddFloatParameter("specular_coefficient");
+                    result.AddFloatParameter("normal_specular_power");
+                    result.AddFloat4Parameter("normal_specular_tint");
+                    result.AddFloatParameter("glancing_specular_power");
+                    result.AddFloat4Parameter("glancing_specular_tint");
+                    result.AddFloatParameter("fresnel_curve_steepness");
+                    result.AddFloatParameter("area_specular_contribution");
+                    result.AddFloatParameter("analytical_specular_contribution");
+                    result.AddFloatParameter("environment_map_specular_contribution");
+                    result.AddBooleanParameter("order3_area_specular");
+                    result.AddBooleanParameter("use_material_texture");
+                    result.AddSamplerParameter("material_texture");
+                    result.AddBooleanParameter("no_dynamic_lights");
+                    result.AddBooleanParameter("albedo_blend_with_specular_tint");
+                    result.AddFloatParameter("analytical_anti_shadow_control");
+                    break;
+                case Material_Model.Foliage:
+                    result.AddBooleanParameter("no_dynamic_lights");
+                    break;
+                case Material_Model.None:
+                    break;
+
+                case Material_Model.Glass:
+                    result.AddFloatParameter("diffuse_coefficient");
+                    result.AddFloatParameter("specular_coefficient");
+                    result.AddFloatParameter("fresnel_coefficient");
+                    result.AddFloatParameter("fresnel_curve_steepness");
+                    result.AddFloatParameter("fresnel_curve_bias");
+                    result.AddFloatParameter("roughness");
+                    result.AddFloatParameter("analytical_specular_contribution");
+                    result.AddFloatParameter("area_specular_contribution");
+                    result.AddBooleanParameter("no_dynamic_lights");
+                    break;
+                case Material_Model.Organism:
+                    result.AddFloatParameter("diffuse_coefficient");
+                    result.AddFloat4Parameter("diffuse_tint");
+                    result.AddFloatParameter("analytical_specular_coefficient");
+                    result.AddFloatParameter("area_specular_coefficient");
+                    result.AddFloat4Parameter("specular_tint");
+                    result.AddFloatParameter("specular_power");
+                    result.AddSamplerParameter("specular_map");
+                    result.AddFloatParameter("environment_map_coefficient");
+                    result.AddFloat4Parameter("environment_map_tint");
+                    result.AddFloatParameter("fresnel_curve_steepness");
+                    result.AddFloatParameter("rim_coefficient");
+                    result.AddFloat4Parameter("rim_tint");
+                    result.AddFloatParameter("rim_power");
+                    result.AddFloatParameter("rim_start");
+                    result.AddFloatParameter("rim_maps_transition_ratio");
+                    result.AddFloatParameter("ambient_coefficient");
+                    result.AddFloat4Parameter("ambient_tint");
+                    result.AddSamplerParameter("occlusion_parameter_map");
+
+                    result.AddFloatParameter("subsurface_coefficient");
+                    result.AddFloat4Parameter("subsurface_tint");
+                    result.AddFloatParameter("subsurface_propagation_bias");
+                    result.AddFloatParameter("subsurface_normal_detail");
+                    result.AddSamplerParameter("subsurface_map");
+
+                    result.AddFloatParameter("transparence_coefficient");
+                    result.AddFloat4Parameter("transparence_tint");
+                    result.AddFloatParameter("transparence_normal_bias");
+                    result.AddFloatParameter("transparence_normal_detail");
+                    result.AddSamplerParameter("transparence_map");
+
+                    result.AddFloat4Parameter("final_tint");
+                    result.AddBooleanParameter("no_dynamic_lights");
+                    break;
+                case Material_Model.Single_Lobe_Phong:
+                    result.AddFloatParameter("diffuse_coefficient");
+                    result.AddFloatParameter("specular_coefficient");
+                    result.AddFloatParameter("roughness");
+                    result.AddFloatParameter("analytical_specular_contribution");
+                    result.AddFloatParameter("area_specular_contribution");
+                    result.AddFloatParameter("environment_map_specular_contribution");
+                    result.AddFloat4Parameter("specular_tint");
+                    result.AddBooleanParameter("order3_area_specular");
+                    result.AddBooleanParameter("no_dynamic_lights");
+                    break;
+                case Material_Model.Car_Paint:
+                    throw new System.Exception("Unsupported");
+
+            }
+
+            switch (environment_mapping)
+            {
+                case Environment_Mapping.None:
+                    break;
+                case Environment_Mapping.Per_Pixel:
+                case Environment_Mapping.Custom_Map:
+                    result.AddSamplerParameter("environment_map");
+                    result.AddFloat4Parameter("env_tint_color");
+                    result.AddFloatParameter("env_roughness_scale");
+                    break;
+                case Environment_Mapping.Dynamic:
+                    result.AddFloat4Parameter("env_tint_color");
+                    result.AddSamplerParameter("dynamic_environment_map_0");
+                    result.AddSamplerParameter("dynamic_environment_map_1");
+                    result.AddFloatParameter("env_roughness_scale");
+                    break;
+                case Environment_Mapping.From_Flat_Texture:
+                    
+                    result.AddSamplerParameter("flat_environment_map");
+                    result.AddFloat4Parameter("env_tint_color");
+                    result.AddIntegerParameter("flat_envmap_matrix_x", RenderMethodExtern.flat_envmap_matrix_x);
+                    result.AddIntegerParameter("flat_envmap_matrix_y", RenderMethodExtern.flat_envmap_matrix_y);
+                    result.AddIntegerParameter("flat_envmap_matrix_z", RenderMethodExtern.flat_envmap_matrix_z);
+                    result.AddFloatParameter("hemisphere_percentage");
+                    result.AddInteger4Parameter("env_bloom_override");
+                    result.AddFloatParameter("env_bloom_override_intensity");
+                    break;
+            }
+
+            switch (self_illumination)
+            {
+                case Self_Illumination.Off:
+                    break;
+                case Self_Illumination.Simple:
+                case Self_Illumination.Simple_With_Alpha_Mask:
+                    result.AddSamplerParameter("self_illum_map");
+                    result.AddFloat4Parameter("self_illum_color");
+                    result.AddFloatParameter("self_illum_intensity");
+                    break;
+                case Self_Illumination._3_Channel_Self_Illum:
+                    result.AddSamplerParameter("self_illum_map");
+                    result.AddInteger4Parameter("channel_a");
+                    result.AddInteger4Parameter("channel_b");
+                    result.AddInteger4Parameter("channel_c");
+                    result.AddFloatParameter("self_illum_intensity");
+                    break;
+                case Self_Illumination.Plasma:
+                    result.AddSamplerParameter("noise_map_a");
+                    result.AddSamplerParameter("noise_map_b");
+                    result.AddInteger4Parameter("color_medium");
+                    result.AddInteger4Parameter("color_wide");
+                    result.AddInteger4Parameter("color_sharp");
+                    result.AddFloatParameter("self_illum_intensity");
+                    result.AddSamplerParameter("alpha_mask_map");
+                    result.AddFloatParameter("thinness_medium");
+                    result.AddFloatParameter("thinness_wide");
+                    result.AddFloatParameter("thinness_sharp");
+                    break;
+                case Self_Illumination.From_Diffuse:
+                    result.AddFloat4Parameter("self_illum_color");
+                    result.AddFloatParameter("self_illum_intensity");
+                    break;
+
+                case Self_Illumination.Illum_Detail:
+                    result.AddSamplerParameter("self_illum_map");
+                    result.AddFloat4Parameter("self_illum_color");
+                    result.AddFloatParameter("self_illum_intensity");
+                    break;
+
+                case Self_Illumination.Meter:
+                    result.AddSamplerParameter("meter_map");
+                    result.AddFloat4Parameter("meter_color_off");
+                    result.AddFloat4Parameter("meter_color_on");
+                    result.AddFloatParameter("meter_value");
+                    break;
+
+                case Self_Illumination.Self_Illum_Times_Diffuse:
+                    result.AddSamplerParameter("self_illum_map");
+                    result.AddFloat4Parameter("self_illum_color");
+                    result.AddFloatParameter("self_illum_intensity");
+                    result.AddFloatParameter("primary_change_color_blend");
+                    break;
+
+                case Self_Illumination.Simple_Four_Change_Color:
+                    result.AddSamplerParameter("self_illum_map");
+                    //result.AddFloat4Parameter("self_illum_color"); object_change_color_quaternary
+                    result.AddFloatParameter("self_illum_intensity");
+                    break;
+
+            }
+
+            switch (parallax)
+            {
+                case Parallax.Off:
+                    break;
+                case Parallax.Simple:
+                case Parallax.Interpolated:
+                    result.AddSamplerParameter("height_map");
+                    result.AddFloatParameter("height_scale");
+                    break;
+                case Parallax.Simple_Detail:
+                    result.AddSamplerParameter("height_map");
+                    result.AddFloatParameter("height_scale");
+                    result.AddSamplerParameter("height_scale_map");
+                    break;
+            }
+
+            switch (distortion)
+            {
+                case Distortion.Off:
+                    break;
+                case Distortion.On:
+                    result.AddSamplerParameter("distort_map");
+                    result.AddFloatParameter("distort_scale");
+                    result.AddBooleanParameter("soft_fresnel_enabled");
+                    result.AddFloatParameter("soft_fresnel_power");
+                    result.AddBooleanParameter("soft_z_enabled");
+                    result.AddFloatParameter("soft_z_range");
+                    break;
+            }
+
+            return result;
+        }
+
+        public ShaderParameters GetVertexShaderParameters()
+        {
+            return new ShaderParameters();
+        }
     }
 }

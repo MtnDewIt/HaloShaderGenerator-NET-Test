@@ -95,5 +95,15 @@ namespace HaloShaderGenerator.Black
         {
             return true;
         }
+
+        public ShaderParameters GetPixelShaderParameters()
+        {
+            return new ShaderParameters();
+        }
+
+        public ShaderParameters GetVertexShaderParameters()
+        {
+            return new ShaderParameters();
+        }
     }
 }
