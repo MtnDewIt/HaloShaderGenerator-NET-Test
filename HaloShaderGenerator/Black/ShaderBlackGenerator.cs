@@ -105,5 +105,21 @@ namespace HaloShaderGenerator.Black
         {
             return new ShaderParameters();
         }
+
+        public ShaderParameters GetGlobalParameters()
+        {
+            var result = new ShaderParameters();
+            result.AddSamplerWithoutXFormParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerWithoutXFormParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
+            result.AddSamplerWithoutXFormParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
+            result.AddSamplerWithoutXFormParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1);
+            result.AddSamplerWithoutXFormParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
+            result.AddFloat4Parameter("debug_tint", RenderMethodExtern.debug_tint);
+            result.AddSamplerWithoutXFormParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
+            result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
+            result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.texture_dominant_light_intensity_map);
+            return result;
+        }
     }
 }
