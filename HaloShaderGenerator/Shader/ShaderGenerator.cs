@@ -225,6 +225,36 @@ namespace HaloShaderGenerator.Shader
             return -1;
         }
 
+        public int GetMethodOptionValue(int methodIndex)
+        {
+            switch ((ShaderMethods)methodIndex)
+            {
+                case ShaderMethods.Albedo:
+                    return (int)albedo;
+                case ShaderMethods.Bump_Mapping:
+                    return (int)bump_mapping;
+                case ShaderMethods.Alpha_Test:
+                    return (int)alpha_test;
+                case ShaderMethods.Specular_Mask:
+                    return (int)specular_mask;
+                case ShaderMethods.Material_Model:
+                    return (int)material_model;
+                case ShaderMethods.Environment_Mapping:
+                    return (int)environment_mapping;
+                case ShaderMethods.Self_Illumination:
+                    return (int)self_illumination;
+                case ShaderMethods.Blend_Mode:
+                    return (int)blend_mode;
+                case ShaderMethods.Parallax:
+                    return (int)parallax;
+                case ShaderMethods.Misc:
+                    return (int)misc;
+                case ShaderMethods.Distortion:
+                    return (int)distortion;
+            }
+            return -1;
+        }
+
         public bool IsEntryPointSupported(ShaderStage entryPoint)
         {
             switch (entryPoint)

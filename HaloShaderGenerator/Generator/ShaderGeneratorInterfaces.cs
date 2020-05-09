@@ -81,6 +81,8 @@ namespace HaloShaderGenerator.Generator
 
         int GetMethodOptionCount(int methodIndex);
 
+        int GetMethodOptionValue(int methodIndex);
+
         ShaderParameters GetPixelShaderParameters();
 
         ShaderParameters GetVertexShaderParameters();

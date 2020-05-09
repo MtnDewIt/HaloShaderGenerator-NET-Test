@@ -57,6 +57,14 @@ namespace HaloShaderGenerator.Black
             return 1;
         }
 
+        public int GetMethodOptionValue(int methodIndex)
+        {
+            if (methodIndex == 0)
+                return 0;
+            else
+                return -1;
+        }
+
         public bool IsEntryPointSupported(ShaderStage entryPoint)
         {
             switch (entryPoint)
