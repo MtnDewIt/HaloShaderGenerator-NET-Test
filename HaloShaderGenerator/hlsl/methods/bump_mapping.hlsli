@@ -36,8 +36,9 @@ float3 calc_bumpmap_detail_ps(
 {
     float3 bump_map_sample = sample_normal_2d(bump_map, apply_xform2d(texcoord, bump_map_xform));
     float3 bump_detail_map_sample = sample_normal_2d(bump_detail_map, apply_xform2d(texcoord, bump_detail_map_xform));
-    float3 bump_plus_detail = bump_map_sample + bump_detail_map_sample * bump_detail_coefficient.x;
-	return normal_transform(tangent, binormal, normal, bump_plus_detail);
+	float3 bump = normalize(bump_map_sample);
+	bump.xy += normalize(bump_detail_map_sample).xy * bump_detail_coefficient.x;
+	return normal_transform(tangent, binormal, normal, bump);
 }
 
 float3 calc_bumpmap_detail_masked_ps(
@@ -47,11 +48,12 @@ float3 calc_bumpmap_detail_masked_ps(
 	float2 texcoord
 )
 {
-    float3 bump_map_sample = sample_normal_2d(bump_map, apply_xform2d(texcoord, bump_map_xform));
-    float3 bump_detail_map_sample = sample_normal_2d(bump_detail_map, apply_xform2d(texcoord, bump_detail_map_xform));
+	float3 bump_map_sample = sample_normal_2d(bump_map, apply_xform2d(texcoord, bump_map_xform));
+	float3 bump_detail_map_sample = sample_normal_2d(bump_detail_map, apply_xform2d(texcoord, bump_detail_map_xform));
 	float4 mask_map_sample = tex2D(bump_detail_mask_map, apply_xform2d(texcoord, bump_detail_mask_map_xform));
-    float3 bump_plus_detail = bump_map_sample + bump_detail_map_sample * bump_detail_coefficient.x * mask_map_sample.xyz;
-	return normal_transform(tangent, binormal, normal, bump_plus_detail);
+	float3 bump = normalize(bump_map_sample);
+	bump.xy +=  mask_map_sample.x * normalize(bump_detail_map_sample).xy * bump_detail_coefficient.x;
+	return normal_transform(tangent, binormal, normal, bump);
 }
 
 float3 calc_bumpmap_detail_plus_detail_masked_ps(
@@ -60,11 +62,8 @@ float3 calc_bumpmap_detail_plus_detail_masked_ps(
 	float3 normal,
 	float2 texcoord
 ) {
-    float3 bump_map_sample = sample_normal_2d(bump_map, apply_xform2d(texcoord, bump_map_xform));
-    float3 bump_detail_map_sample = sample_normal_2d(bump_detail_map, apply_xform2d(texcoord, bump_detail_map_xform));
-	float3 bump_plus_detail = bump_map_sample + bump_detail_map_sample * bump_detail_coefficient.x;
-	return normal_transform(tangent, binormal, normal, bump_plus_detail);
-    //TODO: We need to implement the mask + second detail MS30 only
+	// TODO: implement proper code, only ms30
+	return calc_bumpmap_detail_ps(tangent, binormal, normal, texcoord);
 }
 
 void calc_bumpmap_off_vs()

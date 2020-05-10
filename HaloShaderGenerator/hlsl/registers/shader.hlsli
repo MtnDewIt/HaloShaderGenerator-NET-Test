@@ -146,7 +146,7 @@ uniform sampler bump_map;
 uniform xform2d bump_map_xform;
 uniform sampler bump_detail_map;
 uniform xform2d bump_detail_map_xform;
-uniform float4 bump_detail_coefficient;
+uniform float bump_detail_coefficient;
 uniform sampler bump_detail_mask_map;
 uniform xform2d bump_detail_mask_map_xform;
 
@@ -254,7 +254,7 @@ uniform float k_f0; // figure out what this is
 uniform float height_scale;
 uniform sampler height_map;
 uniform xform2d height_map_xform;
-
+uniform sampler height_scale_map;
 
 
 

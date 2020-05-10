@@ -10,14 +10,24 @@
 #define MATERIAL_TYPE_ARGS float3 diffuse, float3 normal, float3 view_dir, float2 texcoord, float3 camera_dir, float3 prt_result, float3 vertex_color
 #define MATERIAL_TYPE_ARGNAMES diffuse, normal, view_dir, texcoord, camera_dir, prt_result, vertex_color
 
-float3 material_type_diffuse_only(MATERIAL_TYPE_ARGS)
+float3 material_type_diffuse_only(
+float3 albedo,
+float3 normal,
+float3 view_dir,
+float2 texcoord,
+float3 camera_dir,
+float4 sh_0,
+float4 sh_312[3],
+float4 sh_457[3],
+float4 sh_8866[3],
+float3 light_dir,
+float3 light_intensity,
+float3 diffuse_reflectance)
 {
-	float3 diffuse_ref = diffuse_reflectance(normal);
 	float3 ligthing;
-
     if (no_dynamic_lights)
     {
-		ligthing = diffuse_ref * prt_result;
+		ligthing = diffuse_reflectance;
 	}
     else
     {
@@ -57,26 +67,25 @@ float3 material_type_diffuse_only(MATERIAL_TYPE_ARGS)
 			}
 		}
         
-		ligthing = diffuse_ref * prt_result + accumulation;
+		ligthing = diffuse_reflectance + accumulation;
 	}
-	return diffuse * (ligthing + vertex_color);
+	return albedo * ligthing;
 }
 
 
 float3 material_type_cook_torrance(
-float3 diffuse, 
+float3 albedo, 
 float3 normal, 
 float3 view_dir, 
 float2 texcoord, 
 float3 camera_dir, 
-float3 prt_result,
 float4 sh_0, 
 float4 sh_312[3], 
 float4 sh_457[3], 
 float4 sh_8866[3],
 float3 light_dir,
 float3 light_intensity,
-float3 lightmap_diffuse)
+float3 diffuse_reflectance)
 {
 	float c_specular_coefficient;
 	float c_albedo_blend;
@@ -93,7 +102,7 @@ float3 lightmap_diffuse)
 	
 	if (use_albedo_blend_with_specular_tint)
 	{
-		specular_color = lerp(fresnel_color, diffuse, c_albedo_blend);
+		specular_color = lerp(fresnel_color, albedo, c_albedo_blend);
 	}
 	
 	float3 reflect_dir = 2 * dot(normalize(view_dir), normal) * normal - camera_dir;
@@ -177,7 +186,7 @@ float3 lightmap_diffuse)
 	
 	if (use_albedo_blend_with_specular_tint)
 	{
-		c_specular_tint = lerp(specular_tint, diffuse, c_albedo_blend);
+		c_specular_tint = lerp(specular_tint, albedo, c_albedo_blend);
 	}
 	c_specular_tint *= c_specular_coefficient;
 	
@@ -188,14 +197,14 @@ float3 lightmap_diffuse)
 	
 
 	float fresnel_coefficient = rim_fresnel_coefficient.x * c_specular_coefficient;
-	float3 fresnel_contrib = fresnel_coefficient * (rim_fresnel_color + rim_fresnel_albedo_blend.x * diffuse - rim_fresnel_color);
+	float3 fresnel_contrib = fresnel_coefficient * (rim_fresnel_color * (1.0 - rim_fresnel_albedo_blend.x) + rim_fresnel_albedo_blend.x * albedo);
 	
 	color += c_specular_tint * (color) + fresnel_contrib * area_specular;
-	color += diffuse * (diffuse_accumulation + lightmap_diffuse) * diffuse_coefficient.x;
+	color += albedo * (diffuse_accumulation + diffuse_reflectance) * diffuse_coefficient.x;
 	
 	return color;
 }
-
+/*
 float3 material_type_two_lobe_phong(MATERIAL_TYPE_ARGS)
 {
     return material_type_diffuse_only(MATERIAL_TYPE_ARGNAMES);
@@ -234,10 +243,10 @@ float3 material_type_car_paint(MATERIAL_TYPE_ARGS)
 float3 material_type_hair(MATERIAL_TYPE_ARGS)
 {
     return float3(0, 1, 0);
-}
+}*/
 
 #ifndef material_type
-#define material_type material_type_none
+#define material_type material_type_cook_torrance
 #endif
 
 #endif

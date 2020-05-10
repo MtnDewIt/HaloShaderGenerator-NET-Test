@@ -221,6 +221,9 @@ float4 calc_albedo_two_detail_black_point_ps(float2 texcoord, float2 position)
 	return albedo;
 }
 
+uniform float4 primary_change_color_anim;
+uniform float4 secondary_change_color_anim;
+
 float4 calc_albedo_two_change_color_anim_ps(float2 texcoord, float2 position)
 {
 	return random_debug_color(11);
