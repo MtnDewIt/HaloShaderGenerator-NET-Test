@@ -146,13 +146,17 @@ uniform sampler bump_map;
 uniform xform2d bump_map_xform;
 uniform sampler bump_detail_map;
 uniform xform2d bump_detail_map_xform;
-uniform xform2d bump_detail_coefficient;
+uniform float4 bump_detail_coefficient;
 uniform sampler bump_detail_mask_map;
 uniform xform2d bump_detail_mask_map_xform;
 
 /*
 -------------------------------------------------- END BUMP MAPPING
 */
+
+
+uniform sampler alpha_test_map;
+uniform xform2d alpha_test_map_xform;
 
 #define boolf float
 
@@ -233,8 +237,9 @@ uniform float env_roughness_scale;
 uniform samplerCUBE dynamic_environment_map_0;
 uniform samplerCUBE dynamic_environment_map_1;
 
-uniform float4 primary_change_color_old : register(c190); // TODO Figure this one out
-uniform float4 secondary_change_color_old : register(c191); // TODO Figure this one out
+uniform float4 primary_change_color_old : register(c190);
+uniform float4 secondary_change_color_old : register(c191);
+
 uniform float4 k_ps_active_camo_factor : register(c212);
 
 
@@ -246,7 +251,9 @@ uniform float k_f0; // figure out what this is
 
 
 
-
+uniform float height_scale;
+uniform sampler height_map;
+uniform xform2d height_map_xform;
 
 
 

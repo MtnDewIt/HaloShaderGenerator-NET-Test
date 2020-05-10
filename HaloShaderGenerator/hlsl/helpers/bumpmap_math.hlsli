@@ -17,8 +17,9 @@ float2 sample_bump_map_2d(sampler bump_map, float2 texcoord)
 */
 float reconstruct_normal_z(float2 normal)
 {
-    float remainder = 1.0 - saturate(dot(normal, normal));
-    float normal_z = sqrt(remainder);
+	float2 normal_squared = normal * normal;
+	float z_squared = 1.0 - saturate(normal_squared.x + normal_squared.y);
+	float normal_z = sqrt(z_squared);
     return normal_z;
 }
 
@@ -48,7 +49,8 @@ float3 normal_transform(
 	float3 normal
 )
 {
-    float3 surface_normal = tangent_space_tangent * normal.x + tangent_space_binormal * normal.y + tangent_space_normal * normal.z;
+	normal = normalize(normal);
+	float3 surface_normal = normal.x * tangent_space_tangent + normal.y * tangent_space_binormal + normal.z * tangent_space_normal;
     float3 result = normalize(surface_normal);
 
     return result;

@@ -3,9 +3,7 @@
 
 #include "../helpers/math.hlsli"
 #include "../helpers/types.hlsli"
-
-uniform sampler alpha_test_map;
-uniform xform2d alpha_test_map_xform;
+#include "../registers/shader.hlsli"
 
 void calc_alpha_test_off_ps(float2 texcoord)
 {

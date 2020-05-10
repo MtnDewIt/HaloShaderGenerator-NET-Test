@@ -64,8 +64,6 @@ float3 calc_bumpmap_detail_plus_detail_masked_ps(
     float3 bump_detail_map_sample = sample_normal_2d(bump_detail_map, apply_xform2d(texcoord, bump_detail_map_xform));
 	float3 bump_plus_detail = bump_map_sample + bump_detail_map_sample * bump_detail_coefficient.x;
 	return normal_transform(tangent, binormal, normal, bump_plus_detail);
-
-    //NOTE: This is a new saber shader
     //TODO: We need to implement the mask + second detail MS30 only
 }
 

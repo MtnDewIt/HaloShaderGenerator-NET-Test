@@ -20,7 +20,7 @@ ALBEDO_PASS_RESULT get_albedo_and_normal(float2 fragcoord, float2 texcoord, floa
 	// this is set by a b12 if misc is sometimes or always, otherwise it samples from the frame buffer
 	if (actually_calc_albedo)
 	{
-		float4 diffuse_and_alpha = calc_albedo_ps(texcoord);
+		float4 diffuse_and_alpha = calc_albedo_ps(texcoord, fragcoord);
 		result.albedo = apply_debug_tint(diffuse_and_alpha.xyz);
 		result.alpha = diffuse_and_alpha.w;
 		result.normal = calc_bumpmap_ps(tangent, binormal, normal, texcoord);
