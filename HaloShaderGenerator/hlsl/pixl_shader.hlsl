@@ -4,7 +4,7 @@
 #include "helpers/input_output.hlsli"
 #include "helpers/albedo_pass.hlsli"
 #include "helpers/shadows.hlsli"
-
+#include "helpers/definition_helper.hlsli"
 #include "methods/albedo.hlsli"
 #include "helpers/color_processing.hlsli"
 
@@ -19,7 +19,7 @@
 #include "methods\parallax.hlsli"
 #include "methods\misc.hlsli"
 
-#define aspect_ratio float2(16,9) // this is unusual, there should be a global variable, gotta check h3 (could be 4,3 or other)
+#define aspect_ratio float2(16, 9) // this is unusual, there should be a global variable, gotta check h3 (could be 4,3 or other)
 
 PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
 {	
@@ -40,30 +40,28 @@ PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
 
 PS_OUTPUT_DEFAULT entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input) : COLOR
 {
-	float2 fragcoord = input.position.xy + 0.5;
-	float2 camo_texcoord_offset = (k_ps_active_camo_factor.yz) * input.texcoord.xy;
-	camo_texcoord_offset.x /= (4 * aspect_ratio).x;
-	camo_texcoord_offset.y /= (4 * aspect_ratio).y;
-	float camo_scale = 0.5 - input.camo_param.w < 0 ? 1.0 / input.camo_param.w : 2.0;
-	
+	float2 fragcoord = 0.5f + input.position.xy;
 	fragcoord.x /= texture_size.x;
 	fragcoord.y /= texture_size.y;
 	
-	float2 ldr_texcoord = camo_texcoord_offset * camo_scale + fragcoord;
+	float2 camo_texcoord = (k_ps_active_camo_factor.yz * input.texcoord) / (4 * aspect_ratio);
+	float camo_scale;
 
-	float4 sample = tex2D(scene_ldr_texture, ldr_texcoord.xy);
-
-    PS_OUTPUT_DEFAULT output;
+	[flatten]
+	if (0.5f - input.camo_param.w < 0)
+		camo_scale = 1.0f / input.camo_param.w;
+	else
+		camo_scale = 2.0f;
+	
+	float2 ldr_texcoord = fragcoord.xy + camo_texcoord * camo_scale;
+	float4 sample = tex2D(scene_ldr_texture, ldr_texcoord);
 	float4 final_color = float4(sample.rgb, k_ps_active_camo_factor.x);
-	output.high_frequency = export_high_frequency(final_color);
-	output.low_frequency = export_low_frequency(final_color);
-	output.unknown = 0;
-    return output;
+	
+	return export_color(blend_type(final_color, 1.0f));
 }
 
 PS_OUTPUT_DEFAULT entry_static_sh(VS_OUTPUT_STATIC_SH input) : COLOR
 {
-	PS_OUTPUT_DEFAULT output;
 	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
 	get_current_sh_coefficients_quadratic(sh_0, sh_312, sh_457, sh_8866);
 	
@@ -87,15 +85,9 @@ PS_OUTPUT_DEFAULT entry_static_sh(VS_OUTPUT_STATIC_SH input) : COLOR
 
 	float3 exposed_color = expose_color(color);
 
-    //TODO: No transparency so far, we're going to need this!!!
-	float4 output_color = blend_type(float4(exposed_color, 1.0));
+	float4 output_color = blend_type(float4(exposed_color, 1.0), 1.0f);
 
-	output.low_frequency = export_low_frequency(output_color);
-	output.high_frequency = export_high_frequency(output_color);
-
-	output.unknown = 0;
-
-	return output;
+	return export_color(output_color);
 }
 
 PS_OUTPUT_ALBEDO entry_static_prt(VS_OUTPUT_STATIC_PRT input) : COLOR
@@ -124,7 +116,7 @@ PS_OUTPUT_ALBEDO entry_static_prt(VS_OUTPUT_STATIC_PRT input) : COLOR
 	float3 exposed_color = expose_color(color);
 
     //TODO: No transparency so far, we're going to need this!!!
-	float4 output_color = blend_type(float4(exposed_color, 1.0));
+	float4 output_color = blend_type(float4(exposed_color, 1.0), 1.0f);
 
 	output.low_frequency = export_low_frequency(output_color);
 	output.high_frequency = export_high_frequency(output_color);
@@ -380,7 +372,7 @@ PS_OUTPUT_DEFAULT entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLOR input
 	float3 exposed_color = expose_color(color);
 
     //TODO: No transparency so far, we're going to need this!!!
-	float4 output_color = blend_type(float4(exposed_color, 1.0));
+	float4 output_color = blend_type(float4(exposed_color, 1.0), 1.0f);
 
 	output.low_frequency = export_low_frequency(output_color);
 	output.high_frequency = export_high_frequency(output_color);

@@ -10,6 +10,13 @@ bool use_material_texture;
 uniform bool order3_area_specular;
 uniform bool no_dynamic_lights;
 
+#if blend_type_arg ==  k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply
+#define color_export_multiply_alpha true
+#else
+#define color_export_multiply_alpha false
+#endif
+
+
 #if misc_arg == k_misc_first_person_sometimes || misc_arg == k_misc_first_person_always
 uniform bool actually_calc_albedo : register(b12);
 #else

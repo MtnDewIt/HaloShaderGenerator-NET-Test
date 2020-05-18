@@ -88,10 +88,11 @@ namespace HaloShaderGenerator
             //TestPixelShader("chud_cortana_composite");
   
             
-            var stage = ShaderStage.Albedo;
+            var stage = ShaderStage.Active_Camo;
 
-            TestPixelShader(stage, Albedo.Two_Change_Color_Anim_Overlay, Bump_Mapping.Standard, Alpha_Test.Off, Specular_Mask.No_Specular_Mask, 
-                Material_Model.Diffuse_Only, Environment_Mapping.None, Self_Illumination.Off, Blend_Mode.Opaque, Parallax.Off, Misc.First_Person_Never, Distortion.Off);
+            TestPixelShader(stage, Albedo.Default, Bump_Mapping.Off, Alpha_Test.Off, Specular_Mask.No_Specular_Mask, 
+                Material_Model.Diffuse_Only, Environment_Mapping.None, Self_Illumination.Off, Blend_Mode.Pre_Multiplied_Alpha, Parallax.Off, Misc.First_Person_Never, Distortion.Off);
+
             //TestSharedVertexShader(VertexType.World, stage);
             //TestSharedVertexShader(VertexType.Rigid, stage);
             //TestSharedVertexShader(VertexType.Skinned, stage);
