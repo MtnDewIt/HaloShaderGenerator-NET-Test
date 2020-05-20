@@ -10,6 +10,54 @@
 #define MATERIAL_TYPE_ARGS float3 diffuse, float3 normal, float3 view_dir, float2 texcoord, float3 camera_dir, float3 prt_result, float3 vertex_color
 #define MATERIAL_TYPE_ARGNAMES diffuse, normal, view_dir, texcoord, camera_dir, prt_result, vertex_color
 
+
+void calc_simple_lights(
+float3 normal,
+float3 vertex_world_position,
+float3 reflect_dir,
+float roughness_unknown,
+out float3 diffuse_accumulation,
+out float3 specular_accumulation)
+{
+	diffuse_accumulation = 0;
+	specular_accumulation = 0;
+	if (simple_light_count > 0)
+	{
+		calculate_simple_light(get_simple_light(0), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+		if (simple_light_count > 1)
+		{
+			calculate_simple_light(get_simple_light(1), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+			if (simple_light_count > 2)
+			{
+				calculate_simple_light(get_simple_light(2), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+				if (simple_light_count > 3)
+				{
+					calculate_simple_light(get_simple_light(3), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+					if (simple_light_count > 4)
+					{
+						calculate_simple_light(get_simple_light(4), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+						if (simple_light_count > 5)
+						{
+							calculate_simple_light(get_simple_light(5), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+							if (simple_light_count > 6)
+							{
+								calculate_simple_light(get_simple_light(6), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+									[flatten]
+								if (simple_light_count > 7)
+								{
+									calculate_simple_light(get_simple_light(7), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+
+}
+
 float3 material_type_diffuse_only(
 float3 albedo,
 float3 normal,
@@ -24,50 +72,16 @@ float3 light_dir,
 float3 light_intensity,
 float3 diffuse_reflectance)
 {
-	float3 ligthing;
-    if (no_dynamic_lights)
-    {
-		ligthing = diffuse_reflectance;
-	}
-    else
+	float3 ligthing = diffuse_reflectance;
+    if (!no_dynamic_lights)
     {
         float3 vertex_world_position = Camera_Position_PS - camera_dir;
-		float3 accumulation = 0;
-		float3 specular_accumulation = 0;
-		if (simple_light_count > 0)
-		{
-			calculate_simple_light(get_simple_light(0), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
-			if (simple_light_count > 1)
-			{
-				calculate_simple_light(get_simple_light(1), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
-				if (simple_light_count > 2)
-				{
-					calculate_simple_light(get_simple_light(2), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
-					if (simple_light_count > 3)
-					{
-						calculate_simple_light(get_simple_light(3), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
-						if (simple_light_count > 4)
-						{
-							calculate_simple_light(get_simple_light(4), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
-							if (simple_light_count > 5)
-							{
-								calculate_simple_light(get_simple_light(5), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
-								if (simple_light_count > 6)
-								{
-									calculate_simple_light(get_simple_light(6), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
-									if (simple_light_count > 7)
-									{
-										calculate_simple_light(get_simple_light(7), normal, vertex_world_position, 0, 0, accumulation, specular_accumulation);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-        
-		ligthing = diffuse_reflectance + accumulation;
+		float3 diffuse_accumulation;
+		float3 specular_accumulation;
+		
+		calc_simple_lights(normal, vertex_world_position, 0, 0, diffuse_accumulation, specular_accumulation);
+		
+		ligthing += diffuse_accumulation;
 	}
 	return albedo * ligthing;
 }
@@ -141,44 +155,7 @@ float3 diffuse_reflectance)
 		diffuse_accumulation = 0;
 		specular_accumulation = 0;
 		float roughness_unknown = 0.272909999 * pow(roughness.x, -2.19729996);
-
-		if (simple_light_count > 0)
-		{
-			calculate_simple_light(get_simple_light(0), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
-			if (simple_light_count > 1)
-			{
-				calculate_simple_light(get_simple_light(1), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
-				if (simple_light_count > 2)
-				{
-					calculate_simple_light(get_simple_light(2), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
-					if (simple_light_count > 3)
-					{
-						calculate_simple_light(get_simple_light(3), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
-						if (simple_light_count > 4)
-						{
-							calculate_simple_light(get_simple_light(4), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
-							if (simple_light_count > 5)
-							{
-								calculate_simple_light(get_simple_light(5), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
-								if (simple_light_count > 6)
-								{
-									calculate_simple_light(get_simple_light(6), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
-									if (simple_light_count > 7)
-									{
-										calculate_simple_light(get_simple_light(7), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-			diffuse_accumulation = 0;
-			specular_accumulation = 0;
-		}
+		calc_simple_lights(normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
 		specular_accumulation *= roughness_unknown;
 	}
 	

@@ -15,33 +15,33 @@ float calc_heightmap_value(float2 texcoord)
 	return height;
 }
 
-float2 calc_parallax_off_ps(VS_OUTPUT_ALBEDO input)
+float2 calc_parallax_off_ps(float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal)
 {
-	return input.texcoord;
+	return texcoord;
 }
 
-float2 calc_parallax_simple_ps(VS_OUTPUT_ALBEDO input)
+float2 calc_parallax_simple_ps(float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal)
 {
-	float2 height_map_texcoord = apply_xform2d(input.texcoord, height_map_xform);
+	float2 height_map_texcoord = apply_xform2d(texcoord, height_map_xform);
 	float height = calc_heightmap_value(height_map_texcoord);
 	
 	float2 output_texcoord;
-	float3 cam_dir = normalize(input.camera_dir.xyz);
-	float3 delta = float3(dot(input.tangent, cam_dir), dot(input.binormal, cam_dir), dot(input.normal.xyz, cam_dir));
+	float3 cam_dir = normalize(camera_dir.xyz);
+	float3 delta = float3(dot(tangent, cam_dir), dot(binormal, cam_dir), dot(normal.xyz, cam_dir));
 	
 	output_texcoord = height * delta.xy + height_map_texcoord;
 	return unapply_xform2d(output_texcoord, height_map_xform);
 }
 
-float2 calc_parallax_interpolated_ps(VS_OUTPUT_ALBEDO input)
+float2 calc_parallax_interpolated_ps(float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal)
 {
 	float2 output_texcoord;
 	
 
-	float3 cam_dir = normalize(input.camera_dir.xyz);
-	float3 delta = float3(dot(input.tangent, cam_dir), dot(input.binormal, cam_dir), dot(input.normal.xyz, cam_dir));
+	float3 cam_dir = normalize(camera_dir.xyz);
+	float3 delta = float3(dot(tangent, cam_dir), dot(binormal, cam_dir), dot(normal.xyz, cam_dir));
 
-	float2 height_map_texcoord_1 = apply_xform2d(input.texcoord, height_map_xform);
+	float2 height_map_texcoord_1 = apply_xform2d(texcoord, height_map_xform);
 	float height_1 = calc_heightmap_value(height_map_texcoord_1);
 	
 	float2 height_map_texcoord_2 = height_1 * delta.xy + height_map_texcoord_1;
@@ -73,15 +73,15 @@ float2 calc_parallax_interpolated_ps(VS_OUTPUT_ALBEDO input)
 	return unapply_xform2d(output_texcoord, height_map_xform);
 }
 
-float2 calc_parallax_simple_detail_ps(VS_OUTPUT_ALBEDO input)
+float2 calc_parallax_simple_detail_ps(float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal)
 {
-	float2 height_map_texcoord = apply_xform2d(input.texcoord, height_map_xform);
+	float2 height_map_texcoord = apply_xform2d(texcoord, height_map_xform);
 	float height = calc_heightmap_value(height_map_texcoord);
-	float scale_map_sample = tex2D(height_scale_map, height_map_texcoord);
+	float4 scale_map_sample = tex2D(height_scale_map, height_map_texcoord);
 	
 	float2 output_texcoord;
-	float3 cam_dir = normalize(input.camera_dir.xyz);
-	float3 delta = float3(dot(input.tangent, cam_dir), dot(input.binormal, cam_dir), dot(input.normal.xyz, cam_dir));
+	float3 cam_dir = normalize(camera_dir.xyz);
+	float3 delta = float3(dot(tangent, cam_dir), dot(binormal, cam_dir), dot(normal.xyz, cam_dir));
 	
 	output_texcoord = height * scale_map_sample.x * delta.xy + height_map_texcoord;
 	return unapply_xform2d(output_texcoord, height_map_xform);

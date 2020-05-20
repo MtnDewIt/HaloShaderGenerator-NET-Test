@@ -17,12 +17,17 @@ uniform bool no_dynamic_lights;
 #endif
 
 
-#if misc_arg == k_misc_first_person_sometimes || misc_arg == k_misc_first_person_always
+#if misc_arg == k_misc_first_person_sometimes || misc_arg == k_misc_first_person_always || blend_type_arg == k_blend_mode_additive || blend_type_arg == k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply || blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha
 uniform bool actually_calc_albedo : register(b12);
 #else
 #define actually_calc_albedo false
 #endif
 
+#if blend_type_arg == k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply
+#define calc_material false
+#else
+#define calc_material true
+#endif
 
 uniform bool k_is_lightmap_exist;
 uniform bool k_is_water_interaction;

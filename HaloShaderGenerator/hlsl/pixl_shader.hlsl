@@ -23,7 +23,7 @@
 
 PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
 {	
-	float2 texcoord = calc_parallax_ps(input);
+	float2 texcoord = calc_parallax_ps(input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal.xyz);
     calc_alpha_test_ps(texcoord);
 	
 	float3 normal = calc_bumpmap_ps(input.tangent, input.binormal, input.normal.xyz, texcoord);
@@ -62,30 +62,60 @@ PS_OUTPUT_DEFAULT entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input) : COLOR
 
 PS_OUTPUT_DEFAULT entry_static_sh(VS_OUTPUT_STATIC_SH input) : COLOR
 {
-	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
-	get_current_sh_coefficients_quadratic(sh_0, sh_312, sh_457, sh_8866);
+	ALBEDO_PASS_RESULT albedo_pass = get_albedo_and_normal(input.position.xy, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
 	
+	float3 albedo = albedo_pass.albedo.rgb;
+	float alpha = albedo_pass.albedo.a;
+	float3 normal = normalize(albedo_pass.normal);
 	float3 camera_dir = input.camera_dir.xyz;
-	float2 fragcoord = (input.position.xy + 0.5) / texture_size;
-    
-    // TODO: this may be overkill, check other shaders to see if it always use the diffuse/normal texture or it can compute the albedo again
-	ALBEDO_PASS_RESULT albedo_and_normal = get_albedo_and_normal(fragcoord, input.texcoord.xy, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
-	float3 albedo = albedo_and_normal.albedo;
-	float3 normal = albedo_and_normal.normal;
-
-	float3 n_camera_dir = normalize(camera_dir);
-	float3 diffuse_ref = diffuse_reflectance(normal);
-	float3 material_lighting = material_type(albedo, normal, n_camera_dir, input.texcoord.xy, camera_dir, sh_0, sh_312, sh_457, sh_8866, k_ps_dominant_light_direction.xyz, k_ps_dominant_light_intensity.rgb, diffuse_ref);
-	material_lighting = material_lighting * input.extinction_factor + input.sky_radiance;
 	
-	float3 environment = envmap_type(n_camera_dir, normal);
-	float4 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo);
+	
+	float4 color;
+	if (calc_material)
+	{
+		float3 n_camera_dir = normalize(camera_dir);
+		float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
+		get_current_sh_coefficients_quadratic(sh_0, sh_312, sh_457, sh_8866);
+		float3 diffuse_ref = diffuse_reflectance(normal);
+	
+		float3 material_lighting = material_type(albedo, normal, n_camera_dir, input.texcoord.xy, camera_dir, sh_0, sh_312, sh_457, sh_8866, k_ps_dominant_light_direction.xyz, k_ps_dominant_light_intensity.rgb, diffuse_ref);
+		material_lighting = material_lighting * input.extinction_factor;
 
-	float3 color = (environment + self_illumination.xyz) * input.sky_radiance.xyz + material_lighting;
+		float3 environment = envmap_type(n_camera_dir, normal);
+		float4 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo);
 
-	float3 exposed_color = expose_color(color);
+		color.rgb = (environment + self_illumination.xyz) * input.sky_radiance.xyz + material_lighting;
+		
+		if (blend_type_arg != k_blend_mode_additive)
+		{
+			color.rgb += input.sky_radiance.rgb;
+		}
+		
+		if (blend_type_arg == k_blend_mode_additive)
+		{
+			color.a = 0.0;
+		}
+		else if (blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha)
+		{
+			color.a = alpha;
+		}
+		else
+		{
+			color.a = 1.0;
+		}
+	}
+	else
+	{
+		color.rgb = albedo;
+		color.a = 1.0;
+	}
+	
+	if (blend_type_arg == k_blend_mode_double_multiply)
+		color.rgb *= 2;
 
-	float4 output_color = blend_type(float4(exposed_color, 1.0), 1.0f);
+	color.rgb = expose_color(color.rgb);
+	
+	float4 output_color = blend_type(color, 1.0f);
 
 	return export_color(output_color);
 }
@@ -99,7 +129,7 @@ PS_OUTPUT_ALBEDO entry_static_prt(VS_OUTPUT_STATIC_PRT input) : COLOR
 	float3 camera_dir = input.camera_dir.xyz;
 	float2 fragcoord = (input.position.xy + 0.5) / texture_size;
     
-	ALBEDO_PASS_RESULT albedo_and_normal = get_albedo_and_normal(fragcoord, input.texcoord.xy, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
+	ALBEDO_PASS_RESULT albedo_and_normal = get_albedo_and_normal(fragcoord, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
 	float3 albedo = albedo_and_normal.albedo;
 	float3 normal = albedo_and_normal.normal;
 
@@ -355,7 +385,7 @@ PS_OUTPUT_DEFAULT entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLOR input
 	float2 fragcoord = (input.position.xy + 0.5) / texture_size;
     
     // TODO: this may be overkill, check other shaders to see if it always use the diffuse/normal texture or it can compute the albedo again
-	ALBEDO_PASS_RESULT albedo_and_normal = get_albedo_and_normal(fragcoord, input.texcoord.xy, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
+	ALBEDO_PASS_RESULT albedo_and_normal = get_albedo_and_normal(fragcoord, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
 	float3 albedo = albedo_and_normal.albedo;
 	float3 normal = albedo_and_normal.normal;
 	

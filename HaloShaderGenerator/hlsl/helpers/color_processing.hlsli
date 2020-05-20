@@ -27,7 +27,10 @@ float3 srgb_to_rgb(float3 color)
 
 float3 expose_color(float3 input)
 {
-	return max(input.rgb * g_exposure.x, float3(0.0, 0.0, 0.0));
+	if (color_export_multiply_alpha)
+		return input; // should compile as max but compiles as cmp for some reason, equivalent result
+	else
+		return input * g_exposure.x;
 }
 
 float4 export_high_frequency(float4 input)
@@ -47,6 +50,7 @@ float luminance(float3 color)
 
 PS_OUTPUT_DEFAULT export_color(float4 color)
 {
+	color.rgb = max(color.rgb, 0);
 	PS_OUTPUT_DEFAULT output;
 	[flatten]
 	if (color_export_multiply_alpha)

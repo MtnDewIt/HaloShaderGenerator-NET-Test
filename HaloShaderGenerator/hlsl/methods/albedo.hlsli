@@ -9,9 +9,8 @@
 float4 calc_albedo_default_ps(float2 texcoord, float2 position)
 {
     float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
-    float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
-
     float4 base_map_sample = tex2D(base_map, base_map_texcoord);
+	float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
     float4 detail_map_sample = tex2D(detail_map, detail_map_texcoord);
 	float4 albedo = base_map_sample * detail_map_sample * albedo_color;
 	albedo.rgb = apply_debug_tint(albedo.rgb);

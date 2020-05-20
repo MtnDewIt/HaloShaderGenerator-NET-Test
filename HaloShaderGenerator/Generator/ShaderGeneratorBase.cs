@@ -94,7 +94,7 @@ namespace HaloShaderGenerator.Generator
 #endif
             //flags |= D3DCompiler.D3DCOMPILE.D3DCOMPILE_SKIP_OPTIMIZATION;
             flags |= D3DCompiler.D3DCOMPILE.D3DCOMPILE_SKIP_VALIDATION;
-            //flags |= D3DCompiler.D3DCOMPILE.D3DCOMPILE_OPTIMIZATION_LEVEL2;
+            flags |= D3DCompiler.D3DCOMPILE.D3DCOMPILE_OPTIMIZATION_LEVEL2; // if can't get shader to compile 1-1 add or remove this line
             //flags |= D3DCompiler.D3DCOMPILE.D3DCOMPILE_PREFER_FLOW_CONTROL;
 
             byte[] shader_code = D3DCompiler.Compile(
