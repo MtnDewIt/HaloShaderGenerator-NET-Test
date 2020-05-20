@@ -70,9 +70,10 @@ float4 sh_457[3],
 float4 sh_8866[3],
 float3 light_dir,
 float3 light_intensity,
-float3 diffuse_reflectance)
+float3 diffuse_reflectance,
+float prt)
 {
-	float3 ligthing = diffuse_reflectance;
+	float3 ligthing;
     if (!no_dynamic_lights)
     {
         float3 vertex_world_position = Camera_Position_PS - camera_dir;
@@ -81,8 +82,11 @@ float3 diffuse_reflectance)
 		
 		calc_simple_lights(normal, vertex_world_position, 0, 0, diffuse_accumulation, specular_accumulation);
 		
-		ligthing += diffuse_accumulation;
+		ligthing = diffuse_reflectance * prt + diffuse_accumulation;
 	}
+	else
+		ligthing = diffuse_reflectance * prt;
+	
 	return albedo * ligthing;
 }
 
@@ -99,7 +103,8 @@ float4 sh_457[3],
 float4 sh_8866[3],
 float3 light_dir,
 float3 light_intensity,
-float3 diffuse_reflectance)
+float3 diffuse_reflectance,
+float prt)
 {
 	float c_specular_coefficient;
 	float c_albedo_blend;
