@@ -1,14 +1,11 @@
 ﻿#define shader_template
 
-#include "registers/shader.hlsli"
-#include "helpers/input_output.hlsli"
-#include "helpers/albedo_pass.hlsli"
-#include "helpers/shadows.hlsli"
-#include "helpers/definition_helper.hlsli"
-#include "methods/albedo.hlsli"
-#include "helpers/color_processing.hlsli"
-
-//TODO: These must be in the correct order for the registers to align, double check this
+#include "registers\shader.hlsli"
+#include "helpers\input_output.hlsli"
+#include "helpers\shadows.hlsli"
+#include "helpers\definition_helper.hlsli"
+#include "helpers\color_processing.hlsli"
+#include "methods\albedo.hlsli"
 #include "methods\bump_mapping.hlsli"
 #include "methods\alpha_test.hlsli"
 #include "methods\specular_mask.hlsli"
@@ -19,15 +16,34 @@
 #include "methods\parallax.hlsli"
 #include "methods\misc.hlsli"
 
-#define aspect_ratio float2(16, 9) // this is unusual, there should be a global variable, gotta check h3 (could be 4,3 or other)
+ALBEDO_PASS_RESULT get_albedo_and_normal(bool calc_albedo, float2 fragcoord, float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal)
+{
+	ALBEDO_PASS_RESULT result;
+
+	if (calc_albedo)
+	{
+		float2 new_texcoord = calc_parallax_ps(texcoord, camera_dir, tangent, binormal, normal);
+		calc_alpha_test_ps(new_texcoord);
+		result.normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, new_texcoord);
+		result.albedo = calc_albedo_ps(new_texcoord, fragcoord);
+	}
+	else
+	{
+		float2 inv_texture_size = (1.0 / texture_size);
+		float2 texcoord = (fragcoord + 0.5) * inv_texture_size;
+		float4 normal_texture_sample = tex2D(normal_texture, texcoord);
+		float4 albedo_texture_sample = tex2D(albedo_texture, texcoord);
+		result.albedo = albedo_texture_sample.xyzw;
+		result.normal = normal_texture_sample.xyz * 2.0 - 1.0;
+	}
+	return result;
+}
 
 PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
 {	
-	float2 texcoord = calc_parallax_ps(input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal.xyz);
-    calc_alpha_test_ps(texcoord);
-	
-	float3 normal = calc_bumpmap_ps(input.tangent, input.binormal, input.normal.xyz, texcoord);
-	float4 albedo = calc_albedo_ps(texcoord, input.position.xy);
+	ALBEDO_PASS_RESULT albedo_pass = get_albedo_and_normal(true, input.position.xy, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
+	float4 albedo = albedo_pass.albedo;
+	float3 normal = albedo_pass.normal;
 	
 	albedo.rgb = rgb_to_srgb(albedo.rgb);
 
@@ -62,7 +78,7 @@ PS_OUTPUT_DEFAULT entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input) : COLOR
 
 PS_OUTPUT_DEFAULT entry_sh(float2 position, float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal, float3 sky_radiance, float3 extinction_factor, float prt) : COLOR
 {
-	ALBEDO_PASS_RESULT albedo_pass = get_albedo_and_normal(position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz);
+	ALBEDO_PASS_RESULT albedo_pass = get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz);
 	
 	float3 albedo = albedo_pass.albedo.rgb;
 	float alpha = albedo_pass.albedo.a;
@@ -143,121 +159,94 @@ PS_OUTPUT_DEFAULT entry_sfx_distort(VS_OUTPUT_SFX_DISTORT input) : COLOR
 {
 	return export_color(0);
 }
-/*
-PS_OUTPUT_DEFAULT entry_dynamic_light(VS_OUTPUT_DYNAMIC_LIGHT input) : COLOR
+
+PS_OUTPUT_DEFAULT calculate_dynamic_lights(
+float2 position,
+float2 texcoord,
+float3 camera_dir,
+float3 tangent,
+float3 binormal,
+float3 normal,
+int light_index,
+float depth_scale,
+float depth_offset,
+float2 shadowmap_texcoord,
+bool is_cinematic)
 {
-	// TODO: move that code into functions while preserving compile order
-	float3 world_position = Camera_Position_PS - input.camera_dir;
-	SimpleLight light = get_simple_light(0);
+	float3 world_position = Camera_Position_PS - camera_dir;
+	float shadow_coefficient;
+	float3 diffuse;
+	
+	
+	SimpleLight light = get_simple_light(light_index);
 	
 	float3 v_to_light = light.position.xyz - world_position;
 	float light_distance_squared = dot(v_to_light, v_to_light);
 	v_to_light = normalize(v_to_light);
 	
 	float attenuation = 1.0 / (light_distance_squared + light.position.w);
-	
-	float3 light_dir = light.direction.xyz;
-	float light_angle = dot(v_to_light, light_dir);
-	
+	float light_angle = dot(v_to_light, light.direction.xyz);
+
 	float2 packed_light_values = float2(attenuation, light_angle);
 	packed_light_values = max(0.0001, packed_light_values * light.unknown3.xy + light.unknown3.zw);
 	float specular_power = pow(packed_light_values.y, light.color.w);
-	
 
 	float intensity = saturate(specular_power + light.direction.w) * saturate(packed_light_values.x);
-	float2 scale = 1.0 / texture_size;
-	float2 fragcoord = (input.position.xy + 0.5) * scale;
 	
-	float3 normal = 2 * tex2D(normal_texture, fragcoord).xyz - 1;
-
-	float angle2 = dot(v_to_light, normal);
+	float2 shadowmap_texcoord_depth_adjusted = shadowmap_texcoord * (1.0 / depth_scale);
 	
-	float2 shadowmap_texcoord = (1.0 / input.shadowmap_texcoord.w) * input.shadowmap_texcoord.xy;
-	float2 gel_texcoord = apply_xform2d(shadowmap_texcoord, p_dynamic_light_gel_xform);
+	float2 gel_texcoord = apply_xform2d(shadowmap_texcoord_depth_adjusted, p_dynamic_light_gel_xform);
 	float4 gel_sample = tex2D(dynamic_light_gel_texture, gel_texcoord);
-	
-	float3 diffuse = gel_sample.rgb * light.color.rgb * intensity * angle2;
-	float3 albedo = tex2D(albedo_texture, fragcoord).rgb;
-	diffuse *= albedo;
 
-	float shadow_coefficient = 0.0;
+	diffuse = (intensity * light.color.rgb) * gel_sample.rgb;
+	
+	ALBEDO_PASS_RESULT albedo_pass = get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz);
+	diffuse *= dot(v_to_light, albedo_pass.normal);
+	diffuse *= albedo_pass.albedo.rgb;
+	
 	
 	if (dynamic_light_shadowing)
-	{	
-		shadow_coefficient = shadows_percentage_closer_filtering_3x3(shadowmap_texcoord, 512, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, diffuse);
+	{
+		if (is_cinematic)
+			shadow_coefficient = shadows_percentage_closer_filtering_custom_4x4(shadowmap_texcoord_depth_adjusted, shadowmap_texture_side, depth_scale, depth_offset, diffuse);
+		else
+			shadow_coefficient = shadows_percentage_closer_filtering_3x3(shadowmap_texcoord_depth_adjusted, shadowmap_texture_side, depth_scale, depth_offset, diffuse);
 	}
 	else
 	{
 		shadow_coefficient = 1.0;
 	}
 	
-	diffuse *= shadow_coefficient;
-	float4 result = float4(expose_color(diffuse), 0);
+	float4 result;
+	if (blend_type_arg == k_blend_mode_additive)
+	{
+		result.a = 0.0;
+	}
+	else if (blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha)
+	{
+		result.a = albedo_pass.albedo.a;
+	}
+	else
+	{
+		result.a = 1.0;
+	}
 	
-	PS_OUTPUT_DEFAULT output;
-	output.low_frequency = export_low_frequency(result);
-	output.high_frequency = export_high_frequency(result);
-	output.unknown = 0;
-	return output;
+	result.rgb = expose_color(diffuse);
+	result.rgb *= shadow_coefficient;
+	
+	return export_color(result);
+}
+
+PS_OUTPUT_DEFAULT entry_dynamic_light(VS_OUTPUT_DYNAMIC_LIGHT input) : COLOR
+{
+	return calculate_dynamic_lights(input.position.xy, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, false);
 }
 
 PS_OUTPUT_DEFAULT entry_dynamic_light_cinematic(VS_OUTPUT_DYNAMIC_LIGHT input) : COLOR
 {
-	// TODO: move that code into functions while preserving compile order
-	float3 world_position = Camera_Position_PS - input.camera_dir;
-	SimpleLight light = get_simple_light(0);
-	
-	float3 v_to_light = light.position.xyz - world_position;
-	float light_distance_squared = dot(v_to_light, v_to_light);
-	v_to_light = normalize(v_to_light);
-	
-	float attenuation = 1.0 / (light_distance_squared + light.position.w);
-	
-	float3 light_dir = light.direction.xyz;
-	float light_angle = dot(v_to_light, light_dir);
-	
-	float2 packed_light_values = float2(attenuation, light_angle);
-	packed_light_values = max(0.0001, packed_light_values * light.unknown3.xy + light.unknown3.zw);
-	float specular_power = pow(packed_light_values.y, light.color.w);
-	
-
-	float intensity = saturate(specular_power + light.direction.w) * saturate(packed_light_values.x);
-	float2 scale = 1.0 / texture_size;
-	float2 fragcoord = (input.position.xy + 0.5) * scale;
-	
-	float3 normal = 2 * tex2D(normal_texture, fragcoord).xyz - 1;
-
-	float angle2 = dot(v_to_light, normal);
-	
-	float2 shadowmap_texcoord = (1.0 / input.shadowmap_texcoord.w) * input.shadowmap_texcoord.xy;
-	float2 gel_texcoord = apply_xform2d(shadowmap_texcoord, p_dynamic_light_gel_xform);
-	float4 gel_sample = tex2D(dynamic_light_gel_texture, gel_texcoord);
-	
-	float3 diffuse = gel_sample.rgb * light.color.rgb * intensity * angle2;
-	float3 albedo = tex2D(albedo_texture, fragcoord).rgb;
-	diffuse *= albedo;
-	
-	float shadow_coefficient = 0.0;
-	
-	if (dynamic_light_shadowing)
-	{
-		shadow_coefficient = shadows_percentage_closer_filtering_4x4(shadowmap_texcoord, 512, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, diffuse);
-	}
-	else
-	{
-		shadow_coefficient = 1.0;
-	}
-	
-	diffuse *= shadow_coefficient;
-	float4 result = float4(expose_color(diffuse), 0);
-	
-	PS_OUTPUT_DEFAULT output;
-	output.low_frequency = export_low_frequency(result);
-	output.high_frequency = export_high_frequency(result);
-	output.unknown = 0;
-	return output;
+	return calculate_dynamic_lights(input.position.xy, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, true);
 }
-
+/*
 PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input) : COLOR
 {
 	// compiled is not 1-1 but close enough. It's probably the order of operations

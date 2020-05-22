@@ -3,6 +3,28 @@
 
 #include "../helpers/math.hlsli"
 #include "../registers/shader.hlsli"
+#include "shadows.hlsli"
+
+struct SimpleLight
+{
+	float4 position;
+	float4 direction;
+	float4 color;
+	float4 unknown3;
+	float4 unknown4;
+};
+
+SimpleLight get_simple_light(int index)
+{
+	SimpleLight light;
+	light.position = simple_lights[index * 5 + 0];
+	light.direction = simple_lights[index * 5 + 1];
+	light.color = simple_lights[index * 5 + 2];
+	light.unknown3 = simple_lights[index * 5 + 3];
+	light.unknown4 = simple_lights[index * 5 + 4];
+	return light;
+}
+
 
 float get_light_diffuse_intensity(SimpleLight light, float3 normal, float3 light_dir)
 {
@@ -19,8 +41,6 @@ float other_specular,
 inout float3 diffuse_accumulation,
 inout float3 specular_accumulation)
 {
-    
-
 	float3 v_to_light_dir = simple_light.position.xyz - vertex_world_position;
 	float v_to_light_dir_norm = dot(v_to_light_dir, v_to_light_dir);
 	
@@ -60,5 +80,6 @@ inout float3 specular_accumulation)
 		specular_accumulation = specular + specular_accumulation;
 	}
 }
+
 
 #endif

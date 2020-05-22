@@ -191,9 +191,6 @@
     <EmbeddedResource Include="hlsl\helpers\prt.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\helpers\albedo_pass.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="hlsl\vertices\vertices.hlsli" />
   </ItemGroup>
   <ItemGroup>

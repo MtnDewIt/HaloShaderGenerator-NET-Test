@@ -4,6 +4,8 @@
 #include "../helpers/types.hlsli"
 #include "../helpers/definition_helper.hlsli"
 
+#define aspect_ratio float2(16, 9) // this is unusual, there should be a global variable, gotta check h3 (could be 4,3 or other)
+#define shadowmap_texture_side 512
 // Not sure if these are all constant or not
 
 bool use_material_texture;
@@ -16,6 +18,11 @@ uniform bool no_dynamic_lights;
 #define color_export_multiply_alpha false
 #endif
 
+#if shaderstage == k_shaderstage_dynamic_light || shaderstage == k_shaderstage_dynamic_light_cinematic
+#define is_dynamic_light true
+#else
+#define is_dynamic_light false
+#endif
 
 #if misc_arg == k_misc_first_person_sometimes || misc_arg == k_misc_first_person_always || blend_type_arg == k_blend_mode_additive || blend_type_arg == k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply || blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha
 uniform bool actually_calc_albedo : register(b12);
@@ -53,26 +60,6 @@ uniform float4 dynamic_environment_blend : register(c15);
 uniform float3 Camera_Position_PS : register(c16);
 uniform float simple_light_count : register(c17);
 uniform float4 simple_lights[40] : register(c18);
-//uniform SimpleLight simple_lights[8] : register(c18);
-
-struct SimpleLight
-{
-    float4 position;
-    float4 direction;
-    float4 color;
-    float4 unknown3;
-    float4 unknown4;
-};
-SimpleLight get_simple_light(int index)
-{
-    SimpleLight light;
-	light.position = simple_lights[index * 5 + 0];
-	light.direction = simple_lights[index * 5 + 1];
-	light.color    = simple_lights[index * 5 + 2];
-    light.unknown3 = simple_lights[index * 5 + 3];
-    light.unknown4 = simple_lights[index * 5 + 4];
-    return light;
-}
 
 uniform bool dynamic_light_shadowing : register(b13);
 uniform xform2d p_dynamic_light_gel_xform : register(c5);

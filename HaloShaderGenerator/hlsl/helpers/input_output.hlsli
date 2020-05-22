@@ -1,6 +1,12 @@
 ﻿#ifndef _INPUT_OUTPUT_HLSLI
 #define _INPUT_OUTPUT_HLSLI
 
+struct ALBEDO_PASS_RESULT
+{
+	float4 albedo;
+	float3 normal;
+};
+
 struct VS_OUTPUT_BLACK_ALBEDO
 {
 	float4 position : SV_Position;

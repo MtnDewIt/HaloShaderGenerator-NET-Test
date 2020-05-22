@@ -88,10 +88,10 @@ namespace HaloShaderGenerator
             //TestPixelShader("chud_cortana_composite");
   
             
-            var stage = ShaderStage.Static_Sh;
+            var stage = ShaderStage.Dynamic_Light;
 
             TestPixelShader(stage, Albedo.Default, Bump_Mapping.Off, Alpha_Test.Off, Specular_Mask.No_Specular_Mask, 
-                Material_Model.Diffuse_Only, Environment_Mapping.None, Self_Illumination.Off, Blend_Mode.Opaque, Parallax.Off, Misc.First_Person_Never, Distortion.Off);
+                Material_Model.Diffuse_Only, Environment_Mapping.None, Self_Illumination.Off, Blend_Mode.Double_Multiply, Parallax.Off, Misc.First_Person_Never, Distortion.Off);
 
             //TestSharedVertexShader(VertexType.World, stage);
             //TestSharedVertexShader(VertexType.Rigid, stage);

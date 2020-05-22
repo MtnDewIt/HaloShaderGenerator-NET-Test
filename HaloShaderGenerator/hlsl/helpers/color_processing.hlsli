@@ -27,7 +27,7 @@ float3 srgb_to_rgb(float3 color)
 
 float3 expose_color(float3 input)
 {
-	if (color_export_multiply_alpha)
+	if (color_export_multiply_alpha && !is_dynamic_light)
 		return input; // should compile as max but compiles as cmp for some reason, equivalent result
 	else
 		return input * g_exposure.x;
@@ -53,7 +53,7 @@ PS_OUTPUT_DEFAULT export_color(float4 color)
 	color.rgb = max(color.rgb, 0);
 	PS_OUTPUT_DEFAULT output;
 	[flatten]
-	if (color_export_multiply_alpha)
+	if (color_export_multiply_alpha && !is_dynamic_light)
 	{
 		output.low_frequency = color * g_exposure.w;
 		output.high_frequency = color * g_exposure.z;
