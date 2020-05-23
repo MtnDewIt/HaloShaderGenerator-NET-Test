@@ -122,7 +122,7 @@ namespace HaloShaderGenerator.Shader
             macros.Add(ShaderGeneratorBase.CreateMacro("material_type_arg", material_model, "k_material_model_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type_arg", environment_mapping, "k_environment_mapping_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", blend_mode, "k_blend_mode_"));
-
+            macros.Add(ShaderGeneratorBase.CreateMacro("misc_arg", misc, "k_misc_"));
             // add misc option macros here
 
             //macros.Add(ShaderGeneratorBase.CreateMacro("distort_proc_ps", distortion, "distort_", "_ps"));

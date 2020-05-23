@@ -21,11 +21,10 @@
 ALBEDO_PASS_RESULT get_albedo_and_normal(bool calc_albedo, float2 fragcoord, float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal)
 {
 	ALBEDO_PASS_RESULT result;
-
+	float2 new_texcoord = calc_parallax_ps(texcoord, camera_dir, tangent, binormal, normal);
+	calc_alpha_test_ps(new_texcoord);
 	if (calc_albedo)
 	{
-		float2 new_texcoord = calc_parallax_ps(texcoord, camera_dir, tangent, binormal, normal);
-		calc_alpha_test_ps(new_texcoord);
 		result.normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, new_texcoord);
 		result.albedo = calc_albedo_ps(new_texcoord, fragcoord);
 	}
@@ -126,7 +125,7 @@ PS_OUTPUT_DEFAULT entry_sh(float2 position, float2 texcoord, float3 camera_dir, 
 		color.rgb = albedo;
 		color.a = 1.0;
 	}
-	
+
 	if (blend_type_arg == k_blend_mode_double_multiply)
 		color.rgb *= 2;
 
