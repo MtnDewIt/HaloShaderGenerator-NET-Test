@@ -1,10 +1,6 @@
 ﻿#define shader_template
 
-#include "registers\shader.hlsli"
-#include "helpers\input_output.hlsli"
-#include "helpers\shadows.hlsli"
-#include "helpers\definition_helper.hlsli"
-#include "helpers\color_processing.hlsli"
+
 #include "methods\albedo.hlsli"
 #include "methods\bump_mapping.hlsli"
 #include "methods\alpha_test.hlsli"
@@ -15,6 +11,12 @@
 #include "methods\blend_mode.hlsli"
 #include "methods\parallax.hlsli"
 #include "methods\misc.hlsli"
+
+#include "registers\shader.hlsli"
+#include "helpers\input_output.hlsli"
+#include "helpers\shadows.hlsli"
+#include "helpers\definition_helper.hlsli"
+#include "helpers\color_processing.hlsli"
 
 ALBEDO_PASS_RESULT get_albedo_and_normal(bool calc_albedo, float2 fragcoord, float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal)
 {
@@ -208,9 +210,9 @@ bool is_cinematic)
 	if (dynamic_light_shadowing)
 	{
 		if (is_cinematic)
-			shadow_coefficient = shadows_percentage_closer_filtering_custom_4x4(shadowmap_texcoord_depth_adjusted, shadowmap_texture_side, depth_scale, depth_offset, diffuse);
+			shadow_coefficient = shadows_percentage_closer_filtering_custom_4x4(shadowmap_texcoord_depth_adjusted, shadowmap_texture_size, depth_scale, depth_offset, diffuse);
 		else
-			shadow_coefficient = shadows_percentage_closer_filtering_3x3(shadowmap_texcoord_depth_adjusted, shadowmap_texture_side, depth_scale, depth_offset, diffuse);
+			shadow_coefficient = shadows_percentage_closer_filtering_3x3(shadowmap_texcoord_depth_adjusted, shadowmap_texture_size, depth_scale, depth_offset, diffuse);
 	}
 	else
 	{
@@ -246,14 +248,16 @@ PS_OUTPUT_DEFAULT entry_dynamic_light_cinematic(VS_OUTPUT_DYNAMIC_LIGHT input) :
 {
 	return calculate_dynamic_lights(input.position.xy, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, true);
 }
-/*
+
 PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input) : COLOR
 {
-	// compiled is not 1-1 but close enough. It's probably the order of operations
-	PS_OUTPUT_DEFAULT output;
+	
+	ALBEDO_PASS_RESULT albedo_pass = get_albedo_and_normal(true, input.position.xy, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
+	float3 normal = albedo_pass.normal;
 	
 	float3 result_color = float3(0, 0, 0);
 	float debug_mode = p_render_debug_mode.x;
+	
 	[branch]
 	if (debug_mode < 1)
 	{
@@ -264,15 +268,14 @@ PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input)
 		[branch]
 		if (debug_mode < 2)
 		{
-			float2 temp = floor(1024 * input.lightmap_texcoord.xy);
+			float2 temp = floor(default_lightmap_size * input.lightmap_texcoord.xy);
 			temp = temp * 0.5 - floor(0.5 * temp);
-			temp = abs(temp);
 
 			[unbranch]
-			if (temp.x > 0)
+			if (temp.x == 0)
 			{
 				[unbranch]
-				if (temp.y > 0)
+				if (temp.y == 0)
 				{
 					result_color.rgb = float3(1.0, 0.7, 0.3);
 				}
@@ -284,7 +287,7 @@ PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input)
 			else
 			{
 				[unbranch]
-				if (temp.y > 0)
+				if (temp.y == 0)
 				{
 					result_color.rgb = float3(0, 0, 0);
 				}
@@ -302,31 +305,32 @@ PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input)
 			if (debug_mode < 3)
 				result_color.xyz = input.normal;
 			else if (debug_mode < 4)
-				result_color.xyz = input.tangent;
+				result_color.xyz = normal;
 			else if (debug_mode < 5)
-				result_color.xyz = input.binormal;
+				result_color.xyz = input.tangent;
 			else if (debug_mode < 6)
-				result_color.xyz = default_color;
+				result_color.xyz = input.binormal;
 			else if (debug_mode < 7)
-				result_color.xyz = default_color;
+				result_color.xyz = 0;
 			else if (debug_mode < 8)
-				result_color.xyz = default_color;
+				result_color.xyz = 0;
 			else if (debug_mode < 9)
-				result_color.xyz = default_color;
-			else if (debug_mode < 10)
-				result_color.xyz = default_color;
+				result_color.xyz = 0;
+			else if (debug_mode >= 10)
+				result_color.xyz = 0;
 			else
-				result_color.xyz = input.normal;
+				result_color.xyz = default_color;
 			
 		}
 	}
 	result_color = max(result_color, 0);
+	PS_OUTPUT_DEFAULT output;
 	output.low_frequency = export_low_frequency(float4(result_color, 0));
 	output.high_frequency = export_high_frequency(float4(result_color, 0));
 	output.unknown = 0;
 	return output;
 }
-
+/*
 PS_OUTPUT_DEFAULT entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLOR input) : COLOR
 {
 	PS_OUTPUT_DEFAULT output;

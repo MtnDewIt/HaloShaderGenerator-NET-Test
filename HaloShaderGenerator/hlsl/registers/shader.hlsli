@@ -5,7 +5,9 @@
 #include "../helpers/definition_helper.hlsli"
 
 #define aspect_ratio float2(16, 9) // this is unusual, there should be a global variable, gotta check h3 (could be 4,3 or other)
-#define shadowmap_texture_side 512
+#define shadowmap_texture_size 512
+#define default_lightmap_size 1024
+
 // Not sure if these are all constant or not
 
 bool use_material_texture;
