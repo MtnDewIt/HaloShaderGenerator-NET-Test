@@ -170,95 +170,7 @@ float prt)
 	
 	return entry_final_pass(albedo_pass.albedo, alpha, normal, texcoord, camera_dir, view_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity, diffuse_ref, prt, 0, m_no_dynamic_lights, sky_radiance, extinction_factor);
 }
-/*
-PS_OUTPUT_DEFAULT entry_sh(float2 position,
-float2 texcoord,
-float3 camera_dir,
-float3 tangent,
-float3 binormal,
-float3 input_normal,
-float3 sky_radiance,
-float3 extinction_factor,
-float prt,
-bool per_vertex_color,
-float3 vertex_color,
-bool use_lightmap,
-float2 lightmap_texcoord) : COLOR
-{
-	ALBEDO_PASS_RESULT albedo_pass = get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, input_normal.xyz);
-	float3 albedo = albedo_pass.albedo.rgb;
-	float alpha = albedo_pass.albedo.a;
-	float3 normal = normalize(albedo_pass.normal);
-	
-	float4 color;
-	
-	if (calc_material)
-	{
-		float3 n_camera_dir = normalize(camera_dir);
-		float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
-		float3 dominant_light_dir, dominant_light_intensity;
-		float3 diffuse_ref;
-		bool m_no_dynamic_lights = no_dynamic_lights;
-		
-		if (use_lightmap)
-		{
-			lightmap_diffuse_reflectance(input_normal, lightmap_texcoord, diffuse_ref, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity);
-		}
-		else if (per_vertex_color)
-		{
-			diffuse_ref = vertex_color;
-			m_no_dynamic_lights = false;
-			normal = normalize(input_normal);
-		}
-		else
-		{
-			get_current_sh_coefficients_quadratic(sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity);
-			diffuse_ref = diffuse_reflectance(normal);
-		}
-		
-		float3 material_lighting = material_type(albedo, normal, n_camera_dir, texcoord.xy, camera_dir, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity, diffuse_ref, m_no_dynamic_lights, prt);
-		
-		material_lighting = material_lighting * extinction_factor;
 
-		float3 environment = envmap_type(n_camera_dir, normal);
-		float4 self_illumination = calc_self_illumination_ps(texcoord.xy, albedo);
-
-		color.rgb = (environment + self_illumination.xyz) * sky_radiance.xyz + material_lighting;
-		
-		if (blend_type_arg != k_blend_mode_additive)
-		{
-			color.rgb += sky_radiance.rgb;
-		}
-		
-		if (blend_type_arg == k_blend_mode_additive)
-		{
-			color.a = 0.0;
-		}
-		else if (blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha)
-		{
-			color.a = alpha;
-		}
-		else
-		{
-			color.a = 1.0;
-		}
-	}
-	else
-	{
-		color.rgb = albedo;
-		color.a = 1.0;
-	}
-
-	if (blend_type_arg == k_blend_mode_double_multiply)
-		color.rgb *= 2;
-
-	color.rgb = expose_color(color.rgb);
-	
-	float4 output_color = blend_type(color, 1.0f);
-
-	return export_color(output_color);
-}
-*/
 PS_OUTPUT_DEFAULT entry_static_sh(VS_OUTPUT_STATIC_SH input) : COLOR
 {
 	return entry_static_prt_any(input.position.xy, input.texcoord.xy, input.camera_dir.xyz,input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, 1.0);
@@ -487,6 +399,6 @@ PS_OUTPUT_DEFAULT entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input) : COLOR
 	bool m_no_dynamic_lights = no_dynamic_lights;
 	
 	lightmap_diffuse_reflectance(normal, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity, diffuse_ref);
-	
+
 	return entry_final_pass(albedo_pass.albedo, alpha, normal, input.texcoord, input.camera_dir, view_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity, diffuse_ref, 1.0, 0, m_no_dynamic_lights, input.sky_radiance, input.extinction_factor);
 }
