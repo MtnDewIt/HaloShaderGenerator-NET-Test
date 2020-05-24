@@ -77,13 +77,118 @@ PS_OUTPUT_DEFAULT entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input) : COLOR
 	return export_color(blend_type(final_color, 1.0f));
 }
 
-PS_OUTPUT_DEFAULT entry_sh(float2 position, float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal, float3 sky_radiance, float3 extinction_factor, float prt) : COLOR
+PS_OUTPUT_DEFAULT entry_final_pass(
+float4 albedo,
+float alpha,
+float3 normal,
+float2 texcoord,
+float3 camera_dir,
+float3 view_dir,
+float3 world_position,
+float4 sh_0,
+float4 sh_312[3],
+float4 sh_457[3],
+float4 sh_8866[3],
+float3 dominant_light_direction,
+float3 dominant_light_intensity,
+float3 diffuse_reflectance,
+float radiance_transfer,
+float3 vertex_color,
+bool no_dynamic_lights,
+float3 sky_radiance,
+float3 extinction_factor)
+{
+	float4 color;
+	if (calc_material)
+	{
+		float3 material_lighting = material_type(albedo.rgb, normal, view_dir, texcoord.xy, camera_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, diffuse_reflectance, no_dynamic_lights, radiance_transfer, vertex_color);
+		material_lighting = material_lighting * extinction_factor;
+
+		float3 environment = envmap_type(view_dir, normal);
+		float4 self_illumination = calc_self_illumination_ps(texcoord.xy, albedo.rgb);
+
+		color.rgb = (environment + self_illumination.rgb) * sky_radiance.xyz + material_lighting;
+		
+		if (blend_type_arg != k_blend_mode_additive)
+		{
+			color.rgb += sky_radiance.rgb;
+		}
+		
+		if (blend_type_arg == k_blend_mode_additive)
+		{
+			color.a = 0.0;
+		}
+		else if (blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha)
+		{
+			color.a = alpha;
+		}
+		else
+		{
+			color.a = 1.0;
+		}
+	}
+	else
+	{
+		color.rgb = albedo.rgb * vertex_color;
+		color.a = 1.0;
+	}
+
+	if (blend_type_arg == k_blend_mode_double_multiply)
+		color.rgb *= 2;
+
+	color.rgb = expose_color(color.rgb);
+	
+	float4 output_color = blend_type(color, 1.0f);
+
+	return export_color(output_color);
+}
+
+PS_OUTPUT_DEFAULT entry_static_prt_any(
+float2 position,
+float2 texcoord,
+float3 camera_dir,
+float3 normal,
+float3 tangent,
+float3 binormal,
+float3 sky_radiance,
+float3 extinction_factor,
+float prt)
 {
 	ALBEDO_PASS_RESULT albedo_pass = get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz);
-	
 	float3 albedo = albedo_pass.albedo.rgb;
 	float alpha = albedo_pass.albedo.a;
 	normal = normalize(albedo_pass.normal);
+	
+	float3 view_dir = normalize(camera_dir);
+	float3 world_position = Camera_Position_PS - camera_dir;
+	
+	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
+	float3 dominant_light_dir, dominant_light_intensity;
+	bool m_no_dynamic_lights = no_dynamic_lights;
+	get_current_sh_coefficients_quadratic(sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity);
+	float3 diffuse_ref = diffuse_reflectance(normal);
+	
+	return entry_final_pass(albedo_pass.albedo, alpha, normal, texcoord, camera_dir, view_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity, diffuse_ref, prt, 0, m_no_dynamic_lights, sky_radiance, extinction_factor);
+}
+/*
+PS_OUTPUT_DEFAULT entry_sh(float2 position,
+float2 texcoord,
+float3 camera_dir,
+float3 tangent,
+float3 binormal,
+float3 input_normal,
+float3 sky_radiance,
+float3 extinction_factor,
+float prt,
+bool per_vertex_color,
+float3 vertex_color,
+bool use_lightmap,
+float2 lightmap_texcoord) : COLOR
+{
+	ALBEDO_PASS_RESULT albedo_pass = get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, input_normal.xyz);
+	float3 albedo = albedo_pass.albedo.rgb;
+	float alpha = albedo_pass.albedo.a;
+	float3 normal = normalize(albedo_pass.normal);
 	
 	float4 color;
 	
@@ -91,10 +196,28 @@ PS_OUTPUT_DEFAULT entry_sh(float2 position, float2 texcoord, float3 camera_dir, 
 	{
 		float3 n_camera_dir = normalize(camera_dir);
 		float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
-		get_current_sh_coefficients_quadratic(sh_0, sh_312, sh_457, sh_8866);
-		float3 diffuse_ref = diffuse_reflectance(normal);
-	
-		float3 material_lighting = material_type(albedo, normal, n_camera_dir, texcoord.xy, camera_dir, sh_0, sh_312, sh_457, sh_8866, k_ps_dominant_light_direction.xyz, k_ps_dominant_light_intensity.rgb, diffuse_ref, prt);
+		float3 dominant_light_dir, dominant_light_intensity;
+		float3 diffuse_ref;
+		bool m_no_dynamic_lights = no_dynamic_lights;
+		
+		if (use_lightmap)
+		{
+			lightmap_diffuse_reflectance(input_normal, lightmap_texcoord, diffuse_ref, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity);
+		}
+		else if (per_vertex_color)
+		{
+			diffuse_ref = vertex_color;
+			m_no_dynamic_lights = false;
+			normal = normalize(input_normal);
+		}
+		else
+		{
+			get_current_sh_coefficients_quadratic(sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity);
+			diffuse_ref = diffuse_reflectance(normal);
+		}
+		
+		float3 material_lighting = material_type(albedo, normal, n_camera_dir, texcoord.xy, camera_dir, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity, diffuse_ref, m_no_dynamic_lights, prt);
+		
 		material_lighting = material_lighting * extinction_factor;
 
 		float3 environment = envmap_type(n_camera_dir, normal);
@@ -135,25 +258,25 @@ PS_OUTPUT_DEFAULT entry_sh(float2 position, float2 texcoord, float3 camera_dir, 
 
 	return export_color(output_color);
 }
-
+*/
 PS_OUTPUT_DEFAULT entry_static_sh(VS_OUTPUT_STATIC_SH input) : COLOR
 {
-	return entry_sh(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.tangent, input.binormal, input.normal, input.sky_radiance, input.extinction_factor, 1.0);
+	return entry_static_prt_any(input.position.xy, input.texcoord.xy, input.camera_dir.xyz,input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, 1.0);
 }
 
 PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PRT input) : COLOR
 {
-	return entry_sh(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.tangent, input.binormal, input.normal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector.x);
+	return entry_static_prt_any(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector.x);
 }
 
 PS_OUTPUT_DEFAULT entry_static_prt_linear(VS_OUTPUT_STATIC_PRT input) : COLOR
 {
-	return entry_sh(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.tangent, input.binormal, input.normal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector.x);
+	return entry_static_prt_any(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector.x);
 }
 
 PS_OUTPUT_DEFAULT entry_static_prt_quadratic(VS_OUTPUT_STATIC_PRT input) : COLOR
 {
-	return entry_sh(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.tangent, input.binormal, input.normal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector.x);
+	return entry_static_prt_any(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector.x);
 }
 
 PS_OUTPUT_DEFAULT entry_sfx_distort(VS_OUTPUT_SFX_DISTORT input) : COLOR
@@ -329,73 +452,41 @@ PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input)
 	output.unknown = 0;
 	return output;
 }
-/*
+
 PS_OUTPUT_DEFAULT entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLOR input) : COLOR
 {
-	PS_OUTPUT_DEFAULT output;
-	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
-	get_current_sh_coefficients_quadratic(sh_0, sh_312, sh_457, sh_8866);
-	float3 camera_dir = input.camera_dir.xyz;
-	float2 fragcoord = (input.position.xy + 0.5) / texture_size;
-    
-    // TODO: this may be overkill, check other shaders to see if it always use the diffuse/normal texture or it can compute the albedo again
-	ALBEDO_PASS_RESULT albedo_and_normal = get_albedo_and_normal(fragcoord, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
-	float3 albedo = albedo_and_normal.albedo;
-	float3 normal = albedo_and_normal.normal;
+	ALBEDO_PASS_RESULT albedo_pass = get_albedo_and_normal(actually_calc_albedo, input.position.xy, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
+	float3 albedo = albedo_pass.albedo.rgb;
+	float alpha = albedo_pass.albedo.a;
+	float3 normal = normalize(input.normal);
 	
-	float3 n_camera_dir = normalize(camera_dir);
-	float3 diffuse_ref = diffuse_reflectance(normal);
-	float3 material_lighting = material_type(albedo, normal, n_camera_dir, input.texcoord.xy, camera_dir, sh_0, sh_312, sh_457, sh_8866, k_ps_dominant_light_direction.xyz, k_ps_dominant_light_intensity.rgb, diffuse_ref);
-	material_lighting += (input.vertex_color * albedo);
-	material_lighting = material_lighting * input.extinction_factor + input.sky_radiance;
-	float3 environment = envmap_type(n_camera_dir, input.normal);
-	float4 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo);
-
-	float3 color = (environment + self_illumination.xyz) * input.sky_radiance.xyz + material_lighting;
-
-	float3 exposed_color = expose_color(color);
-
-    //TODO: No transparency so far, we're going to need this!!!
-	float4 output_color = blend_type(float4(exposed_color, 1.0), 1.0f);
-
-	output.low_frequency = export_low_frequency(output_color);
-	output.high_frequency = export_high_frequency(output_color);
-
-	output.unknown = 0;
-
-	return output;
+	float3 view_dir = normalize(input.camera_dir);
+	float3 world_position = Camera_Position_PS - input.camera_dir;
+	float3 diffuse_ref = input.vertex_color;
+	
+	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
+	float3 dominant_light_dir, dominant_light_intensity;
+	get_current_sh_coefficients_quadratic(sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity);
+	
+	return entry_final_pass(albedo_pass.albedo, alpha, normal, input.texcoord, input.camera_dir, view_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity, 0.0, 1.0,input.vertex_color, false, input.sky_radiance, input.extinction_factor);
 }
 
 PS_OUTPUT_DEFAULT entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input) : COLOR
 {
-	PS_OUTPUT_DEFAULT output;
-	float3 camera_dir = input.camera_dir.xyz;
-	float2 fragcoord = (input.position.xy + 0.5) / texture_size;
+	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
+	float3 dominant_light_dir, dominant_light_intensity, diffuse_ref;
+	get_lightmap_sh_coefficients(input.lightmap_texcoord, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity);
 	
-	ALBEDO_PASS_RESULT albedo_and_normal = get_albedo_and_normal(fragcoord, input.texcoord.xy, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
-	float3 albedo = albedo_and_normal.albedo;
-	float3 normal = albedo_and_normal.normal;
-	float3 n_camera_dir = normalize(camera_dir);
-	float3 dominant_light_dir, dominant_light_intensity, lightmap_diffuse_reflectance;
-	float3 diffuse_reflectance = lightmap_diffuse_reflectance(normal, input.lightmap_texcoord, lightmap_diffuse_reflectance, dominant_light_dir, dominant_light_intensity);
-
-	float3 material_lighting = material_type(albedo, normal, n_camera_dir, input.texcoord.xy, camera_dir, sh_0, sh_312, sh_457, sh_8866, k_ps_dominant_light_direction.xyz, k_ps_dominant_light_intensity.rgb, diffuse_ref)
-	material_lighting = material_lighting * input.extinction_factor + input.sky_radiance;
+	ALBEDO_PASS_RESULT albedo_pass = get_albedo_and_normal(actually_calc_albedo, input.position.xy, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
+	float3 albedo = albedo_pass.albedo.rgb;
+	float alpha = albedo_pass.albedo.a;
+	float3 normal = normalize(albedo_pass.normal);
 	
-	float3 environment = envmap_type(n_camera_dir, normal);
-	float4 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo);
-
-	float3 color = (environment + self_illumination.xyz) * input.sky_radiance.xyz + material_lighting;
-
-	float3 exposed_color = expose_color(color);
-
-    //TODO: No transparency so far, we're going to need this!!!
-	float4 output_color = blend_type(float4(exposed_color, 1.0));
-
-	output.low_frequency = export_low_frequency(output_color);
-	output.high_frequency = export_high_frequency(output_color);
-
-	output.unknown = 0;
-
-	return output;
-}*/
+	float3 view_dir = normalize(input.camera_dir);
+	float3 world_position = Camera_Position_PS - input.camera_dir;
+	bool m_no_dynamic_lights = no_dynamic_lights;
+	
+	lightmap_diffuse_reflectance(normal, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity, diffuse_ref);
+	
+	return entry_final_pass(albedo_pass.albedo, alpha, normal, input.texcoord, input.camera_dir, view_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity, diffuse_ref, 1.0, 0, m_no_dynamic_lights, input.sky_radiance, input.extinction_factor);
+}

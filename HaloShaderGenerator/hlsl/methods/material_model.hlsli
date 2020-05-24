@@ -7,9 +7,6 @@
 #include "../helpers/sh.hlsli"
 #include "../material_models/cook_torrance.hlsli"
 
-#define MATERIAL_TYPE_ARGS float3 diffuse, float3 normal, float3 view_dir, float2 texcoord, float3 camera_dir, float3 prt_result, float3 vertex_color
-#define MATERIAL_TYPE_ARGNAMES diffuse, normal, view_dir, texcoord, camera_dir, prt_result, vertex_color
-
 
 void calc_simple_lights(
 float3 normal,
@@ -64,6 +61,7 @@ float3 normal,
 float3 view_dir,
 float2 texcoord,
 float3 camera_dir,
+float3 world_position,
 float4 sh_0,
 float4 sh_312[3],
 float4 sh_457[3],
@@ -71,21 +69,23 @@ float4 sh_8866[3],
 float3 light_dir,
 float3 light_intensity,
 float3 diffuse_reflectance,
-float prt)
+bool no_dynamic_lights,
+float prt,
+float3 vertex_color)
 {
 	float3 ligthing;
     if (!no_dynamic_lights)
     {
-        float3 vertex_world_position = Camera_Position_PS - camera_dir;
 		float3 diffuse_accumulation;
 		float3 specular_accumulation;
 		
-		calc_simple_lights(normal, vertex_world_position, 0, 0, diffuse_accumulation, specular_accumulation);
+		calc_simple_lights(normal, world_position, 0, 0, diffuse_accumulation, specular_accumulation);
 		
 		ligthing = diffuse_reflectance * prt + diffuse_accumulation;
 	}
 	else
 		ligthing = diffuse_reflectance * prt;
+	ligthing += vertex_color;
 	
 	return albedo * ligthing;
 }
@@ -96,7 +96,8 @@ float3 albedo,
 float3 normal, 
 float3 view_dir, 
 float2 texcoord, 
-float3 camera_dir, 
+float3 camera_dir,
+float3 world_position,
 float4 sh_0, 
 float4 sh_312[3], 
 float4 sh_457[3], 
@@ -104,7 +105,9 @@ float4 sh_8866[3],
 float3 light_dir,
 float3 light_intensity,
 float3 diffuse_reflectance,
-float prt)
+bool no_dynamic_lights,
+float prt,
+float3 vertex_color)
 {
 	float c_specular_coefficient;
 	float c_albedo_blend;
@@ -156,11 +159,10 @@ float prt)
 	}
 	else
 	{
-		float3 vertex_world_position = Camera_Position_PS - camera_dir;
 		diffuse_accumulation = 0;
 		specular_accumulation = 0;
 		float roughness_unknown = 0.272909999 * pow(roughness.x, -2.19729996);
-		calc_simple_lights(normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
+		calc_simple_lights(normal, world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
 		specular_accumulation *= roughness_unknown;
 	}
 	

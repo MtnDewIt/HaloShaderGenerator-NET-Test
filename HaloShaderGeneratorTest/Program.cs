@@ -13,6 +13,50 @@ namespace HaloShaderGenerator
 {
     class Application
     {
+        static int Main()
+        {
+            //var stage = ShaderStage.Static_Sh;
+
+            List<ShaderStage> stages_to_gen_prt = new List<ShaderStage> { ShaderStage.Static_Sh, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Prt_Linear, ShaderStage.Static_Prt_Quadratic };
+            List<ShaderStage> stages_to_gen = new List<ShaderStage> { ShaderStage.Static_Per_Pixel };
+
+            foreach(var stage in stages_to_gen)
+            {
+                foreach (Blend_Mode blend_mode in Enum.GetValues(typeof(Blend_Mode)))
+                {
+                    TestPixelShader(
+                    stage,
+                    Albedo.Default,
+                    Bump_Mapping.Off,
+                    Alpha_Test.Off,
+                    Specular_Mask.No_Specular_Mask,
+                    Material_Model.Diffuse_Only,
+                    Environment_Mapping.None,
+                    Self_Illumination.Off,
+                    blend_mode,
+                    Parallax.Off,
+                    Misc.First_Person_Never,
+                    Distortion.Off);
+                }
+            }
+            
+            
+
+            //TestSharedVertexShader(VertexType.World, stage);
+            //TestSharedVertexShader(VertexType.Rigid, stage);
+            //TestSharedVertexShader(VertexType.Skinned, stage);
+            //TestSharedPixelShader(stage, (int)Shader.ShaderMethods.Alpha_Test, (int)Shader.Alpha_Test.Off);
+            //TestSharedPixelShader(stage, (int)Shader.ShaderMethods.Alpha_Test, (int)Shader.Alpha_Test.On);
+
+            /*
+            TestPixelBlack(ShaderStage.Albedo);
+            TestSharedVertexBlack(VertexType.World, ShaderStage.Albedo);
+            TestSharedVertexBlack(VertexType.Rigid, ShaderStage.Albedo);
+            TestSharedVertexBlack(VertexType.Skinned, ShaderStage.Albedo);
+            */
+            return 0;
+        }
+
         static void WriteShaderFile(string name, string disassembly)
         {
             using (FileStream test = new FileInfo(name).Create())
@@ -29,7 +73,7 @@ namespace HaloShaderGenerator
             var bytecode = gen.GeneratePixelShader(stage).Bytecode;
             var parameters = gen.GetPixelShaderParameters();
 
-            foreach(var param in parameters.GetRealParameters())
+            foreach (var param in parameters.GetRealParameters())
             {
                 Console.WriteLine(param.ParameterName);
             }
@@ -82,31 +126,6 @@ namespace HaloShaderGenerator
             Console.WriteLine(str);
         }
 
-        static int Main()
-        {
-            //TestVertexShader("chud_cortana_composite");
-            //TestPixelShader("chud_cortana_composite");
-  
-            
-            var stage = ShaderStage.Static_Sh;
-
-            TestPixelShader(stage, Albedo.Default, Bump_Mapping.Off, Alpha_Test.On, Specular_Mask.No_Specular_Mask, 
-                Material_Model.Diffuse_Only, Environment_Mapping.None, Self_Illumination.Off, Blend_Mode.Opaque, Parallax.Off, Misc.First_Person_Always, Distortion.Off);
-
-            //TestSharedVertexShader(VertexType.World, stage);
-            //TestSharedVertexShader(VertexType.Rigid, stage);
-            //TestSharedVertexShader(VertexType.Skinned, stage);
-            //TestSharedPixelShader(stage, (int)Shader.ShaderMethods.Alpha_Test, (int)Shader.Alpha_Test.Off);
-            //TestSharedPixelShader(stage, (int)Shader.ShaderMethods.Alpha_Test, (int)Shader.Alpha_Test.On);
-
-            /*
-            TestPixelBlack(ShaderStage.Albedo);
-            TestSharedVertexBlack(VertexType.World, ShaderStage.Albedo);
-            TestSharedVertexBlack(VertexType.Rigid, ShaderStage.Albedo);
-            TestSharedVertexBlack(VertexType.Skinned, ShaderStage.Albedo);
-            */
-            return 0;
-        }
 
         static void TestPixelBlack(ShaderStage stage)
         {

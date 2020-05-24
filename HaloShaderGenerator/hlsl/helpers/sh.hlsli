@@ -5,7 +5,10 @@
 #include "math.hlsli"
 #include "color_processing.hlsli"
 
-float4 sample_lightprobe_texture_array(int band_index, float2 texcoord, float compression_factor)
+float4 sample_lightprobe_texture_array(
+int band_index, 
+float2 texcoord,
+float compression_factor)
 {
 	float4 result;
 	float4 sample1 = tex3D(lightprobe_texture_array, float3(texcoord, 0.0625 + band_index * 0.25));
@@ -16,7 +19,9 @@ float4 sample_lightprobe_texture_array(int band_index, float2 texcoord, float co
 	return result;
 }
 
-float4 sample_dominant_light_intensity_texture_array(float2 texcoord, float compression_factor)
+float4 sample_dominant_light_intensity_texture_array(
+float2 texcoord,
+float compression_factor)
 {
 	float4 result;
 	float4 sample1 = tex3D(dominant_light_intensity_map, float3(texcoord, 0.25));
@@ -32,11 +37,43 @@ float3 calc_dominant_light_dir(float4 sh[4])
 	return normalize(float3(-luminance(sh[3].rgb), -luminance(sh[1].rgb), luminance(sh[2].rgb)));
 }
 
-void lightmap_diffuse_reflectance(float3 normal, float2 lightmap_texcoord, out float3 diffuse_reflectance, out float3 dominant_light_dir, out float3 dominant_light_intensity)
+void lightmap_diffuse_reflectance(
+in float3 normal,
+in float4 sh_0,
+in float4 sh_312[3],
+in float4 sh_457[3],
+in float4 sh_8866[3],
+in float3 dominant_light_dir,
+in float3 dominant_light_intensity,
+out float3 diffuse_reflectance)
+{
+	float c2 = 0.511664f;
+	float c4 = 0.886227f;
+	float3 x1;
+	//linear
+	x1.r = dot(normal, sh_312[0].xyz);
+	x1.g = dot(normal, sh_312[1].xyz);
+	x1.b = dot(normal, sh_312[2].xyz);
+	
+	float3 lightprobe_color = c4 * sh_0.rgb + (-2.f * c2) * x1;
+	lightprobe_color /= PI;
+	
+	float3 intensity_unknown = 0.280999988 * dominant_light_intensity.rgb * dot(normal, dominant_light_dir);
+	diffuse_reflectance = lightprobe_color + intensity_unknown;
+}
+
+
+
+void get_lightmap_sh_coefficients(
+in float2 lightmap_texcoord,
+out float4 sh_0,
+out float4 sh_312[3],
+out float4 sh_457[3],
+out float4 sh_8866[3],
+out float3 dominant_light_dir,
+out float3 dominant_light_intensity)
 {
 	float4 sh[4];
-	float4 sh_0;
-	float4 sh_312[3];
 
 	sh[0] = sample_lightprobe_texture_array(0, lightmap_texcoord, p_lightmap_compress_constant_0.x);
 	sh[1] = sample_lightprobe_texture_array(1, lightmap_texcoord, p_lightmap_compress_constant_0.y);
@@ -58,19 +95,13 @@ void lightmap_diffuse_reflectance(float3 normal, float2 lightmap_texcoord, out f
 	sh_312[1].xyz += -0.4886025f * dominant_light_dir.xyz * -dominant_light_intensity.g;
 	sh_312[2].xyz += -0.4886025f * dominant_light_dir.xyz * -dominant_light_intensity.b;
 	
-	float c2 = 0.511664f;
-	float c4 = 0.886227f;
-	float3 x1;
-	//linear
-	x1.r = dot(normal, sh_312[0].xyz);
-	x1.g = dot(normal, sh_312[1].xyz);
-	x1.b = dot(normal, sh_312[2].xyz);
-	
-	float3 lightprobe_color = c4 * sh_0.rgb + (-2.f * c2) * x1;
-	lightprobe_color /= PI;
-	
-	float3 intensity_unknown = 0.280999988 * dominant_light_intensity.rgb * dot(normal, dominant_light_dir);
-	diffuse_reflectance = lightprobe_color + intensity_unknown;
+	// quadratic terms set to 0
+	sh_457[0] = 0;
+	sh_457[1] = 0;
+	sh_457[2] = 0;
+	sh_8866[0] = 0;
+	sh_8866[1] = 0;
+	sh_8866[2] = 0;
 }
 
 // Lighting and materials of Halo 3
@@ -100,7 +131,13 @@ float3 diffuse_reflectance(float3 normal)
 	return lightprobe_color / PI;
 }
 
-void get_current_sh_coefficients_quadratic(out float4 sh_0, out float4 sh_312[3], out float4 sh_457[3], out float4 sh_8866[3])
+void get_current_sh_coefficients_quadratic(
+out float4 sh_0,
+out float4 sh_312[3],
+out float4 sh_457[3],
+out float4 sh_8866[3],
+out float3 dominant_light_dir,
+out float3 dominant_light_intensity)
 {
 	sh_0 = p_lighting_constant_0;
 	sh_312[0] = p_lighting_constant_1;
@@ -112,9 +149,17 @@ void get_current_sh_coefficients_quadratic(out float4 sh_0, out float4 sh_312[3]
 	sh_8866[0] = p_lighting_constant_7;
 	sh_8866[1] = p_lighting_constant_8;
 	sh_8866[2] = p_lighting_constant_9;
+	dominant_light_dir = k_ps_dominant_light_direction;
+	dominant_light_intensity = k_ps_dominant_light_intensity;
 }
 
-void get_current_sh_coefficients_linear(out float4 sh_0, out float4 sh_312[3], out float4 sh_457[3], out float4 sh_8866[3])
+void get_current_sh_coefficients_linear(
+out float4 sh_0,
+out float4 sh_312[3],
+out float4 sh_457[3],
+out float4 sh_8866[3],
+out float3 dominant_light_dir,
+out float3 dominant_light_intensity)
 {
 	sh_0 = p_lighting_constant_0;
 	sh_312[0] = p_lighting_constant_1;
@@ -126,9 +171,13 @@ void get_current_sh_coefficients_linear(out float4 sh_0, out float4 sh_312[3], o
 	sh_8866[0] = 0;
 	sh_8866[1] = 0;
 	sh_8866[2] = 0;
+	dominant_light_dir = k_ps_dominant_light_direction;
+	dominant_light_intensity = k_ps_dominant_light_intensity;
 }
 
-void pack_constants(in float3 sh[9], out float4 lc[10])
+void pack_constants(
+in float3 sh[9],
+out float4 lc[10])
 {
 	lc[0] = float4(sh[0], 0);
 	lc[1] = float4(sh[3].r, sh[1].r, -sh[2].r, 0);
