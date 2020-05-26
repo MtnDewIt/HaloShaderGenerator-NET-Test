@@ -7,7 +7,7 @@
 
 float calc_alpha_test_off_ps(float2 texcoord)
 {
-	return 0.0;
+	return 1.0;
 }
 
 float calc_alpha_test_on_ps(float2 texcoord)

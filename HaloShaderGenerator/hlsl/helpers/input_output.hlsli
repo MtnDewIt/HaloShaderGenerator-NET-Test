@@ -4,6 +4,7 @@
 struct ALBEDO_PASS_RESULT
 {
 	float4 albedo;
+	float alpha;
 	float3 normal;
 };
 

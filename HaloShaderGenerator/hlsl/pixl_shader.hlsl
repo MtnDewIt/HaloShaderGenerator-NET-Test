@@ -22,7 +22,7 @@ ALBEDO_PASS_RESULT get_albedo_and_normal(bool calc_albedo, float2 fragcoord, flo
 {
 	ALBEDO_PASS_RESULT result;
 	float2 new_texcoord = calc_parallax_ps(texcoord, camera_dir, tangent, binormal, normal);
-	calc_alpha_test_ps(new_texcoord);
+	result.alpha = calc_alpha_test_ps(new_texcoord);
 	if (calc_albedo)
 	{
 		result.normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, new_texcoord);
@@ -30,8 +30,9 @@ ALBEDO_PASS_RESULT get_albedo_and_normal(bool calc_albedo, float2 fragcoord, flo
 	}
 	else
 	{
+		fragcoord += 0.5;	// here for calc_material = false
 		float2 inv_texture_size = (1.0 / texture_size);
-		float2 texcoord = (fragcoord + 0.5) * inv_texture_size;
+		float2 texcoord = fragcoord * inv_texture_size; // inlined with fragcoord for calc_material = true
 		float4 normal_texture_sample = tex2D(normal_texture, texcoord);
 		float4 albedo_texture_sample = tex2D(albedo_texture, texcoord);
 		result.albedo = albedo_texture_sample.xyzw;
@@ -98,40 +99,44 @@ bool no_dynamic_lights,
 float3 sky_radiance,
 float3 extinction_factor)
 {
-	float4 color;
+	float4 color = 0;
 	if (calc_material)
 	{
 		float3 material_lighting = material_type(albedo.rgb, normal, view_dir, texcoord.xy, camera_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, diffuse_reflectance, no_dynamic_lights, radiance_transfer, vertex_color);
-		material_lighting = material_lighting * extinction_factor;
+		color.rgb += material_lighting;
 
-		float3 environment = envmap_type(view_dir, normal);
-		float4 self_illumination = calc_self_illumination_ps(texcoord.xy, albedo.rgb);
-
-		color.rgb = (environment + self_illumination.rgb) * sky_radiance.xyz + material_lighting;
-		
-		if (blend_type_arg != k_blend_mode_additive)
-		{
-			color.rgb += sky_radiance.rgb;
-		}
-		
-		if (blend_type_arg == k_blend_mode_additive)
-		{
-			color.a = 0.0;
-		}
-		else if (blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha)
-		{
-			color.a = alpha;
-		}
-		else
-		{
-			color.a = 1.0;
-		}
 	}
 	else
 	{
-		color.rgb = albedo.rgb * vertex_color;
-		color.a = 1.0;
+		//color.rgb = albedo.rgb * vertex_color;
+		//color.a = 1.0;
 	}
+	float4 self_illumination = calc_self_illumination_ps(texcoord.xy, albedo);
+	float3 environment = envmap_type(view_dir, normal);
+	
+
+	color.rgb += environment;
+	color += self_illumination;
+	color.rgb = color.rgb * extinction_factor;
+		
+	if (blend_type_arg != k_blend_mode_additive)
+	{
+		color.rgb += sky_radiance.rgb;
+	}
+		
+	if (blend_type_arg == k_blend_mode_additive)
+	{
+		color.a = 0.0;
+	}
+	else if (blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha)
+	{
+		color.a = alpha * albedo.a;
+	}
+	else
+	{
+		color.a = alpha;
+	}
+	
 
 	if (blend_type_arg == k_blend_mode_double_multiply)
 		color.rgb *= 2;
@@ -155,8 +160,7 @@ float3 extinction_factor,
 float prt)
 {
 	ALBEDO_PASS_RESULT albedo_pass = get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz);
-	float3 albedo = albedo_pass.albedo.rgb;
-	float alpha = albedo_pass.albedo.a;
+	float alpha = albedo_pass.alpha;
 	normal = normalize(albedo_pass.normal);
 	
 	float3 view_dir = normalize(camera_dir);

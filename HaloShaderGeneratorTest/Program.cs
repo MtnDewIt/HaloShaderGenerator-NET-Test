@@ -18,26 +18,23 @@ namespace HaloShaderGenerator
             //var stage = ShaderStage.Static_Sh;
 
             List<ShaderStage> stages_to_gen_prt = new List<ShaderStage> { ShaderStage.Static_Sh, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Prt_Linear, ShaderStage.Static_Prt_Quadratic };
-            List<ShaderStage> stages_to_gen = new List<ShaderStage> { ShaderStage.Static_Per_Pixel };
+            List<ShaderStage> stages_to_gen = new List<ShaderStage> { ShaderStage.Static_Sh, ShaderStage.Albedo };
 
             foreach(var stage in stages_to_gen)
             {
-                foreach (Blend_Mode blend_mode in Enum.GetValues(typeof(Blend_Mode)))
-                {
-                    TestPixelShader(
-                    stage,
-                    Albedo.Default,
-                    Bump_Mapping.Off,
-                    Alpha_Test.Off,
-                    Specular_Mask.No_Specular_Mask,
-                    Material_Model.Diffuse_Only,
-                    Environment_Mapping.None,
-                    Self_Illumination.Off,
-                    blend_mode,
-                    Parallax.Off,
-                    Misc.First_Person_Never,
-                    Distortion.Off);
-                }
+                TestPixelShader(
+                   stage,
+                   Albedo.Default,
+                   Bump_Mapping.Off,
+                   Alpha_Test.Off,
+                   Specular_Mask.No_Specular_Mask,
+                   Material_Model.Diffuse_Only,
+                   Environment_Mapping.None,
+                   Self_Illumination.Simple_With_Alpha_Mask,
+                   Blend_Mode.Alpha_Blend,
+                   Parallax.Off,
+                   Misc.First_Person_Never,
+                   Distortion.Off);
             }
             
             
