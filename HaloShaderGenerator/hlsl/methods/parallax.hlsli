@@ -3,9 +3,11 @@
 
 #include "../helpers/math.hlsli"
 #include "../helpers/types.hlsli"
-#include "../helpers/math.hlsli"
-#include "../helpers/input_output.hlsli"
-#include "../registers/shader.hlsli"
+
+uniform float height_scale;
+uniform sampler height_map;
+uniform xform2d height_map_xform;
+uniform sampler height_scale_map;
 
 float calc_heightmap_value(float2 texcoord)
 {

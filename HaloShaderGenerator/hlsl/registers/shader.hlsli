@@ -4,15 +4,21 @@
 #include "../helpers/types.hlsli"
 #include "../helpers/definition_helper.hlsli"
 
-#define aspect_ratio float2(16, 9) // this is unusual, there should be a global variable, gotta check h3 (could be 4,3 or other)
+#define aspect_ratio float2(16, 9)
 #define shadowmap_texture_size 512
 #define default_lightmap_size 1024
 
-// Not sure if these are all constant or not
+#if misc_arg == k_misc_first_person_sometimes || misc_arg == k_misc_first_person_always || blend_type_arg == k_blend_mode_additive || blend_type_arg == k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply || blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha
+uniform bool actually_calc_albedo : register(b12);
+#else
+#define actually_calc_albedo false
+#endif
+//
+// Macros for shader generation
+//
+/* Most of these macros could be set from the C# side where depending on the methods some macros are set to true or false.
+*/
 
-bool use_material_texture;
-uniform bool order3_area_specular;
-uniform bool no_dynamic_lights;
 
 #if blend_type_arg ==  k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply
 #define color_export_multiply_alpha true
@@ -26,11 +32,7 @@ uniform bool no_dynamic_lights;
 #define is_dynamic_light false
 #endif
 
-#if misc_arg == k_misc_first_person_sometimes || misc_arg == k_misc_first_person_always || blend_type_arg == k_blend_mode_additive || blend_type_arg == k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply || blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha
-uniform bool actually_calc_albedo : register(b12);
-#else
-#define actually_calc_albedo false
-#endif
+
 
 #if blend_type_arg == k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply || self_illumination_arg == k_self_illumination_from_diffuse
 #define calc_material false
@@ -38,10 +40,6 @@ uniform bool actually_calc_albedo : register(b12);
 #define calc_material true
 #endif
 
-uniform bool k_is_lightmap_exist;
-uniform bool k_is_water_interaction;
-
-uniform int layers_of_4;
 
 uniform float4 g_exposure : register(c0);
 uniform float4 p_lighting_constant_0 : register(c1);
@@ -62,45 +60,18 @@ uniform float4 dynamic_environment_blend : register(c15);
 uniform float3 Camera_Position_PS : register(c16);
 uniform float simple_light_count : register(c17);
 uniform float4 simple_lights[40] : register(c18);
+uniform float4 p_render_debug_mode : register(c94);
+uniform float4 primary_change_color_old : register(c190);
+uniform float4 secondary_change_color_old : register(c191);
+uniform float4 p_lightmap_compress_constant_0 : register(c210);
+uniform float4 p_lightmap_compress_constant_1 : register(c211);
+uniform float4 k_ps_active_camo_factor : register(c212);
+uniform float4 p_atmosphere_constant_0 : register(c215);
+uniform float4 p_atmosphere_constant_extra : register(c221);
 
 uniform bool dynamic_light_shadowing : register(b13);
 uniform xform2d p_dynamic_light_gel_xform : register(c5);
-uniform sampler dynamic_light_gel_texture : register(s4);
-uniform sampler shadow_depth_map_1 : register(s3);
 
-uniform float4 p_render_debug_mode : register(c94);
-
-
-
-uniform float4 p_lightmap_compress_constant_0 : register(c210);
-uniform float4 p_lightmap_compress_constant_1 : register(c211);
-uniform sampler3D lightprobe_texture_array : register(s3);
-uniform sampler3D dominant_light_intensity_map : register(s4);
-/*
-This region here is where dynamically created uniforms are allowed
-Not entirely sure where this ends
-*/
-
-/*
--------------------------------------------------- ALBEDO
-*/
-
-uniform sampler2D scene_ldr_texture;
-uniform sampler2D albedo_texture;
-uniform sampler2D normal_texture;
-uniform sampler2D material_texture;
-
-// not 100% sure if these are in correct spot
-uniform sampler2D g_sampler_cc0236;
-uniform sampler2D g_sampler_dd0236;
-uniform sampler2D g_sampler_c78d78;
-
-uniform float4 albedo_color;
-uniform float4 albedo_color2;
-uniform float4 albedo_color3;
-
-uniform sampler base_map;
-uniform xform2d base_map_xform;
 // no idea why this is so, this seems to disappear when hightmaps are present :/
 // we need a better solution for this
 //NOTE: We should be able to macro this out
@@ -109,63 +80,23 @@ uniform xform2d base_map_xform;
 uniform sampler __unknown_s1 : register(s1);
 #endif
 
-uniform sampler detail_map;
-uniform xform2d detail_map_xform;
-
-uniform float4 debug_tint;
-
-uniform sampler detail_map2;
-uniform xform2d detail_map2_xform;
-
-uniform sampler change_color_map;
-uniform xform2d change_color_map_xform;
-uniform float3 primary_change_color;
-uniform float3 secondary_change_color;
-
-uniform float3 tertiary_change_color;
-uniform float3 quaternary_change_color;
-
-uniform sampler detail_map3;
-uniform xform2d detail_map3_xform;
-
-uniform sampler detail_map_overlay;
-uniform xform2d detail_map_overlay_xform;
-
-uniform sampler color_mask_map;
-uniform xform2d color_mask_map_xform;
-uniform float4 neutral_gray;
-
-/*
--------------------------------------------------- END ALBEDO
-*/
-
-/*
--------------------------------------------------- BUMP MAPPING
-*/
-
-uniform sampler bump_map;
-uniform xform2d bump_map_xform;
-uniform sampler bump_detail_map;
-uniform xform2d bump_detail_map_xform;
-uniform float bump_detail_coefficient;
-uniform sampler bump_detail_mask_map;
-uniform xform2d bump_detail_mask_map_xform;
-
-/*
--------------------------------------------------- END BUMP MAPPING
-*/
 
 
-uniform sampler alpha_test_map;
-uniform xform2d alpha_test_map_xform;
 
-#define boolf float
+uniform bool k_is_lightmap_exist;
+uniform bool k_is_water_interaction;
+uniform int layers_of_4;
 
-uniform float self_illum_intensity;
-uniform float4 self_illum_map_xform;
-uniform sampler2D self_illum_map;
-uniform float4 self_illum_color;
 
+
+uniform sampler dynamic_light_gel_texture;
+uniform sampler shadow_depth_map_1;
+uniform sampler2D scene_ldr_texture;
+uniform sampler2D albedo_texture;
+uniform sampler2D normal_texture;
+
+
+// material model parameters
 
 // BEGIN ENERGY SWORD VARIABLES, NOT SURE WHERE THESE BELONG YET
 
@@ -188,9 +119,6 @@ uniform float thinness_wide;
 
 // END ENERGY SWORD VARIABLES
 
-
-
-
 uniform float diffuse_coefficient;
 uniform float specular_coefficient;
 
@@ -204,11 +132,9 @@ uniform float environment_map_specular_contribution;
 uniform float normal_specular_power;
 uniform float3 normal_specular_tint;
 
-
-
 // START
 
-float4 material_texture_xform;
+
 float3 fresnel_color;
 float fresnel_power;
 float roughness;
@@ -222,10 +148,6 @@ float rim_fresnel_albedo_blend;
 
 // END
 
-
-
-
-
 uniform float glancing_specular_power;
 uniform float3 glancing_specular_tint;
 
@@ -233,53 +155,7 @@ uniform float fresnel_curve_steepness;
 uniform float albedo_specular_tint_blend;
 uniform float analytical_anti_shadow_control;
 
-uniform float4 env_tint_color;
-uniform float env_roughness_scale;
-uniform samplerCUBE dynamic_environment_map_0;
-uniform samplerCUBE dynamic_environment_map_1;
-
-uniform float4 primary_change_color_old : register(c190);
-uniform float4 secondary_change_color_old : register(c191);
-
-uniform float4 k_ps_active_camo_factor : register(c212);
-
-
-uniform float4 p_atmosphere_constant_0 : register(c215);
-uniform float4 p_atmosphere_constant_extra : register(c221);
-
-
 uniform float k_f0; // figure out what this is
-
-
-
-uniform float height_scale;
-uniform sampler height_map;
-uniform xform2d height_map_xform;
-uniform sampler height_scale_map;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #endif

@@ -3,16 +3,7 @@
 
 #include "../registers/shader.hlsli"
 #include "input_output.hlsli"
-
-#define DEBUG_TINT_FACTOR 4.59479
-
-float3 apply_debug_tint(float3 color)
-{
-	float debug_tint_factor = DEBUG_TINT_FACTOR;
-	float3 positive_color = color * debug_tint_factor;
-	float3 negative_tinted_color = debug_tint.rgb - color * debug_tint_factor;
-	return positive_color + debug_tint.a * negative_tinted_color;
-}
+#include "../helpers/definition_helper.hlsli"
 
 float3 rgb_to_srgb(float3 color)
 {

@@ -6,6 +6,39 @@
 #include "../registers/shader.hlsli"
 #include "../helpers/color_processing.hlsli"
 
+uniform float4 albedo_color;
+uniform float4 albedo_color2;
+uniform float4 albedo_color3;
+uniform sampler base_map;
+uniform xform2d base_map_xform;
+uniform sampler detail_map;
+uniform xform2d detail_map_xform;
+uniform float4 debug_tint;
+uniform sampler detail_map2;
+uniform xform2d detail_map2_xform;
+uniform sampler change_color_map;
+uniform xform2d change_color_map_xform;
+uniform float3 primary_change_color;
+uniform float3 secondary_change_color;
+uniform float3 tertiary_change_color;
+uniform float3 quaternary_change_color;
+uniform sampler detail_map3;
+uniform xform2d detail_map3_xform;
+uniform sampler detail_map_overlay;
+uniform xform2d detail_map_overlay_xform;
+uniform sampler color_mask_map;
+uniform xform2d color_mask_map_xform;
+uniform float4 neutral_gray;
+uniform float primary_change_color_blend;
+
+float3 apply_debug_tint(float3 color)
+{
+	float debug_tint_factor = DEBUG_TINT_FACTOR;
+	float3 positive_color = color * debug_tint_factor;
+	float3 negative_tinted_color = debug_tint.rgb - color * debug_tint_factor;
+	return positive_color + debug_tint.a * negative_tinted_color;
+}
+
 float4 calc_albedo_default_ps(float2 texcoord, float2 position)
 {
     float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);

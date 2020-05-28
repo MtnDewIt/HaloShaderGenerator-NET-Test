@@ -1,7 +1,10 @@
 ﻿#define shader_template
 
+// order matters to match register indices with original HO shaders. Does not affect ingame results
+#include "helpers\lightmaps.hlsli"
 
 #include "methods\albedo.hlsli"
+#include "methods\parallax.hlsli"
 #include "methods\bump_mapping.hlsli"
 #include "methods\alpha_test.hlsli"
 #include "methods\specular_mask.hlsli"
@@ -9,7 +12,7 @@
 #include "methods\environment_mapping.hlsli"
 #include "methods\self_illumination.hlsli"
 #include "methods\blend_mode.hlsli"
-#include "methods\parallax.hlsli"
+
 #include "methods\misc.hlsli"
 
 #include "registers\shader.hlsli"
@@ -17,6 +20,7 @@
 #include "helpers\shadows.hlsli"
 #include "helpers\definition_helper.hlsli"
 #include "helpers\color_processing.hlsli"
+
 
 ALBEDO_PASS_RESULT get_albedo_and_normal(bool calc_albedo, float2 fragcoord, float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal)
 {
@@ -104,19 +108,20 @@ float3 extinction_factor)
 	{
 		float3 material_lighting = material_type(albedo.rgb, normal, view_dir, texcoord.xy, camera_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, diffuse_reflectance, no_dynamic_lights, radiance_transfer, vertex_color);
 		color.rgb += material_lighting;
-
 	}
 	else
 	{
-		//color.rgb = albedo.rgb * vertex_color;
-		//color.a = 1.0;
+		color.rgb = vertex_color;
+		color.a = 1.0;
 	}
-	float4 self_illumination = calc_self_illumination_ps(texcoord.xy, albedo);
+	color.rgb *= albedo.rgb;
+	
+	float3 self_illumination = calc_self_illumination_ps(texcoord.xy, albedo.rgb);
 	float3 environment = envmap_type(view_dir, normal);
 	
 
 	color.rgb += environment;
-	color += self_illumination;
+	color.rgb += self_illumination;
 	color.rgb = color.rgb * extinction_factor;
 		
 	if (blend_type_arg != k_blend_mode_additive)
@@ -137,6 +142,10 @@ float3 extinction_factor)
 		color.a = alpha;
 	}
 	
+	if (shaderstage == k_shaderstage_static_per_pixel)
+	{
+		color.a = 1.0;
+	}
 
 	if (blend_type_arg == k_blend_mode_double_multiply)
 		color.rgb *= 2;

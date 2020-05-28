@@ -1,12 +1,13 @@
 ﻿#ifndef _MATH_HLSLI
 #define _MATH_HLSLI
 
-//TODO This number is not 100% accurate
 #define PI 3.1415926535f
 #define EPSILON 0.001f
 #define RAND_COEFFICIENTS float3(12.9898, 78.233, 4.1414)
 #define SQRT3 1.7320508f
 #define LOG2_E 1.44269502f
+#define DEBUG_TINT_FACTOR 4.59479
+
 float rand2(float2 co)
 {
 	float a = 12.9898;

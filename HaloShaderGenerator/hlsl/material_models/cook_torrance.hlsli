@@ -6,26 +6,12 @@
 #include "../helpers/color_processing.hlsli"
 #include "../helpers/sh.hlsli"
 
-void get_material_parameters(
-in float2 texcoord,
-out float c_specular_coefficient,
-out float c_albedo_blend,
-out float c_roughness)
-{
-	if (use_material_texture)
-	{
-		float4 material_texture_sample = tex2D(material_texture, apply_xform2d(texcoord, material_texture_xform));
-		c_specular_coefficient = specular_coefficient * material_texture_sample.x;
-		c_albedo_blend = albedo_blend * material_texture_sample.y;
-		c_roughness = roughness * material_texture_sample.w;
-	}
-	else
-	{
-		c_specular_coefficient = specular_coefficient;
-		c_albedo_blend = albedo_blend;
-		c_roughness = roughness;
-	}
-}
+
+uniform sampler2D g_sampler_cc0236;
+uniform sampler2D g_sampler_dd0236;
+uniform sampler2D g_sampler_c78d78;
+
+
 
 // Lighting and materials of Halo 3
 
@@ -101,14 +87,27 @@ out float3 area_specular)
 	quadratic_b = float4(rotate_z.xyz * rotate_z.xyz, 1.0f / 3.0f) * 0.5f * (-SQRT3);
 	//red
 	sh_local.xyz = sh_rotate_023(0,rotate_x,rotate_z,sh_0,sh_312);
-	sh_local.w = dot(quadratic_a.xyz,
-	sh_457[0].xyz) + dot(quadratic_b.xyzw, sh_8866[0].xyzw);
+	sh_local.w = dot(quadratic_a.xyz, sh_457[0].xyz) + dot(quadratic_b.xyzw, sh_8866[0].xyzw);
 	//dot with C and D look up
 	sh_local *= float4(1.0f, r_dot_l, r_dot_l, r_dot_l);
 	specular_part.r = dot(c_value, sh_local);
 	schlick_part.r = dot(d_value, sh_local);
 	//repeat for green and blue
-
+	//green
+	sh_local.xyz = sh_rotate_023(1, rotate_x, rotate_z, sh_0, sh_312);
+	sh_local.w = dot(quadratic_a.xyz, sh_457[1].xyz) + dot(quadratic_b.xyzw, sh_8866[1].xyzw);
+	//dot with C and D look up
+	sh_local *= float4(1.0f, r_dot_l, r_dot_l, r_dot_l);
+	specular_part.g = dot(c_value, sh_local);
+	schlick_part.g = dot(d_value, sh_local);
+	//green
+	sh_local.xyz = sh_rotate_023(2, rotate_x, rotate_z, sh_0, sh_312);
+	sh_local.w = dot(quadratic_a.xyz, sh_457[2].xyz) + dot(quadratic_b.xyzw, sh_8866[2].xyzw);
+	//dot with C and D look up
+	sh_local *= float4(1.0f, r_dot_l, r_dot_l, r_dot_l);
+	specular_part.b = dot(c_value, sh_local);
+	schlick_part.b = dot(d_value, sh_local);
+	
 	// basis - 7
 	c_value = tex2D(g_sampler_c78d78, view_lookup);
 	quadratic_a.xyz = rotate_x.xyz * rotate_z.yzx + rotate_x.yzx *
@@ -140,4 +139,26 @@ out float3 area_specular)
 	schlick_part = schlick_part * 0.01f;
 	area_specular = specular_part * k_f0 + (1 - k_f0) * schlick_part;
 }
+
+void area_specular_cook_torrance_order_2(
+in float3 view_dir,
+in float3 rotate_z,
+in float4 sh_0,
+in float4 sh_312[3],
+in float roughness,
+in float r_dot_l,
+out float3 area_specular)
+{
+	float4 sh_8866[3];
+	float4 sh_457[3];
+	sh_457[0] = 0;
+	sh_457[1] = 0;
+	sh_457[2] = 0;
+	sh_8866[0] = 0;
+	sh_8866[1] = 0;
+	sh_8866[2] = 0;
+	
+	area_specular_cook_torrance(view_dir, rotate_z, sh_0, sh_312, sh_457, sh_8866, roughness, r_dot_l, area_specular);
+}
+
 #endif

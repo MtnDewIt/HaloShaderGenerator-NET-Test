@@ -2,6 +2,7 @@
 #define _TYPES_HLSLI
 
 #define xform2d float4
+#define boolf float
 
 float2 apply_xform2d(float2 texcoord, xform2d xform)
 {

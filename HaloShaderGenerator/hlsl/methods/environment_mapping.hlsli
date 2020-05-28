@@ -5,6 +5,11 @@
 #include "../helpers/math.hlsli"
 #include "../registers/shader.hlsli"
 
+uniform float4 env_tint_color;
+uniform float env_roughness_scale;
+uniform samplerCUBE dynamic_environment_map_0;
+uniform samplerCUBE dynamic_environment_map_1;
+uniform samplerCUBE environment_map;
 
 float4 _calculate_partial_derivative_cubemap_world_coordinate_reflection(float3 eye, float3 normal)
 {
@@ -71,8 +76,9 @@ float3 envmap_type_none(float3 eye_world, float3 normal)
 
 float3 envmap_type_per_pixel(float3 eye_world, float3 normal)
 {
-    
-    return float3(0, 0, 0);
+	float3 envmap_texcoord = cubemap_coordinate_shift(normal);
+	float4 envmap_sample = texCUBE(environment_map, envmap_texcoord);
+	return envmap_sample.rgb * env_tint_color.rgb;
 }
 
 float3 envmap_type_dynamic(float3 eye_world, float3 normal)

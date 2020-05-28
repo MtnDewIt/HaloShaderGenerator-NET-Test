@@ -8,6 +8,35 @@
 #include "../material_models/cook_torrance.hlsli"
 
 
+
+uniform bool order3_area_specular;
+uniform bool no_dynamic_lights;
+uniform bool use_material_texture;
+uniform sampler2D material_texture;
+xform2d material_texture_xform;
+
+void get_material_parameters(
+in float2 texcoord,
+out float c_specular_coefficient,
+out float c_albedo_blend,
+out float c_roughness)
+{
+	if (use_material_texture)
+	{
+		float2 material_texture_texcoord = apply_xform2d(texcoord, material_texture_xform);
+		float4 material_texture_sample = tex2D(material_texture, material_texture_texcoord);
+		c_specular_coefficient = material_texture_sample.x * specular_coefficient;
+		c_albedo_blend = material_texture_sample.y * albedo_blend;
+		c_roughness = material_texture_sample.w * roughness;
+	}
+	else
+	{
+		c_specular_coefficient = specular_coefficient;
+		c_albedo_blend = albedo_blend;
+		c_roughness = roughness;
+	}
+}
+
 void calc_simple_lights(
 float3 normal,
 float3 vertex_world_position,
@@ -39,7 +68,7 @@ out float3 specular_accumulation)
 							if (simple_light_count > 6)
 							{
 								calculate_simple_light(get_simple_light(6), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
-									[flatten]
+								[flatten]
 								if (simple_light_count > 7)
 								{
 									calculate_simple_light(get_simple_light(7), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
@@ -51,8 +80,6 @@ out float3 specular_accumulation)
 			}
 		}
 	}
-	
-
 }
 
 float3 material_type_diffuse_only(
@@ -87,7 +114,7 @@ float3 vertex_color)
 		ligthing = diffuse_reflectance * prt;
 	ligthing += vertex_color;
 	
-	return albedo * ligthing;
+	return ligthing;
 }
 
 
@@ -112,43 +139,31 @@ float3 vertex_color)
 	float c_specular_coefficient;
 	float c_albedo_blend;
 	float c_roughness;
-	float3 color = 0;
-
-	get_material_parameters(texcoord, c_specular_coefficient, c_albedo_blend, c_roughness);
-	// to verify
-	float3 specular_color = fresnel_color;
 	
-
-	bool use_albedo_blend_with_specular_tint = albedo_blend_with_specular_tint.x > 0 ? true : false;
-	bool use_analytical_antishadow_control = analytical_anti_shadow_control.x > 0 ? true : false;
-	
-	if (use_albedo_blend_with_specular_tint)
-	{
-		specular_color = lerp(fresnel_color, albedo, c_albedo_blend);
-	}
-	
-	float3 reflect_dir = 2 * dot(normalize(view_dir), normal) * normal - camera_dir;
-	
-	float3 analytic_specular;
-	
-	calc_material_analytic_specular_cook_torrance_ps(view_dir, normal, reflect_dir, light_dir, light_intensity, specular_color, c_roughness, analytic_specular);
-	
-	
+	float3 reflect_dir = 2 * dot(view_dir, normal) * normal - camera_dir;
 	float r_dot_l = dot(reflect_dir, light_dir);
 	
-	float3 area_specular;
+	get_material_parameters(texcoord, c_specular_coefficient, c_albedo_blend, c_roughness);
+	// to verify
+
+	float3 specular_color = albedo_blend_with_specular_tint.x > 0 ? lerp(fresnel_color, albedo, c_albedo_blend) : fresnel_color;
+
+	float3 analytic_specular;
+	calc_material_analytic_specular_cook_torrance_ps(view_dir, normal, reflect_dir, light_dir, light_intensity, specular_color, c_roughness, analytic_specular);
+	
+	// appearrs to be some code related to rim coefficients missing here
+	float3 area_specular = 0;
 	if (order3_area_specular)
 	{
 		area_specular_cook_torrance(view_dir, view_dir, sh_0, sh_312, sh_457, sh_8866, c_roughness, r_dot_l, area_specular);
 	}
 	else
 	{
-		// sh457, 8866 supposed to be 0 in this case, maybe use custom function
-		area_specular_cook_torrance(view_dir, view_dir, sh_0, sh_312, sh_457, sh_8866, c_roughness, r_dot_l, area_specular);
+		area_specular_cook_torrance_order_2(view_dir, view_dir, sh_0, sh_312, c_roughness, r_dot_l, area_specular);
 	}
-	// appearrs to be some code related to rim coefficients missing here
 	
-	float3 r3, r4, r7;
+	bool use_albedo_blend_with_specular_tint = albedo_blend_with_specular_tint.x > 0 ? true : false;
+	bool use_analytical_antishadow_control = analytical_anti_shadow_control.x > 0 ? true : false;
 	
 	float3 diffuse_accumulation;
 	float3 specular_accumulation;
@@ -175,16 +190,21 @@ float3 vertex_color)
 	c_specular_tint *= c_specular_coefficient;
 	
 	
-	color = area_specular * area_specular_contribution.x;
-	color = color < 0 ? 0 : color;
+	
+	float3 color = 0;
 	color += (analytic_specular + specular_accumulation) * specular_color * analytical_specular_contribution.x;
+	
+	color += area_specular * area_specular_contribution.x;
+	
+	color = color < 0 ? 0 : color;
+	
 	
 
 	float fresnel_coefficient = rim_fresnel_coefficient.x * c_specular_coefficient;
 	float3 fresnel_contrib = fresnel_coefficient * (rim_fresnel_color * (1.0 - rim_fresnel_albedo_blend.x) + rim_fresnel_albedo_blend.x * albedo);
 	
-	color += c_specular_tint * (color) + fresnel_contrib * area_specular;
-	color += albedo * (diffuse_accumulation + diffuse_reflectance) * diffuse_coefficient.x;
+	color += c_specular_tint * color + fresnel_contrib * area_specular;
+	color +=  (diffuse_accumulation + diffuse_reflectance) * diffuse_coefficient.x;
 	
 	return color;
 }

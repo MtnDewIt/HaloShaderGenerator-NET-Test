@@ -18,23 +18,32 @@ namespace HaloShaderGenerator
             //var stage = ShaderStage.Static_Sh;
 
             List<ShaderStage> stages_to_gen_prt = new List<ShaderStage> { ShaderStage.Static_Sh, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Prt_Linear, ShaderStage.Static_Prt_Quadratic };
-            List<ShaderStage> stages_to_gen = new List<ShaderStage> { ShaderStage.Static_Sh, ShaderStage.Albedo };
+            List<ShaderStage> stages_to_gen = new List<ShaderStage> { ShaderStage.Static_Per_Pixel };
 
-            foreach(var stage in stages_to_gen)
+            List<List<int>> shaders_to_gen = new List<List<int>> { 
+                new List<int> {0,0,0,0,0,0,0,0,0,0,0 },
+                new List<int> {0,0,0,0,0,0,0,0,0,1,0 },
+                new List<int> {0,0,0,0,0,0,0,1,0,0,0 },
+                new List<int> {0,0,0,0,0,0,0,3,0,0,0 },
+                new List<int> {0,0,0,0,0,0,0,4,0,0,0 },
+                new List<int> {0,0,0,0,0,0,0,5,0,0,0 },
+                new List<int> {0,0,0,0,0,0,1,0,0,0,0 },
+                new List<int> {0,0,0,0,0,0,3,1,0,0,0 },
+                new List<int> {0,0,0,1,0,0,0,3,0,1,0 },
+                new List<int> {0,0,1,0,0,0,0,0,0,0,0 },
+                new List<int> {0,0,1,0,0,0,0,0,0,2,0 },
+                new List<int> {2,0,0,0,0,0,8,1,0,1,0 }
+            };
+
+
+            foreach (var stage in stages_to_gen)
             {
-                TestPixelShader(
-                   stage,
-                   Albedo.Default,
-                   Bump_Mapping.Off,
-                   Alpha_Test.Off,
-                   Specular_Mask.No_Specular_Mask,
-                   Material_Model.Diffuse_Only,
-                   Environment_Mapping.None,
-                   Self_Illumination.Simple_With_Alpha_Mask,
-                   Blend_Mode.Alpha_Blend,
-                   Parallax.Off,
-                   Misc.First_Person_Never,
-                   Distortion.Off);
+                foreach(var methods in shaders_to_gen)
+                {
+                    TestPixelShader(stage, (Albedo)methods[0], (Bump_Mapping)methods[1], (Alpha_Test)methods[2], (Specular_Mask)methods[3], (Material_Model)methods[4], 
+                        (Environment_Mapping)methods[5], (Self_Illumination)methods[6], (Blend_Mode)methods[7], (Parallax)methods[8], (Misc)methods[9], (Distortion)methods[10]);
+                }
+                
             }
             
             
