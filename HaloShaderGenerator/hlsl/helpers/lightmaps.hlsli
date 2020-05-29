@@ -9,8 +9,7 @@ uniform sampler3D dominant_light_intensity_map;
 
 float4 sample_lightprobe_texture_array(
 int band_index, 
-float2 texcoord,
-float compression_factor)
+float2 texcoord)
 {
 	float4 result;
 	float4 sample1 = tex3D(lightprobe_texture_array, float3(texcoord, 0.0625 + band_index * 0.25));
@@ -21,8 +20,7 @@ float compression_factor)
 }
 
 float4 sample_dominant_light_intensity_texture_array(
-float2 texcoord,
-float compression_factor)
+float2 texcoord)
 {
 	float4 result;
 	float4 sample1 = tex3D(dominant_light_intensity_map, float3(texcoord, 0.25));
@@ -81,11 +79,11 @@ out float3 dominant_light_intensity)
 	float4 sh[4];
 	float4 temp_dominant_light_intensity;
 	
-	sh[0] = sample_lightprobe_texture_array(0, lightmap_texcoord, p_lightmap_compress_constant_0.x);
-	sh[1] = sample_lightprobe_texture_array(1, lightmap_texcoord, p_lightmap_compress_constant_0.y);
-	sh[2] = sample_lightprobe_texture_array(2, lightmap_texcoord, p_lightmap_compress_constant_0.z);
-	sh[3] = sample_lightprobe_texture_array(3, lightmap_texcoord, p_lightmap_compress_constant_1.x);
-	temp_dominant_light_intensity = sample_dominant_light_intensity_texture_array(lightmap_texcoord, p_lightmap_compress_constant_1.y);
+	sh[0] = sample_lightprobe_texture_array(0, lightmap_texcoord);
+	sh[1] = sample_lightprobe_texture_array(1, lightmap_texcoord);
+	sh[2] = sample_lightprobe_texture_array(2, lightmap_texcoord);
+	sh[3] = sample_lightprobe_texture_array(3, lightmap_texcoord);
+	temp_dominant_light_intensity = sample_dominant_light_intensity_texture_array(lightmap_texcoord);
 	
 	decompress_lightmap_value(sh[0], p_lightmap_compress_constant_0.x);
 	decompress_lightmap_value(sh[1], p_lightmap_compress_constant_0.y);
@@ -93,7 +91,6 @@ out float3 dominant_light_intensity)
 	decompress_lightmap_value(sh[3], p_lightmap_compress_constant_1.x);
 	decompress_lightmap_value(temp_dominant_light_intensity, p_lightmap_compress_constant_1.y);
 	
-
 	pack_lightmap_constants(sh, sh_0, sh_312, sh_457, sh_8866);
 	
 	dominant_light_intensity = temp_dominant_light_intensity.rgb;
