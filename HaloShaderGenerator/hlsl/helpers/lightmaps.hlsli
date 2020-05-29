@@ -41,43 +41,13 @@ float3 calc_dominant_light_dir(float4 sh_312[3])
 	return normalize(dir);
 }
 
-void get_lightmap_sh_coefficients(
-in float2 lightmap_texcoord,
+void pack_lightmap_constants(
+in float4 sh[4],
 out float4 sh_0,
 out float4 sh_312[3],
 out float4 sh_457[3],
-out float4 sh_8866[3],
-out float3 dominant_light_dir,
-out float3 dominant_light_intensity)
+out float4 sh_8866[3])
 {
-	float4 sh[4];
-
-	sh[0] = sample_lightprobe_texture_array(0, lightmap_texcoord, p_lightmap_compress_constant_0.x);
-	sh[1] = sample_lightprobe_texture_array(1, lightmap_texcoord, p_lightmap_compress_constant_0.y);
-	sh[2] = sample_lightprobe_texture_array(2, lightmap_texcoord, p_lightmap_compress_constant_0.z);
-	sh[3] = sample_lightprobe_texture_array(3, lightmap_texcoord, p_lightmap_compress_constant_1.x);
-	float4 dli = sample_dominant_light_intensity_texture_array(lightmap_texcoord, p_lightmap_compress_constant_1.y);
-	
-	sh[1].w *= p_lightmap_compress_constant_0.y;
-	sh[1].rgb = (2.0 * sh[1].rgb - 2.0);
-	sh[1].rgb = sh[1].rgb * sh[1].w;
-	
-	sh[2].w *= p_lightmap_compress_constant_0.z;
-	sh[2].rgb = (2.0 * sh[2].rgb - 2.0);
-	sh[2].rgb = sh[2].rgb * sh[2].w;
-	
-	sh[3].w *= p_lightmap_compress_constant_1.x;
-	sh[3].rgb = (2.0 * sh[3].rgb - 2.0);
-	sh[3].rgb = sh[3].rgb * sh[3].w;
-	
-	dli.w *= p_lightmap_compress_constant_1.y;
-	dli.rgb = (2.0 * dli.rgb - 2.0);
-	dominant_light_intensity = dli.rgb * dli.w;
-	
-	sh[0].w *= p_lightmap_compress_constant_0.x;
-	sh[0].rgb = (2.0 * sh[0].rgb - 2.0);
-	sh[0].rgb = sh[0].w * sh[0].rgb;
-	
 	sh_0 = sh[0];
 	sh_312[0] = float4(sh[3].r, sh[1].r, -sh[2].r, 0.0);
 	sh_312[1] = float4(sh[3].g, sh[1].g, -sh[2].g, 0.0);
@@ -88,7 +58,45 @@ out float3 dominant_light_intensity)
 	sh_8866[0] = 0;
 	sh_8866[1] = 0;
 	sh_8866[2] = 0;
+}
+
+void decompress_lightmap_value(
+inout float4 value, 
+in float compression_factor)
+{
+	value.w *= compression_factor;
+	value.rgb = (2.0 * value.rgb - 2.0);
+	value.rgb = value.rgb * value.w;
+}
+
+void get_lightmap_sh_coefficients(
+in float2 lightmap_texcoord,
+out float4 sh_0,
+out float4 sh_312[3],
+out float4 sh_457[3],
+out float4 sh_8866[3],
+out float3 dominant_light_dir,
+out float3 dominant_light_intensity)
+{
+	float4 sh[4];
+	float4 temp_dominant_light_intensity;
 	
+	sh[0] = sample_lightprobe_texture_array(0, lightmap_texcoord, p_lightmap_compress_constant_0.x);
+	sh[1] = sample_lightprobe_texture_array(1, lightmap_texcoord, p_lightmap_compress_constant_0.y);
+	sh[2] = sample_lightprobe_texture_array(2, lightmap_texcoord, p_lightmap_compress_constant_0.z);
+	sh[3] = sample_lightprobe_texture_array(3, lightmap_texcoord, p_lightmap_compress_constant_1.x);
+	temp_dominant_light_intensity = sample_dominant_light_intensity_texture_array(lightmap_texcoord, p_lightmap_compress_constant_1.y);
+	
+	decompress_lightmap_value(sh[0], p_lightmap_compress_constant_0.x);
+	decompress_lightmap_value(sh[1], p_lightmap_compress_constant_0.y);
+	decompress_lightmap_value(sh[2], p_lightmap_compress_constant_0.z);
+	decompress_lightmap_value(sh[3], p_lightmap_compress_constant_1.x);
+	decompress_lightmap_value(temp_dominant_light_intensity, p_lightmap_compress_constant_1.y);
+	
+
+	pack_lightmap_constants(sh, sh_0, sh_312, sh_457, sh_8866);
+	
+	dominant_light_intensity = temp_dominant_light_intensity.rgb;
 	dominant_light_dir = calc_dominant_light_dir(sh_312);
 }
 
