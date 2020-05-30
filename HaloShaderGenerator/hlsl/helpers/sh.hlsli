@@ -13,11 +13,12 @@ inout float4 sh_312[3],
 inout float4 sh_457[3],
 inout float4 sh_8866[3])
 {
-	float3 dld = -0.4886025f * dominant_light_direction.xyz;
 	float c1 = 0.282094806f;
-	sh_312[0].xyz += -(dld * dominant_light_intensity.r);
-	sh_312[1].xyz += -(dld * dominant_light_intensity.g);
-	sh_312[2].xyz += -(dld * dominant_light_intensity.b);
+	float c2 = -0.4886025f;
+
+	sh_312[0].xyz += -(c2 * dominant_light_direction.xyz * dominant_light_intensity.r);
+	sh_312[1].xyz += -(c2 * dominant_light_direction.xyz * dominant_light_intensity.g);
+	sh_312[2].xyz += -(c2 * dominant_light_direction.xyz * dominant_light_intensity.b);
 	sh_0.rgb += -(c1 * dominant_light_intensity.rgb);
 }
 

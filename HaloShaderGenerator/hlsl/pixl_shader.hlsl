@@ -152,9 +152,9 @@ float3 extinction_factor)
 
 	color.rgb = expose_color(color.rgb);
 	
-	float4 output_color = blend_type(color, 1.0f);
+	color = blend_type(color, 1.0f);
 
-	return export_color(output_color);
+	return export_color(color);
 }
 
 PS_OUTPUT_DEFAULT entry_static_prt_any(
@@ -414,4 +414,29 @@ PS_OUTPUT_DEFAULT entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input) : COLOR
 	lightmap_diffuse_reflectance(normal, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity, diffuse_ref);
 
 	return entry_final_pass(albedo_pass.albedo, alpha, normal, input.texcoord, input.camera_dir, view_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity, diffuse_ref, 1.0, 0, m_no_dynamic_lights, input.sky_radiance, input.extinction_factor);
+}
+
+PS_OUTPUT_DEFAULT entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input) : COLOR
+{
+	float3 extinction_factor = input.sky_radiance.rgb;
+	float3 sky_radiance = float3(input.texcoord.zw, input.sky_radiance.w);
+	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
+	float3 dominant_light_dir, dominant_light_intensity;
+	
+	unpack_per_vertex_lighting(input, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity);
+	
+	ALBEDO_PASS_RESULT albedo_pass = get_albedo_and_normal(actually_calc_albedo, input.position.xy, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz);
+	float alpha = albedo_pass.alpha;
+	float4 albedo = albedo_pass.albedo;
+	
+	float3 normal = normalize(albedo_pass.normal);
+	
+	float3 view_dir = normalize(input.camera_dir);
+	float3 world_position = Camera_Position_PS - input.camera_dir;
+	
+	float3 diffuse_ref;
+
+	lightmap_diffuse_reflectance(normal, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity, diffuse_ref);
+	
+	return entry_final_pass(albedo, alpha, normal, input.texcoord.xy, input.camera_dir, view_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_dir, dominant_light_intensity, diffuse_ref, 1.0, 0, no_dynamic_lights, sky_radiance, extinction_factor);
 }
