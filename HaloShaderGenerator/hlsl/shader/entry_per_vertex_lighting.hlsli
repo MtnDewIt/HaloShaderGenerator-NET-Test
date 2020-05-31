@@ -19,25 +19,31 @@
 
 PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 {
+	
+	float4 color = 0;
 	float4 albedo;
 	float3 normal;
-	float alpha;
 	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
 	float3 dominant_light_direction, dominant_light_intensity, diffuse_ref;
 	float3 extinction_factor = input.sky_radiance.rgb;
 	float3 sky_radiance = float3(input.texcoord.zw, input.sky_radiance.w);
 	
-	unpack_per_vertex_lighting(input, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity);
-	get_albedo_and_normal(actually_calc_albedo, input.position.xy, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, alpha, normal);
-	albedo.a = 1.0;
+	
+	
+	unpack_per_vertex_lightmap_coefficients(input, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity);
+	
+	float2 texcoord = calc_parallax_ps(input.texcoord.xy, input.camera_dir, input.tangent, input.binormal, input.normal.xyz);
+	float alpha = calc_alpha_test_ps(texcoord);
+	
+	get_albedo_and_normal(actually_calc_albedo, input.position.xy, texcoord, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, normal);
+	
 	normal = normalize(normal);
 	float3 view_dir = normalize(input.camera_dir);
 	float3 world_position = Camera_Position_PS - input.camera_dir;
 	
 	lightmap_diffuse_reflectance(normal, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, diffuse_ref);
 
-	float4 color = 0;
-
+	
 	if (calc_material)
 	{
 		float3 material_lighting = material_type(albedo.rgb, normal, view_dir, input.texcoord.xy, input.camera_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, diffuse_ref, no_dynamic_lights, 1.0, 0.0);
@@ -48,24 +54,11 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	
 	float3 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo.rgb);
 	float3 environment = envmap_type(view_dir, normal);
-	
 
 	color.rgb += environment;
 	color.rgb += self_illumination;
 	color.rgb = color.rgb * extinction_factor;
-		
-	if (blend_type_arg == k_blend_mode_additive)
-	{
-		color.a = 0.0;
-	}
-	else if (blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha)
-	{
-		color.a = alpha * albedo.a;
-	}
-	else
-	{
-		color.a = albedo.a;
-	}
+	color.a = blend_type_calculate_alpha_blending(albedo, alpha);
 	
 	if (blend_type_arg != k_blend_mode_additive)
 	{
@@ -78,7 +71,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	color.rgb = expose_color(color.rgb);
 	
 	color = blend_type(color, 1.0f);
-
+	
 	return export_color(color);
 }
 #endif

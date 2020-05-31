@@ -29,8 +29,9 @@ float prt)
 {
 	float4 albedo;
 	float3 modified_normal;
-	float alpha;
-	get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz, albedo, alpha, modified_normal);
+	texcoord = calc_parallax_ps(texcoord, camera_dir, tangent, binormal, normal);
+	float alpha = calc_alpha_test_ps(texcoord);
+	get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord, camera_dir, tangent.xyz, binormal.xyz, normal.xyz, albedo, modified_normal);
 	
 	float3 view_dir = normalize(camera_dir);
 	modified_normal = normalize(modified_normal);

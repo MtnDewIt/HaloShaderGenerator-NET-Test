@@ -1,8 +1,9 @@
 ﻿#ifndef _SHADER_TEMPLATE_PER_PIXEL_LIGHTING_HLSLI
 #define _SHADER_TEMPLATE_PER_PIXEL_LIGHTING_HLSLI
 
-#include "..\helpers\lightmaps.hlsli"
+
 #include "entry_albedo.hlsli"
+#include "..\helpers\lightmaps.hlsli"
 
 #include "..\methods\specular_mask.hlsli"
 #include "..\methods\material_model.hlsli"
@@ -21,12 +22,15 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 {
 	float4 albedo;
 	float3 normal;
-	float alpha;
+
 	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
 	float3 dominant_light_direction, dominant_light_intensity, diffuse_ref;
 	
 	get_lightmap_sh_coefficients(input.lightmap_texcoord, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity);
-	get_albedo_and_normal(actually_calc_albedo, input.position.xy, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, alpha, normal);
+	
+	float2 texcoord = calc_parallax_ps(input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal.xyz);
+	float alpha = calc_alpha_test_ps(texcoord);
+	get_albedo_and_normal(actually_calc_albedo, input.position.xy, texcoord, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, normal);
 	
 	normal = normalize(normal);
 	float3 view_dir = normalize(input.camera_dir);
@@ -36,7 +40,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 
 	float4 color = 0;
 
-	color.a = 1.0;
+	
 	if (calc_material)
 	{
 		float3 material_lighting = material_type(albedo.rgb, normal, view_dir, input.texcoord.xy, input.camera_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, diffuse_ref, no_dynamic_lights, 1.0, 0.0);
@@ -52,7 +56,8 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 	color.rgb += environment;
 	color.rgb += self_illumination;
 	color.rgb = color.rgb * input.extinction_factor;
-		
+	color.a = blend_type_calculate_alpha_blending(albedo, alpha);
+	
 	if (blend_type_arg != k_blend_mode_additive)
 	{
 		color.rgb += input.sky_radiance.rgb;

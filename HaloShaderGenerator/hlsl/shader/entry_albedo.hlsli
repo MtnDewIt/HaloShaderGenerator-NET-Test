@@ -11,7 +11,6 @@
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 
-
 void get_albedo_and_normal(
 bool calc_albedo,
 float2 fragcoord,
@@ -21,15 +20,12 @@ float3 tangent,
 float3 binormal,
 float3 normal,
 out float4 albedo,
-out float alpha,
 out float3 out_normal)
 {
-	float2 new_texcoord = calc_parallax_ps(texcoord, camera_dir, tangent, binormal, normal);
-	alpha = calc_alpha_test_ps(new_texcoord);
 	if (calc_albedo)
 	{
-		out_normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, new_texcoord);
-		albedo = calc_albedo_ps(new_texcoord, fragcoord);
+		out_normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, texcoord);
+		albedo = calc_albedo_ps(texcoord, fragcoord);
 	}
 	else
 	{
@@ -47,8 +43,10 @@ PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
 {	
 	float4 albedo;
 	float3 normal;
-	float alpha;
-	get_albedo_and_normal(true, input.position.xy, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, alpha, normal);
+	float2 texcoord = calc_parallax_ps(input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal.xyz);
+	float alpha = calc_alpha_test_ps(texcoord);
+	
+	get_albedo_and_normal(true, input.position.xy, texcoord, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, normal);
 
 	albedo.rgb = rgb_to_srgb(albedo.rgb);
 

@@ -2,6 +2,7 @@
 #define _BLEND_MODE_HLSLI
 
 #include "../helpers/math.hlsli"
+#include "../helpers/definition_helper.hlsli"
 
 float4 blend_type_opaque(float4 input, float fade)
 {
@@ -36,6 +37,24 @@ float4 blend_type_pre_multiplied_alpha(float4 input, float fade)
 {
 	float alpha = input.a * fade;
 	return float4(input.rgb * alpha, alpha);
+}
+
+float blend_type_calculate_alpha_blending(float4 albedo, float alpha)
+{
+	float result;
+	if (blend_type_arg == k_blend_mode_additive)
+	{
+		result = 0.0;
+	}
+	else if (blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha)
+	{
+		result = alpha * albedo.a;
+	}
+	else
+	{
+		result = alpha;
+	}
+	return result;
 }
 
 

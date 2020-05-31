@@ -21,11 +21,12 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 {
 	float4 albedo;
 	float3 normal;
-	float alpha;
 	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
 	float3 dominant_light_direction, dominant_light_intensity, diffuse_ref;
 	
-	get_albedo_and_normal(actually_calc_albedo, input.position.xy, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, alpha, normal);
+	float2 texcoord = calc_parallax_ps(input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal.xyz);
+	float alpha = calc_alpha_test_ps(texcoord);
+	get_albedo_and_normal(actually_calc_albedo, input.position.xy, texcoord, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, normal);
 	
 	normal = normalize(input.normal);
 	float3 view_dir = normalize(input.camera_dir);

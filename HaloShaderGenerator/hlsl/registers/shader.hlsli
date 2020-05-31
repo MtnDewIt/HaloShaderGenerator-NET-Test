@@ -72,18 +72,17 @@ uniform float4 p_atmosphere_constant_extra : register(c221);
 uniform bool dynamic_light_shadowing : register(b13);
 uniform xform2d p_dynamic_light_gel_xform : register(c5);
 
-// no idea why this is so, this seems to disappear when hightmaps are present :/
-// we need a better solution for this
-//NOTE: We should be able to macro this out
+// Order here is important
+
 
 uniform sampler2D albedo_texture;
-
 #if envmap_type_arg != k_environment_mapping_dynamic
 uniform sampler __unknown_s1 : register(s1);
 #endif
 
 uniform sampler2D normal_texture;
-
+uniform sampler3D lightprobe_texture_array;
+uniform sampler3D dominant_light_intensity_map;
 
 uniform bool k_is_lightmap_exist;
 uniform bool k_is_water_interaction;
@@ -92,8 +91,7 @@ uniform int layers_of_4;
 
 
 
-uniform sampler2D shadow_depth_map_1;
-uniform sampler2D dynamic_light_gel_texture;
+
 uniform sampler2D scene_ldr_texture;
 
 

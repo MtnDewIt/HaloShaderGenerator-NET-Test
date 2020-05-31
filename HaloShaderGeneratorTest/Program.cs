@@ -10,8 +10,8 @@ namespace HaloShaderGenerator
 {
     class Application
     {
-        static bool UnitTest = false;
-        static bool TestSpecificShader = true;
+        static readonly bool UnitTest = false;
+        static readonly bool TestSpecificShader = true;
 
 
         static int Main()
@@ -29,21 +29,9 @@ namespace HaloShaderGenerator
                 List<ShaderStage> stages_to_gen = new List<ShaderStage> { ShaderStage.Static_Per_Vertex};
 
                 List<List<int>> shaders_to_gen = new List<List<int>> {
-                new List<int> {0,0,0,0,0,0,0,0,0,0,0 },
-                //new List<int> {0,0,0,0,0,0,0,0,0,1,0 },
-                //new List<int> {0,0,0,0,0,0,0,1,0,0,0 },
-                //new List<int> {0,0,0,0,0,0,0,3,0,0,0 },
-                //new List<int> {0,0,0,0,0,0,0,4,0,0,0 },
-                //new List<int> {0,0,0,0,0,0,0,5,0,0,0 },
-                //new List<int> {0,0,0,0,0,0,1,0,0,0,0 },
-                //new List<int> {0,0,0,0,0,0,3,1,0,0,0 },
-                //new List<int> {0,0,0,1,0,0,0,3,0,1,0 },
-                //new List<int> {0,0,1,0,0,0,0,0,0,0,0 },
-                //new List<int> {0,0,1,0,0,0,0,0,0,2,0 },
-                //new List<int> {2,0,0,0,0,0,8,1,0,1,0 },
-                //new List<int> {9,0,0,0,0,0,0,3,0,0,0 },
-                //new List<int> {2,0,0,0,0,0,0,3,0,0,0 },
-            };
+                new List<int> {0,0,0,0,0,0,0,1,0,0,0 },
+                new List<int> {0,0,1,0,0,0,0,0,0,0,0 },
+                };
 
 
                 foreach (var stage in stages_to_gen)

@@ -13,8 +13,6 @@ namespace HaloShaderGenerator
 {
     public static class PixelShaderUnitTest
     {
-
-        static readonly List<List<int>> TestMethods = new List<List<int>> { new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, };
         static readonly string PathToReferenceShaders = @"D:\Halo\Repositories\TagTool\TagTool\bin\x64\Debug\Shaders\shader_templates";
 
         static string BuildShaderName(List<int> methods)
@@ -30,6 +28,15 @@ namespace HaloShaderGenerator
         static string BuildPixelShaderEntryPointName(ShaderStage stage)
         {
             return $"{stage.ToString().ToLower()}.pixel_shader";
+        }
+
+        static void WriteShaderFile(string name, string disassembly)
+        {
+            using (FileStream test = new FileInfo(name).Create())
+            using (StreamWriter writer = new StreamWriter(test))
+            {
+                writer.WriteLine(disassembly);
+            }
         }
 
         static public void RunTests()
@@ -75,7 +82,10 @@ namespace HaloShaderGenerator
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine($"Generated shader for {BuildShaderName(testShader)} at {stage.ToString().ToLower()} is not equal to reference.");
                         Console.ResetColor();
+                        string filename = $"unit_test_failed{BuildShaderName(testShader)}.pixl";
+                        WriteShaderFile(filename, generatedDissassembly);
                     }
+
 
                     else
                     {
@@ -109,5 +119,13 @@ namespace HaloShaderGenerator
 
             return D3DCompiler.Disassemble(bytecode);
         }
+
+        static readonly List<List<int>> TestMethods = new List<List<int>> {
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            new List<int> { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+            new List<int> { 5, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
+            //new List<int> { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
+        };
     }
 }

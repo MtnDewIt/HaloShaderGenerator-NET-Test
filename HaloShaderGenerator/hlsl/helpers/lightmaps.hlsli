@@ -5,8 +5,7 @@
 #include "math.hlsli"
 #include "input_output.hlsli"
 
-uniform sampler3D lightprobe_texture_array;
-uniform sampler3D dominant_light_intensity_map;
+
 
 float4 sample_lightprobe_texture_array(
 int band_index, 
@@ -98,7 +97,7 @@ out float3 dominant_light_intensity)
 	dominant_light_dir = calc_dominant_light_dir(sh_312);
 }
 
-void unpack_per_vertex_lighting(
+void unpack_per_vertex_lightmap_coefficients(
 in VS_OUTPUT_PER_VERTEX per_vertex,
 out float4 sh_0,
 out float4 sh_312[3],
@@ -107,10 +106,9 @@ out float4 sh_8866[3],
 out float3 dominant_light_dir,
 out float3 dominant_light_intensity)
 {
-	
+
 	
 	sh_0 = float4(per_vertex.color1.x, per_vertex.color2.x, per_vertex.color3.x, 0.0);
-	
 	sh_312[0] = float4(per_vertex.color1.w, per_vertex.color1.y, -per_vertex.color1.z, 0);
 	sh_312[1] = float4(per_vertex.color2.w, per_vertex.color2.y, -per_vertex.color2.z, 0);
 	sh_312[2] = float4(per_vertex.color3.w, per_vertex.color3.y, -per_vertex.color3.z, 0);
@@ -120,12 +118,22 @@ out float3 dominant_light_intensity)
 	sh_8866[0] = 0;
 	sh_8866[1] = 0;
 	sh_8866[2] = 0;
+	dominant_light_intensity = per_vertex.color4;
+	dominant_light_dir = 0.21265601 * per_vertex.color1.wyz + 0.71515799 * per_vertex.color2.wyz + 0.07218560 * per_vertex.color3.wyz;
+	//dominant_light_dir = -dominant_light_dir;
+	dominant_light_dir = normalize(float3(1, 1, -1) * -dominant_light_dir);
+}
 
+void unpack_per_vertex_dominant_light(
+in VS_OUTPUT_PER_VERTEX per_vertex,
+out float3 dominant_light_dir,
+out float3 dominant_light_intensity)
+{
+	/*
 	dominant_light_intensity = per_vertex.color4;
 	dominant_light_dir = 0.21265601 * per_vertex.color1.wyz + 0.71515799 * per_vertex.color2.wyz + 0.07218560 * per_vertex.color3.wyz;
 	dominant_light_dir *= float3(-1, -1, 1);
-	dominant_light_dir = normalize(dominant_light_dir);
-
+	dominant_light_dir = normalize(dominant_light_dir);*/
 }
 
 #endif

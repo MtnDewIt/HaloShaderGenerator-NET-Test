@@ -2,7 +2,8 @@
 #define _SHADOWS_HLSLI
 
 #include "../helpers/math.hlsli"
-#include "../registers/shader.hlsli"
+
+uniform sampler2D shadow_depth_map_1;
 
 
 float sample_shadowmap(float2 texcoord, float2 offset, float depth_offset, float scale)

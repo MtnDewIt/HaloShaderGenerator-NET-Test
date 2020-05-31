@@ -2,13 +2,14 @@
 #define _SHADER_TEMPLATE_DYNAMIC_LIGHT_HLSLI
 
 #include "entry_albedo.hlsli"
-
 #include "..\registers\shader.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 #include "..\helpers\lighting.hlsli"
 #include "..\helpers\shadows.hlsli"
+
+uniform sampler2D dynamic_light_gel_texture;
 
 PS_OUTPUT_DEFAULT calculate_dynamic_light(
 float2 position,
@@ -23,6 +24,9 @@ float depth_offset,
 float2 shadowmap_texcoord,
 bool is_cinematic)
 {
+	texcoord = calc_parallax_ps(texcoord, camera_dir, tangent, binormal, normal);
+	float alpha = calc_alpha_test_ps(texcoord);
+	
 	float3 world_position = Camera_Position_PS - camera_dir;
 	float shadow_coefficient;
 	float3 diffuse;
@@ -51,8 +55,9 @@ bool is_cinematic)
 	
 	float4 albedo;
 	float3 modified_normal;
-	float alpha;
-	get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz, albedo, alpha, modified_normal);
+
+	get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz, albedo, modified_normal);
+	
 	diffuse *= dot(v_to_light, modified_normal);
 	diffuse *= albedo.rgb;
 	
@@ -76,11 +81,11 @@ bool is_cinematic)
 	}
 	else if (blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha)
 	{
-		result.a = albedo.a;
+		result.a = alpha * albedo.a;
 	}
 	else
 	{
-		result.a = 1.0;
+		result.a = alpha;
 	}
 	
 	result.rgb = expose_color(diffuse);

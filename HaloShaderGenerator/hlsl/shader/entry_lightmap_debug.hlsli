@@ -9,14 +9,12 @@
 #include "..\helpers\color_processing.hlsli"
 
 PS_OUTPUT_DEFAULT shader_entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input) : COLOR
-{
-	float4 albedo;
-	float3 normal;
-	float alpha;
-	get_albedo_and_normal(true, input.position.xy, input.texcoord.xy, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, alpha, normal);
-	
+{	
 	float3 result_color = 0;
 	float debug_mode = p_render_debug_mode.x;
+	
+	float2 texcoord = calc_parallax_ps(input.texcoord.xy, input.camera_dir, input.tangent, input.binormal, input.normal.xyz);
+	float3 normal = calc_bumpmap_ps(input.tangent, input.binormal, input.normal, texcoord);
 	
 	[branch]
 	if (debug_mode < 1)
