@@ -99,7 +99,7 @@ uniform sampler2D scene_ldr_texture;
 // material model parameters
 
 // BEGIN ENERGY SWORD VARIABLES, NOT SURE WHERE THESE BELONG YET
-
+/*
 uniform float4 alpha_mask_map_xform;
 uniform sampler alpha_mask_map;
 
@@ -116,7 +116,7 @@ uniform float4 color_wide;
 uniform float thinness_medium;
 uniform float thinness_sharp;
 uniform float thinness_wide;
-
+*/
 // END ENERGY SWORD VARIABLES
 
 uniform float diffuse_coefficient;

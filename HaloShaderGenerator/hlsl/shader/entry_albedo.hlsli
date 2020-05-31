@@ -29,9 +29,9 @@ out float3 out_normal)
 	}
 	else
 	{
-		fragcoord += 0.5;	// here for calc_material = false
+		fragcoord += 0.5;
 		float2 inv_texture_size = (1.0 / texture_size);
-		float2 texcoord = fragcoord * inv_texture_size; // inlined with fragcoord for calc_material = true
+		float2 texcoord = fragcoord * inv_texture_size; 
 		float4 normal_texture_sample = tex2D(normal_texture, texcoord);
 		float4 albedo_texture_sample = tex2D(albedo_texture, texcoord);
 		albedo = albedo_texture_sample;

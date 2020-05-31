@@ -10,7 +10,6 @@
 #include "shader/entry_per_vertex_color_lighting.hlsli"
 #include "shader/entry_per_vertex_lighting.hlsli"
 
-#include "registers\shader.hlsli"
 #include "helpers\input_output.hlsli"
 #include "helpers\definition_helper.hlsli"
 

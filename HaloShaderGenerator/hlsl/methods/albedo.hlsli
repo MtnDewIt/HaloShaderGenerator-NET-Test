@@ -3,7 +3,6 @@
 
 #include "../helpers/types.hlsli"
 #include "../helpers/math.hlsli"
-#include "../registers/shader.hlsli"
 #include "../helpers/color_processing.hlsli"
 
 uniform float4 albedo_color;

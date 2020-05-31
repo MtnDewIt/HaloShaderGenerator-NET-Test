@@ -38,6 +38,9 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 
 	float4 color = 0;
 	
+	float3 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo.rgb);
+	
+	
 	if (calc_material)
 	{
 		float3 material_lighting = material_type(albedo.rgb, normal, view_dir, input.texcoord.xy, input.camera_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, input.vertex_color, false, 1.0, 0.0);
@@ -45,18 +48,18 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	}
 	else
 	{
-		color.rgb = input.vertex_color;
+		color.rgb += input.vertex_color;
 		sky_radiance = 0.0;
 		extinction_factor = 1.0;
 	}
 	
 	color.rgb *= albedo.rgb;
 	
-	float3 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo.rgb);
+	color.rgb += self_illumination;
 	float3 environment = envmap_type(view_dir, normal);
 	
 	color.rgb += environment;
-	color.rgb += self_illumination;
+	
 	color.rgb = color.rgb * extinction_factor;
 		
 	if (blend_type_arg == k_blend_mode_additive)

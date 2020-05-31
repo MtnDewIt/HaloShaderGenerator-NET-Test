@@ -2,17 +2,28 @@
 #define _SELF_ILLUMINATION_HLSLI
 
 #include "../helpers/math.hlsli"
+#include "../helpers/types.hlsli"
 #include "../helpers/color_processing.hlsli"
-#include "albedo.hlsli"	// figure out how to share teh primary_change_color and blend
+#include "albedo.hlsli"
 
 uniform float self_illum_intensity;
-uniform float4 self_illum_map_xform;
+uniform xform2d self_illum_map_xform;
 uniform sampler2D self_illum_map;
 uniform float4 self_illum_color;
 uniform xform2d self_illum_detail_map_xform;
 uniform sampler self_illum_detail_map;
-
-
+uniform xform2d alpha_mask_map_xform;
+uniform sampler alpha_mask_map;
+uniform xform2d noise_map_a_xform;
+uniform sampler noise_map_a;
+uniform xform2d noise_map_b_xform;
+uniform sampler noise_map_b;
+uniform float4 color_medium;
+uniform float4 color_sharp;
+uniform float4 color_wide;
+uniform float thinness_medium;
+uniform float thinness_sharp;
+uniform float thinness_wide;
 
 #define SELF_ILLUM_ARGS float2 texcoord, float3 diffuse
 
@@ -49,22 +60,22 @@ float3 calc_self_illumination_plasma_ps(SELF_ILLUM_ARGS)
 
     float noise = 1.0 - abs(noise_map_a_sample.x - noise_map_b_sample.x);
     float log_noise = log2(noise);
-
-    float noise_wide = exp2(log_noise * thinness_wide);
+	
+	float noise_sharp = exp2(log_noise * thinness_sharp);
     float noise_medium = exp2(log_noise * thinness_medium);
-	float noise_wide_to_medium = noise_medium - noise_wide;
-    
-    
-    float noise_sharp = exp2(log_noise * thinness_sharp);
-	float noise_medium_to_sharp = noise_sharp - noise_medium;
+	float noise_wide = exp2(log_noise * thinness_wide);
+	
+	float noise_medium_to_sharp = noise_medium - noise_sharp;
+	float noise_wide_to_medium = noise_wide - noise_medium;
+	
+	
     // These three noise components represent the full [0-1] range
 
 
     float3 color = float3(0, 0, 0);
-    
-	color = color_sharp.rgb * color_sharp.a * noise_sharp;
-    color += color_medium.rgb * color_medium.a * noise_medium_to_sharp;
-    color += color_wide.rgb * color_wide.a * noise_wide_to_medium;
+	color += color_medium.rgb * color_medium.a * noise_medium_to_sharp;
+	color += color_sharp.rgb * color_sharp.a * noise_sharp;
+	color += color_wide.rgb * color_wide.a * noise_wide_to_medium;
 
     color *= alpha_mask_map_sample.a;
     color *= self_illum_intensity;

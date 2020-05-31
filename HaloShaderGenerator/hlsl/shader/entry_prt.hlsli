@@ -1,7 +1,16 @@
 ﻿#ifndef _SHADER_TEMPLATE_PRT_HLSLI
 #define _SHADER_TEMPLATE_PRT_HLSLI
 
+
+
 #include "entry_albedo.hlsli"
+
+
+
+#include "..\registers\shader.hlsli"
+#include "..\helpers\input_output.hlsli"
+#include "..\helpers\definition_helper.hlsli"
+#include "..\helpers\color_processing.hlsli"
 
 #include "..\methods\specular_mask.hlsli"
 #include "..\methods\material_model.hlsli"
@@ -9,11 +18,6 @@
 #include "..\methods\self_illumination.hlsli"
 #include "..\methods\blend_mode.hlsli"
 #include "..\methods\misc.hlsli"
-
-#include "..\registers\shader.hlsli"
-#include "..\helpers\input_output.hlsli"
-#include "..\helpers\definition_helper.hlsli"
-#include "..\helpers\color_processing.hlsli"
 
 
 PS_OUTPUT_DEFAULT entry_static_sh_prt(
