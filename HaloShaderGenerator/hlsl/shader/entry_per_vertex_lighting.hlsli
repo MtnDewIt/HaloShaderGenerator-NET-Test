@@ -49,6 +49,12 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 		float3 material_lighting = material_type(albedo.rgb, normal, view_dir, input.texcoord.xy, input.camera_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, diffuse_ref, no_dynamic_lights, 1.0, 0.0);
 		color.rgb += material_lighting;
 	}
+	else
+	{
+		color.rgb = 1.0;
+		sky_radiance = 0.0;
+		extinction_factor = 1.0;
+	}
 	
 	color.rgb *= albedo.rgb;
 	

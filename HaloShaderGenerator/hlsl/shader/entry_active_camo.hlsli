@@ -26,10 +26,24 @@ PS_OUTPUT_DEFAULT shader_entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input)
 	float4 sample = tex2D(scene_ldr_texture, ldr_texcoord);
 	float4 final_color = float4(sample.rgb, k_ps_active_camo_factor.x);
 	
+	if (blend_type_arg == k_blend_mode_pre_multiplied_alpha)
+		final_color.rgb *= k_ps_active_camo_factor.x;
 
 	PS_OUTPUT_DEFAULT output;
-	output.low_frequency = export_low_frequency(final_color);
-	output.high_frequency = export_high_frequency(final_color);
+	
+	if (blend_type_arg == k_blend_mode_double_multiply)
+	{
+		output.low_frequency = final_color * g_exposure.w;
+		output.high_frequency = final_color * g_exposure.z;
+	}
+	else
+	{
+		output.low_frequency = export_low_frequency(final_color);
+		output.high_frequency = export_high_frequency(final_color);
+	}
+	
+	
+	
 	output.unknown = 0;
 	return output;
 }

@@ -50,7 +50,12 @@ float prt)
 		float3 material_lighting = material_type(albedo.rgb, modified_normal, view_dir, texcoord.xy, camera_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, diffuse_ref, no_dynamic_lights, prt, 0.0);
 		color.rgb += material_lighting;
 	}
-	
+	else
+	{
+		color.rgb = 1.0;
+		sky_radiance = 0.0;
+		extinction_factor = 1.0;
+	}
 	color.rgb *= albedo.rgb;
 	
 	float3 self_illumination = calc_self_illumination_ps(texcoord.xy, albedo.rgb);

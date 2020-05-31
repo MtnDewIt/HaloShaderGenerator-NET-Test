@@ -22,9 +22,10 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 {
 	float4 albedo;
 	float3 normal;
-
 	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
 	float3 dominant_light_direction, dominant_light_intensity, diffuse_ref;
+	float3 sky_radiance = input.sky_radiance;
+	float3 extinction_factor = input.extinction_factor;
 	
 	get_lightmap_sh_coefficients(input.lightmap_texcoord, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity);
 	
@@ -46,6 +47,12 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 		float3 material_lighting = material_type(albedo.rgb, normal, view_dir, input.texcoord.xy, input.camera_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, diffuse_ref, no_dynamic_lights, 1.0, 0.0);
 		color.rgb += material_lighting;
 	}
+	else
+	{
+		color.rgb = 1.0;
+		sky_radiance = 0.0;
+		extinction_factor = 1.0;
+	}
 	
 	color.rgb *= albedo.rgb;
 	
@@ -55,12 +62,12 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 
 	color.rgb += environment;
 	color.rgb += self_illumination;
-	color.rgb = color.rgb * input.extinction_factor;
+	color.rgb = color.rgb * extinction_factor;
 	color.a = blend_type_calculate_alpha_blending(albedo, alpha);
 	
 	if (blend_type_arg != k_blend_mode_additive)
 	{
-		color.rgb += input.sky_radiance.rgb;
+		color.rgb += sky_radiance;
 	}
 
 	if (blend_type_arg == k_blend_mode_double_multiply)

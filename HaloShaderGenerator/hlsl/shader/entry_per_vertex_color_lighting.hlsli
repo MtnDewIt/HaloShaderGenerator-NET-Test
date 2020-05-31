@@ -23,6 +23,8 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	float3 normal;
 	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
 	float3 dominant_light_direction, dominant_light_intensity, diffuse_ref;
+	float3 sky_radiance = input.sky_radiance;
+	float3 extinction_factor = input.extinction_factor;
 	
 	float2 texcoord = calc_parallax_ps(input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal.xyz);
 	float alpha = calc_alpha_test_ps(texcoord);
@@ -44,7 +46,8 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	else
 	{
 		color.rgb = input.vertex_color;
-		color.a = 1.0;
+		sky_radiance = 0.0;
+		extinction_factor = 1.0;
 	}
 	
 	color.rgb *= albedo.rgb;
@@ -54,7 +57,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	
 	color.rgb += environment;
 	color.rgb += self_illumination;
-	color.rgb = color.rgb * input.extinction_factor;
+	color.rgb = color.rgb * extinction_factor;
 		
 	if (blend_type_arg == k_blend_mode_additive)
 	{
@@ -72,7 +75,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	
 	if (blend_type_arg != k_blend_mode_additive)
 	{
-		color.rgb += input.sky_radiance.rgb;
+		color.rgb += sky_radiance;
 	}
 
 	if (blend_type_arg == k_blend_mode_double_multiply)

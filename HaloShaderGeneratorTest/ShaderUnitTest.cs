@@ -82,7 +82,7 @@ namespace HaloShaderGenerator
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine($"Generated shader for {BuildShaderName(testShader)} at {stage.ToString().ToLower()} is not equal to reference.");
                         Console.ResetColor();
-                        string filename = $"unit_test_failed{BuildShaderName(testShader)}.pixl";
+                        string filename = $"unit_test_failed_{stage.ToString().ToLower()}{BuildShaderName(testShader)}.pixl";
                         WriteShaderFile(filename, generatedDissassembly);
                     }
 
@@ -125,6 +125,11 @@ namespace HaloShaderGenerator
             new List<int> { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
             new List<int> { 5, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             new List<int> { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0 },
+            //new List<int> { 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
+            //new List<int> { 0, 0, 0, 0, 0, 0, 3, 1, 0, 0, 0 },
             //new List<int> { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
         };
     }

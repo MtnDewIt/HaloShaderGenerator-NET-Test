@@ -20,7 +20,7 @@ uniform bool actually_calc_albedo : register(b12);
 */
 
 
-#if blend_type_arg ==  k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply
+#if blend_type_arg == k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply
 #define color_export_multiply_alpha true
 #else
 #define color_export_multiply_alpha false
