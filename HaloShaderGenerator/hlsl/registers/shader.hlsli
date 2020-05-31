@@ -76,11 +76,13 @@ uniform xform2d p_dynamic_light_gel_xform : register(c5);
 // we need a better solution for this
 //NOTE: We should be able to macro this out
 
+uniform sampler2D albedo_texture;
+
 #if envmap_type_arg != k_environment_mapping_dynamic
 uniform sampler __unknown_s1 : register(s1);
 #endif
 
-
+uniform sampler2D normal_texture;
 
 
 uniform bool k_is_lightmap_exist;
@@ -89,11 +91,11 @@ uniform int layers_of_4;
 
 
 
-uniform sampler dynamic_light_gel_texture;
-uniform sampler shadow_depth_map_1;
+
+uniform sampler2D shadow_depth_map_1;
+uniform sampler2D dynamic_light_gel_texture;
 uniform sampler2D scene_ldr_texture;
-uniform sampler2D albedo_texture;
-uniform sampler2D normal_texture;
+
 
 
 // material model parameters

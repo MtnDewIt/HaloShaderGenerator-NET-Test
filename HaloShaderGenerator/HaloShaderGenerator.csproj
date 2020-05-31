@@ -171,6 +171,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Beam\" />
+    <Folder Include="hlsl\black\" />
+    <Folder Include="hlsl\particle\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\registers\vertex_shader.hlsli" />
@@ -234,6 +236,29 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\lightmaps.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\shader\entry_sfx_distort.hlsli" />
+    <EmbeddedResource Include="hlsl\shader\entry_active_camo.hlsli" />
+    <EmbeddedResource Include="hlsl\shader\entry_albedo.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\shader\entry_lightmap_debug.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\shader\entry_prt.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\shader\entry_dynamic_light.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\shader\entry_per_pixel_lighting.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\shader\entry_per_vertex_color_lighting.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\shader\entry_per_vertex_lighting.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

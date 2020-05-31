@@ -5,22 +5,30 @@ using HaloShaderGenerator.Black;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HaloShaderGenerator
 {
     class Application
     {
+        static bool UnitTest = false;
+        static bool TestSpecificShader = true;
+
+
         static int Main()
         {
-            //var stage = ShaderStage.Static_Sh;
+            if (UnitTest)
+            {
+                PixelShaderUnitTest.RunTests();
+                Console.ReadLine();
+            }
+                
 
-            List<ShaderStage> stages_to_gen_prt = new List<ShaderStage> { ShaderStage.Static_Sh, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Prt_Linear, ShaderStage.Static_Prt_Quadratic };
-            List<ShaderStage> stages_to_gen = new List<ShaderStage> { ShaderStage.Static_Per_Vertex, ShaderStage.Static_Per_Pixel };
+            if (TestSpecificShader)
+            {
+                List<ShaderStage> stages_to_gen_prt = new List<ShaderStage> { ShaderStage.Static_Sh, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Prt_Linear, ShaderStage.Static_Prt_Quadratic };
+                List<ShaderStage> stages_to_gen = new List<ShaderStage> { ShaderStage.Static_Per_Vertex};
 
-            List<List<int>> shaders_to_gen = new List<List<int>> { 
+                List<List<int>> shaders_to_gen = new List<List<int>> {
                 new List<int> {0,0,0,0,0,0,0,0,0,0,0 },
                 //new List<int> {0,0,0,0,0,0,0,0,0,1,0 },
                 //new List<int> {0,0,0,0,0,0,0,1,0,0,0 },
@@ -38,30 +46,34 @@ namespace HaloShaderGenerator
             };
 
 
-            foreach (var stage in stages_to_gen)
-            {
-                foreach(var methods in shaders_to_gen)
+                foreach (var stage in stages_to_gen)
                 {
-                    TestPixelShader(stage, (Albedo)methods[0], (Bump_Mapping)methods[1], (Alpha_Test)methods[2], (Specular_Mask)methods[3], (Material_Model)methods[4], 
-                        (Environment_Mapping)methods[5], (Self_Illumination)methods[6], (Blend_Mode)methods[7], (Parallax)methods[8], (Misc)methods[9], (Distortion)methods[10]);
+                    foreach (var methods in shaders_to_gen)
+                    {
+                        TestPixelShader(stage, (Albedo)methods[0], (Bump_Mapping)methods[1], (Alpha_Test)methods[2], (Specular_Mask)methods[3], (Material_Model)methods[4],
+                            (Environment_Mapping)methods[5], (Self_Illumination)methods[6], (Blend_Mode)methods[7], (Parallax)methods[8], (Misc)methods[9], (Distortion)methods[10]);
+                    }
+
                 }
-                
+
+                //TestSharedVertexShader(VertexType.World, stage);
+                //TestSharedVertexShader(VertexType.Rigid, stage);
+                //TestSharedVertexShader(VertexType.Skinned, stage);
+                //TestSharedPixelShader(stage, (int)Shader.ShaderMethods.Alpha_Test, (int)Shader.Alpha_Test.Off);
+                //TestSharedPixelShader(stage, (int)Shader.ShaderMethods.Alpha_Test, (int)Shader.Alpha_Test.On);
+
+                /*
+                TestPixelBlack(ShaderStage.Albedo);
+                TestSharedVertexBlack(VertexType.World, ShaderStage.Albedo);
+                TestSharedVertexBlack(VertexType.Rigid, ShaderStage.Albedo);
+                TestSharedVertexBlack(VertexType.Skinned, ShaderStage.Albedo);
+                */
             }
-            
-            
 
-            //TestSharedVertexShader(VertexType.World, stage);
-            //TestSharedVertexShader(VertexType.Rigid, stage);
-            //TestSharedVertexShader(VertexType.Skinned, stage);
-            //TestSharedPixelShader(stage, (int)Shader.ShaderMethods.Alpha_Test, (int)Shader.Alpha_Test.Off);
-            //TestSharedPixelShader(stage, (int)Shader.ShaderMethods.Alpha_Test, (int)Shader.Alpha_Test.On);
 
-            /*
-            TestPixelBlack(ShaderStage.Albedo);
-            TestSharedVertexBlack(VertexType.World, ShaderStage.Albedo);
-            TestSharedVertexBlack(VertexType.Rigid, ShaderStage.Albedo);
-            TestSharedVertexBlack(VertexType.Skinned, ShaderStage.Albedo);
-            */
+
+
+
             return 0;
         }
 
@@ -80,11 +92,6 @@ namespace HaloShaderGenerator
             var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion);
             var bytecode = gen.GeneratePixelShader(stage).Bytecode;
             var parameters = gen.GetPixelShaderParameters();
-
-            foreach (var param in parameters.GetRealParameters())
-            {
-                Console.WriteLine(param.ParameterName);
-            }
 
             var disassembly = D3DCompiler.Disassemble(bytecode);
             string filename = $"generated_{stage.ToString().ToLower()}_{(int)albedo}_{(int)bump_mapping}_{(int)alpha_test}_{(int)specular_mask}_{(int)material_model}_{(int)environment_mapping}_{(int)self_illumination}_{(int)blend_mode}_{(int)parallax}_{(int)misc}_{(int)distortion}.pixl";

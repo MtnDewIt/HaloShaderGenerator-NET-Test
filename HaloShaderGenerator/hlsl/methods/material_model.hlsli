@@ -1,4 +1,4 @@
-﻿#ifndef _MATERIAL_MODEL_HLSLItempx
+﻿#ifndef _MATERIAL_MODEL_HLSLI
 #define _MATERIAL_MODEL_HLSLI
 
 #include "../helpers/math.hlsli"
