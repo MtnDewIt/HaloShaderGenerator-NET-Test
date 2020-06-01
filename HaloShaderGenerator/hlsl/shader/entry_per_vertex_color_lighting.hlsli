@@ -67,18 +67,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	
 	color.rgb = color.rgb * extinction_factor;
 		
-	if (blend_type_arg == k_blend_mode_additive)
-	{
-		color.a = 0.0;
-	}
-	else if (blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha)
-	{
-		color.a = alpha * albedo.a;
-	}
-	else
-	{
-		color.a = alpha;
-	}
+	color.a = blend_type_calculate_alpha_blending(albedo, alpha);
 
 	
 	if (blend_type_arg != k_blend_mode_additive)

@@ -5,7 +5,7 @@
 #include "math.hlsli"
 #include "color_processing.hlsli"
 
-void add_dominant_light_contribution(
+void remove_dominant_light_contribution(
 float3 dominant_light_direction,
 float3 dominant_light_intensity,
 inout float4 sh_0,
@@ -14,26 +14,35 @@ inout float4 sh_457[3],
 inout float4 sh_8866[3])
 {
 	float c1 = 0.282094806f;
-	float c2 = -0.4886025f;
+	float c2 = 0.4886025f;
 
-	sh_312[0].xyz += -(c2 * dominant_light_direction.xyz * dominant_light_intensity.r);
-	sh_312[1].xyz += -(c2 * dominant_light_direction.xyz * dominant_light_intensity.g);
-	sh_312[2].xyz += -(c2 * dominant_light_direction.xyz * dominant_light_intensity.b);
+	sh_312[0].xyz += -(c2 * -dominant_light_direction.xyz * dominant_light_intensity.r);
+	sh_312[1].xyz += -(c2 * -dominant_light_direction.xyz * dominant_light_intensity.g);
+	sh_312[2].xyz += -(c2 * -dominant_light_direction.xyz * dominant_light_intensity.b);
 	sh_0.rgb += -(c1 * dominant_light_intensity.rgb);
 }
 
-void lightmap_diffuse_reflectance(
+float3 dominant_light_diffuse_reflectance(
 in float3 normal,
-inout float4 sh_0,
-inout float4 sh_312[3],
-inout float4 sh_457[3],
-inout float4 sh_8866[3],
 in float3 dominant_light_dir,
-in float3 dominant_light_intensity,
-out float3 diffuse_reflectance)
+in float3 dominant_light_intensity)
 {
-	add_dominant_light_contribution(dominant_light_dir, dominant_light_intensity, sh_0, sh_312, sh_457, sh_8866);
-	
+	float3 diffuse_reflectance;
+	float n_dot_light = dot(dominant_light_dir, normal);
+	if (n_dot_light < 0)
+		diffuse_reflectance = 0;
+	else
+		diffuse_reflectance = 0.280999988 * dominant_light_intensity.rgb * n_dot_light;
+	return diffuse_reflectance;
+}
+
+float3 lightmap_diffuse_reflectance(
+in float3 normal,
+in float4 sh_0,
+in float4 sh_312[3],
+in float4 sh_457[3],
+in float4 sh_8866[3])
+{
 	float c2 = 0.511664f;
 	float c4 = 0.886227f;
 	float3 x1;
@@ -43,16 +52,7 @@ out float3 diffuse_reflectance)
 	x1.b = dot(normal, sh_312[2].xyz);
 	
 	float3 lightprobe_color = c4 * sh_0.rgb + (-2.f * c2) * x1;
-	lightprobe_color /= PI;
-	float n_dot_light = dot(dominant_light_dir, normal);
-	
-	float3 intensity_unknown;
-	if (dot(normal, dominant_light_dir) < 0)
-		intensity_unknown = 0;
-	else
-		intensity_unknown = 0.280999988 * dominant_light_intensity.rgb * n_dot_light;
-	
-	diffuse_reflectance = intensity_unknown + lightprobe_color;
+	return lightprobe_color /= PI;
 }
 
 // Lighting and materials of Halo 3

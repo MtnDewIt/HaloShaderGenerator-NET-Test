@@ -10,7 +10,7 @@ namespace HaloShaderGenerator
 {
     class Application
     {
-        static readonly bool UnitTest = false;
+        static readonly bool UnitTest = true;
         static readonly bool TestSpecificShader = true;
 
 

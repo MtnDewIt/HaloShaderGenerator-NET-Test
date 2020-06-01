@@ -19,7 +19,6 @@
 
 PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 {
-	
 	float4 color = 0;
 	float4 albedo;
 	float3 normal;
@@ -27,8 +26,6 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	float3 dominant_light_direction, dominant_light_intensity, diffuse_ref;
 	float3 extinction_factor = input.sky_radiance.rgb;
 	float3 sky_radiance = float3(input.texcoord.zw, input.sky_radiance.w);
-	
-	
 	
 	unpack_per_vertex_lightmap_coefficients(input, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity);
 	
@@ -41,8 +38,9 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	float3 view_dir = normalize(input.camera_dir);
 	float3 world_position = Camera_Position_PS - input.camera_dir;
 	
-	lightmap_diffuse_reflectance(normal, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, diffuse_ref);
-
+	remove_dominant_light_contribution(dominant_light_direction, dominant_light_intensity, sh_0, sh_312, sh_457, sh_8866);
+	diffuse_ref = lightmap_diffuse_reflectance(normal, sh_0, sh_312, sh_457, sh_8866);
+	diffuse_ref += dominant_light_diffuse_reflectance(normal, dominant_light_direction, dominant_light_intensity);
 	
 	if (calc_material)
 	{

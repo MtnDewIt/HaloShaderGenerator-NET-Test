@@ -57,6 +57,23 @@ float blend_type_calculate_alpha_blending(float4 albedo, float alpha)
 	return result;
 }
 
+float3 blend_type_calculate_color_blending(float4 color)
+{
+	float3 result;
+	if (blend_type_arg == k_blend_mode_double_multiply)
+	{
+		result = 2 * color.rgb;
+	}
+	else if (blend_type_arg == k_blend_mode_pre_multiplied_alpha)
+	{
+		result = color.rgb * color.a;
+	}
+	else
+	{
+		result = color.rgb;
+	}
+	return result;
+}
 
 #ifndef blend_type
 #define blend_type blend_type_opaque
