@@ -38,7 +38,8 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 
 	float4 color = 0;
 	
-	float3 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo.rgb);
+	float3 self_illumination = 0;
+	calc_self_illumination_ps(texcoord.xy, albedo.rgb, self_illumination);
 	
 	
 	if (calc_material)

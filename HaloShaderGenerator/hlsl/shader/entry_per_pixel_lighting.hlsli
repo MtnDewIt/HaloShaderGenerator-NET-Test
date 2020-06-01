@@ -50,18 +50,20 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 	else
 	{
 		color.rgb = 1.0;
-		sky_radiance = 0.0;
-		extinction_factor = 1.0;
+		if (!calc_atmosphere_no_material)
+		{
+			sky_radiance = 0.0;
+			extinction_factor = 1.0;
+		}
 	}
 	
 	color.rgb *= albedo.rgb;
 	
-	float3 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo.rgb);
-	float3 environment = envmap_type(view_dir, normal);
+	calc_self_illumination_ps(texcoord.xy, albedo.rgb, color.rgb);
 	
-
+	float3 environment = envmap_type(view_dir, normal);
 	color.rgb += environment;
-	color.rgb += self_illumination;
+
 	color.rgb = color.rgb * extinction_factor;
 	color.a = blend_type_calculate_alpha_blending(albedo, alpha);
 	

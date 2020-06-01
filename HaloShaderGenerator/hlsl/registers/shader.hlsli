@@ -40,6 +40,12 @@ uniform bool actually_calc_albedo : register(b12);
 #define calc_material true
 #endif
 
+#if self_illumination_arg == k_self_illumination_from_diffuse
+#define calc_atmosphere_no_material true
+#else
+#define calc_atmosphere_no_material false
+#endif
+
 
 uniform float4 g_exposure : register(c0);
 uniform float4 p_lighting_constant_0 : register(c1);
@@ -88,36 +94,11 @@ uniform bool k_is_lightmap_exist;
 uniform bool k_is_water_interaction;
 uniform int layers_of_4;
 
-
-
-
-
 uniform sampler2D scene_ldr_texture;
 
 
 
 // material model parameters
-
-// BEGIN ENERGY SWORD VARIABLES, NOT SURE WHERE THESE BELONG YET
-/*
-uniform float4 alpha_mask_map_xform;
-uniform sampler alpha_mask_map;
-
-uniform float4 noise_map_a_xform;
-uniform sampler noise_map_a;
-
-uniform float4 noise_map_b_xform;
-uniform sampler noise_map_b;
-
-uniform float4 color_medium;
-uniform float4 color_sharp;
-uniform float4 color_wide;
-
-uniform float thinness_medium;
-uniform float thinness_sharp;
-uniform float thinness_wide;
-*/
-// END ENERGY SWORD VARIABLES
 
 uniform float diffuse_coefficient;
 uniform float specular_coefficient;

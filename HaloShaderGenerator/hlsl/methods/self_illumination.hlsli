@@ -25,14 +25,17 @@ uniform float thinness_medium;
 uniform float thinness_sharp;
 uniform float thinness_wide;
 
-#define SELF_ILLUM_ARGS float2 texcoord, float3 diffuse
-
-float3 calc_self_illumination_none_ps(SELF_ILLUM_ARGS)
+void calc_self_illumination_none_ps(
+in float2 texcoord,
+in float3 albedo,
+inout float3 diffuse)
 {
-	return 0;
 }
 
-float3 calc_self_illumination_simple_ps(float2 texcoord, float3 diffuse)
+void calc_self_illumination_simple_ps(
+in float2 texcoord,
+in float3 albedo,
+inout float3 diffuse)
 {
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
     float3 self_illum_map_sample = tex2D(self_illum_map, self_illum_map_texcoord).rgb;
@@ -40,15 +43,20 @@ float3 calc_self_illumination_simple_ps(float2 texcoord, float3 diffuse)
 	self_illum_map_sample *= self_illum_intensity;
 	self_illum_map_sample *= g_alt_exposure.x;
 
-	return self_illum_map_sample;
+	diffuse += self_illum_map_sample;
 }
 
-float3 calc_self_illumination_three_channel_ps(SELF_ILLUM_ARGS)
+void calc_self_illumination_three_channel_ps(
+in float2 texcoord,
+in float3 albedo,
+inout float3 diffuse)
 {
-    return float3(0.0, 0.0, 0.0);
 }
 
-float3 calc_self_illumination_plasma_ps(SELF_ILLUM_ARGS)
+void calc_self_illumination_plasma_ps(
+in float2 texcoord,
+in float3 albedo,
+inout float3 diffuse)
 {
 	float2 alpha_map_texcoord = apply_xform2d(texcoord, alpha_mask_map_xform);
 	float2 noise_a_texcoord = apply_xform2d(texcoord, noise_map_a_xform);
@@ -82,19 +90,25 @@ float3 calc_self_illumination_plasma_ps(SELF_ILLUM_ARGS)
     color *= g_alt_exposure.x;
 
     // not 100% sure about alpha yet
-	return color;
+	diffuse += color;
 }
 
-float3 calc_self_illumination_from_albedo_ps(SELF_ILLUM_ARGS)
+void calc_self_illumination_from_albedo_ps(
+in float2 texcoord,
+in float3 albedo,
+inout float3 diffuse)
 {
-	float3 color = diffuse.rgb;
+	float3 color = albedo.rgb;
 	color.rgb *= self_illum_color.rgb;
 	color.rgb *= self_illum_intensity;
 	color.rgb *= g_alt_exposure.x;
-	return color;
+	diffuse = color;
 }
 
-float3 calc_self_illumination_detail_ps(float2 texcoord, float3 diffuse)
+void calc_self_illumination_detail_ps(
+in float2 texcoord,
+in float3 albedo,
+inout float3 diffuse)
 {
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
 	float2 self_illum_detail_map_texcoord = apply_xform2d(texcoord, self_illum_detail_map_xform);
@@ -107,22 +121,28 @@ float3 calc_self_illumination_detail_ps(float2 texcoord, float3 diffuse)
 	self_illum_map_sample.rgb *= self_illum_intensity;
 	self_illum_map_sample.rgb *= g_alt_exposure.x;
 	self_illum_map_sample.rgb *= DEBUG_TINT_FACTOR;
-	return self_illum_map_sample.rgb;
+	diffuse += self_illum_map_sample.rgb;
 }
 
-float3 calc_self_illumination_meter_ps(SELF_ILLUM_ARGS)
+void calc_self_illumination_meter_ps(
+in float2 texcoord,
+in float3 albedo,
+inout float3 diffuse)
 {
-	return float3(0.0, 0.0, 0.0);
+
 }
 
-float3 calc_self_illumination_times_diffuse_ps(SELF_ILLUM_ARGS)
+void calc_self_illumination_times_diffuse_ps(
+in float2 texcoord,
+in float3 albedo,
+inout float3 diffuse)
 {
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
 	float4 self_illum_map_sample = tex2D(self_illum_map, self_illum_map_texcoord);
 	float a = max(0, 10 * self_illum_map_sample.y - 9);
 	float3 color = primary_change_color_blend * primary_change_color + (1.0 - primary_change_color_blend) * self_illum_color.rgb;
 	
-	float3 interpolation = lerp(a, 1.0, diffuse);
+	float3 interpolation = lerp(a, 1.0, albedo);
 
 	float3 result = 0;
 	result.rgb = color * interpolation;
@@ -130,10 +150,13 @@ float3 calc_self_illumination_times_diffuse_ps(SELF_ILLUM_ARGS)
 	result.rgb *= self_illum_map_sample.rgb;
 	result.rgb *= g_alt_exposure.x;
 
-	return result;
+	diffuse += result;
 }
 
-float3 calc_self_illumination_simple_with_alpha_mask_ps(SELF_ILLUM_ARGS)
+void calc_self_illumination_simple_with_alpha_mask_ps(
+in float2 texcoord,
+in float3 albedo,
+inout float3 diffuse)
 {
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
 	float4 self_illum_map_sample = tex2D(self_illum_map, self_illum_map_texcoord);
@@ -141,12 +164,15 @@ float3 calc_self_illumination_simple_with_alpha_mask_ps(SELF_ILLUM_ARGS)
 	self_illum_map_sample.rgb *= (self_illum_intensity * self_illum_map_sample.a);
 	self_illum_map_sample.rgb *= g_alt_exposure.x;
 
-	return self_illum_map_sample.rgb;
+	diffuse += self_illum_map_sample.rgb;
 }
 
-float3 calc_self_illumination_simple_four_change_color_ps(SELF_ILLUM_ARGS)
+void calc_self_illumination_simple_four_change_color_ps(
+in float2 texcoord,
+in float3 albedo,
+inout float3 diffuse)
 {
-	return float3(0.0, 0.0, 0.0);
+
 }
 
 // fixups

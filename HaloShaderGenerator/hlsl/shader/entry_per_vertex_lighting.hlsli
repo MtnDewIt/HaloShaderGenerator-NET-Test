@@ -58,11 +58,10 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	
 	color.rgb *= albedo.rgb;
 	
-	float3 self_illumination = calc_self_illumination_ps(input.texcoord.xy, albedo.rgb);
+	calc_self_illumination_ps(texcoord.xy, albedo.rgb, color.rgb);
 	float3 environment = envmap_type(view_dir, normal);
 
 	color.rgb += environment;
-	color.rgb += self_illumination;
 	color.rgb = color.rgb * extinction_factor;
 	color.a = blend_type_calculate_alpha_blending(albedo, alpha);
 	
