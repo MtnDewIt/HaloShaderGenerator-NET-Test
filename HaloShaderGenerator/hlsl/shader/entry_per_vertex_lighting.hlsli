@@ -31,21 +31,21 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	
 	float2 texcoord = calc_parallax_ps(input.texcoord.xy, input.camera_dir, input.tangent, input.binormal, input.normal.xyz);
 	float alpha = calc_alpha_test_ps(texcoord);
-	
+
 	get_albedo_and_normal(actually_calc_albedo, input.position.xy, texcoord, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, normal);
-	
 	normal = normalize(normal);
-	float3 view_dir = normalize(input.camera_dir);
-	float3 world_position = Camera_Position_PS - input.camera_dir;
 	
 	remove_dominant_light_contribution(dominant_light_direction, dominant_light_intensity, sh_0, sh_312, sh_457, sh_8866);
+	
 	diffuse_ref = lightmap_diffuse_reflectance(normal, sh_0, sh_312, sh_457, sh_8866);
 	diffuse_ref += dominant_light_diffuse_reflectance(normal, dominant_light_direction, dominant_light_intensity);
 	
+	float3 view_dir = normalize(input.camera_dir);
+	float3 world_position = Camera_Position_PS - input.camera_dir;
+	
 	if (calc_material)
 	{
-		float3 material_lighting = material_type(albedo.rgb, normal, view_dir, input.texcoord.xy, input.camera_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, diffuse_ref, no_dynamic_lights, 1.0, 0.0);
-		color.rgb += material_lighting;
+		color.rgb += material_type(albedo.rgb, normal, view_dir, input.texcoord.xy, input.camera_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, diffuse_ref, no_dynamic_lights, 1.0, 0.0);
 	}
 	else
 	{
@@ -60,22 +60,18 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	color.rgb *= albedo.rgb;
 	
 	calc_self_illumination_ps(texcoord.xy, albedo.rgb, color.rgb);
-	float3 environment = envmap_type(view_dir, normal);
+	color.rgb += envmap_type(view_dir, normal);
+	color.rgb *= extinction_factor;
 
-	color.rgb += environment;
-	color.rgb = color.rgb * extinction_factor;
-	color.a = blend_type_calculate_alpha_blending(albedo, alpha);
-	
 	if (blend_type_arg != k_blend_mode_additive)
-	{
 		color.rgb += sky_radiance.rgb;
-	}
 
 	if (blend_type_arg == k_blend_mode_double_multiply)
 		color.rgb *= 2;
-
+	
 	color.rgb = expose_color(color.rgb);
 	
+	color.a = blend_type_calculate_alpha_blending(albedo, alpha);
 	color = blend_type(color, 1.0f);
 	
 	return export_color(color);

@@ -61,4 +61,8 @@ float3 normal_export(float3 normal)
     return normal * 0.5 + 0.5;
 }
 
+float3 normal_import(float3 normal)
+{
+	return normal * 2.0 - 1.0;
+}
 #endif

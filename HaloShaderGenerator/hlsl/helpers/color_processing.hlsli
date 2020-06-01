@@ -43,7 +43,7 @@ PS_OUTPUT_DEFAULT export_color(float4 color)
 {
 	color.rgb = max(color.rgb, 0);
 	PS_OUTPUT_DEFAULT output;
-	[flatten]
+	
 	if (color_export_multiply_alpha && !is_dynamic_light)
 	{
 		output.low_frequency = color * g_exposure.w;

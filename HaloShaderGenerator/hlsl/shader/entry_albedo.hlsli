@@ -35,7 +35,7 @@ out float3 out_normal)
 		float4 normal_texture_sample = tex2D(normal_texture, texcoord);
 		float4 albedo_texture_sample = tex2D(albedo_texture, texcoord);
 		albedo = albedo_texture_sample;
-		out_normal = normal_texture_sample.xyz * 2.0 - 1.0;
+		out_normal = normal_import(normal_texture_sample.xyz);
 	}
 }
 
