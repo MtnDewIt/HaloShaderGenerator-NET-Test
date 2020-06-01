@@ -52,8 +52,11 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	else
 	{
 		color.rgb = 1.0;
-		sky_radiance = 0.0;
-		extinction_factor = 1.0;
+		if (!calc_atmosphere_no_material)
+		{
+			sky_radiance = 0.0;
+			extinction_factor = 1.0;
+		}
 	}
 	
 	color.rgb *= albedo.rgb;

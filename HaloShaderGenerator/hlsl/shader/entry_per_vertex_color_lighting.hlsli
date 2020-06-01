@@ -17,6 +17,7 @@
 #include "..\helpers\color_processing.hlsli"
 
 
+
 PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLOR input)
 {
 	float4 albedo;
@@ -49,9 +50,12 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	}
 	else
 	{
-		color.rgb += input.vertex_color;
-		sky_radiance = 0.0;
-		extinction_factor = 1.0;
+		if (!calc_atmosphere_no_material)
+		{
+			color.rgb += input.vertex_color;
+			sky_radiance = 0.0;
+			extinction_factor = 1.0;
+		}
 	}
 	
 	color.rgb *= albedo.rgb;
