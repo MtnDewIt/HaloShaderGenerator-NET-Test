@@ -28,7 +28,6 @@ uniform xform2d detail_map_overlay_xform;
 uniform sampler color_mask_map;
 uniform xform2d color_mask_map_xform;
 uniform float4 neutral_gray;
-uniform float primary_change_color_blend;
 
 float3 apply_debug_tint(float3 color)
 {

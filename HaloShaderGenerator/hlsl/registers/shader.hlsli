@@ -46,6 +46,11 @@ uniform bool actually_calc_albedo : register(b12);
 #define calc_atmosphere_no_material false
 #endif
 
+#if envmap_type_arg != k_environment_mapping_none
+#define calc_env_output true
+#else
+#define calc_env_output false
+#endif
 
 uniform float4 g_exposure : register(c0);
 uniform float4 p_lighting_constant_0 : register(c1);
@@ -82,10 +87,7 @@ uniform xform2d p_dynamic_light_gel_xform : register(c5);
 
 
 uniform sampler2D albedo_texture;
-#if envmap_type_arg != k_environment_mapping_dynamic
-uniform sampler __unknown_s1 : register(s1);
-#endif
-
+uniform samplerCUBE environment_map : register(s1);
 uniform sampler2D normal_texture;
 uniform sampler3D lightprobe_texture_array;
 uniform sampler3D dominant_light_intensity_map;

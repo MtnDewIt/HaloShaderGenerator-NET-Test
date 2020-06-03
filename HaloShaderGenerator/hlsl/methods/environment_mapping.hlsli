@@ -3,13 +3,14 @@
 
 #include "../helpers/types.hlsli"
 #include "../helpers/math.hlsli"
+#include "../helpers/sh.hlsli"
 #include "../registers/shader.hlsli"
+#include "../methods/blend_mode.hlsli"
 
-uniform float4 env_tint_color;
+uniform float3 env_tint_color;
 uniform float env_roughness_scale;
 uniform samplerCUBE dynamic_environment_map_0;
 uniform samplerCUBE dynamic_environment_map_1;
-uniform samplerCUBE environment_map;
 
 float4 _calculate_partial_derivative_cubemap_world_coordinate_reflection(float3 eye, float3 normal)
 {
@@ -68,17 +69,24 @@ float3 cubemap_coordinate_shift(float3 coordinate)
     return coordinate * float3(1, -1, 1);
 }
 
-float3 envmap_type_none(float3 eye_world, float3 normal)
+void envmap_type_none(
+in float3 view_dir,
+in float3 reflect_dir,
+in float3 sh_0,
+inout float3 diffuse)
 {
-    
-    return float3(0, 0, 0);
 }
 
-float3 envmap_type_per_pixel(float3 eye_world, float3 normal)
+void envmap_type_per_pixel(
+in float3 view_dir,
+in float3 reflect_dir,
+in float3 sh_0,
+inout float3 diffuse)
 {
-	float3 envmap_texcoord = cubemap_coordinate_shift(normal);
+	float3 envmap_texcoord = float3(reflect_dir.x, -reflect_dir.y, reflect_dir.z);
 	float4 envmap_sample = texCUBE(environment_map, envmap_texcoord);
-	return envmap_sample.rgb * env_tint_color.rgb;
+	float3 environment_color = (envmap_sample.rgb * sh_0.rgb) * env_tint_color * envmap_sample.a;
+	diffuse += environment_color;
 }
 
 float3 envmap_type_dynamic(float3 eye_world, float3 normal)

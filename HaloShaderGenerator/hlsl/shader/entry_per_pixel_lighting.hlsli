@@ -37,8 +37,8 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 	float3 view_dir = normalize(input.camera_dir);
 	float3 world_position = Camera_Position_PS - input.camera_dir;
 	
-	remove_dominant_light_contribution(dominant_light_direction, dominant_light_intensity, sh_0, sh_312, sh_457, sh_8866);
-	diffuse_ref = lightmap_diffuse_reflectance(normal, sh_0, sh_312, sh_457, sh_8866);
+	remove_dominant_light_contribution(dominant_light_direction, dominant_light_intensity, sh_0, sh_312);
+	diffuse_ref = lightmap_diffuse_reflectance(normal, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity);
 	diffuse_ref += dominant_light_diffuse_reflectance(normal, dominant_light_direction, dominant_light_intensity);
 
 	float4 color = 0;
@@ -63,8 +63,8 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 	
 	calc_self_illumination_ps(texcoord.xy, albedo.rgb, color.rgb);
 	
-	float3 environment = envmap_type(view_dir, normal);
-	color.rgb += environment;
+	//float3 environment = envmap_type(view_dir, normal);
+	//color.rgb += environment;
 
 	color.rgb = color.rgb * extinction_factor;
 	color.a = blend_type_calculate_alpha_blending(albedo, alpha);

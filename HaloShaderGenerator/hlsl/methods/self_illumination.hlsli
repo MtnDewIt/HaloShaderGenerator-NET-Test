@@ -25,6 +25,8 @@ uniform float thinness_medium;
 uniform float thinness_sharp;
 uniform float thinness_wide;
 
+uniform float primary_change_color_blend;
+
 void calc_self_illumination_none_ps(
 in float2 texcoord,
 in float3 albedo,

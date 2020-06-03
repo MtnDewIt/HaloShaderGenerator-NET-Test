@@ -20,6 +20,7 @@
 
 PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLOR input)
 {
+	float3 view_dir = normalize(input.camera_dir);
 	float4 albedo;
 	float3 normal;
 	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
@@ -32,7 +33,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	get_albedo_and_normal(actually_calc_albedo, input.position.xy, texcoord, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, normal);
 	
 	normal = normalize(input.normal);
-	float3 view_dir = normalize(input.camera_dir);
+	float3 reflect_v = reflect(view_dir, normal);
 	float3 world_position = Camera_Position_PS - input.camera_dir;
 	
 	get_current_sh_coefficients_quadratic(sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity);
@@ -61,9 +62,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	color.rgb *= albedo.rgb;
 	
 	color.rgb += self_illumination;
-	float3 environment = envmap_type(view_dir, normal);
-	
-	color.rgb += environment;
+	envmap_type(view_dir, reflect_v, sh_0.rgb, color.rgb);
 	
 	color.rgb = color.rgb * extinction_factor;
 		
@@ -80,7 +79,8 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 
 	color.rgb = expose_color(color.rgb);
 	
-	color = blend_type(color, 1.0f);
+	if (blend_type_arg == k_blend_mode_pre_multiplied_alpha)
+		color.rgb *= color.a;
 
 	return export_color(color);
 }

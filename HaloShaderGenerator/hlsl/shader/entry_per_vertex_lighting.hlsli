@@ -35,9 +35,9 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	get_albedo_and_normal(actually_calc_albedo, input.position.xy, texcoord, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, normal);
 	normal = normalize(normal);
 	
-	remove_dominant_light_contribution(dominant_light_direction, dominant_light_intensity, sh_0, sh_312, sh_457, sh_8866);
+	remove_dominant_light_contribution(dominant_light_direction, dominant_light_intensity, sh_0, sh_312);
 	
-	diffuse_ref = lightmap_diffuse_reflectance(normal, sh_0, sh_312, sh_457, sh_8866);
+	diffuse_ref = lightmap_diffuse_reflectance(normal, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity);
 	diffuse_ref += dominant_light_diffuse_reflectance(normal, dominant_light_direction, dominant_light_intensity);
 	
 	float3 view_dir = normalize(input.camera_dir);
@@ -60,7 +60,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	color.rgb *= albedo.rgb;
 	
 	calc_self_illumination_ps(texcoord.xy, albedo.rgb, color.rgb);
-	color.rgb += envmap_type(view_dir, normal);
+	//color.rgb += envmap_type(view_dir, normal);
 	color.rgb *= extinction_factor;
 
 	if (blend_type_arg != k_blend_mode_additive)

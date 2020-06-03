@@ -9,9 +9,7 @@ void remove_dominant_light_contribution(
 float3 dominant_light_direction,
 float3 dominant_light_intensity,
 inout float4 sh_0,
-inout float4 sh_312[3],
-inout float4 sh_457[3],
-inout float4 sh_8866[3])
+inout float4 sh_312[3])
 {
 	float c1 = 0.282094806f;
 	float c2 = 0.4886025f;
@@ -20,6 +18,14 @@ inout float4 sh_8866[3])
 	sh_312[1].xyz += -(c2 * -dominant_light_direction.xyz * dominant_light_intensity.g);
 	sh_312[2].xyz += -(c2 * -dominant_light_direction.xyz * dominant_light_intensity.b);
 	sh_0.rgb += -(c1 * dominant_light_intensity.rgb);
+}
+
+float3 get_environment_contribution(
+in float4 sh_0)
+{
+	float c1 = 0.282094806f;
+	return max(c1 * sh_0.rgb, 0.001);
+
 }
 
 float3 dominant_light_diffuse_reflectance(
@@ -41,7 +47,9 @@ in float3 normal,
 in float4 sh_0,
 in float4 sh_312[3],
 in float4 sh_457[3],
-in float4 sh_8866[3])
+in float4 sh_8866[3],
+in float3 dominant_light_dir,
+in float3 dominant_light_intensity)
 {
 	float c2 = 0.511664f;
 	float c4 = 0.886227f;
