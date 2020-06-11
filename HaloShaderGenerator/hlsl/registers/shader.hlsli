@@ -98,47 +98,6 @@ uniform int layers_of_4;
 
 uniform sampler2D scene_ldr_texture;
 
-
-
-// material model parameters
-
-uniform float diffuse_coefficient;
-uniform float specular_coefficient;
-
-uniform float area_specular_contribution;
-uniform float analytical_specular_contribution;
-uniform float environment_map_specular_contribution;
-
-//TODO: Figure out location of this
-//uniform boolf order3_area_specular; // bool order3_area_specular; this is weird, its a bool sitting in a constant register?????? 
-
-uniform float normal_specular_power;
-uniform float3 normal_specular_tint;
-
-// START
-
-
-float3 fresnel_color;
-float fresnel_power;
-float roughness;
-float albedo_blend;
-float3 specular_tint;
-bool albedo_blend_with_specular_tint;
-float rim_fresnel_coefficient;
-float3 rim_fresnel_color;
-float rim_fresnel_power;
-float rim_fresnel_albedo_blend;
-
-// END
-
-uniform float glancing_specular_power;
-uniform float3 glancing_specular_tint;
-
-uniform float fresnel_curve_steepness;
-uniform float albedo_specular_tint_blend;
-uniform float analytical_anti_shadow_control;
-
-uniform float k_f0; // figure out what this is
-
+uniform sampler2D material_texture;
 
 #endif

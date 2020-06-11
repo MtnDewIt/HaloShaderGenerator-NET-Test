@@ -11,7 +11,7 @@ namespace HaloShaderGenerator
     class Application
     {
         static readonly bool UnitTest = true;
-        static readonly bool TestSpecificShader = true;
+        static readonly bool TestSpecificShader = false;
 
 
         static int Main()
@@ -19,11 +19,11 @@ namespace HaloShaderGenerator
             if (TestSpecificShader)
             {
                 List<ShaderStage> stages_to_gen_prt = new List<ShaderStage> { ShaderStage.Static_Sh, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Prt_Linear, ShaderStage.Static_Prt_Quadratic };
-                List<ShaderStage> stages_to_gen = new List<ShaderStage> {ShaderStage.Static_Per_Vertex, ShaderStage.Static_Per_Pixel, ShaderStage.Static_Sh, ShaderStage.Static_Per_Vertex_Color};
+                List<ShaderStage> stages_to_gen = new List<ShaderStage> {ShaderStage.Dynamic_Light, ShaderStage.Dynamic_Light_Cinematic};
 
                 List<List<int>> shaders_to_gen = new List<List<int>> {
-                    new List<int> { 0, 0, 0, 0, 0, 1, 0, 3, 0, 0, 0 },
-                //new List<int> {0,0,1,0,0,0,0,0,0,0,0 },
+                    new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+                    new List<int> {0,0,0,0,0,0,0,0,0,0,0 },
                 //new List<int> {0,0,1,0,0,0,0,0,0,2,0 },
                 };
 

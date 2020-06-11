@@ -132,7 +132,7 @@ This file contains a list of blank definitions to help with Intellisense
 
 #define albedo_arg 0
 #define self_illumination_arg 0
-#define material_model_arg 0
+#define material_type_arg 0
 #define envmap_type_arg 0
 #define blend_type_arg 0
 #define misc_arg 0

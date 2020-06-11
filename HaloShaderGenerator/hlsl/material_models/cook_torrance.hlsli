@@ -10,7 +10,7 @@
 uniform sampler2D g_sampler_cc0236;
 uniform sampler2D g_sampler_dd0236;
 uniform sampler2D g_sampler_c78d78;
-
+uniform float k_f0;
 
 
 // Lighting and materials of Halo 3
@@ -34,9 +34,9 @@ out float3 analytic_specular)
 		float3 half_vector = normalize(view_dir + light_dir);
 		float n_dot_h = dot(normal_dir, half_vector);
 		float v_dot_h = dot(view_dir, half_vector);
-		float G = 2 * n_dot_h * min_dot / (saturate(v_dot_h));
+		float G = 2 * n_dot_h * min_dot / (saturate(v_dot_h) + 0.00001f);
 		//calculate fresnel term
-		float3 f0 = c_fresnel_f0;
+		float3 f0 = min(c_fresnel_f0, 0.999);
 		float3 sqrt_f0 = sqrt(f0);
 		float3 n = (1.f + sqrt_f0) / (1.0 - sqrt_f0);
 		float3 g = sqrt(n * n + v_dot_h * v_dot_h - 1.f);
@@ -45,18 +45,19 @@ out float3 analytic_specular)
 		float3 r = (v_dot_h * gpc - 1.f) / (v_dot_h * gmc + 1.f);
 		float3 F = (0.5f * ((gmc * gmc) / (gpc * gpc + 0.00001f)) * (1.f + r * r));
 		//calculate the distribution term
-		float t_roughness = c_toughness;
+		float t_roughness = max(c_toughness, 0.05);
 		float m_squared = t_roughness * t_roughness;
 		float cosine_alpha_squared = n_dot_h * n_dot_h;
 		float D;
-		D = exp((cosine_alpha_squared - 1) / (m_squared * cosine_alpha_squared)) / (m_squared * cosine_alpha_squared * cosine_alpha_squared);
+		D = exp((cosine_alpha_squared - 1) / (m_squared * cosine_alpha_squared)) / (m_squared * cosine_alpha_squared * cosine_alpha_squared + 0.00001f);
 		//puting it all together
-		analytic_specular = D * saturate(G) / (PI * n_dot_v) * F;
+		analytic_specular = D * saturate(G) / (PI * n_dot_v + 0.00001f) * F;
+		analytic_specular = min(analytic_specular, 2);
 		analytic_specular *= light_intensity;
 	}
 	else
 	{
-		analytic_specular = 0.0f;
+		analytic_specular = 0.00001f;
 	}
 }
 

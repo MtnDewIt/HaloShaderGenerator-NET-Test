@@ -50,6 +50,10 @@ namespace HaloShaderGenerator
                     if (stage == ShaderStage.Default || stage == ShaderStage.Shadow_Apply || stage == ShaderStage.Shadow_Generate || stage == ShaderStage.Static_Default || stage == ShaderStage.Water_Shading || stage == ShaderStage.Water_Tesselation || stage == ShaderStage.Z_Only)
                         continue;
 
+                    /*
+                    if (stage != ShaderStage.Dynamic_Light && stage != ShaderStage.Dynamic_Light_Cinematic)
+                        continue;
+                    */
 
                     string filePath = Path.Combine(PathToReferenceShaders, BuildShaderName(testShader));
                     filePath = Path.Combine(filePath, BuildPixelShaderEntryPointName(stage));
@@ -122,10 +126,12 @@ namespace HaloShaderGenerator
 
         static readonly List<List<int>> TestMethods = new List<List<int>> {
 
-            new List<int> { 0, 0, 0, 0, 0, 1, 0, 3, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+            
+            //new List<int> { 0, 0, 0, 0, 0, 1, 0, 3, 0, 0, 0 },
             //new List<int> { 0, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0 },
 
-            /*
+            
             new List<int> { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },      
             new List<int> { 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0 },
             new List<int> { 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0 },
@@ -140,7 +146,7 @@ namespace HaloShaderGenerator
             new List<int> { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
             new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0 },
             new List<int> { 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0 },*/
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0 },
 
 
         };

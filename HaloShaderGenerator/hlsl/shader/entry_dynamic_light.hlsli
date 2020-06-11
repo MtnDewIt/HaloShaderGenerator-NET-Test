@@ -7,7 +7,9 @@
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 #include "..\helpers\lighting.hlsli"
+#include "..\methods\material_model.hlsli"
 #include "..\helpers\shadows.hlsli"
+
 
 uniform sampler2D dynamic_light_gel_texture;
 
@@ -27,7 +29,9 @@ bool is_cinematic)
 	texcoord = calc_parallax_ps(texcoord, camera_dir, tangent, binormal, normal);
 	float alpha = calc_alpha_test_ps(texcoord);
 	
+	float3 view_dir = normalize(camera_dir);
 	float3 world_position = Camera_Position_PS - camera_dir;
+
 	float shadow_coefficient;
 	float3 diffuse;
 
@@ -50,24 +54,45 @@ bool is_cinematic)
 	
 	float2 gel_texcoord = apply_xform2d(shadowmap_texcoord_depth_adjusted, p_dynamic_light_gel_xform);
 	float4 gel_sample = tex2D(dynamic_light_gel_texture, gel_texcoord);
-
-	diffuse = (intensity * light.color.rgb) * gel_sample.rgb;
+	
+	float3 light_intensity = intensity * light.color.rgb * gel_sample.rgb;
 	
 	float4 albedo;
 	float3 modified_normal;
-
+	
 	get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz, albedo, modified_normal);
+	float3 reflect_dir = 2 * dot(view_dir, modified_normal) * modified_normal - camera_dir;
+	float v_dot_n = dot(v_to_light, modified_normal);
+	float3 specular_contribution = specular_coefficient * analytical_specular_contribution;
 	
-	diffuse *= dot(v_to_light, modified_normal);
-	diffuse *= albedo.rgb;
+	float c_albedo_blend;
+	float c_roughness;
+	float4 packed_parameters;
+	float c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient;
 	
+	get_material_parameters_2(texcoord, packed_parameters, c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient);
+	c_albedo_blend = packed_parameters.y;
+	c_roughness = packed_parameters.w;
+	
+	float3 color = light_intensity * v_dot_n * albedo.rgb * c_diffuse_coefficient;
+
+	specular_contribution *= specular_tint;
+	
+	[flatten]
+	if (dot(specular_contribution, specular_contribution) > 0.0001)
+	{
+		float3 analytic_specular;
+		float3 fresnel_f0 = albedo_blend_with_specular_tint.x > 0 ? fresnel_color : lerp(fresnel_color, albedo.rgb, c_albedo_blend);
+		calc_material_analytic_specular(view_dir, modified_normal, reflect_dir, v_to_light, light_intensity, fresnel_f0, c_roughness, analytic_specular);
+		color += analytic_specular * specular_contribution;
+	}
 	
 	if (dynamic_light_shadowing)
 	{
 		if (is_cinematic)
-			shadow_coefficient = shadows_percentage_closer_filtering_custom_4x4(shadowmap_texcoord_depth_adjusted, shadowmap_texture_size, depth_scale, depth_offset, diffuse);
+			shadow_coefficient = shadows_percentage_closer_filtering_custom_4x4(shadowmap_texcoord_depth_adjusted, shadowmap_texture_size, depth_scale, depth_offset, color);
 		else
-			shadow_coefficient = shadows_percentage_closer_filtering_3x3(shadowmap_texcoord_depth_adjusted, shadowmap_texture_size, depth_scale, depth_offset, diffuse);
+			shadow_coefficient = shadows_percentage_closer_filtering_3x3(shadowmap_texcoord_depth_adjusted, shadowmap_texture_size, depth_scale, depth_offset, color);
 	}
 	else
 	{
@@ -88,7 +113,7 @@ bool is_cinematic)
 		result.a = alpha;
 	}
 	
-	result.rgb = expose_color(diffuse);
+	result.rgb = expose_color(color.rgb);
 	result.rgb *= shadow_coefficient;
 	
 	return export_color(result);
