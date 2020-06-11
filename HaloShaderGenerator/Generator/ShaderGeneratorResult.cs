@@ -352,12 +352,13 @@ namespace HaloShaderGenerator
             var registers = GetRegisterComponents(result);
             var parameters = GetRegisterParameters(result);
 
-            foreach (var register_kp in registers)
+            foreach (var parameters_kp in parameters)
             {
-                var name = register_kp.Key;
-                var register = Int32.Parse(register_kp.Value[0].Substring(1));
-                var size = Int32.Parse(register_kp.Value[1]);
-                var typename = parameters[name];
+                var name = parameters_kp.Key;
+                var register_entry = registers[name];
+                var register = Int32.Parse(register_entry[0].Substring(1));
+                var size = Int32.Parse(register_entry[1]);
+                var typename = parameters_kp.Key;
 
                 ShaderRegister.RegisterType register_type;
                 {
