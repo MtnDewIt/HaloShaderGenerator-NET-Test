@@ -642,7 +642,7 @@ namespace HaloShaderGenerator.Shader
             result.AddSamplerWithoutXFormParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
             result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
             result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
-            result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.texture_dominant_light_intensity_map);
+            result.AddSamplerWithoutXFormParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
             return result;
         }
     }
