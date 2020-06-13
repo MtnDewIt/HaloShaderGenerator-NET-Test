@@ -32,26 +32,20 @@ bool is_cinematic)
 	float3 view_dir = normalize(camera_dir);
 	float3 world_position = Camera_Position_PS - camera_dir;
 
-	float shadow_coefficient;
-	float3 diffuse;
-
 	SimpleLight light = get_simple_light(light_index);
 	
 	float3 v_to_light = light.position.xyz - world_position;
 	float light_distance_squared = dot(v_to_light, v_to_light);
 	v_to_light = normalize(v_to_light);
 	
-	float attenuation = 1.0 / (light_distance_squared + light.position.w);
-	float light_angle = dot(v_to_light, light.direction.xyz);
+	float3 L = normalize(v_to_light); // normalized surface to light direction
 
-	float2 packed_light_values = float2(attenuation, light_angle);
-	packed_light_values = max(0.0001, packed_light_values * light.unknown3.xy + light.unknown3.zw);
-	float specular_power = pow(packed_light_values.y, light.color.w);
+	float distance_attenuation, cone_attenuation;
+	get_simple_light_parameters(light, L, light_distance_squared, distance_attenuation, cone_attenuation);
 
-	float intensity = saturate(specular_power + light.direction.w) * saturate(packed_light_values.x);
+	float3 intensity = cone_attenuation * distance_attenuation;
 	
 	float2 shadowmap_texcoord_depth_adjusted = shadowmap_texcoord * (1.0 / depth_scale);
-	
 	float2 gel_texcoord = apply_xform2d(shadowmap_texcoord_depth_adjusted, p_dynamic_light_gel_xform);
 	float4 gel_sample = tex2D(dynamic_light_gel_texture, gel_texcoord);
 	
@@ -74,6 +68,7 @@ bool is_cinematic)
 	c_albedo_blend = packed_parameters.y;
 	c_roughness = packed_parameters.w;
 	
+	// lambertian diffuse
 	float3 color = light_intensity * v_dot_n * albedo.rgb * c_diffuse_coefficient;
 
 	specular_contribution *= specular_tint;
@@ -87,6 +82,7 @@ bool is_cinematic)
 		color += analytic_specular * specular_contribution;
 	}
 	
+	float shadow_coefficient;
 	if (dynamic_light_shadowing)
 	{
 		if (is_cinematic)

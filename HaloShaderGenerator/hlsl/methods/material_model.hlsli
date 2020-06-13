@@ -221,11 +221,11 @@ float3 vertex_color)
 	float3 area_specular = 0;
 	if (order3_area_specular)
 	{
-		area_specular_cook_torrance(view_dir, view_dir, sh_0, sh_312, sh_457, sh_8866, c_roughness, r_dot_l, area_specular);
+		calc_material_area_specular_order_3_cook_torrance_ps(view_dir, view_dir, sh_0, sh_312, sh_457, sh_8866, c_roughness, r_dot_l, area_specular);
 	}
 	else
 	{
-		area_specular_cook_torrance_order_2(view_dir, view_dir, sh_0, sh_312, c_roughness, r_dot_l, area_specular);
+		calc_material_area_specular_order_2_cook_torrance_ps(view_dir, view_dir, sh_0, sh_312, c_roughness, r_dot_l, area_specular);
 	}
 	
 	bool use_albedo_blend_with_specular_tint = albedo_blend_with_specular_tint.x > 0 ? true : false;
@@ -323,8 +323,9 @@ float3 material_type_hair(MATERIAL_TYPE_ARGS)
 #define calc_material_analytic_specular calc_material_analytic_specular_diffuse_only_ps
 #endif
 
-#ifndef area_specular
-#define area_specular area_specular_cook_torrance
+#ifndef calc_material_area_specular
+#define calc_material_area_specular_order_3 calc_material_area_specular_order_3_diffuse_only_ps
+#define calc_material_area_specular_order_2 calc_material_area_specular_order_2_diffuse_only_ps
 #endif
 
 #endif

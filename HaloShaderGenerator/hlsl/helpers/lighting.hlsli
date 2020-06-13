@@ -25,13 +25,55 @@ SimpleLight get_simple_light(int index)
 	return light;
 }
 
+float3 get_simple_light_color(SimpleLight light)
+{
+	return light.color.rgb;
+}
 
-float get_light_diffuse_intensity(SimpleLight light, float3 normal, float3 light_dir)
+
+float get_light_diffuse_intensity(
+SimpleLight light,
+float3 normal,
+float3 light_dir)
 {
 	return max(0.05, dot(normal, light_dir));
 }
 
-// 1-1 with level 2 optimization
+void get_simple_light_parameters(
+SimpleLight light,
+float3 surface_to_light,
+float light_dist_squared,
+out float distance_attenuation,
+out float cone_attenuation)
+{
+	float2 packed_params;
+	
+	packed_params.x = 1.0 / (light_dist_squared + light.position.w);
+	packed_params.y = dot(surface_to_light, light.direction.xyz);
+	packed_params = packed_params * light.unknown3.xy + light.unknown3.zw;
+	packed_params = max(0.0001, packed_params);
+	
+	distance_attenuation = packed_params.x;
+	cone_attenuation = packed_params.y;
+	
+	cone_attenuation = pow(cone_attenuation, light.color.w);
+	cone_attenuation = saturate(cone_attenuation + light.direction.w);
+	distance_attenuation = saturate(distance_attenuation);
+}
+
+float3 calculate_lambertian_reflectance(
+float3 n_dot_l, 
+float3 light_intensity, 
+float3 light_color)
+{
+	return light_color * light_intensity * n_dot_l;
+}
+
+float get_simple_light_max_range(SimpleLight light)
+{
+	return light.unknown4.x;
+}
+
 void calculate_simple_light(
 SimpleLight simple_light, 
 float3 normal,
@@ -42,44 +84,29 @@ inout float3 diffuse_accumulation,
 inout float3 specular_accumulation)
 {
 	float3 v_to_light_dir = simple_light.position.xyz - vertex_world_position;
-	float v_to_light_dir_norm = dot(v_to_light_dir, v_to_light_dir);
-	
-	// unknown4.x is the maximal distance the light has an effect, if distance_m_max_falloff >=0 means light is too far to render
-	float distance_m_max_falloff = v_to_light_dir_norm - simple_light.unknown4.x;
-	
+	float light_dist_squared = dot(v_to_light_dir, v_to_light_dir);
+
 	[flatten]
-	if (distance_m_max_falloff < 0)
+	if (light_dist_squared - get_simple_light_max_range(simple_light) < 0)
 	{
-		float3 v_to_light_dir_n = normalize(v_to_light_dir);
+		float3 L = normalize(v_to_light_dir);	// normalized surface to light direction
 
-		float2 r6 = float2(0, 0);
-		
-		r6.x = 1.0 / (v_to_light_dir_norm + simple_light.position.w);
-		r6.y = dot(v_to_light_dir_n, simple_light.direction.xyz);
+		float distance_attenuation, cone_attenuation;
+		get_simple_light_parameters(simple_light, L, light_dist_squared, distance_attenuation, cone_attenuation);
 
-		r6 = r6 * simple_light.unknown3.xy + simple_light.unknown3.zw;
-		r6 = max(0.0001, r6);
-
-		float temporary2 = pow(r6.y, simple_light.color.w);
-
-		temporary2 = saturate(temporary2 + simple_light.direction.w);
-
-		r6.x = saturate(r6.x);
-		float3 attenuation = temporary2 * r6.x;
-		float n_dot_l = dot(normal, v_to_light_dir_n);
-		float diffuse_impact = max(0.05, n_dot_l); // cos between light and normal directions
+		float3 intensity = cone_attenuation * distance_attenuation;
+		float n_dot_l = max(0.05, dot(normal, L));
     
-		float3 light_color = (simple_light.color.rgb * attenuation);
-		float3 diffuse = (light_color * diffuse_impact);
+		float3 diffuse = calculate_lambertian_reflectance(n_dot_l, intensity, get_simple_light_color(simple_light));
 		
-		float dl_dot_l = max(dot(dominant_light_reflect_dir, v_to_light_dir_n), 0);
+		// TODO: figure out exactly what this is supposed to do
+		float dl_dot_l = max(dot(dominant_light_reflect_dir, L), 0); // this is actually lambertian for dominant light
 		float specular_c = pow(dl_dot_l, other_specular);
-		float3 specular = (light_color * specular_c);
+		float3 specular = (simple_light.color.rgb * intensity * specular_c);
 		
-		diffuse_accumulation = diffuse + diffuse_accumulation;
-		specular_accumulation = specular + specular_accumulation;
+		diffuse_accumulation += diffuse;
+		specular_accumulation += specular;
 	}
 }
-
 
 #endif

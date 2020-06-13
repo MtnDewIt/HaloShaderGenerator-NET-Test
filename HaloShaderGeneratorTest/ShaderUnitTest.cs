@@ -120,7 +120,7 @@ namespace HaloShaderGenerator
             var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion);
             var bytecode = gen.GeneratePixelShader(stage).Bytecode;
             var parameters = gen.GetPixelShaderParameters();
-
+            var result = new ShaderGeneratorResult(bytecode);
             return D3DCompiler.Disassemble(bytecode);
         }
 

@@ -6,14 +6,12 @@
 #include "../helpers/color_processing.hlsli"
 #include "../helpers/sh.hlsli"
 
-
 uniform sampler2D g_sampler_cc0236;
 uniform sampler2D g_sampler_dd0236;
 uniform sampler2D g_sampler_c78d78;
 uniform float k_f0;
 
-
-// Lighting and materials of Halo 3
+// Lighting and materials of Halo 3 + modified to eliminate potential divisions by 0
 
 void calc_material_analytic_specular_cook_torrance_ps(
 in float3 view_dir,
@@ -61,7 +59,7 @@ out float3 analytic_specular)
 	}
 }
 
-void area_specular_cook_torrance(
+void calc_material_area_specular_order_3_cook_torrance_ps(
 in float3 view_dir,
 in float3 rotate_z,
 in float4 sh_0,
@@ -141,7 +139,7 @@ out float3 area_specular)
 	area_specular = specular_part * k_f0 + (1 - k_f0) * schlick_part;
 }
 
-void area_specular_cook_torrance_order_2(
+void calc_material_area_specular_order_2_cook_torrance_ps(
 in float3 view_dir,
 in float3 rotate_z,
 in float4 sh_0,
@@ -159,7 +157,8 @@ out float3 area_specular)
 	sh_8866[1] = 0;
 	sh_8866[2] = 0;
 	
-	area_specular_cook_torrance(view_dir, rotate_z, sh_0, sh_312, sh_457, sh_8866, roughness, r_dot_l, area_specular);
+	calc_material_area_specular_order_3_cook_torrance_ps(view_dir, rotate_z, sh_0, sh_312, sh_457, sh_8866, roughness, r_dot_l, area_specular);
 }
+
 
 #endif

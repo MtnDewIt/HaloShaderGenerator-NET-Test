@@ -19,7 +19,7 @@ namespace HaloShaderGenerator
             if (TestSpecificShader)
             {
                 List<ShaderStage> stages_to_gen_prt = new List<ShaderStage> { ShaderStage.Static_Sh, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Prt_Linear, ShaderStage.Static_Prt_Quadratic };
-                List<ShaderStage> stages_to_gen = new List<ShaderStage> {ShaderStage.Dynamic_Light, ShaderStage.Dynamic_Light_Cinematic};
+                List<ShaderStage> stages_to_gen = new List<ShaderStage> {ShaderStage.Albedo};
 
                 List<List<int>> shaders_to_gen = new List<List<int>> {
                     new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
@@ -63,7 +63,7 @@ namespace HaloShaderGenerator
             var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion);
             var bytecode = gen.GeneratePixelShader(stage).Bytecode;
             var parameters = gen.GetPixelShaderParameters();
-
+            
             var disassembly = D3DCompiler.Disassemble(bytecode);
             string filename = $"generated_{stage.ToString().ToLower()}_{(int)albedo}_{(int)bump_mapping}_{(int)alpha_test}_{(int)specular_mask}_{(int)material_model}_{(int)environment_mapping}_{(int)self_illumination}_{(int)blend_mode}_{(int)parallax}_{(int)misc}_{(int)distortion}.pixl";
             WriteShaderFile(filename, disassembly);
