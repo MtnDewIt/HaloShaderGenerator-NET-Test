@@ -551,9 +551,9 @@ namespace HaloShaderGenerator.Shader
                 case Self_Illumination.Plasma:
                     result.AddSamplerParameter("noise_map_a");
                     result.AddSamplerParameter("noise_map_b");
-                    result.AddInteger4Parameter("color_medium");
-                    result.AddInteger4Parameter("color_wide");
-                    result.AddInteger4Parameter("color_sharp");
+                    result.AddFloat4Parameter("color_medium");
+                    result.AddFloat4Parameter("color_wide");
+                    result.AddFloat4Parameter("color_sharp");
                     result.AddFloatParameter("self_illum_intensity");
                     result.AddSamplerParameter("alpha_mask_map");
                     result.AddFloatParameter("thinness_medium");
