@@ -339,7 +339,52 @@ namespace HaloShaderGenerator.Shader
                     result.AddSamplerParameter("detail_map");
                     result.AddFloat4Parameter("albedo_color");
                     break;
+                case Albedo.Two_Detail_Black_Point:
+                case Albedo.Two_Detail:
                 case Albedo.Detail_Blend:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("detail_map");
+                    result.AddSamplerParameter("detail_map2");
+                    break;
+                case Albedo.Constant_Color:
+                    result.AddFloat4Parameter("albedo_color");
+                    break;
+                case Albedo.Two_Change_Color:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("detail_map");
+                    result.AddSamplerParameter("change_color_map");
+                    result.AddFloat4Parameter("primary_change_color");
+                    result.AddFloat4Parameter("secondary_change_color");
+                    break;
+                case Albedo.Four_Change_Color:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("detail_map");
+                    result.AddSamplerParameter("change_color_map");
+                    result.AddFloat4Parameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
+                    result.AddFloat4Parameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
+                    result.AddFloat4Parameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary);
+                    result.AddFloat4Parameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary);
+                    break;
+                case Albedo.Three_Detail_Blend:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("detail_map");
+                    result.AddSamplerParameter("detail_map2");
+                    result.AddSamplerParameter("detail_map3");
+                    break;
+                case Albedo.Two_Detail_Overlay:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("detail_map");
+                    result.AddSamplerParameter("detail_map2");
+                    result.AddSamplerParameter("detail_map_overlay");
+                    break;
+                case Albedo.Color_Mask:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("detail_map");
+                    result.AddSamplerParameter("color_mask_map");
+                    result.AddFloat4Parameter("albedo_color");
+                    result.AddFloat4Parameter("albedo_color2");
+                    result.AddFloat4Parameter("albedo_color3");
+                    result.AddFloat4Parameter("neutral_gray");
                     break;
             }
 
@@ -543,9 +588,9 @@ namespace HaloShaderGenerator.Shader
                     break;
                 case Self_Illumination._3_Channel_Self_Illum:
                     result.AddSamplerParameter("self_illum_map");
-                    result.AddInteger4Parameter("channel_a");
-                    result.AddInteger4Parameter("channel_b");
-                    result.AddInteger4Parameter("channel_c");
+                    result.AddFloat4Parameter("channel_a");
+                    result.AddFloat4Parameter("channel_b");
+                    result.AddFloat4Parameter("channel_c");
                     result.AddFloatParameter("self_illum_intensity");
                     break;
                 case Self_Illumination.Plasma:
