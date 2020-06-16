@@ -10,7 +10,7 @@
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 
-#include "..\methods\specular_mask.hlsli"
+
 #include "..\methods\material_model.hlsli"
 #include "..\methods\environment_mapping.hlsli"
 #include "..\methods\self_illumination.hlsli"

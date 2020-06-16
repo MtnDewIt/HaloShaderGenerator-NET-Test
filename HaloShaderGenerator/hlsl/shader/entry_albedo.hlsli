@@ -5,6 +5,7 @@
 #include "..\methods\parallax.hlsli"
 #include "..\methods\bump_mapping.hlsli"
 #include "..\methods\alpha_test.hlsli"
+#include "..\methods\specular_mask.hlsli"
 
 #include "..\registers\shader.hlsli"
 #include "..\helpers\input_output.hlsli"

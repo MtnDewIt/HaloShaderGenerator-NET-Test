@@ -9,7 +9,8 @@
 #include "..\helpers\lighting.hlsli"
 #include "..\methods\material_model.hlsli"
 #include "..\helpers\shadows.hlsli"
-
+#include "..\material_models\cook_torrance.hlsli"
+#include "..\material_models\diffuse_only.hlsli"
 
 uniform sampler2D dynamic_light_gel_texture;
 

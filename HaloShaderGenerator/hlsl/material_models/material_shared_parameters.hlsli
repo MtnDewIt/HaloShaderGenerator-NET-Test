@@ -5,6 +5,8 @@
 #include "..\helpers\lighting.hlsli"
 
 
+uniform sampler2D material_texture;
+
 uniform float diffuse_coefficient;
 uniform float specular_coefficient;
 

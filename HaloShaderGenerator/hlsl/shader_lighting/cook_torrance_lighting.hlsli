@@ -2,11 +2,8 @@
 #define _COOK_TORRANCE_LIGHTING_HLSLI
 
 #include "..\methods\specular_mask.hlsli"
-#include "..\methods\material_model.hlsli"
-#include "..\methods\environment_mapping.hlsli"
-#include "..\methods\self_illumination.hlsli"
-#include "..\methods\blend_mode.hlsli"
-#include "..\methods\misc.hlsli"
+#include "..\material_models\material_shared_parameters.hlsli"
+#include "..\material_models\cook_torrance.hlsli"
 
 #include "..\registers\shader.hlsli"
 #include "..\helpers\input_output.hlsli"
@@ -25,7 +22,7 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data)
 	float3 analytic_specular;
 	float3 fresnel_f0 = use_albedo_blend_with_specular_tint ? fresnel_color : lerp(fresnel_color, common_data.albedo.rgb, c_albedo_blend);
 		
-	calc_material_analytic_specular(common_data.n_view_dir, common_data.surface_normal, common_data.reflect_dir, common_data.dominant_light_direction, common_data.dominant_light_intensity, fresnel_f0, c_roughness, dot(common_data.normal, common_data.dominant_light_direction), analytic_specular);
+	calc_material_analytic_specular_cook_torrance_ps(common_data.n_view_dir, common_data.surface_normal, common_data.reflect_dir, common_data.dominant_light_direction, common_data.dominant_light_intensity, fresnel_f0, c_roughness, dot(common_data.normal, common_data.dominant_light_direction), analytic_specular);
 
 	float3 specular;
 	float3 antishadow_control;
@@ -49,9 +46,10 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data)
 		
 	float3 area_specular = 0;
 	float3 rim_area_specular = 0;
-		calc_material_area_specular(common_data.n_view_dir, common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, c_roughness, fresnel_power, rim_fresnel_power, rim_fresnel_coefficient, fresnel_f0, r_dot_l_area_specular, area_specular, rim_area_specular);
+		calc_material_area_specular_cook_torrance_ps(common_data.n_view_dir, common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, c_roughness, fresnel_power, rim_fresnel_power, rim_fresnel_coefficient, fresnel_f0, r_dot_l_area_specular, area_specular, rim_area_specular);
 
-
+	calc_specular_mask_ps(common_data.albedo, common_data.texcoord, c_specular_coefficient);
+	
 	if (use_analytical_antishadow_control)
 		specular = antishadow_control;
 		

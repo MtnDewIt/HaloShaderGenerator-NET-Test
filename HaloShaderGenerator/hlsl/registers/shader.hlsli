@@ -98,6 +98,5 @@ uniform int layers_of_4;
 
 uniform sampler2D scene_ldr_texture;
 
-uniform sampler2D material_texture;
 
 #endif
