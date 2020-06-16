@@ -24,6 +24,9 @@ uniform float4 color_wide;
 uniform float thinness_medium;
 uniform float thinness_sharp;
 uniform float thinness_wide;
+uniform float4 channel_a;
+uniform float4 channel_b;
+uniform float4 channel_c;
 
 uniform float primary_change_color_blend;
 
@@ -53,6 +56,25 @@ in float2 texcoord,
 in float3 albedo,
 inout float3 diffuse)
 {
+	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
+    float3 self_illum_map_sample = tex2D(self_illum_map, self_illum_map_texcoord).rgb;
+	
+    self_illum_map_sample.r *= channel_a.a;
+    self_illum_map_sample.g *= channel_b.a;
+    self_illum_map_sample.b *= channel_c.a;
+	
+    float3 color = float3(0, 0, 0);
+	
+    color.rgb += self_illum_map_sample.r * channel_a.rgb;
+    color.rgb += self_illum_map_sample.g * channel_b.rgb;
+    color.rgb += self_illum_map_sample.b * channel_c.rgb;
+	
+    color.rgb *= self_illum_intensity;
+	
+    //color.rgb *= g_alt_exposure.x;
+    //diffuse += color;
+	
+    diffuse = color * g_alt_exposure.x + diffuse;
 }
 
 void calc_self_illumination_plasma_ps(
