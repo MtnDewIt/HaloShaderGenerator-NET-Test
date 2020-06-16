@@ -10,8 +10,8 @@ namespace HaloShaderGenerator
 {
     class Application
     {
-        static readonly bool UnitTest = true;
-        static readonly bool TestSpecificShader = false;
+        static readonly bool UnitTest = false;
+        static readonly bool TestSpecificShader = true;
 
 
         static int Main()
@@ -19,14 +19,11 @@ namespace HaloShaderGenerator
             if (TestSpecificShader)
             {
                 List<ShaderStage> stages_to_gen_prt = new List<ShaderStage> { ShaderStage.Static_Sh, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Prt_Linear, ShaderStage.Static_Prt_Quadratic };
-                List<ShaderStage> stages_to_gen = new List<ShaderStage> {ShaderStage.Albedo};
+                List<ShaderStage> stages_to_gen = new List<ShaderStage> {ShaderStage.Static_Per_Pixel, ShaderStage.Static_Per_Vertex, ShaderStage.Static_Per_Vertex_Color};
 
                 List<List<int>> shaders_to_gen = new List<List<int>> {
                     new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                    new List<int> {0,0,0,0,0,0,0,0,0,0,0 },
-                //new List<int> {0,0,1,0,0,0,0,0,0,2,0 },
                 };
-
 
                 foreach (var stage in stages_to_gen)
                 {
@@ -35,7 +32,6 @@ namespace HaloShaderGenerator
                         TestPixelShader(stage, (Albedo)methods[0], (Bump_Mapping)methods[1], (Alpha_Test)methods[2], (Specular_Mask)methods[3], (Material_Model)methods[4],
                             (Environment_Mapping)methods[5], (Self_Illumination)methods[6], (Blend_Mode)methods[7], (Parallax)methods[8], (Misc)methods[9], (Distortion)methods[10]);
                     }
-
                 }
             }
 
@@ -44,7 +40,6 @@ namespace HaloShaderGenerator
                 PixelShaderUnitTest.RunTests();
                 Console.ReadLine();
             }
-
             return 0;
         }
 

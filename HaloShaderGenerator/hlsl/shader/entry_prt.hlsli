@@ -1,11 +1,9 @@
 ﻿#ifndef _SHADER_TEMPLATE_PRT_HLSLI
 #define _SHADER_TEMPLATE_PRT_HLSLI
 
-
+#pragma warning( disable : 3571 34)
 
 #include "entry_albedo.hlsli"
-
-
 
 #include "..\registers\shader.hlsli"
 #include "..\helpers\input_output.hlsli"
@@ -19,7 +17,6 @@
 #include "..\methods\blend_mode.hlsli"
 #include "..\methods\misc.hlsli"
 
-
 PS_OUTPUT_DEFAULT entry_static_sh_prt(
 float2 position,
 float2 texcoord,
@@ -31,57 +28,81 @@ float3 sky_radiance,
 float3 extinction_factor,
 float prt)
 {
-	float3 view_dir = normalize(camera_dir);
-	float4 albedo;
-	float3 modified_normal;
-	texcoord = calc_parallax_ps(texcoord, camera_dir, tangent, binormal, normal);
-	float alpha = calc_alpha_test_ps(texcoord);
-	get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord, camera_dir, tangent.xyz, binormal.xyz, normal.xyz, albedo, modified_normal);
-	
-	
-	modified_normal = normalize(modified_normal);
-	float v_dot_n = dot(view_dir, modified_normal);
-	float3 reflect_dir = v_dot_n * modified_normal - view_dir;
-	reflect_dir = reflect_dir * 2 + view_dir;
-	
-	float3 world_position = Camera_Position_PS - camera_dir;
-	
-	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
-	float3 dominant_light_direction, dominant_light_intensity;
-	bool m_no_dynamic_lights = no_dynamic_lights;
-	get_current_sh_coefficients_quadratic(sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity);
-	float3 diffuse_ref = diffuse_reflectance(modified_normal);
-	
-	float4 color = 0;
+	SHADER_COMMON common_data;
+	{
+		common_data.view_dir = camera_dir;
+		common_data.n_view_dir = normalize(camera_dir);
+		common_data.fragcoord = position.xy;
+		common_data.tangent = tangent;
+		common_data.binormal = binormal;
+		common_data.normal = normal;
+		common_data.texcoord = calc_parallax_ps(texcoord, camera_dir, tangent, binormal, normal);
+		common_data.alpha = calc_alpha_test_ps(common_data.texcoord);
 
+		if (actually_calc_albedo)
+		{
+			common_data.surface_normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, common_data.texcoord);
+			common_data.albedo = calc_albedo_ps(common_data.texcoord, position);
+		}
+		else
+		{
+			position += 0.5;
+			float2 inv_texture_size = (1.0 / texture_size);
+			float2 texcoord = position * inv_texture_size;
+			float4 normal_texture_sample = tex2D(normal_texture, texcoord);
+			common_data.surface_normal = normal_import(normal_texture_sample.xyz);
+			float4 albedo_texture_sample = tex2D(albedo_texture, texcoord);
+			common_data.albedo = albedo_texture_sample;
+		}
+		
+		common_data.surface_normal = normalize(common_data.surface_normal);
+		float v_dot_n = dot(common_data.n_view_dir, common_data.surface_normal);
+		common_data.half_dir = v_dot_n * common_data.surface_normal - common_data.n_view_dir;
+		common_data.reflect_dir = common_data.half_dir * 2 + common_data.n_view_dir;
+		common_data.world_position = Camera_Position_PS - common_data.view_dir;
+		
+		get_current_sh_coefficients_quadratic(common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, common_data.dominant_light_direction, common_data.dominant_light_intensity);
+		common_data.diffuse_reflectance = diffuse_reflectance(common_data.surface_normal);
+		
+		common_data.precomputed_radiance_transfer = prt;
+		common_data.per_vertex_color = 0.0f;
+		common_data.no_dynamic_lights = no_dynamic_lights;
+		
+		if (!calc_atmosphere_no_material && !calc_material)
+		{
+			common_data.sky_radiance = 0.0;
+			common_data.extinction_factor = 1.0;
+		}
+		else
+		{
+			common_data.sky_radiance = sky_radiance;
+			common_data.extinction_factor = extinction_factor;
+		}
+	}
+	
+	float4 color;
 	if (calc_material)
 	{
-		float3 material_lighting = material_type(albedo.rgb, modified_normal, view_dir, texcoord.xy, camera_dir, world_position, sh_0, sh_312, sh_457, sh_8866, dominant_light_direction, dominant_light_intensity, diffuse_ref, no_dynamic_lights, prt, 0.0);
-		color.rgb += material_lighting;
+		color.rgb = calc_lighting_ps(common_data);
 	}
 	else
 	{
 		color.rgb = 1.0;
-		if (!calc_atmosphere_no_material)
-		{
-			sky_radiance = 0.0;
-			extinction_factor = 1.0;
-		}
 	}
-
-	color.rgb *= albedo.rgb;
-	float3 env_band_0 = get_environment_contribution(sh_0);
-	envmap_type(view_dir, reflect_dir, env_band_0, color.rgb);
-	calc_self_illumination_ps(texcoord.xy, albedo.rgb, color.rgb);
 	
-
-	color.rgb = color.rgb * extinction_factor;
+	color.rgb *= common_data.albedo.rgb;
+	
+	float3 env_band_0 = get_environment_contribution(common_data.sh_0);
+	envmap_type(common_data.view_dir, common_data.reflect_dir, env_band_0, color.rgb);
+	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, color.rgb);
+	
+	color.rgb = color.rgb * common_data.extinction_factor;
 		
-	color.a = blend_type_calculate_alpha_blending(albedo, alpha);
+	color.a = blend_type_calculate_alpha_blending(common_data.albedo, common_data.alpha);
 	
 	if (blend_type_arg != k_blend_mode_additive)
 	{
-		color.rgb += sky_radiance.rgb;
+		color.rgb += common_data.sky_radiance.rgb;
 	}
 
 	if (blend_type_arg == k_blend_mode_double_multiply)
@@ -99,6 +120,7 @@ float prt)
 	}
 	return output;
 }
+
 
 PS_OUTPUT_DEFAULT shader_entry_static_sh(VS_OUTPUT_STATIC_SH input)
 {

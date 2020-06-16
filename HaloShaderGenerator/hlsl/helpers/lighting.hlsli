@@ -94,17 +94,15 @@ inout float3 specular_accumulation)
 		float distance_attenuation, cone_attenuation;
 		get_simple_light_parameters(simple_light, L, light_dist_squared, distance_attenuation, cone_attenuation);
 
-		float3 intensity = cone_attenuation * distance_attenuation;
+		float intensity = cone_attenuation * distance_attenuation;
 		float n_dot_l = max(0.05, dot(normal, L));
-    
-		float3 diffuse = calculate_lambertian_reflectance(n_dot_l, intensity, get_simple_light_color(simple_light));
-		
-		// TODO: figure out exactly what this is supposed to do
-		float dl_dot_l = max(dot(dominant_light_reflect_dir, L), 0); // this is actually lambertian for dominant light
-		float specular_c = pow(dl_dot_l, other_specular);
-		float3 specular = (simple_light.color.rgb * intensity * specular_c);
-		
+		float3 light_result = get_simple_light_color(simple_light) * intensity;
+		float3 diffuse = light_result * n_dot_l;
 		diffuse_accumulation += diffuse;
+		
+		float dl_dot_l = dot(L, dominant_light_reflect_dir); 
+		float specular_c = pow(max(dl_dot_l, 0), other_specular);
+		float3 specular = get_simple_light_color(simple_light) * intensity * specular_c;
 		specular_accumulation += specular;
 	}
 }

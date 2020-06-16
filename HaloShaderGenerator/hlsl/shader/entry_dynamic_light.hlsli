@@ -59,14 +59,9 @@ bool is_cinematic)
 	float v_dot_n = dot(v_to_light, modified_normal);
 	float3 specular_contribution = specular_coefficient * analytical_specular_contribution;
 	
-	float c_albedo_blend;
-	float c_roughness;
-	float4 packed_parameters;
+	float c_albedo_blend, c_roughness, c_specular_coefficient;
 	float c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient;
-	
-	get_material_parameters_2(texcoord, packed_parameters, c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient);
-	c_albedo_blend = packed_parameters.y;
-	c_roughness = packed_parameters.w;
+	get_material_parameters_2(texcoord, c_specular_coefficient, c_albedo_blend, c_roughness, c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient);
 	
 	// lambertian diffuse
 	float3 color = light_intensity * v_dot_n * albedo.rgb * c_diffuse_coefficient;
@@ -78,7 +73,7 @@ bool is_cinematic)
 	{
 		float3 analytic_specular;
 		float3 fresnel_f0 = albedo_blend_with_specular_tint.x > 0 ? fresnel_color : lerp(fresnel_color, albedo.rgb, c_albedo_blend);
-		calc_material_analytic_specular(view_dir, modified_normal, reflect_dir, v_to_light, light_intensity, fresnel_f0, c_roughness, analytic_specular);
+		calc_material_analytic_specular(view_dir, modified_normal, reflect_dir, v_to_light, light_intensity, fresnel_f0, c_roughness, 1.0 , analytic_specular);
 		color += analytic_specular * specular_contribution;
 	}
 	

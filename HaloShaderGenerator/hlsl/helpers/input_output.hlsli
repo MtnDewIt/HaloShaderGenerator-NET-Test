@@ -1,6 +1,33 @@
 ﻿#ifndef _INPUT_OUTPUT_HLSLI
 #define _INPUT_OUTPUT_HLSLI
 
+struct SHADER_COMMON
+{
+	float alpha;
+	float4 albedo;
+	float2 fragcoord;
+	float3 world_position;
+	float2 texcoord;
+	float3 normal;
+	float3 tangent;
+	float3 binormal;
+	float3 surface_normal;
+	float3 sky_radiance;
+	float3 extinction_factor;
+	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
+	float3 dominant_light_direction, dominant_light_intensity;
+	float3 diffuse_reflectance;
+	float3 precomputed_radiance_transfer;
+	float3 per_vertex_color;
+	float3 view_dir;
+	float3 n_view_dir;
+	float3 half_dir;
+	float3 reflect_dir;
+	
+	bool no_dynamic_lights;
+	
+};
+
 struct ALBEDO_PASS_RESULT
 {
 	float4 albedo;
