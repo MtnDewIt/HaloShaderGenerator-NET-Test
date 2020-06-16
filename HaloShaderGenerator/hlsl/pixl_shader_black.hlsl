@@ -2,7 +2,6 @@
 
 #include "registers/shader.hlsli"
 #include "helpers/input_output.hlsli"
-#include "helpers/albedo_pass.hlsli"
 #include "helpers/shadows.hlsli"
 
 #include "helpers/color_processing.hlsli"

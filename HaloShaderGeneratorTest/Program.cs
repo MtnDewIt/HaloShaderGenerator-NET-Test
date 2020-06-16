@@ -16,6 +16,8 @@ namespace HaloShaderGenerator
 
         static int Main()
         {
+            TestPixelBlack();
+
             if (TestSpecificShader)
             {
                 List<ShaderStage> stages_to_gen_prt = new List<ShaderStage> { ShaderStage.Static_Sh, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Prt_Linear, ShaderStage.Static_Prt_Quadratic };
@@ -23,8 +25,6 @@ namespace HaloShaderGenerator
 
                 List<List<int>> shaders_to_gen = new List<List<int>> {
                     new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-                    new List<int> { 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0 },
-                    new List<int> { 0, 1, 0, 2, 1, 0, 0, 0, 0, 0, 0 },
                 };
 
                 foreach (var stage in stages_to_gen)
@@ -110,11 +110,11 @@ namespace HaloShaderGenerator
         }
 
 
-        static void TestPixelBlack(ShaderStage stage)
+        static void TestPixelBlack()
         {
             var gen = new ShaderBlackGenerator();
-            var bytecode = gen.GeneratePixelShader(stage).Bytecode;
-            WriteShaderFile($"generated_shader_black_{stage.ToString().ToLower()}_0.pixl", D3DCompiler.Disassemble(bytecode));
+            var bytecode = gen.GeneratePixelShader(ShaderStage.Albedo).Bytecode;
+            WriteShaderFile($"generated_shader_black_{ShaderStage.Albedo.ToString().ToLower()}_0.pixl", D3DCompiler.Disassemble(bytecode));
         }
 
         static void TestSharedVertexBlack(VertexType vertexType, ShaderStage stage)
