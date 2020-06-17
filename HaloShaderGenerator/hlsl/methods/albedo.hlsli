@@ -67,7 +67,7 @@ float4 calc_albedo_detail_blend_ps(float2 texcoord, float2 position)
 float4 calc_albedo_constant_color_ps(float2 texcoord, float2 position)
 {
 	float3 albedo = lerp(albedo_color.rgb, debug_tint.rgb, debug_tint.w);
-	return float4(albedo, albedo_color.a);
+	return float4(albedo, 1.0);
 }
 
 float4 calc_albedo_two_change_color_ps(float2 texcoord, float2 position)

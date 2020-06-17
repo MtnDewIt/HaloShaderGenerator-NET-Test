@@ -14,7 +14,12 @@
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 
-
+// hack to make it compile 1-1, probably a mistake in the original code
+#if material_type_arg == k_material_model_none
+#define calc_lighting_ps_vertex_color calc_lighting_diffuse_only_ps
+#else
+#define calc_lighting_ps_vertex_color calc_lighting_ps
+#endif
 
 PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLOR input)
 {
@@ -79,7 +84,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	
 	if (calc_material)
 	{
-		color.rgb = calc_lighting_ps(common_data);
+		color.rgb = calc_lighting_ps_vertex_color(common_data);
 		color.rgb += common_data.per_vertex_color;
 	}
 	else

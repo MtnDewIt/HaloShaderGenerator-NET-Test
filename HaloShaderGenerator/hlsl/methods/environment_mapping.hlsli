@@ -40,7 +40,7 @@ in float3 reflect_dir,
 in float3 sh_0,
 inout float3 diffuse)
 {
-	float3 envmap_texcoord = float3(reflect_dir.x, reflect_dir.y, reflect_dir.z) * float3(1, -1, 1);
+	float3 envmap_texcoord = float3(reflect_dir.x, -reflect_dir.y, reflect_dir.z);
 	float4 envmap_sample = texCUBE(environment_map, envmap_texcoord);
 	float3 environment_color = (envmap_sample.rgb * sh_0.rgb) * env_tint_color * envmap_sample.a;
 	diffuse += environment_color;

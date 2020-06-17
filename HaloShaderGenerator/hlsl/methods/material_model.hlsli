@@ -3,6 +3,7 @@
 
 #include "../shader_lighting/diffuse_only_lighting.hlsli"
 #include "../shader_lighting/cook_torrance_lighting.hlsli"
+#include "../shader_lighting/none_lighting.hlsli"
 
 #ifndef calc_lighting_ps
 #define calc_lighting_ps calc_lighting_diffuse_only_ps
