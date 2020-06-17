@@ -106,6 +106,7 @@ namespace HaloShaderGenerator.Generator
                 include
             );
 
+            GC.KeepAlive(include?.NativePointer);
             return shader_code;
         }
 
