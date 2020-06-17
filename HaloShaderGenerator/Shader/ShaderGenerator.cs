@@ -612,6 +612,7 @@ namespace HaloShaderGenerator.Shader
 
                 case Self_Illumination.Illum_Detail:
                     result.AddSamplerParameter("self_illum_map");
+                    result.AddSamplerParameter("self_illum_detail_map");
                     result.AddFloat4Parameter("self_illum_color");
                     result.AddFloatParameter("self_illum_intensity");
                     break;
