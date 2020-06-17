@@ -27,6 +27,11 @@ uniform float thinness_wide;
 uniform float4 channel_a;
 uniform float4 channel_b;
 uniform float4 channel_c;
+uniform sampler2D meter_map;
+uniform float4 meter_map_xform;
+uniform float4 meter_color_off;
+uniform float4 meter_color_on;
+uniform float meter_value;
 
 uniform float primary_change_color_blend;
 
@@ -153,7 +158,26 @@ in float2 texcoord,
 in float3 albedo,
 inout float3 diffuse)
 {
+    float2 meter_map_texcoord = apply_xform2d(texcoord, meter_map_xform);
+    float4 meter_map_sample = tex2D(meter_map, meter_map_texcoord);
 
+    float3 color = float3(0, 0, 0);
+	
+    if (-meter_map_sample.w + meter_value < 0)
+        color = meter_color_off.rgb;
+	else
+        color = meter_color_on.rgb;
+
+    color *= g_alt_exposure.x;
+	
+	// weird instruction placement here, functions the same tho
+	
+    if (meter_map_sample.x - 0.5 < 0)
+        diffuse = 0;
+	else
+        diffuse = color;
+	
+    diffuse *= g_exposure.x;
 }
 
 void calc_self_illumination_times_diffuse_ps(
