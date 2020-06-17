@@ -98,8 +98,8 @@ inout float3 diffuse)
     float noise = 1.0 - abs(noise_map_a_sample.x - noise_map_b_sample.x);
     float log_noise = log2(noise);
 	
+	float noise_medium = exp2(log_noise * thinness_medium);
 	float noise_sharp = exp2(log_noise * thinness_sharp);
-    float noise_medium = exp2(log_noise * thinness_medium);
 	float noise_wide = exp2(log_noise * thinness_wide);
 	
 	float noise_medium_to_sharp = noise_medium - noise_sharp;
@@ -176,8 +176,6 @@ inout float3 diffuse)
         diffuse = 0;
 	else
         diffuse = color;
-	
-    diffuse *= g_exposure.x;
 }
 
 void calc_self_illumination_times_diffuse_ps(
