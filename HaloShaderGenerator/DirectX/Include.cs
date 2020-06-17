@@ -39,6 +39,12 @@ namespace HaloShaderGenerator.DirectX
             Marshal.WriteIntPtr(IntPtr.Add(vtblPtr, IntPtr.Size), Marshal.GetFunctionPointerForDelegate(_closeCallback));
         }
 
+        ~Include()
+        {
+            _openCallback = null;
+            _closeCallback = null;
+        }
+
         private int Open(IntPtr thisPtr, D3D.INCLUDE_TYPE includeType, IntPtr pFileName, IntPtr pParentData, ref IntPtr ppData, ref int pBytes)
         {
             string result = null;
