@@ -52,10 +52,10 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 		
 		common_data.surface_normal = normalize(common_data.surface_normal);
 		
-		remove_dominant_light_contribution(common_data.dominant_light_direction, common_data.dominant_light_intensity, common_data.sh_0, common_data.sh_312);
+		//remove_dominant_light_contribution(common_data.dominant_light_direction, common_data.dominant_light_intensity, common_data.sh_0, common_data.sh_312);
 	
 		common_data.diffuse_reflectance = lightmap_diffuse_reflectance(common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, common_data.dominant_light_direction, common_data.dominant_light_intensity);
-		common_data.diffuse_reflectance += dominant_light_diffuse_reflectance(common_data.surface_normal, common_data.dominant_light_direction, common_data.dominant_light_intensity);
+		//common_data.diffuse_reflectance += dominant_light_diffuse_reflectance(common_data.surface_normal, common_data.dominant_light_direction, common_data.dominant_light_intensity);
 		
 		
 		float v_dot_n = dot(common_data.n_view_dir, common_data.surface_normal);

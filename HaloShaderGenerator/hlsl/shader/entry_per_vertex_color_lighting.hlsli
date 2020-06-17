@@ -92,10 +92,10 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	
 	color.rgb *= common_data.albedo.rgb;
 	color.rgb += self_illum;
-	
+	/* seems to be disabled in per_vertex_color mode?
 	float3 env_band_0 = get_environment_contribution(common_data.sh_0);
 	envmap_type(common_data.view_dir, common_data.reflect_dir, env_band_0, color.rgb);
-
+	*/
 	color.rgb = color.rgb * common_data.extinction_factor;
 		
 	color.a = blend_type_calculate_alpha_blending(common_data.albedo, common_data.alpha);
@@ -114,10 +114,10 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 		color.rgb *= color.a;
 
 	PS_OUTPUT_DEFAULT output = export_color(color);
+	/*
 	if (calc_env_output)
-	{
 		output.unknown.rgb = env_tint_color.rgb;
-	}
+	*/
 	return output;
 }
 

@@ -11,13 +11,13 @@ float3 dominant_light_intensity,
 inout float4 sh_0,
 inout float4 sh_312[3])
 {
-	float c1 = 0.282094806f;
+	
 	float c2 = 0.4886025f;
 
 	sh_312[0].xyz += -(c2 * -dominant_light_direction.xyz * dominant_light_intensity.r);
 	sh_312[1].xyz += -(c2 * -dominant_light_direction.xyz * dominant_light_intensity.g);
 	sh_312[2].xyz += -(c2 * -dominant_light_direction.xyz * dominant_light_intensity.b);
-	sh_0.rgb += -(c1 * dominant_light_intensity.rgb);
+	
 }
 
 float3 get_environment_contribution(
@@ -51,16 +51,34 @@ in float4 sh_8866[3],
 in float3 dominant_light_dir,
 in float3 dominant_light_intensity)
 {
+	float c1 = 0.282094806f;
 	float c2 = 0.511664f;
+	float c3 = 0.280999988;
 	float c4 = 0.886227f;
 	float3 x1;
+	
+	remove_dominant_light_contribution(dominant_light_dir, dominant_light_intensity, sh_0, sh_312);
+	sh_0.rgb += -(c1 * dominant_light_intensity.rgb);
+	
 	//linear
 	x1.r = dot(normal, sh_312[0].xyz);
 	x1.g = dot(normal, sh_312[1].xyz);
 	x1.b = dot(normal, sh_312[2].xyz);
-	
+
 	float3 lightprobe_color = c4 * sh_0.rgb + (-2.f * c2) * x1;
-	return lightprobe_color /= PI;
+	lightprobe_color /= PI;
+	
+	float n_dot_light = dot(dominant_light_dir, normal); // move up to fix per pixel lighting with envmap (per pixel envmap)
+	float3 diffuse_reflectance;
+
+	if (n_dot_light < 0)
+		diffuse_reflectance = 0.0;
+	else
+		diffuse_reflectance = c3 * dominant_light_intensity.rgb * n_dot_light;
+	
+	diffuse_reflectance += lightprobe_color;
+	
+	return diffuse_reflectance;
 }
 
 // Lighting and materials of Halo 3
