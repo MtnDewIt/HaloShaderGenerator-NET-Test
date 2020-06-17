@@ -54,6 +54,14 @@ PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
     PS_OUTPUT_ALBEDO output;
 	output.diffuse = albedo;
 	output.normal = float4(normal_export(normal), albedo.w);
+	
+	if (blend_type_arg == k_blend_mode_opaque &&  albedo_arg == k_albedo_constant_color)
+	{
+		output.normal.w = 1.0;
+		output.diffuse.w = 1.0;
+	}
+		
+	
 	output.unknown = input.normal.wwww;
     return output;
 }
