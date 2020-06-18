@@ -35,13 +35,11 @@ float2 calc_parallax_simple_ps(float2 texcoord, float3 view_dir, float3 tangent,
 	return unapply_xform2d(output_texcoord, height_map_xform);
 }
 
-float2 calc_parallax_interpolated_ps(float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal)
+float2 calc_parallax_interpolated_ps(float2 texcoord, float3 view_dir, float3 tangent, float3 binormal, float3 normal)
 {
 	float2 output_texcoord;
-	
 
-	float3 cam_dir = normalize(camera_dir.xyz);
-	float3 delta = float3(dot(tangent, cam_dir), dot(binormal, cam_dir), dot(normal.xyz, cam_dir));
+	float3 delta = float3(dot(tangent, view_dir), dot(binormal, view_dir), dot(normal.xyz, view_dir));
 
 	float2 height_map_texcoord_1 = apply_xform2d(texcoord, height_map_xform);
 	float height_1 = calc_heightmap_value(height_map_texcoord_1);
@@ -49,42 +47,38 @@ float2 calc_parallax_interpolated_ps(float2 texcoord, float3 camera_dir, float3 
 	float2 height_map_texcoord_2 = height_1 * delta.xy + height_map_texcoord_1;
 	float height_2 = calc_heightmap_value(height_map_texcoord_2);
 	
+	float step_1 = height_1 - height_1 * delta.z;
+	float step_2 = height_2 - height_1 * delta.z;
+	
 	float a = (height_1) + (height_1 * delta.z - height_2);
-	float step_1 = height_1 - delta.z * height_1;
-	float step_2 = height_2 - delta.z * height_1;
-	
 	float weight = height_1 / a;
-	
-	float2 outcome_1 = step_2 * delta.xy + height_map_texcoord_2.xy;
 	float2 outcome_2 = weight * (delta.xy * height_1) + height_map_texcoord_1;
 	
-	float sign1 = sign(step_1);
-	float sign2 = sign(step_2);
-	float sign = sign2 - sign1;
+	float2 outcome_1 = step_2 * delta.xy + height_map_texcoord_2.xy;
 	
 	[flatten]
-	if (sign == 0)
+	if (sign(step_2) != sign(step_1))
 	{
-		output_texcoord = outcome_1;
+		output_texcoord = outcome_2;
 	}
 	else
 	{
-		output_texcoord = outcome_2;
+		output_texcoord = outcome_1;
 	}
 	
 	return unapply_xform2d(output_texcoord, height_map_xform);
 }
 
-float2 calc_parallax_simple_detail_ps(float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal)
+float2 calc_parallax_simple_detail_ps(float2 texcoord, float3 view_dir, float3 tangent, float3 binormal, float3 normal)
 {
+	float2 delta = float2(dot(tangent, view_dir), dot(binormal, view_dir));
+	
 	float2 height_map_texcoord = apply_xform2d(texcoord, height_map_xform);
 	float height = calc_heightmap_value(height_map_texcoord);
 	float4 scale_map_sample = tex2D(height_scale_map, height_map_texcoord);
 	
 	float2 output_texcoord;
-	float3 cam_dir = normalize(camera_dir.xyz);
-	float3 delta = float3(dot(tangent, cam_dir), dot(binormal, cam_dir), dot(normal.xyz, cam_dir));
-	
+
 	output_texcoord = height * scale_map_sample.x * delta.xy + height_map_texcoord;
 	return unapply_xform2d(output_texcoord, height_map_xform);
 }

@@ -22,7 +22,7 @@ namespace HaloShaderGenerator
                 List<ShaderStage> stages_to_gen = new List<ShaderStage> {ShaderStage.Static_Sh};
 
                 List<List<int>> shaders_to_gen = new List<List<int>> {
-                    new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 1, 0, 0 },
+                    new List<int> { 0, 0, 0, 0, 0, 0, 4, 3, 2, 0, 0 },
                 };
 
                 foreach (var stage in stages_to_gen)
