@@ -12,6 +12,7 @@
 #include "..\material_models\cook_torrance.hlsli"
 #include "..\material_models\diffuse_only.hlsli"
 #include "..\material_models\none.hlsli"
+#include "..\material_models\foliage.hlsli"
 
 uniform sampler2D dynamic_light_gel_texture;
 
@@ -31,7 +32,6 @@ bool is_cinematic)
 	float3 view_dir = normalize(camera_dir);
 	texcoord = calc_parallax_ps(texcoord, view_dir, tangent, binormal, normal);
 	float alpha = calc_alpha_test_ps(texcoord);
-	
 	
 	float3 world_position = Camera_Position_PS - camera_dir;
 
@@ -55,11 +55,12 @@ bool is_cinematic)
 	float3 light_intensity = intensity * light.color.rgb * gel_sample.rgb;
 	
 	float4 albedo;
-	float3 modified_normal;
+	float3 surface_normal;
+	get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz, albedo, surface_normal);
 	
-	get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz, albedo, modified_normal);
-	float3 reflect_dir = 2 * dot(view_dir, modified_normal) * modified_normal - camera_dir;
-	float v_dot_n = dot(v_to_light, modified_normal);
+	float3 reflect_dir = 2 * dot(view_dir, surface_normal) * surface_normal - camera_dir;
+	float v_dot_n = dot(v_to_light, surface_normal);
+	
 	float3 specular_contribution = specular_coefficient * analytical_specular_contribution;
 	
 	float c_albedo_blend, c_roughness, c_specular_coefficient;
@@ -76,7 +77,7 @@ bool is_cinematic)
 	{
 		float3 analytic_specular;
 		float3 fresnel_f0 = albedo_blend_with_specular_tint.x > 0 ? fresnel_color : lerp(fresnel_color, albedo.rgb, c_albedo_blend);
-		calc_material_analytic_specular(view_dir, modified_normal, reflect_dir, v_to_light, light_intensity, fresnel_f0, c_roughness, 1.0 , analytic_specular);
+		calc_material_analytic_specular(view_dir, surface_normal, reflect_dir, v_to_light, light_intensity, fresnel_f0, c_roughness, 1.0 , analytic_specular);
 		color += analytic_specular * specular_contribution;
 	}
 	

@@ -72,7 +72,7 @@ out float c_area_specular_contribution)
 	c_analytical_specular_contribution = analytical_specular_contribution;
 	c_area_specular_contribution = area_specular_contribution;
 	
-	if (material_type_arg == k_material_model_diffuse_only || material_type_arg == k_material_model_none)
+	if (material_type_arg == k_material_model_diffuse_only || material_type_arg == k_material_model_none || k_material_model_foliage)
 	{
 		c_diffuse_contribution = 1.0;
 		c_analytical_specular_contribution = 0.0;
