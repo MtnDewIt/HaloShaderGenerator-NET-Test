@@ -147,9 +147,11 @@ namespace HaloShaderGenerator
 
             // not passing but fine anyway
 
-            /*new List<int> { 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0 },
+            /*
+            new List<int> { 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 1, 0, 3, 0, 0, 0 },
             new List<int> { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 }, 
-            new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 1, 0, 0 },
+
             new List<int> { 0, 0, 0, 0, 0, 0, 4, 3, 2, 0, 0 },
             new List<int> { 0, 0, 0, 0, 0, 1, 0, 3, 0, 0, 0 },
             */
@@ -163,7 +165,7 @@ namespace HaloShaderGenerator
             new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0 },
             new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0 },
             new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 0, 2, 0 },
-            
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 1, 0, 0 },
             new List<int> { 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0 },
             new List<int> { 0, 0, 0, 0, 0, 0, 0, 4, 0, 1, 0 },
             new List<int> { 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0 },
@@ -179,7 +181,6 @@ namespace HaloShaderGenerator
             new List<int> { 0, 0, 0, 0, 0, 0, 4, 1, 0, 0, 0 },
             new List<int> { 0, 0, 0, 0, 0, 0, 4, 3, 0, 0, 0 },
 
-
             new List<int> { 0, 0, 0, 0, 0, 0, 5, 1, 0, 0, 0 },
             new List<int> { 0, 0, 0, 0, 0, 0, 5, 3, 0, 0, 0 },
             new List<int> { 0, 0, 0, 0, 0, 0, 5, 3, 0, 1, 0 },
@@ -189,11 +190,6 @@ namespace HaloShaderGenerator
 
             new List<int> { 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0 },
             new List<int> { 5, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            
-            
-
-
-
 
         };
     }

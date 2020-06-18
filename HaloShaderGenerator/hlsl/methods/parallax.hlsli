@@ -22,15 +22,15 @@ float2 calc_parallax_off_ps(float2 texcoord, float3 camera_dir, float3 tangent, 
 	return texcoord;
 }
 
-float2 calc_parallax_simple_ps(float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal)
+float2 calc_parallax_simple_ps(float2 texcoord, float3 view_dir, float3 tangent, float3 binormal, float3 normal)
 {
+	float2 output_texcoord;
+	
+	float2 delta = float2(dot(tangent, view_dir), dot(binormal, view_dir));
+	
 	float2 height_map_texcoord = apply_xform2d(texcoord, height_map_xform);
 	float height = calc_heightmap_value(height_map_texcoord);
-	
-	float2 output_texcoord;
-	float3 cam_dir = normalize(camera_dir.xyz);
-	float3 delta = float3(dot(tangent, cam_dir), dot(binormal, cam_dir), dot(normal.xyz, cam_dir));
-	
+
 	output_texcoord = height * delta.xy + height_map_texcoord;
 	return unapply_xform2d(output_texcoord, height_map_xform);
 }

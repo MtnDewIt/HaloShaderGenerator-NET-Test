@@ -44,7 +44,8 @@ PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
 {	
 	float4 albedo;
 	float3 normal;
-	float2 texcoord = calc_parallax_ps(input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal.xyz);
+	float3 n_view_dir = normalize(input.camera_dir);
+	float2 texcoord = calc_parallax_ps(input.texcoord, n_view_dir, input.tangent, input.binormal, input.normal.xyz);
 	float alpha = calc_alpha_test_ps(texcoord);
 	
 	get_albedo_and_normal(true, input.position.xy, texcoord, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, normal);

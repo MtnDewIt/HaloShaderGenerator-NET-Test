@@ -28,10 +28,11 @@ float depth_offset,
 float2 shadowmap_texcoord,
 bool is_cinematic)
 {
-	texcoord = calc_parallax_ps(texcoord, camera_dir, tangent, binormal, normal);
+	float3 view_dir = normalize(camera_dir);
+	texcoord = calc_parallax_ps(texcoord, view_dir, tangent, binormal, normal);
 	float alpha = calc_alpha_test_ps(texcoord);
 	
-	float3 view_dir = normalize(camera_dir);
+	
 	float3 world_position = Camera_Position_PS - camera_dir;
 
 	SimpleLight light = get_simple_light(light_index);

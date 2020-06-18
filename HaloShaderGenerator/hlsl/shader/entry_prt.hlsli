@@ -36,7 +36,7 @@ float prt)
 		common_data.tangent = tangent;
 		common_data.binormal = binormal;
 		common_data.normal = normal;
-		common_data.texcoord = calc_parallax_ps(texcoord, camera_dir, tangent, binormal, normal);
+		common_data.texcoord = calc_parallax_ps(texcoord, common_data.n_view_dir, tangent, binormal, normal);
 		common_data.alpha = calc_alpha_test_ps(common_data.texcoord);
 
 		if (actually_calc_albedo)
