@@ -81,17 +81,8 @@ PS_OUTPUT_DEFAULT shader_entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE
 	color.rgb = max(color.rgb, 0);
 	
 	PS_OUTPUT_DEFAULT output;
-	[flatten]
-	if (blend_type_arg == k_blend_mode_multiply)
-	{
-		output.low_frequency = color * g_exposure.w;
-		output.high_frequency = color * g_exposure.z;
-	}
-	else
-	{
-		output.low_frequency = export_low_frequency(color);
-		output.high_frequency = export_high_frequency(color);
-	}
+	output.low_frequency = export_low_frequency(color);
+	output.high_frequency = export_high_frequency(color);
 	output.unknown = 0;
 	
 	return output;

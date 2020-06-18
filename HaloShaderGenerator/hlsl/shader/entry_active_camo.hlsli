@@ -31,7 +31,7 @@ PS_OUTPUT_DEFAULT shader_entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input)
 
 	PS_OUTPUT_DEFAULT output;
 	
-	if (blend_type_arg == k_blend_mode_double_multiply)
+	if (blend_type_arg == k_blend_mode_double_multiply || blend_type_arg == k_blend_mode_multiply)
 	{
 		output.low_frequency = final_color * g_exposure.w;
 		output.high_frequency = final_color * g_exposure.z;

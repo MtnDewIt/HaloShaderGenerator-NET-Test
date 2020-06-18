@@ -6,7 +6,7 @@
 #define RAND_COEFFICIENTS float3(12.9898, 78.233, 4.1414)
 #define SQRT3 1.7320508f
 #define LOG2_E 1.44269502f
-#define DEBUG_TINT_FACTOR 4.59479
+#define DEBUG_TINT_FACTOR 4.59479 // 2^2.2 TODO: find another name
 
 float rand2(float2 co)
 {
