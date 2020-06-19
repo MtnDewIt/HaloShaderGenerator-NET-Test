@@ -8,11 +8,12 @@
 #include "..\helpers\color_processing.hlsli"
 #include "..\helpers\lighting.hlsli"
 #include "..\methods\material_model.hlsli"
-#include "..\helpers\shadows.hlsli"
+
 #include "..\material_models\cook_torrance.hlsli"
 #include "..\material_models\diffuse_only.hlsli"
 #include "..\material_models\none.hlsli"
 #include "..\material_models\foliage.hlsli"
+#include "..\helpers\shadows.hlsli"
 
 uniform sampler2D dynamic_light_gel_texture;
 
@@ -85,14 +86,19 @@ bool is_cinematic)
 	if (dynamic_light_shadowing)
 	{
 		if (is_cinematic)
-			shadow_coefficient = shadows_percentage_closer_filtering_custom_4x4(shadowmap_texcoord_depth_adjusted, shadowmap_texture_size, depth_scale, depth_offset, color);
+			shadow_coefficient = shadows_percentage_closer_filtering_custom_4x4(shadowmap_texcoord_depth_adjusted, shadowmap_texture_size, depth_scale, depth_offset);
 		else
-			shadow_coefficient = shadows_percentage_closer_filtering_3x3(shadowmap_texcoord_depth_adjusted, shadowmap_texture_size, depth_scale, depth_offset, color);
+			shadow_coefficient = shadows_percentage_closer_filtering_3x3(shadowmap_texcoord_depth_adjusted, shadowmap_texture_size, depth_scale, depth_offset);
+		
+		if (dot(color.rgb, color.rgb) <= 0)
+			shadow_coefficient = 1.0;
 	}
 	else
 	{
 		shadow_coefficient = 1.0;
 	}
+	
+	
 	
 	float4 result;
 	if (blend_type_arg == k_blend_mode_additive)

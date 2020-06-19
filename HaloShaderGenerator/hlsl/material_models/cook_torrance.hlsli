@@ -84,8 +84,8 @@ out float3 rim_area_specular)
 	float3 rotate_y = cross(rotate_z, rotate_x);
 	//calculate the texure coord for lookup
 	float roughness_lookup = max(roughness, 0.05);
-	float v_dot_rotate_x = dot(view_dir, rotate_x);
-	float2 view_lookup = float2(exp2(log2(v_dot_rotate_x) * fresnel_power) + 0.015625, roughness_lookup);
+	float v_dot_rotate_x = log2(dot(view_dir, rotate_x));
+	float2 view_lookup = float2(exp2(fresnel_power * v_dot_rotate_x) + 0.015625, roughness_lookup);
 	// bases: 0,2,3,6
 	float4 c_value = tex2D(g_sampler_cc0236, view_lookup);
 	float4 d_value = tex2D(g_sampler_dd0236, view_lookup);

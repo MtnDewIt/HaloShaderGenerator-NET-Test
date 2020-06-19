@@ -26,33 +26,28 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data)
 
 	float3 specular;
 	float3 antishadow_control;
-		
-	float c1 = 0.282094806f;
-	float c2 = 0.4886025f;
+	
+	// this part of code determines if there is a shadow correction required when comparing with and without dominant light contribution, since green has the largest
+	// contribution to visible light this approximation is faster than using the luminance
 
-	float4 sh_unknown;
-	sh_unknown.xyz = common_data.sh_312[1].xyz + (-c2 * common_data.dominant_light_direction.xyz * common_data.dominant_light_intensity.g);
-	sh_unknown.w = common_data.sh_0.g - (c1 * common_data.dominant_light_intensity.g);
-	float r1w = dot(sh_unknown, sh_unknown);
-	float r2w = 1.0 / (common_data.sh_0.g * common_data.sh_0.g + dot(common_data.sh_312[1].xyz, common_data.sh_312[1].xyz));
+	// why is this required is still a mystery, it is probably related to the consequences of having a static dominant light instead of a real dynamic light
+	
+	float4 band_1_0_sh_green;
+	
+	band_1_0_sh_green.xyz = common_data.sh_312_no_dominant_light[1].xyz;
+	band_1_0_sh_green.w = common_data.sh_0_no_dominant_light.g;
+	
+	float sh_intensity_no_dominant_light = dot(band_1_0_sh_green, band_1_0_sh_green);
+	
+	float sh_intensity_dominant_light = 1.0 / (common_data.sh_0.g * common_data.sh_0.g + dot(common_data.sh_312[1].xyz, common_data.sh_312[1].xyz));
 			
-	float base = r1w * r2w - 1.0 < 0 ? (1 - r2w * r1w) : 0;
+	float base = sh_intensity_no_dominant_light * sh_intensity_dominant_light - 1.0 < 0 ? (1 - sh_intensity_dominant_light * sh_intensity_no_dominant_light) : 0;
 	antishadow_control = analytic_specular * pow(base, 100 * analytical_anti_shadow_control);
 		
 	specular = analytic_specular;
-		
-	float r_dot_l = dot(common_data.dominant_light_direction.xyz, common_data.reflect_dir);
-	float r_dot_l_area_specular = r_dot_l < 0 ? 0.35f : r_dot_l * 0.65f + 0.35f;
-		
-	float3 area_specular = 0;
-	float3 rim_area_specular = 0;
-		calc_material_area_specular_cook_torrance_ps(common_data.n_view_dir, common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, c_roughness, fresnel_power, rim_fresnel_power, rim_fresnel_coefficient, fresnel_f0, r_dot_l_area_specular, area_specular, rim_area_specular);
-
-	calc_specular_mask_ps(common_data.albedo, common_data.texcoord, c_specular_coefficient);
-	
 	if (use_analytical_antishadow_control)
 		specular = antishadow_control;
-		
+	
 	float3 diffuse;
 	float3 diffuse_accumulation = 0;
 	float3 specular_accumulation = 0;
@@ -62,6 +57,17 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data)
 		calc_material_lambert_diffuse_ps(common_data.surface_normal, common_data.world_position, common_data.reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
 		specular_accumulation *= roughness_unknown;
 	}
+	
+	
+	float r_dot_l = dot(common_data.dominant_light_direction.xyz, common_data.reflect_dir);
+	float r_dot_l_area_specular = r_dot_l < 0 ? 0.35f : r_dot_l * 0.65f + 0.35f;
+		
+	float3 area_specular = 0;
+	float3 rim_area_specular = 0;
+	
+	calc_material_area_specular_cook_torrance_ps(common_data.n_view_dir, common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, c_roughness, fresnel_power, rim_fresnel_power, rim_fresnel_coefficient, fresnel_f0, r_dot_l_area_specular, area_specular, rim_area_specular);
+
+	calc_specular_mask_ps(common_data.albedo, common_data.texcoord, c_specular_coefficient);
 
 	float3 c_specular_tint = specular_tint;
 	

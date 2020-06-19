@@ -21,6 +21,9 @@ float3 calc_lighting_foliage_ps(SHADER_COMMON common_data)
 		diffuse = diffuse_accumulation;
 	}
 	diffuse += common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer;
+	
+	diffuse *= common_data.albedo.rgb;
+	
 	return diffuse;
 }
 #endif

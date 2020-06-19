@@ -52,15 +52,14 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 		
 		common_data.surface_normal = normalize(common_data.surface_normal);
 		
-		//remove_dominant_light_contribution(common_data.dominant_light_direction, common_data.dominant_light_intensity, common_data.sh_0, common_data.sh_312);
-	
-		common_data.diffuse_reflectance = lightmap_diffuse_reflectance(common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, common_data.dominant_light_direction, common_data.dominant_light_intensity);
-		//common_data.diffuse_reflectance += dominant_light_diffuse_reflectance(common_data.surface_normal, common_data.dominant_light_direction, common_data.dominant_light_intensity);
-		
-		
 		float v_dot_n = dot(common_data.n_view_dir, common_data.surface_normal);
 		common_data.half_dir = v_dot_n * common_data.surface_normal - common_data.n_view_dir;
 		common_data.reflect_dir = common_data.half_dir * 2 + common_data.n_view_dir;
+		
+		common_data.diffuse_reflectance = lightmap_diffuse_reflectance(common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, common_data.dominant_light_direction, common_data.dominant_light_intensity, common_data.sh_0_no_dominant_light, common_data.sh_312_no_dominant_light);
+
+		
+		
 		common_data.world_position = Camera_Position_PS - common_data.view_dir;
 
 		common_data.precomputed_radiance_transfer = 1.0;
@@ -86,10 +85,9 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 	}
 	else
 	{
-		color.rgb = 1.0;
+		color.rgb = common_data.albedo.rgb;
 	}
-	
-	color.rgb *= common_data.albedo.rgb;
+
 	
 	float3 env_band_0 = get_environment_contribution(common_data.sh_0);
 	envmap_type(common_data.view_dir, common_data.reflect_dir, env_band_0, color.rgb);

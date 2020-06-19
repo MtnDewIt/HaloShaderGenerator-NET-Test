@@ -15,7 +15,7 @@
 #include "..\helpers\color_processing.hlsli"
 
 // hack to make it compile 1-1, probably a mistake in the original code
-#if material_type_arg == k_material_model_none
+#if material_type_arg == k_material_model_none || material_type_arg == k_material_model_cook_torrance
 #define calc_lighting_ps_vertex_color calc_lighting_diffuse_only_ps
 #else
 #define calc_lighting_ps_vertex_color calc_lighting_ps
@@ -58,8 +58,16 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 		common_data.world_position = Camera_Position_PS - common_data.view_dir;
 
 		get_current_sh_coefficients_quadratic(common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, common_data.dominant_light_direction, common_data.dominant_light_intensity);
-		common_data.diffuse_reflectance = 0.0f;
+		common_data.diffuse_reflectance = input.vertex_color;
 
+		common_data.sh_0_no_dominant_light = common_data.sh_0;
+		common_data.sh_312_no_dominant_light[0] = common_data.sh_312[0];
+		common_data.sh_312_no_dominant_light[1] = common_data.sh_312[1];
+		common_data.sh_312_no_dominant_light[2] = common_data.sh_312[2];
+		
+		remove_dominant_light_contribution(common_data.dominant_light_direction, common_data.dominant_light_intensity, common_data.sh_0_no_dominant_light, common_data.sh_312_no_dominant_light);
+	
+		
 		common_data.precomputed_radiance_transfer = 1.0;
 		common_data.per_vertex_color = input.vertex_color;
 		common_data.no_dynamic_lights = false;
@@ -85,17 +93,16 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	if (calc_material)
 	{
 		color.rgb = calc_lighting_ps_vertex_color(common_data);
-		color.rgb += common_data.per_vertex_color;
 	}
 	else
 	{
 		if (!calc_atmosphere_no_material)
 		{
 			color.rgb = common_data.per_vertex_color;
+			color.rgb *= common_data.albedo.rgb;
 		}
 	}
 	
-	color.rgb *= common_data.albedo.rgb;
 	color.rgb += self_illum;
 	/* seems to be disabled in per_vertex_color mode?
 	float3 env_band_0 = get_environment_contribution(common_data.sh_0);

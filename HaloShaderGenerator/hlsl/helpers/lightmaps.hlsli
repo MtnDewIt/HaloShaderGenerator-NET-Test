@@ -58,13 +58,19 @@ out float4 sh_8866[3])
 	sh_8866[2] = 0;
 }
 
-void decompress_lightmap_value(
-inout float4 value, 
+float4 decompress_lightmap_value(
+in float4 value1, 
+in float4 value2,
 in float compression_factor)
 {
-	value.w *= compression_factor;
-	value.rgb = (2.0 * value.rgb - 2.0);
-	value.rgb = value.rgb * value.w;
+	float4 result;
+	result.w = value1.w * value2.w;
+	result.w *= compression_factor;
+	result.rgb = value1.rgb + value2.rgb;
+	result.rgb = (2.0 * result.rgb - 2.0);
+	result.rgb = result.rgb * result.w;
+	return result;
+
 }
 
 void get_lightmap_sh_coefficients(
@@ -78,18 +84,33 @@ out float3 dominant_light_intensity)
 {
 	float4 sh[4];
 	float4 temp_dominant_light_intensity;
-	
+	/*
 	sh[0] = sample_lightprobe_texture_array(0, lightmap_texcoord);
 	sh[1] = sample_lightprobe_texture_array(1, lightmap_texcoord);
 	sh[2] = sample_lightprobe_texture_array(2, lightmap_texcoord);
 	sh[3] = sample_lightprobe_texture_array(3, lightmap_texcoord);
-	temp_dominant_light_intensity = sample_dominant_light_intensity_texture_array(lightmap_texcoord);
+	temp_dominant_light_intensity = sample_dominant_light_intensity_texture_array(lightmap_texcoord);*/
 	
-	decompress_lightmap_value(sh[0], p_lightmap_compress_constant_0.x);
-	decompress_lightmap_value(sh[1], p_lightmap_compress_constant_0.y);
-	decompress_lightmap_value(sh[2], p_lightmap_compress_constant_0.z);
-	decompress_lightmap_value(sh[3], p_lightmap_compress_constant_1.x);
-	decompress_lightmap_value(temp_dominant_light_intensity, p_lightmap_compress_constant_1.y);
+	float4 sample1 = tex3D(lightprobe_texture_array, float3(lightmap_texcoord, 0.0625 + 0 * 0.25));
+	float4 sample2 = tex3D(lightprobe_texture_array, float3(lightmap_texcoord, 0.1875 + 0 * 0.25));
+	float4 sample3 = tex3D(lightprobe_texture_array, float3(lightmap_texcoord, 0.0625 + 1 * 0.25));
+	float4 sample4 = tex3D(lightprobe_texture_array, float3(lightmap_texcoord, 0.1875 + 1 * 0.25));
+	float4 sample5 = tex3D(lightprobe_texture_array, float3(lightmap_texcoord, 0.0625 + 2 * 0.25));
+	float4 sample6 = tex3D(lightprobe_texture_array, float3(lightmap_texcoord, 0.1875 + 2 * 0.25));
+	float4 sample7 = tex3D(lightprobe_texture_array, float3(lightmap_texcoord, 0.0625 + 3 * 0.25));
+	float4 sample8 = tex3D(lightprobe_texture_array, float3(lightmap_texcoord, 0.1875 + 3 * 0.25));
+	float4 sample9 = tex3D(dominant_light_intensity_map, float3(lightmap_texcoord, 0.25));
+	float4 sample10 = tex3D(dominant_light_intensity_map, float3(lightmap_texcoord, 0.75));
+
+	sh[0] = decompress_lightmap_value(sample1, sample2, p_lightmap_compress_constant_0.x);
+
+	sh[1] = decompress_lightmap_value(sample3, sample4, p_lightmap_compress_constant_0.y);
+
+	sh[2] = decompress_lightmap_value(sample5, sample6, p_lightmap_compress_constant_0.z);
+
+	sh[3] = decompress_lightmap_value(sample7, sample8, p_lightmap_compress_constant_1.x);
+
+	temp_dominant_light_intensity = decompress_lightmap_value(sample9, sample10, p_lightmap_compress_constant_1.y);
 	
 	pack_lightmap_constants(sh, sh_0, sh_312, sh_457, sh_8866);
 	

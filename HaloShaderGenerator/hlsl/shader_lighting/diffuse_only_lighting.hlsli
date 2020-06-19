@@ -19,6 +19,8 @@ float3 calc_lighting_diffuse_only_ps(SHADER_COMMON common_data)
 	else
 		diffuse = common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer;
 	
+	diffuse *= common_data.albedo.rgb;
+	
 	return diffuse;
 }
 #endif

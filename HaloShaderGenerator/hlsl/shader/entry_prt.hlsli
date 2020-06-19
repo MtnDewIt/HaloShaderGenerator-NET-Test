@@ -62,6 +62,14 @@ float prt)
 		common_data.world_position = Camera_Position_PS - common_data.view_dir;
 		
 		get_current_sh_coefficients_quadratic(common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, common_data.dominant_light_direction, common_data.dominant_light_intensity);
+		
+		common_data.sh_0_no_dominant_light = common_data.sh_0;
+		common_data.sh_312_no_dominant_light[0] = common_data.sh_312[0];
+		common_data.sh_312_no_dominant_light[1] = common_data.sh_312[1];
+		common_data.sh_312_no_dominant_light[2] = common_data.sh_312[2];
+		
+		remove_dominant_light_contribution(common_data.dominant_light_direction, common_data.dominant_light_intensity, common_data.sh_0_no_dominant_light, common_data.sh_312_no_dominant_light);
+	
 		common_data.diffuse_reflectance = diffuse_reflectance(common_data.surface_normal);
 		
 		common_data.precomputed_radiance_transfer = prt;
@@ -79,18 +87,17 @@ float prt)
 			common_data.extinction_factor = extinction_factor;
 		}
 	}
-	
+
 	float4 color;
 	if (calc_material)
 	{
+		
 		color.rgb = calc_lighting_ps(common_data);
 	}
 	else
 	{
-		color.rgb = 1.0;
+		color.rgb = common_data.albedo.rgb;
 	}
-	
-	color.rgb *= common_data.albedo.rgb;
 	
 	float3 env_band_0 = get_environment_contribution(common_data.sh_0);
 	envmap_type(common_data.view_dir, common_data.reflect_dir, env_band_0, color.rgb);

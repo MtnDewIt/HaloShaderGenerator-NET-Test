@@ -3,7 +3,7 @@
 
 #include "../helpers/math.hlsli"
 #include "../registers/shader.hlsli"
-#include "shadows.hlsli"
+
 
 struct SimpleLight
 {
@@ -95,14 +95,14 @@ inout float3 specular_accumulation)
 		get_simple_light_parameters(simple_light, L, light_dist_squared, distance_attenuation, cone_attenuation);
 
 		float intensity = cone_attenuation * distance_attenuation;
-		float n_dot_l = max(0.05, dot(normal, L));
 		float3 light_result = get_simple_light_color(simple_light) * intensity;
+		float n_dot_l = max(0.05, dot(normal, L));
 		float3 diffuse = light_result * n_dot_l;
 		diffuse_accumulation += diffuse;
 		
 		float dl_dot_l = dot(L, dominant_light_reflect_dir); 
 		float specular_c = pow(max(dl_dot_l, 0), other_specular);
-		float3 specular = get_simple_light_color(simple_light) * intensity * specular_c;
+		float3 specular = light_result * specular_c;
 		specular_accumulation += specular;
 	}
 }

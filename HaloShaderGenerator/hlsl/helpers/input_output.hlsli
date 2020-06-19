@@ -15,6 +15,7 @@ struct SHADER_COMMON
 	float3 sky_radiance;
 	float3 extinction_factor;
 	float4 sh_0, sh_312[3], sh_457[3], sh_8866[3];
+	float4 sh_0_no_dominant_light, sh_312_no_dominant_light[3];
 	float3 dominant_light_direction, dominant_light_intensity;
 	float3 diffuse_reflectance;
 	float3 precomputed_radiance_transfer;

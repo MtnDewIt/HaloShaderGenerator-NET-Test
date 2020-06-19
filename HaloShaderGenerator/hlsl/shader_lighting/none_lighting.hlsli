@@ -6,6 +6,6 @@
 
 float3 calc_lighting_none_ps(SHADER_COMMON common_data)
 {
-	return 0.0;
+	return 0;
 }
 #endif

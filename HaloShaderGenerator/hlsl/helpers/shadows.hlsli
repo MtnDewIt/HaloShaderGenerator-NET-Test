@@ -13,7 +13,7 @@ float sample_shadowmap(float2 texcoord, float2 offset, float depth_offset, float
 	return depth < 0.0 ? 0.0 : 1.0;
 }
 
-float shadows_percentage_closer_filtering_3x3(float2 shadowmap_texcoord, float shadowmap_size, float depth_scale, float depth_offset, float3 diffuse)
+float shadows_percentage_closer_filtering_3x3(float2 shadowmap_texcoord, float shadowmap_size, float depth_scale, float depth_offset)
 {
 	float shadow_coefficient = 0;
 	float scale = 1.0 / depth_scale;
@@ -32,13 +32,10 @@ float shadows_percentage_closer_filtering_3x3(float2 shadowmap_texcoord, float s
 
 	shadow_coefficient /= 9.0;
 	
-	if (-dot(diffuse.rgb, diffuse.rgb) >= 0 )
-		shadow_coefficient = 1.0;
-	
 	return shadow_coefficient;
 }
 
-float shadows_percentage_closer_filtering_custom_4x4(float2 shadowmap_texcoord, float shadowmap_size, float depth_scale, float depth_offset, float3 diffuse)
+float shadows_percentage_closer_filtering_custom_4x4(float2 shadowmap_texcoord, float shadowmap_size, float depth_scale, float depth_offset)
 {
 	float shadow_coefficient = 0;
 	float scale = 1.0 / depth_scale;
@@ -69,9 +66,6 @@ float shadows_percentage_closer_filtering_custom_4x4(float2 shadowmap_texcoord, 
 	shadow_coefficient += right_bound.x * right_bound.y * sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(3, 3), depth_offset, scale);
 
 	shadow_coefficient /= 9.0;
-	
-	if (-dot(diffuse.rgb, diffuse.rgb) >= 0)
-		shadow_coefficient = 1.0;
 	
 	return shadow_coefficient;
 }
