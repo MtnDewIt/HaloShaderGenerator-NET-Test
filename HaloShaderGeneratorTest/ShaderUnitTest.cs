@@ -126,6 +126,8 @@ namespace HaloShaderGenerator
 
         static readonly List<List<int>> TestMethods = new List<List<int>> {
 
+            //new List<int> { 0, 0, 0, 1, 2, 0, 0, 3, 0, 0, 0 },
+
             /*
             
             
@@ -133,20 +135,6 @@ namespace HaloShaderGenerator
             new List<int> { 0, 1, 0, 2, 1, 0, 0, 0, 0, 0, 0 },*/
 
             //new List<int> { 0, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0 },
-
-
-            /*
-            // material_none test, all passing
-            new List<int> { 2, 0, 0, 0, 4, 0, 1, 0, 0, 1, 0 },
-            new List<int> { 2, 0, 0, 0, 4, 0, 1, 1, 0, 1, 0 },
-            new List<int> { 2, 0, 0, 0, 4, 0, 1, 3, 0, 1, 0 },
-            new List<int> { 2, 0, 0, 0, 4, 0, 3, 1, 0, 0, 0 },
-            new List<int> { 2, 0, 0, 0, 4, 0, 5, 1, 0, 0, 0 },
-            new List<int> { 2, 0, 0, 0, 4, 0, 6, 1, 0, 0, 0 },
-            new List<int> { 2, 0, 0, 0, 4, 0, 6, 1, 0, 1, 0 },
-            new List<int> { 0, 0, 0, 0, 4, 0, 1, 1, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 4, 0, 6, 1, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 4, 0, 6, 1, 0, 1, 0 },*/
 
             // not passing but fine anyway
 
@@ -159,6 +147,19 @@ namespace HaloShaderGenerator
             new List<int> { 0, 0, 0, 0, 0, 0, 4, 3, 2, 0, 0 },
             new List<int> { 6, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0 },
             */
+
+            /*
+            // material_none test, all passing
+            new List<int> { 2, 0, 0, 0, 4, 0, 1, 0, 0, 1, 0 },
+            new List<int> { 2, 0, 0, 0, 4, 0, 1, 1, 0, 1, 0 },
+            new List<int> { 2, 0, 0, 0, 4, 0, 1, 3, 0, 1, 0 },
+            new List<int> { 2, 0, 0, 0, 4, 0, 3, 1, 0, 0, 0 },
+            new List<int> { 2, 0, 0, 0, 4, 0, 5, 1, 0, 0, 0 },
+            new List<int> { 2, 0, 0, 0, 4, 0, 6, 1, 0, 0, 0 },
+            new List<int> { 2, 0, 0, 0, 4, 0, 6, 1, 0, 1, 0 },
+            new List<int> { 0, 0, 0, 0, 4, 0, 1, 1, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 4, 0, 6, 1, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 4, 0, 6, 1, 0, 1, 0 },
 
             // passing everything
             
@@ -194,7 +195,7 @@ namespace HaloShaderGenerator
             new List<int> { 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0 },
             new List<int> { 5, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             
-            new List<int> { 0, 0, 0, 0, 3, 0, 3, 1, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 3, 0, 3, 1, 0, 0, 0 },*/
 
 
 

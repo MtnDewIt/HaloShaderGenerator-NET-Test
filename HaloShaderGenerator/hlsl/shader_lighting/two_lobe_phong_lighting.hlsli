@@ -1,17 +1,16 @@
-﻿#ifndef _COOK_TORRANCE_LIGHTING_HLSLI
-#define _COOK_TORRANCE_LIGHTING_HLSLI
+﻿#ifndef _TWO_LOBE_PHONG_LIGHTING_HLSLI
+#define _TWO_LOBE_PHONG_LIGHTING_HLSLI
 
 #include "..\methods\specular_mask.hlsli"
 #include "..\material_models\material_shared_parameters.hlsli"
-#include "..\material_models\cook_torrance.hlsli"
+#include "..\material_models\two_lobe_phong.hlsli"
 
 #include "..\registers\shader.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 
-
-void calc_dynamic_lighting_cook_torrance_ps(float3 light_dir, float3 view_dir, float3 reflect_dir, float3 surface_normal, float2 texcoord, float3 light_intensity, float3 albedo, out float3 color)
+void calc_dynamic_lighting_two_lobe_phong_ps(float3 light_dir, float3 view_dir, float3 reflect_dir, float3 surface_normal, float2 texcoord, float3 light_intensity, float3 albedo, out float3 color)
 {
 	float v_dot_n = dot(light_dir, surface_normal);
 	
@@ -25,19 +24,32 @@ void calc_dynamic_lighting_cook_torrance_ps(float3 light_dir, float3 view_dir, f
 	color = light_intensity * v_dot_n * albedo.rgb * c_diffuse_coefficient;
 
 	specular_contribution *= specular_tint;
-
+	
+	// two_lobe_phong stuff
+	float fresnel_curve = pow(1 - v_dot_n, fresnel_curve_steepness);
+	fresnel_curve = v_dot_n < 0 ? 1 : fresnel_curve;
+	
+	float tlp_specular_tint = normal_specular_tint + fresnel_curve * (glancing_specular_tint - normal_specular_tint);
+	tlp_specular_tint = lerp(tlp_specular_tint, albedo.rgb, albedo_specular_tint_blend);
+	
+	float tlp_specular_power = normal_specular_power + fresnel_curve * (glancing_specular_power - normal_specular_power);
+	tlp_specular_power = (1.0 + tlp_specular_power) * pow(dot(light_dir, -reflect_dir), tlp_specular_power);
+	tlp_specular_power *= (1.0 / (2 * PI));
+	//
+	
+	
 	[flatten]
 	if (dot(specular_contribution, specular_contribution) > 0.0001)
 	{
 		float3 analytic_specular;
 		float3 fresnel_f0 = albedo_blend_with_specular_tint.x > 0 ? fresnel_color : lerp(fresnel_color, albedo.rgb, c_albedo_blend);
 
-		calc_material_analytic_specular_cook_torrance_ps(view_dir, surface_normal, reflect_dir, light_dir, light_intensity, fresnel_f0, c_roughness, 1.0, analytic_specular);
+		
 		color += analytic_specular * specular_contribution;
 	}
 }
 
-float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data)
+float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data)
 {
 	float3 color = 0;
 	float c_albedo_blend, c_roughness, c_specular_coefficient;
@@ -49,7 +61,7 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data)
 	float3 analytic_specular;
 	float3 fresnel_f0 = use_albedo_blend_with_specular_tint ? fresnel_color : lerp(fresnel_color, common_data.albedo.rgb, c_albedo_blend);
 		
-	calc_material_analytic_specular_cook_torrance_ps(common_data.n_view_dir, common_data.surface_normal, common_data.reflect_dir, common_data.dominant_light_direction, common_data.dominant_light_intensity, fresnel_f0, c_roughness, dot(common_data.normal, common_data.dominant_light_direction), analytic_specular);
+	calc_material_analytic_specular_two_lobe_phong_ps(common_data.n_view_dir, common_data.surface_normal, common_data.reflect_dir, common_data.dominant_light_direction, common_data.dominant_light_intensity, fresnel_f0, c_roughness, dot(common_data.normal, common_data.dominant_light_direction), analytic_specular);
 
 	float3 specular;
 	float3 antishadow_control;
@@ -92,7 +104,7 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data)
 	float3 area_specular = 0;
 	float3 rim_area_specular = 0;
 	
-	calc_material_area_specular_cook_torrance_ps(common_data.n_view_dir, common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, c_roughness, fresnel_power, rim_fresnel_power, rim_fresnel_coefficient, fresnel_f0, r_dot_l_area_specular, area_specular, rim_area_specular);
+	calc_material_area_specular_two_lobe_phong_ps(common_data.n_view_dir, common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, c_roughness, fresnel_power, rim_fresnel_power, rim_fresnel_coefficient, fresnel_f0, r_dot_l_area_specular, area_specular, rim_area_specular);
 
 	calc_specular_mask_ps(common_data.albedo, common_data.texcoord, c_specular_coefficient);
 

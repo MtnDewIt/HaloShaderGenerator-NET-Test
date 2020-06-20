@@ -11,6 +11,10 @@
 #define calc_lighting_ps calc_lighting_diffuse_only_ps
 #endif
 
+#ifndef calc_dynamic_lighting_ps
+#define calc_dynamic_lighting_ps calc_dynamic_lighting_diffuse_only_ps
+#endif
+
 #ifndef calc_material_analytic_specular
 #define calc_material_analytic_specular calc_material_analytic_specular_diffuse_only_ps
 #endif

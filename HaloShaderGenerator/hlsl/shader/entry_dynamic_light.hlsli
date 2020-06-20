@@ -8,11 +8,6 @@
 #include "..\helpers\color_processing.hlsli"
 #include "..\helpers\lighting.hlsli"
 #include "..\methods\material_model.hlsli"
-
-#include "..\material_models\cook_torrance.hlsli"
-#include "..\material_models\diffuse_only.hlsli"
-#include "..\material_models\none.hlsli"
-#include "..\material_models\foliage.hlsli"
 #include "..\helpers\shadows.hlsli"
 
 uniform sampler2D dynamic_light_gel_texture;
@@ -60,27 +55,10 @@ bool is_cinematic)
 	get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz, albedo, surface_normal);
 	
 	float3 reflect_dir = 2 * dot(view_dir, surface_normal) * surface_normal - camera_dir;
-	float v_dot_n = dot(v_to_light, surface_normal);
 	
-	float3 specular_contribution = specular_coefficient * analytical_specular_contribution;
+	float3 color;
 	
-	float c_albedo_blend, c_roughness, c_specular_coefficient;
-	float c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient;
-	get_material_parameters_2(texcoord, c_specular_coefficient, c_albedo_blend, c_roughness, c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient);
-	
-	// lambertian diffuse
-	float3 color = light_intensity * v_dot_n * albedo.rgb * c_diffuse_coefficient;
-
-	specular_contribution *= specular_tint;
-	
-	[flatten]
-	if (dot(specular_contribution, specular_contribution) > 0.0001)
-	{
-		float3 analytic_specular;
-		float3 fresnel_f0 = albedo_blend_with_specular_tint.x > 0 ? fresnel_color : lerp(fresnel_color, albedo.rgb, c_albedo_blend);
-		calc_material_analytic_specular(view_dir, surface_normal, reflect_dir, v_to_light, light_intensity, fresnel_f0, c_roughness, 1.0 , analytic_specular);
-		color += analytic_specular * specular_contribution;
-	}
+	calc_dynamic_lighting_ps(v_to_light, view_dir, reflect_dir, surface_normal, texcoord, light_intensity, albedo.rgb, color);
 	
 	float shadow_coefficient;
 	if (dynamic_light_shadowing)
@@ -97,8 +75,6 @@ bool is_cinematic)
 	{
 		shadow_coefficient = 1.0;
 	}
-	
-	
 	
 	float4 result;
 	if (blend_type_arg == k_blend_mode_additive)

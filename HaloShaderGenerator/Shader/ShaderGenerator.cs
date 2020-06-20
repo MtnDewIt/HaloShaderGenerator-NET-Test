@@ -116,6 +116,7 @@ namespace HaloShaderGenerator.Shader
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_material_analytic_specular", material_model, "calc_material_analytic_specular_", "_ps"));
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_material_area_specular", material_model, "calc_material_area_specular_", "_ps"));
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_lighting_ps", material_model, "calc_lighting_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_dynamic_lighting_ps", material_model, "calc_dynamic_lighting_", "_ps"));
 
             macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", environment_mapping, "envmap_type_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", blend_mode, "blend_type_"));
