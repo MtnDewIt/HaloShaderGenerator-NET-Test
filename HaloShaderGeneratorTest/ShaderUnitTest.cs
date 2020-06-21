@@ -126,8 +126,8 @@ namespace HaloShaderGenerator
 
         static readonly List<List<int>> TestMethods = new List<List<int>> {
 
-            //new List<int> { 0, 0, 0, 1, 2, 0, 0, 3, 0, 0, 0 },
-            //new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 1, 2, 0, 0, 3, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
             
             /*
             

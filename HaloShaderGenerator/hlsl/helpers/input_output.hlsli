@@ -1,6 +1,15 @@
 ﻿#ifndef _INPUT_OUTPUT_HLSLI
 #define _INPUT_OUTPUT_HLSLI
 
+struct ENVIRONMENT_MAPPING_COMMON
+{
+	float3 reflect_dir;
+	float3 view_dir;
+	float3 sh_0_env_color;
+	float3 specular_coefficient;
+	float3 area_specular;
+};
+
 struct SHADER_DYNAMIC_LIGHT_COMMON
 {
 	float4 albedo;

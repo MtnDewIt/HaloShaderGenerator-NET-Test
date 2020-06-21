@@ -74,7 +74,7 @@ void calc_dynamic_lighting_cook_torrance_ps(SHADER_DYNAMIC_LIGHT_COMMON common_d
 	}
 }
 
-float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data)
+float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float3 unknown_output)
 {
 	float3 color = 0;
 	float c_albedo_blend, c_roughness, c_specular_coefficient;
@@ -152,8 +152,15 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data)
 	diffuse = common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer + diffuse_accumulation;
 	color.rgb += diffuse * c_diffuse_coefficient * common_data.albedo.rgb;
 	
-	float3 env_band_0 = get_environment_contribution(common_data.sh_0);
-	envmap_type(common_data.view_dir, common_data.reflect_dir, env_band_0, color);
+	ENVIRONMENT_MAPPING_COMMON env_mapping_common_data;
+	
+	env_mapping_common_data.reflect_dir = common_data.reflect_dir;
+	env_mapping_common_data.view_dir = common_data.view_dir;
+	env_mapping_common_data.sh_0_env_color = get_environment_contribution(common_data.sh_0);
+	env_mapping_common_data.specular_coefficient = common_data.specular_mask * environment_map_specular_contribution * specular_coefficient;
+	env_mapping_common_data.area_specular = area_specular;
+
+	envmap_type(env_mapping_common_data, color.rgb, unknown_output);
 	
 	return color;
 }

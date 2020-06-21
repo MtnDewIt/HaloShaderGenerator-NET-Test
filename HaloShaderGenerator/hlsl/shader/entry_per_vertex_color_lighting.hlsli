@@ -90,10 +90,10 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	float4 color = 0.0f;
 	float3 self_illum = 0.0f;
 	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, self_illum);
-	
+	float3 unknown_color = 0;
 	if (calc_material)
 	{
-		color.rgb = calc_lighting_ps_vertex_color(common_data);
+		color.rgb = calc_lighting_ps_vertex_color(common_data, unknown_color);
 	}
 	else
 	{

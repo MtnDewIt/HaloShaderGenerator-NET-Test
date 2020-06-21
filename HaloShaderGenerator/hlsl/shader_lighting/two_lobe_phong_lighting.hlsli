@@ -1,6 +1,7 @@
 ﻿#ifndef _TWO_LOBE_PHONG_LIGHTING_HLSLI
 #define _TWO_LOBE_PHONG_LIGHTING_HLSLI
 
+#include "..\helpers\input_output.hlsli"
 #include "..\methods\specular_mask.hlsli"
 #include "..\material_models\material_shared_parameters.hlsli"
 #include "..\material_models\two_lobe_phong.hlsli"
@@ -8,7 +9,7 @@
 #include "..\methods\environment_mapping.hlsli"
 #include "..\helpers\math.hlsli"
 #include "..\registers\shader.hlsli"
-#include "..\helpers\input_output.hlsli"
+
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 
@@ -51,7 +52,7 @@ void calc_dynamic_lighting_two_lobe_phong_ps(SHADER_DYNAMIC_LIGHT_COMMON common_
 	}
 }
 
-float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data)
+float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data, out float3 unknown_output)
 {
 	float3 color = 0;
 
@@ -105,10 +106,19 @@ float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data)
 	
 	float3 diffuse = common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer + diffuse_accumulation;
 	diffuse = diffuse * diffuse_coefficient;
-	color.rgb = diffuse * common_data.albedo.rgb + specular;
+	color.rgb = diffuse * common_data.albedo.rgb + specular; 
 	
-	float3 env_band_0 = get_environment_contribution(common_data.sh_0);
-	envmap_type(common_data.view_dir, common_data.reflect_dir, env_band_0, color);
+	ENVIRONMENT_MAPPING_COMMON env_mapping_common_data;
+	
+	env_mapping_common_data.reflect_dir = common_data.reflect_dir;
+	env_mapping_common_data.view_dir = common_data.view_dir;
+	env_mapping_common_data.sh_0_env_color = get_environment_contribution(common_data.sh_0);
+	env_mapping_common_data.specular_coefficient = common_data.specular_mask * environment_map_specular_contribution * specular_coefficient;
+	env_mapping_common_data.area_specular = area_specular;
+
+	envmap_type(env_mapping_common_data, color.rgb, unknown_output);
+	
+	
 	
 	return color;
 }

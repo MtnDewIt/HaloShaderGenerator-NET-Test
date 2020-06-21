@@ -82,14 +82,15 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	}
 	
 	float4 color;
+	float3 unknown_color = 0;
 	if (calc_material)
 	{
-		color.rgb = calc_lighting_ps(common_data);
+		color.rgb = calc_lighting_ps(common_data, unknown_color);
 	}
 	else
 	{
 		color.rgb = common_data.albedo.rgb;
-		calc_lighting_no_material_ps(common_data, color.rgb);
+		calc_lighting_no_material_ps(common_data, color.rgb, unknown_color);
 	}
 	
 	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, color.rgb);
@@ -114,7 +115,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	PS_OUTPUT_DEFAULT output = export_color(color);
 	if (calc_env_output)
 	{
-		output.unknown.rgb = env_tint_color.rgb;
+		output.unknown.rgb = unknown_color;
 	}
 	return output;
 }
