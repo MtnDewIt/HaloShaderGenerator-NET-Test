@@ -11,18 +11,19 @@
 #include "..\helpers\color_processing.hlsli"
 
 
-void calc_dynamic_lighting_cook_torrance_ps(float3 light_dir, float3 view_dir, float3 reflect_dir, float3 surface_normal, float2 texcoord, float3 light_intensity, float3 albedo, out float3 color)
+void calc_dynamic_lighting_cook_torrance_ps(SHADER_DYNAMIC_LIGHT_COMMON common_data, out float3 color)
 {
-	float v_dot_n = dot(light_dir, surface_normal);
-	
-	float3 specular_contribution = specular_coefficient * analytical_specular_contribution;
+	float v_dot_n = dot(common_data.light_direction, common_data.surface_normal);
+	float c_specular_mask = 1.0;
+	calc_specular_mask_ps(common_data.albedo, common_data.texcoord, c_specular_mask);
+	float3 specular_contribution = c_specular_mask * specular_coefficient * analytical_specular_contribution;
 	
 	float c_albedo_blend, c_roughness, c_specular_coefficient;
 	float c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient;
-	get_material_parameters_2(texcoord, c_specular_coefficient, c_albedo_blend, c_roughness, c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient);
+	get_material_parameters_2(common_data.texcoord, c_specular_coefficient, c_albedo_blend, c_roughness, c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient);
 	
 	// lambertian diffuse
-	color = light_intensity * v_dot_n * albedo.rgb * c_diffuse_coefficient;
+	color = common_data.light_intensity * v_dot_n * common_data.albedo.rgb * c_diffuse_coefficient;
 
 	specular_contribution *= specular_tint;
 
@@ -30,9 +31,9 @@ void calc_dynamic_lighting_cook_torrance_ps(float3 light_dir, float3 view_dir, f
 	if (dot(specular_contribution, specular_contribution) > 0.0001)
 	{
 		float3 analytic_specular;
-		float3 fresnel_f0 = albedo_blend_with_specular_tint.x > 0 ? fresnel_color : lerp(fresnel_color, albedo.rgb, c_albedo_blend);
+		float3 fresnel_f0 = albedo_blend_with_specular_tint.x > 0 ? fresnel_color : lerp(fresnel_color, common_data.albedo.rgb, c_albedo_blend);
 
-		calc_material_analytic_specular_cook_torrance_ps(view_dir, surface_normal, reflect_dir, light_dir, light_intensity, fresnel_f0, c_roughness, 1.0, analytic_specular);
+		calc_material_analytic_specular_cook_torrance_ps(common_data.view_dir, common_data.surface_normal, common_data.reflect_dir, common_data.light_direction, common_data.light_intensity, fresnel_f0, c_roughness, 1.0, analytic_specular);
 		color += analytic_specular * specular_contribution;
 	}
 }

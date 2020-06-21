@@ -7,6 +7,7 @@
 #define SQRT3 1.7320508f
 #define LOG2_E 1.44269502f
 #define DEBUG_TINT_FACTOR 4.59479 // 2^2.2 TODO: find another name
+#define INV_2PI  0.159154564
 
 float rand2(float2 co)
 {

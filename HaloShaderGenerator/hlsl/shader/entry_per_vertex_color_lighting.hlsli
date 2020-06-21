@@ -15,7 +15,7 @@
 #include "..\helpers\color_processing.hlsli"
 
 // hack to make it compile 1-1, probably a mistake in the original code
-#if material_type_arg == k_material_model_none || material_type_arg == k_material_model_cook_torrance
+#if material_type_arg == k_material_model_none || material_type_arg == k_material_model_cook_torrance || material_type_arg == k_material_model_two_lobe_phong
 #define calc_lighting_ps_vertex_color calc_lighting_diffuse_only_ps
 #else
 #define calc_lighting_ps_vertex_color calc_lighting_ps

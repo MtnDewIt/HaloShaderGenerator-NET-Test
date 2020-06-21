@@ -1,6 +1,18 @@
 ﻿#ifndef _INPUT_OUTPUT_HLSLI
 #define _INPUT_OUTPUT_HLSLI
 
+struct SHADER_DYNAMIC_LIGHT_COMMON
+{
+	float4 albedo;
+	float2 texcoord;
+	float3 surface_normal;
+	float3 normal;
+	float3 view_dir;
+	float3 reflect_dir;
+	float3 light_direction;
+	float3 light_intensity;
+};
+
 struct SHADER_COMMON
 {
 	float alpha;

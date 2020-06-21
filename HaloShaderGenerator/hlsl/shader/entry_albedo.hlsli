@@ -61,7 +61,6 @@ PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
 		output.normal.w = 1.0;
 		output.diffuse.w = 1.0;
 	}
-		
 	
 	output.unknown = input.normal.wwww;
     return output;

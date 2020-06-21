@@ -58,7 +58,18 @@ bool is_cinematic)
 	
 	float3 color;
 	
-	calc_dynamic_lighting_ps(v_to_light, view_dir, reflect_dir, surface_normal, texcoord, light_intensity, albedo.rgb, color);
+	SHADER_DYNAMIC_LIGHT_COMMON common_data;
+
+	common_data.albedo = albedo;
+	common_data.texcoord = texcoord;
+	common_data.surface_normal = surface_normal;
+	common_data.normal = normal;
+	common_data.view_dir = view_dir;
+	common_data.reflect_dir = reflect_dir;
+	common_data.light_intensity = light_intensity;
+	common_data.light_direction = L;
+	
+	calc_dynamic_lighting_ps(common_data, color);
 	
 	float shadow_coefficient;
 	if (dynamic_light_shadowing)

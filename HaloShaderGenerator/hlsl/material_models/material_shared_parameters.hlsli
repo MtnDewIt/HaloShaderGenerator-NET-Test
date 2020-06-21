@@ -16,8 +16,8 @@ uniform float environment_map_specular_contribution;
 
 xform2d material_texture_xform;
 
-uniform float normal_specular_power;
-uniform float3 normal_specular_tint;
+
+// cook torrance parameters
 
 float3 fresnel_color;
 float fresnel_power;
@@ -30,14 +30,19 @@ float3 rim_fresnel_color;
 float rim_fresnel_power;
 float rim_fresnel_albedo_blend;
 
-uniform float glancing_specular_power;
-uniform float3 glancing_specular_tint;
-
-uniform float fresnel_curve_steepness;
-uniform float albedo_specular_tint_blend;
-uniform float analytical_anti_shadow_control;
 
 uniform bool order3_area_specular;
+
+// two lobe phong
+
+uniform float normal_specular_power;
+uniform float3 normal_specular_tint;
+uniform float glancing_specular_power;
+uniform float3 glancing_specular_tint;
+uniform float fresnel_curve_steepness;
+uniform float albedo_specular_tint_blend;
+
+uniform float analytical_anti_shadow_control;
 uniform bool no_dynamic_lights;
 uniform bool use_material_texture;
 
@@ -90,11 +95,9 @@ float3 normal,
 float3 vertex_world_position,
 float3 reflect_dir,
 float roughness_unknown,
-out float3 diffuse_accumulation,
-out float3 specular_accumulation)
+inout float3 diffuse_accumulation,
+inout float3 specular_accumulation)
 {
-	diffuse_accumulation = 0;
-	specular_accumulation = 0;
 	if (simple_light_count > 0)
 	{
 		calculate_simple_light(get_simple_light(0), normal, vertex_world_position, reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
