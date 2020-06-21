@@ -4,7 +4,8 @@
 #include "..\methods\specular_mask.hlsli"
 #include "..\material_models\material_shared_parameters.hlsli"
 #include "..\material_models\two_lobe_phong.hlsli"
-
+#include "..\helpers\sh.hlsli"
+#include "..\methods\environment_mapping.hlsli"
 #include "..\helpers\math.hlsli"
 #include "..\registers\shader.hlsli"
 #include "..\helpers\input_output.hlsli"
@@ -105,6 +106,9 @@ float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data)
 	float3 diffuse = common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer + diffuse_accumulation;
 	diffuse = diffuse * diffuse_coefficient;
 	color.rgb = diffuse * common_data.albedo.rgb + specular;
+	
+	float3 env_band_0 = get_environment_contribution(common_data.sh_0);
+	envmap_type(common_data.view_dir, common_data.reflect_dir, env_band_0, color);
 	
 	return color;
 }

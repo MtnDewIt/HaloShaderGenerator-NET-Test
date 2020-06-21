@@ -7,6 +7,7 @@
 
 #include "..\methods\specular_mask.hlsli"
 #include "..\methods\material_model.hlsli"
+#include "..\shader_lighting\no_material_lighting.hlsli"
 #include "..\methods\environment_mapping.hlsli"
 #include "..\methods\self_illumination.hlsli"
 #include "..\methods\blend_mode.hlsli"
@@ -90,11 +91,9 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 	else
 	{
 		color.rgb = common_data.albedo.rgb;
+		calc_lighting_no_material_ps(common_data, color.rgb);
 	}
 
-	
-	float3 env_band_0 = get_environment_contribution(common_data.sh_0);
-	envmap_type(common_data.view_dir, common_data.reflect_dir, env_band_0, color.rgb);
 	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, color.rgb);
 	
 	color.rgb = color.rgb * common_data.extinction_factor;

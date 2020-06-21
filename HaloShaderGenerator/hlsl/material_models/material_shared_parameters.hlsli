@@ -46,49 +46,6 @@ uniform float analytical_anti_shadow_control;
 uniform bool no_dynamic_lights;
 uniform bool use_material_texture;
 
-void get_material_parameters_2(
-in float2 texcoord,
-out float c_specular_coefficient,
-out float c_albedo_blend,
-out float c_roughness,
-out float c_diffuse_contribution,
-out float c_analytical_specular_contribution,
-out float c_area_specular_contribution)
-{
-	float4 parameters;
-	parameters.z = 0;
-	if (use_material_texture)
-	{
-		float2 material_texture_texcoord = apply_xform2d(texcoord, material_texture_xform);
-		float4 material_texture_sample = tex2D(material_texture, material_texture_texcoord);
-		parameters.x = material_texture_sample.x;
-		parameters.y = material_texture_sample.y;
-		parameters.w = material_texture_sample.w;
-		parameters *= float4(specular_coefficient, albedo_blend, 1.0, roughness);
-	}
-	else
-	{
-		parameters.x = specular_coefficient;
-		parameters.y = albedo_blend;
-		parameters.w = roughness;
-	}
-
-	c_diffuse_contribution = diffuse_coefficient;
-	c_analytical_specular_contribution = analytical_specular_contribution;
-	c_area_specular_contribution = area_specular_contribution;
-	
-	if (material_type_arg == k_material_model_diffuse_only || material_type_arg == k_material_model_none || material_type_arg == k_material_model_foliage)
-	{
-		c_diffuse_contribution = 1.0;
-		c_analytical_specular_contribution = 0.0;
-		c_area_specular_contribution = 0.0;
-	}
-	
-	c_roughness = parameters.w;
-	c_albedo_blend = parameters.y;
-	c_specular_coefficient = parameters.x;
-}
-
 
 void calc_material_lambert_diffuse_ps(
 float3 normal,
@@ -132,5 +89,7 @@ inout float3 specular_accumulation)
 		}
 	}
 }
+
+
 
 #endif

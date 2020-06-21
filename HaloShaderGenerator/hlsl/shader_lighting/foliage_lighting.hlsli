@@ -3,6 +3,8 @@
 
 #include "..\material_models\material_shared_parameters.hlsli"
 #include "..\helpers\input_output.hlsli"
+#include "..\helpers\sh.hlsli"
+#include "..\methods\environment_mapping.hlsli"
 
 void calc_dynamic_lighting_foliage_ps(SHADER_DYNAMIC_LIGHT_COMMON common_data, out float3 color)
 {
@@ -29,6 +31,9 @@ float3 calc_lighting_foliage_ps(SHADER_COMMON common_data)
 	diffuse += common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer;
 	
 	diffuse *= common_data.albedo.rgb;
+	
+	float3 env_band_0 = get_environment_contribution(common_data.sh_0);
+	envmap_type(common_data.view_dir, common_data.reflect_dir, env_band_0, diffuse);
 	
 	return diffuse;
 }

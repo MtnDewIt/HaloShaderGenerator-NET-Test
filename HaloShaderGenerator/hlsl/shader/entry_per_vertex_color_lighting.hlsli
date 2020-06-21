@@ -15,10 +15,8 @@
 #include "..\helpers\color_processing.hlsli"
 
 // hack to make it compile 1-1, probably a mistake in the original code
-#if material_type_arg == k_material_model_none || material_type_arg == k_material_model_cook_torrance || material_type_arg == k_material_model_two_lobe_phong
+#ifdef calc_lighting_ps
 #define calc_lighting_ps_vertex_color calc_lighting_diffuse_only_ps
-#else
-#define calc_lighting_ps_vertex_color calc_lighting_ps
 #endif
 
 PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLOR input)
@@ -107,10 +105,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 	}
 	
 	color.rgb += self_illum;
-	/* seems to be disabled in per_vertex_color mode?
-	float3 env_band_0 = get_environment_contribution(common_data.sh_0);
-	envmap_type(common_data.view_dir, common_data.reflect_dir, env_band_0, color.rgb);
-	*/
+
 	color.rgb = color.rgb * common_data.extinction_factor;
 		
 	color.a = blend_type_calculate_alpha_blending(common_data.albedo, common_data.alpha);
@@ -129,10 +124,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 		color.rgb *= color.a;
 
 	PS_OUTPUT_DEFAULT output = export_color(color);
-	/*
-	if (calc_env_output)
-		output.unknown.rgb = env_tint_color.rgb;
-	*/
+
 	return output;
 }
 

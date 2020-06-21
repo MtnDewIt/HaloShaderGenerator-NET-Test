@@ -3,6 +3,8 @@
 
 #include "..\material_models\material_shared_parameters.hlsli"
 #include "..\helpers\input_output.hlsli"
+#include "..\helpers\sh.hlsli"
+#include "..\methods\environment_mapping.hlsli"
 
 void calc_dynamic_lighting_none_ps(SHADER_DYNAMIC_LIGHT_COMMON common_data, out float3 color)
 {
@@ -12,6 +14,9 @@ void calc_dynamic_lighting_none_ps(SHADER_DYNAMIC_LIGHT_COMMON common_data, out 
 
 float3 calc_lighting_none_ps(SHADER_COMMON common_data)
 {
-	return 0;
+	float3 color = 0;
+	float3 env_band_0 = get_environment_contribution(common_data.sh_0);
+	envmap_type(common_data.view_dir, common_data.reflect_dir, env_band_0, color);
+	return color;
 }
 #endif

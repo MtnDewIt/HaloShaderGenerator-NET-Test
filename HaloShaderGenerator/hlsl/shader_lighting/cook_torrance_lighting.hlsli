@@ -4,12 +4,48 @@
 #include "..\methods\specular_mask.hlsli"
 #include "..\material_models\material_shared_parameters.hlsli"
 #include "..\material_models\cook_torrance.hlsli"
-
+#include "..\helpers\sh.hlsli"
+#include "..\methods\environment_mapping.hlsli"
 #include "..\registers\shader.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 
+void get_material_parameters_2(
+in float2 texcoord,
+out float c_specular_coefficient,
+out float c_albedo_blend,
+out float c_roughness,
+out float c_diffuse_contribution,
+out float c_analytical_specular_contribution,
+out float c_area_specular_contribution)
+{
+	float4 parameters;
+	parameters.z = 0;
+	if (use_material_texture)
+	{
+		float2 material_texture_texcoord = apply_xform2d(texcoord, material_texture_xform);
+		float4 material_texture_sample = tex2D(material_texture, material_texture_texcoord);
+		parameters.x = material_texture_sample.x;
+		parameters.y = material_texture_sample.y;
+		parameters.w = material_texture_sample.w;
+		parameters *= float4(specular_coefficient, albedo_blend, 1.0, roughness);
+	}
+	else
+	{
+		parameters.x = specular_coefficient;
+		parameters.y = albedo_blend;
+		parameters.w = roughness;
+	}
+
+	c_diffuse_contribution = diffuse_coefficient;
+	c_analytical_specular_contribution = analytical_specular_contribution;
+	c_area_specular_contribution = area_specular_contribution;
+	
+	c_roughness = parameters.w;
+	c_albedo_blend = parameters.y;
+	c_specular_coefficient = parameters.x;
+}
 
 void calc_dynamic_lighting_cook_torrance_ps(SHADER_DYNAMIC_LIGHT_COMMON common_data, out float3 color)
 {
@@ -115,6 +151,10 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data)
 	color.rgb += c_specular_tint * specular + temp;
 	diffuse = common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer + diffuse_accumulation;
 	color.rgb += diffuse * c_diffuse_coefficient * common_data.albedo.rgb;
+	
+	float3 env_band_0 = get_environment_contribution(common_data.sh_0);
+	envmap_type(common_data.view_dir, common_data.reflect_dir, env_band_0, color);
+	
 	return color;
 }
 #endif
