@@ -86,6 +86,9 @@ float prt)
 			common_data.sky_radiance = sky_radiance;
 			common_data.extinction_factor = extinction_factor;
 		}
+		
+		common_data.specular_mask = 1.0;
+		calc_specular_mask_ps(common_data.albedo, common_data.texcoord, common_data.specular_mask);
 	}
 
 	float4 color;

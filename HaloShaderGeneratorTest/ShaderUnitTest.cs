@@ -126,10 +126,11 @@ namespace HaloShaderGenerator
 
         static readonly List<List<int>> TestMethods = new List<List<int>> {
 
-            new List<int> { 0, 0, 0, 1, 2, 0, 0, 3, 0, 0, 0 },
+            //new List<int> { 0, 0, 0, 1, 2, 0, 0, 3, 0, 0, 0 },
+            //new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
 
             /*
-            new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+            
 
             new List<int> { 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0 },
             new List<int> { 0, 1, 0, 2, 1, 0, 0, 0, 0, 0, 0 },*/
@@ -150,7 +151,7 @@ namespace HaloShaderGenerator
 
 
 
-            /*
+            
             // material_none test, all passing
             new List<int> { 2, 0, 0, 0, 4, 0, 1, 0, 0, 1, 0 },
             new List<int> { 2, 0, 0, 0, 4, 0, 1, 1, 0, 1, 0 },
@@ -197,7 +198,7 @@ namespace HaloShaderGenerator
             new List<int> { 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0 },
             new List<int> { 5, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             
-            new List<int> { 0, 0, 0, 0, 3, 0, 3, 1, 0, 0, 0 },*/
+            new List<int> { 0, 0, 0, 0, 3, 0, 3, 1, 0, 0, 0 },
 
 
 

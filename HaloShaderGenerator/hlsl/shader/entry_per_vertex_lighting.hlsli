@@ -1,5 +1,5 @@
 ﻿#ifndef _SHADER_TEMPLATE_PER_VERTEX_LIGHTING_HLSLI
-#define _SHADER_TEMPLATE_PER_PIXEL_LIGHTING_HLSLI
+#define _SHADER_TEMPLATE_PER_VERTEX_LIGHTING_HLSLI
 
 #include "..\helpers\lightmaps.hlsli"
 #include "entry_albedo.hlsli"
@@ -75,7 +75,9 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 			common_data.sky_radiance = float3(input.texcoord.zw, input.sky_radiance.w);
 			common_data.extinction_factor = input.sky_radiance.rgb;
 		}
-
+		
+		common_data.specular_mask = 1.0;
+		calc_specular_mask_ps(common_data.albedo, common_data.texcoord, common_data.specular_mask);
 	}
 	
 	float4 color;

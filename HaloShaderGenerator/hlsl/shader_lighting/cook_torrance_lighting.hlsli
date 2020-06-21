@@ -95,15 +95,13 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data)
 	
 	calc_material_area_specular_cook_torrance_ps(common_data.n_view_dir, common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, c_roughness, fresnel_power, rim_fresnel_power, rim_fresnel_coefficient, fresnel_f0, r_dot_l_area_specular, area_specular, rim_area_specular);
 
-	calc_specular_mask_ps(common_data.albedo, common_data.texcoord, c_specular_coefficient);
-
 	float3 c_specular_tint = specular_tint;
 	
 	if (use_albedo_blend_with_specular_tint)
 	{
 		c_specular_tint = specular_tint * (1.0 - c_albedo_blend) + c_albedo_blend * common_data.albedo.rgb;
 	}
-	c_specular_tint = c_specular_coefficient * c_specular_tint;
+	c_specular_tint = common_data.specular_mask * c_specular_coefficient * c_specular_tint;
 		
 	specular += specular_accumulation * fresnel_f0;
 	specular *= c_analytical_specular_coefficient;

@@ -16,34 +16,36 @@ void calc_dynamic_lighting_two_lobe_phong_ps(SHADER_DYNAMIC_LIGHT_COMMON common_
 	// lambertian diffuse
 	float v_dot_n = dot(common_data.light_direction, common_data.surface_normal);
 	
-	color = common_data.light_intensity * v_dot_n * common_data.albedo.rgb * diffuse_coefficient;
+	float3 reflect_dir = 2 * v_dot_n * -common_data.surface_normal + common_data.view_dir;
+	reflect_dir = normalize(reflect_dir);
 	
 	float specular_mask = 1.0;
 	calc_specular_mask_ps(common_data.albedo, common_data.texcoord, specular_mask);
 	float3 specular_contribution = specular_mask * specular_coefficient * analytical_specular_contribution;
 	
-	float l_dot_r = dot(common_data.light_direction, common_data.reflect_dir);
+	float l_dot_r = dot(common_data.light_direction, reflect_dir);
 	
 	float sn_dot_n = dot(common_data.view_dir, common_data.surface_normal);
 	float fresnel_curve = pow(1 - sn_dot_n, fresnel_curve_steepness);
 	fresnel_curve = sn_dot_n < 0 ? 1 : fresnel_curve;
-	
+		
+	float3 specular_tint = normal_specular_tint + fresnel_curve * (glancing_specular_tint - normal_specular_tint);
+	specular_tint = lerp(specular_tint, common_data.albedo.rgb, albedo_specular_tint_blend);
+		
 	float specular_exponent = normal_specular_power + fresnel_curve * (glancing_specular_power - normal_specular_power);
 	float specular_power = pow(l_dot_r, specular_exponent) * (specular_exponent + 1.0f);
 	specular_power *= INV_2PI;
 	
-	float3 specular_tint = normal_specular_tint + fresnel_curve * (glancing_specular_tint - normal_specular_tint);
-	specular_tint = lerp(specular_tint, common_data.albedo.rgb, albedo_specular_tint_blend);
+	color = common_data.light_intensity * v_dot_n * common_data.albedo.rgb * diffuse_coefficient;
 	
 	[flatten]
 	if (dot(specular_contribution, specular_contribution) > 0.0001f)
 	{
 		float3 analytic_specular;
-		calc_material_analytic_specular_two_lobe_phong_ps(common_data.reflect_dir, common_data.light_direction, common_data.light_intensity, specular_tint, specular_power, analytic_specular);
-	
+		analytic_specular = specular_power * specular_tint;
+		analytic_specular *= common_data.light_intensity;
+		analytic_specular = l_dot_r > 0 ? analytic_specular : 0;
 		analytic_specular *= specular_contribution;
-		
-		
 		color += analytic_specular;
 	}
 }
@@ -91,16 +93,13 @@ float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data)
 	float3 area_specular;
 	calc_material_area_specular_two_lobe_phong_ps(common_data.reflect_dir, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, specular_tint, area_specular);
 	
-	float specular_mask = 1.0;
-	calc_specular_mask_ps(common_data.albedo, common_data.texcoord, specular_mask);
-	
 	analytic_specular = max(analytic_specular, 0);
 	analytic_specular = specular_accumulation + analytic_specular;
 	area_specular *= area_specular_contribution;
 	area_specular = max(area_specular, 0.0f);
 	float3 specular = analytic_specular * analytical_specular_contribution + area_specular;
 	
-	float c_specular_coefficient = specular_mask * specular_coefficient;
+	float c_specular_coefficient = common_data.specular_mask * specular_coefficient;
 	specular = c_specular_coefficient * specular;
 	
 	float3 diffuse = common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer + diffuse_accumulation;

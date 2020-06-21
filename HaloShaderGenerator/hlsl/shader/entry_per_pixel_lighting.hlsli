@@ -76,6 +76,10 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 			common_data.sky_radiance = input.sky_radiance;
 			common_data.extinction_factor = input.extinction_factor;
 		}
+		
+		common_data.specular_mask = 1.0;
+		calc_specular_mask_ps(common_data.albedo, common_data.texcoord, common_data.specular_mask);
+		
 	}
 	
 	float4 color;

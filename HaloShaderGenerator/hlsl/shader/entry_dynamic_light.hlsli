@@ -56,6 +56,7 @@ bool is_cinematic)
 	
 	float3 reflect_dir = 2 * dot(view_dir, surface_normal) * surface_normal - camera_dir;
 	
+	
 	float3 color;
 	
 	SHADER_DYNAMIC_LIGHT_COMMON common_data;

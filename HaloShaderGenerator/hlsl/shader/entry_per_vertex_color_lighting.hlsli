@@ -83,6 +83,9 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 			common_data.extinction_factor = input.extinction_factor;
 		}
 		
+		common_data.specular_mask = 1.0;
+		calc_specular_mask_ps(common_data.albedo, common_data.texcoord, common_data.specular_mask);
+		
 	}
 	
 	

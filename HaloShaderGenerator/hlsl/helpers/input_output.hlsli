@@ -38,6 +38,7 @@ struct SHADER_COMMON
 	float3 reflect_dir;
 	
 	bool no_dynamic_lights;
+	float specular_mask;
 	
 };
 
