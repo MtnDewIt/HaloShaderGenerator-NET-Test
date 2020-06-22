@@ -82,7 +82,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	}
 	
 	float4 color;
-	float3 unknown_color = 0;
+	float4 unknown_color = 0;
 	if (calc_material)
 	{
 		color.rgb = calc_lighting_ps(common_data, unknown_color);
@@ -115,7 +115,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	PS_OUTPUT_DEFAULT output = export_color(color);
 	if (calc_env_output)
 	{
-		output.unknown.rgb = unknown_color;
+		output.unknown = unknown_color;
 	}
 	return output;
 }

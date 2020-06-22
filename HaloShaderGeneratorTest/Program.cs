@@ -23,6 +23,8 @@ namespace HaloShaderGenerator
 
                 List<List<int>> shaders_to_gen = new List<List<int>> {
                     new List<int> { 0, 1, 0, 1, 2, 2, 0, 0, 0, 0, 0 },
+                    new List<int> { 0, 0, 0, 0, 1, 1, 0, 3, 0, 0, 0 },
+                    new List<int> { 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0 },
                 };
 
                 foreach (var stage in stages_to_gen)

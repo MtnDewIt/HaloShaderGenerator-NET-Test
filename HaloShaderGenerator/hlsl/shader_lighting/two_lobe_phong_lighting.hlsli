@@ -52,7 +52,7 @@ void calc_dynamic_lighting_two_lobe_phong_ps(SHADER_DYNAMIC_LIGHT_COMMON common_
 	}
 }
 
-float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data, out float3 unknown_output)
+float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data, out float4 unknown_output)
 {
 	float3 color = 0;
 
@@ -112,10 +112,11 @@ float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data, out float3 unk
 	
 	env_mapping_common_data.reflect_dir = common_data.reflect_dir;
 	env_mapping_common_data.view_dir = common_data.view_dir;
-	env_mapping_common_data.sh_0_env_color = get_environment_contribution(common_data.sh_0);
+	env_mapping_common_data.env_area_specular = get_environment_contribution(common_data.sh_0);
 	env_mapping_common_data.specular_coefficient = common_data.specular_mask * environment_map_specular_contribution * specular_coefficient;
 	env_mapping_common_data.area_specular = area_specular;
-
+	env_mapping_common_data.specular_exponent = specular_exponent;
+	
 	envmap_type(env_mapping_common_data, color.rgb, unknown_output);
 	
 	

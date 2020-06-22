@@ -209,9 +209,11 @@ in float fresnel_power,
 in float rim_fresnel_power,
 in float rim_fresnel_coefficient,
 in float3 k_f0,
+in float3 k_f0_env,
 in float r_dot_l,
 out float3 area_specular,
-out float3 rim_area_specular)
+out float3 rim_area_specular,
+out float3 env_area_specular)
 {
 	float3 specular_part;
 	float3 schlick_part;
@@ -224,7 +226,8 @@ out float3 rim_area_specular)
 		calc_material_area_specular_order_2_cook_torrance_ps(view_dir, rotate_z, sh_0, sh_312, roughness, fresnel_power, rim_fresnel_power, rim_fresnel_coefficient, k_f0, r_dot_l, specular_part, schlick_part, rim_area_specular);
 	}
 	area_specular = specular_part * k_f0 + (1 - k_f0) * schlick_part;
-	
+	env_area_specular = specular_part * k_f0_env + (1 - k_f0_env) * schlick_part;
+	env_area_specular = use_fresnel_color_environment ? env_area_specular : area_specular;
 }
 
 #endif

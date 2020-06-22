@@ -4,7 +4,6 @@
 
 #include "entry_albedo.hlsli"
 #include "..\helpers\lightmaps.hlsli"
-
 #include "..\methods\specular_mask.hlsli"
 #include "..\methods\material_model.hlsli"
 #include "..\shader_lighting\no_material_lighting.hlsli"
@@ -12,7 +11,6 @@
 #include "..\methods\self_illumination.hlsli"
 #include "..\methods\blend_mode.hlsli"
 #include "..\methods\misc.hlsli"
-
 #include "..\registers\shader.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\definition_helper.hlsli"
@@ -82,7 +80,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 	}
 	
 	float4 color;
-	float3 unknown_color = 0;
+	float4 unknown_color = 0;
 	if (calc_material)
 	{
 		color.rgb = calc_lighting_ps(common_data, unknown_color);
@@ -115,7 +113,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 	PS_OUTPUT_DEFAULT output = export_color(color);
 	if (calc_env_output)
 	{
-		output.unknown.rgb = unknown_color;
+		output.unknown = unknown_color;
 	}
 	return output;
 }

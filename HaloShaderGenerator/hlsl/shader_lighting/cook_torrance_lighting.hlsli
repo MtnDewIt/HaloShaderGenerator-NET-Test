@@ -18,7 +18,8 @@ out float c_albedo_blend,
 out float c_roughness,
 out float c_diffuse_contribution,
 out float c_analytical_specular_contribution,
-out float c_area_specular_contribution)
+out float c_area_specular_contribution,
+out float c_environment_map_specular_contribution)
 {
 	float4 parameters;
 	parameters.z = 0;
@@ -28,13 +29,15 @@ out float c_area_specular_contribution)
 		float4 material_texture_sample = tex2D(material_texture, material_texture_texcoord);
 		parameters.x = material_texture_sample.x;
 		parameters.y = material_texture_sample.y;
+		parameters.z = material_texture_sample.z;
 		parameters.w = material_texture_sample.w;
-		parameters *= float4(specular_coefficient, albedo_blend, 1.0, roughness);
+		parameters *= float4(specular_coefficient, albedo_blend, environment_map_specular_contribution, roughness);
 	}
 	else
 	{
 		parameters.x = specular_coefficient;
 		parameters.y = albedo_blend;
+		parameters.z = environment_map_specular_contribution;
 		parameters.w = roughness;
 	}
 
@@ -45,6 +48,8 @@ out float c_area_specular_contribution)
 	c_roughness = parameters.w;
 	c_albedo_blend = parameters.y;
 	c_specular_coefficient = parameters.x;
+	c_environment_map_specular_contribution = parameters.z;
+
 }
 
 void calc_dynamic_lighting_cook_torrance_ps(SHADER_DYNAMIC_LIGHT_COMMON common_data, out float3 color)
@@ -55,8 +60,8 @@ void calc_dynamic_lighting_cook_torrance_ps(SHADER_DYNAMIC_LIGHT_COMMON common_d
 	float3 specular_contribution = c_specular_mask * specular_coefficient * analytical_specular_contribution;
 	
 	float c_albedo_blend, c_roughness, c_specular_coefficient;
-	float c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient;
-	get_material_parameters_2(common_data.texcoord, c_specular_coefficient, c_albedo_blend, c_roughness, c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient);
+	float c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient, c_environment_map_specular_contribution;
+	get_material_parameters_2(common_data.texcoord, c_specular_coefficient, c_albedo_blend, c_roughness, c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient, c_environment_map_specular_contribution);
 	
 	// lambertian diffuse
 	color = common_data.light_intensity * v_dot_n * common_data.albedo.rgb * c_diffuse_coefficient;
@@ -74,18 +79,18 @@ void calc_dynamic_lighting_cook_torrance_ps(SHADER_DYNAMIC_LIGHT_COMMON common_d
 	}
 }
 
-float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float3 unknown_output)
+float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unknown_output)
 {
 	float3 color = 0;
 	float c_albedo_blend, c_roughness, c_specular_coefficient;
-	float c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient;
-	get_material_parameters_2(common_data.texcoord, c_specular_coefficient, c_albedo_blend, c_roughness, c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient);
+	float c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient, c_environment_map_specular_contribution;
+	get_material_parameters_2(common_data.texcoord, c_specular_coefficient, c_albedo_blend, c_roughness, c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient, c_environment_map_specular_contribution);
 	bool use_albedo_blend_with_specular_tint = albedo_blend_with_specular_tint.x > 0 ? true : false;
 	bool use_analytical_antishadow_control = analytical_anti_shadow_control.x > 0 ? true : false;
 		
 	float3 analytic_specular;
 	float3 fresnel_f0 = use_albedo_blend_with_specular_tint ? fresnel_color : lerp(fresnel_color, common_data.albedo.rgb, c_albedo_blend);
-		
+	
 	calc_material_analytic_specular_cook_torrance_ps(common_data.n_view_dir, common_data.surface_normal, common_data.reflect_dir, common_data.dominant_light_direction, common_data.dominant_light_intensity, fresnel_f0, c_roughness, dot(common_data.normal, common_data.dominant_light_direction), analytic_specular);
 
 	float3 specular;
@@ -121,22 +126,25 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float3 unkn
 		calc_material_lambert_diffuse_ps(common_data.surface_normal, common_data.world_position, common_data.reflect_dir, roughness_unknown, diffuse_accumulation, specular_accumulation);
 		specular_accumulation *= roughness_unknown;
 	}
-	
+	float3 fresnel_env_f0 = use_albedo_blend_with_specular_tint ? fresnel_color_environment : lerp(fresnel_color_environment, common_data.albedo.rgb, c_albedo_blend);
 	
 	float r_dot_l = dot(common_data.dominant_light_direction.xyz, common_data.reflect_dir);
 	float r_dot_l_area_specular = r_dot_l < 0 ? 0.35f : r_dot_l * 0.65f + 0.35f;
 		
 	float3 area_specular = 0;
 	float3 rim_area_specular = 0;
+	float3 env_area_specular = 0;
+	calc_material_area_specular_cook_torrance_ps(common_data.n_view_dir, common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, c_roughness, fresnel_power, rim_fresnel_power, rim_fresnel_coefficient, fresnel_f0, fresnel_env_f0, r_dot_l_area_specular, area_specular, rim_area_specular, env_area_specular);
 	
-	calc_material_area_specular_cook_torrance_ps(common_data.n_view_dir, common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, c_roughness, fresnel_power, rim_fresnel_power, rim_fresnel_coefficient, fresnel_f0, r_dot_l_area_specular, area_specular, rim_area_specular);
-
 	float3 c_specular_tint = specular_tint;
 	
 	if (use_albedo_blend_with_specular_tint)
 	{
 		c_specular_tint = specular_tint * (1.0 - c_albedo_blend) + c_albedo_blend * common_data.albedo.rgb;
 	}
+	
+	env_area_specular = c_specular_tint * env_area_specular;
+	
 	c_specular_tint = common_data.specular_mask * c_specular_coefficient * c_specular_tint;
 		
 	specular += specular_accumulation * fresnel_f0;
@@ -149,18 +157,29 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float3 unkn
 	temp *= fresnel_coefficient;
 	temp *= rim_area_specular;
 	color.rgb += c_specular_tint * specular + temp;
+	
+	float env_specular_contribution = common_data.specular_mask * c_environment_map_specular_contribution * c_specular_coefficient;
+	
 	diffuse = common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer + diffuse_accumulation;
-	color.rgb += diffuse * c_diffuse_coefficient * common_data.albedo.rgb;
+	diffuse *= c_diffuse_coefficient;
+	diffuse *= common_data.albedo.rgb;
+	
+	env_area_specular = max(env_area_specular, 0.001);
 	
 	ENVIRONMENT_MAPPING_COMMON env_mapping_common_data;
 	
 	env_mapping_common_data.reflect_dir = common_data.reflect_dir;
 	env_mapping_common_data.view_dir = common_data.view_dir;
-	env_mapping_common_data.sh_0_env_color = get_environment_contribution(common_data.sh_0);
-	env_mapping_common_data.specular_coefficient = common_data.specular_mask * environment_map_specular_contribution * specular_coefficient;
+	env_mapping_common_data.env_area_specular = env_area_specular;
+	env_mapping_common_data.specular_coefficient = env_specular_contribution;
 	env_mapping_common_data.area_specular = area_specular;
-
-	envmap_type(env_mapping_common_data, color.rgb, unknown_output);
+	env_mapping_common_data.specular_exponent = c_roughness;
+	float3 env_color = 0;
+	envmap_type(env_mapping_common_data, env_color, unknown_output);
+	
+	color += diffuse;
+	color.rgb += env_color;
+	
 	
 	return color;
 }

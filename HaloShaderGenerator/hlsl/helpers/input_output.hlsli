@@ -5,9 +5,10 @@ struct ENVIRONMENT_MAPPING_COMMON
 {
 	float3 reflect_dir;
 	float3 view_dir;
-	float3 sh_0_env_color;
-	float3 specular_coefficient;
+	float3 env_area_specular;
+	float specular_coefficient;
 	float3 area_specular;
+	float specular_exponent;
 };
 
 struct SHADER_DYNAMIC_LIGHT_COMMON

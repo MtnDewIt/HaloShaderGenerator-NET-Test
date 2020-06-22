@@ -87,7 +87,15 @@ uniform xform2d p_dynamic_light_gel_xform : register(c5);
 
 
 uniform sampler2D albedo_texture;
-uniform samplerCUBE environment_map : register(s1);
+
+#if envmap_type_arg != k_environment_mapping_dynamic
+#define environment_map_register : register(s1)
+#else
+#define environment_map_register
+#endif
+
+uniform samplerCUBE environment_map environment_map_register;
+
 uniform sampler2D normal_texture;
 uniform sampler3D lightprobe_texture_array;
 uniform sampler3D dominant_light_intensity_map;

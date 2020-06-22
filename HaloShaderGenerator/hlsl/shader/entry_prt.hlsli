@@ -92,7 +92,7 @@ float prt)
 	}
 
 	float4 color;
-	float3 unknown_color = 0;
+	float4 unknown_color = 0;
 	if (calc_material)
 	{
 		color.rgb = calc_lighting_ps(common_data, unknown_color);
@@ -125,7 +125,7 @@ float prt)
 	PS_OUTPUT_DEFAULT output = export_color(color);
 	if (calc_env_output)
 	{
-		output.unknown.rgb = unknown_color;
+		output.unknown = unknown_color;
 	}
 	return output;
 }

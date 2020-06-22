@@ -25,6 +25,8 @@ float roughness;
 float albedo_blend;
 float3 specular_tint;
 bool albedo_blend_with_specular_tint;
+uniform bool use_fresnel_color_environment;
+float3 fresnel_color_environment;
 float rim_fresnel_coefficient;
 float3 rim_fresnel_color;
 float rim_fresnel_power;
@@ -44,6 +46,7 @@ uniform float albedo_specular_tint_blend;
 
 uniform float analytical_anti_shadow_control;
 uniform bool no_dynamic_lights;
+
 uniform bool use_material_texture;
 
 
