@@ -474,10 +474,8 @@ namespace HaloShaderGenerator.Shader
                     result.AddFloatParameter("analytical_specular_contribution");
                     result.AddFloatParameter("environment_map_specular_contribution");
                     result.AddBooleanParameter("order3_area_specular");
-                    result.AddBooleanParameter("use_material_texture");
-                    result.AddSamplerParameter("material_texture");
                     result.AddBooleanParameter("no_dynamic_lights");
-                    result.AddBooleanParameter("albedo_blend_with_specular_tint");
+                    result.AddFloatParameter("albedo_specular_tint_blend");
                     result.AddFloatParameter("analytical_anti_shadow_control");
                     break;
                 case Material_Model.Foliage:
@@ -554,14 +552,14 @@ namespace HaloShaderGenerator.Shader
                     break;
                 case Environment_Mapping.Per_Pixel:
                 case Environment_Mapping.Custom_Map:
-                    result.AddSamplerParameter("environment_map");
+                    result.AddSamplerWithoutXFormParameter("environment_map");
                     result.AddFloat4Parameter("env_tint_color");
                     result.AddFloatParameter("env_roughness_scale");
                     break;
                 case Environment_Mapping.Dynamic:
                     result.AddFloat4Parameter("env_tint_color");
-                    result.AddSamplerParameter("dynamic_environment_map_0");
-                    result.AddSamplerParameter("dynamic_environment_map_1");
+                    result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
+                    result.AddSamplerParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
                     result.AddFloatParameter("env_roughness_scale");
                     break;
                 case Environment_Mapping.From_Flat_Texture:
