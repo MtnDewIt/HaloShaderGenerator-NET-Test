@@ -102,7 +102,29 @@ in ENVIRONMENT_MAPPING_COMMON env_mapping_common_data,
 inout float3 diffuse,
 out float4 unknown_output)
 {
-	unknown_output = 0;
+    float lod_level = get_lod_level(env_mapping_common_data.reflect_dir);
+
+    float roughness_level = env_mapping_common_data.specular_exponent * env_roughness_scale;
+
+    float4 envmap_texcoord;
+    envmap_texcoord.w = max(lod_level, 4 * roughness_level);
+    envmap_texcoord.xyz = env_mapping_common_data.reflect_dir * float3(1, -1, 1);
+	
+    float4 envmap_sample = texCUBElod(environment_map, envmap_texcoord);
+	
+    unknown_output.rgb = env_tint_color.rgb * env_mapping_common_data.specular_coefficient;
+    unknown_output.a = roughness_level;
+	
+    float3 env_color_0 = envmap_sample.rgb;
+    env_color_0 *= 256;
+	
+    float3 environment_color = env_color_0;
+    environment_color *= env_mapping_common_data.specular_coefficient;
+    environment_color *= env_mapping_common_data.env_area_specular;
+    environment_color *= env_tint_color.xyz;
+    environment_color *= envmap_sample.w;
+
+    diffuse += environment_color;
 }
 
 #ifndef envmap_type
