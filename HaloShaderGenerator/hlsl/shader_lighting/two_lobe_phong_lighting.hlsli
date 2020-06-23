@@ -37,36 +37,37 @@ out float3 specular_tint)
 
 void calc_dynamic_lighting_two_lobe_phong_ps(SHADER_DYNAMIC_LIGHT_COMMON common_data, out float3 color)
 {
-	// lambertian diffuse
-	float v_dot_n = dot(common_data.light_direction, common_data.surface_normal);
-	
-	float3 reflect_dir = 2 * v_dot_n * -common_data.surface_normal + common_data.view_dir;
+	float v_dot_n = dot(common_data.view_dir, common_data.surface_normal);
+	float3 reflect_dir = common_data.view_dir - (common_data.surface_normal * (2 * v_dot_n));
 	reflect_dir = normalize(reflect_dir);
 	
-	float specular_mask = 1.0;
-	calc_specular_mask_ps(common_data.albedo, common_data.texcoord, specular_mask);
-	float3 specular_contribution = specular_mask * specular_coefficient * analytical_specular_contribution;
+	float l_dot_n = dot(common_data.light_direction, common_data.surface_normal);
+	// lambertian diffuse
+	color = common_data.light_intensity * l_dot_n * common_data.albedo.rgb;
+	color *= diffuse_coefficient;
 	
-	float l_dot_r = dot(common_data.light_direction, reflect_dir);
+	float l_dot_r = dot(common_data.light_direction, -reflect_dir);
 	
 	float sn_dot_n = dot(common_data.view_dir, common_data.surface_normal);
 	float fresnel_curve = pow(1 - sn_dot_n, fresnel_curve_steepness);
 	fresnel_curve = sn_dot_n < 0 ? 1 : fresnel_curve;
-		
-	float3 specular_tint = normal_specular_tint + fresnel_curve * (glancing_specular_tint - normal_specular_tint);
-	specular_tint = lerp(specular_tint, common_data.albedo.rgb, albedo_specular_tint_blend);
-		
+	
 	float specular_exponent = normal_specular_power + fresnel_curve * (glancing_specular_power - normal_specular_power);
 	float specular_power = pow(l_dot_r, specular_exponent) * (specular_exponent + 1.0f);
 	specular_power *= INV_2PI;
 	
-	color = common_data.light_intensity * v_dot_n * common_data.albedo.rgb * diffuse_coefficient;
+	float3 c_specular_tint = normal_specular_tint + fresnel_curve * (glancing_specular_tint - normal_specular_tint);
+	c_specular_tint = lerp(c_specular_tint, common_data.albedo.rgb, albedo_specular_tint_blend);
+
+	float specular_mask = 1.0;
+	calc_specular_mask_ps(common_data.albedo, common_data.texcoord, specular_mask);
+	float3 specular_contribution = specular_mask * specular_coefficient * analytical_specular_contribution;
 	
 	[flatten]
 	if (dot(specular_contribution, specular_contribution) > 0.0001f)
 	{
 		float3 analytic_specular;
-		analytic_specular = specular_power * specular_tint;
+		analytic_specular = specular_power * c_specular_tint;
 		analytic_specular *= common_data.light_intensity;
 		analytic_specular = l_dot_r > 0 ? analytic_specular : 0;
 		analytic_specular *= specular_contribution;

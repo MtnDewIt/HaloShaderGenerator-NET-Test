@@ -8,8 +8,8 @@
 
 void calc_dynamic_lighting_foliage_ps(SHADER_DYNAMIC_LIGHT_COMMON common_data, out float3 color)
 {
-	float v_dot_n = dot(common_data.light_direction, common_data.surface_normal);
-	color = common_data.light_intensity * v_dot_n * common_data.albedo.rgb; // lambertian diffuse
+	float l_dot_n = dot(common_data.light_direction, common_data.surface_normal);
+	color = common_data.light_intensity * l_dot_n * common_data.albedo.rgb; // lambertian diffuse
 }
 
 float3 calc_lighting_foliage_ps(SHADER_COMMON common_data, out float4 unknown_output)

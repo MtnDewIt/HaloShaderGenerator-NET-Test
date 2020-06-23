@@ -126,11 +126,11 @@ namespace HaloShaderGenerator
 
         static readonly List<List<int>> TestMethods = new List<List<int>> {
 
-            new List<int> { 0, 1, 0, 1, 2, 2, 0, 0, 0, 0, 0 },
-            new List<int> { 0, 1, 0, 1, 2, 1, 0, 0, 0, 0, 0 },
-            new List<int> { 0, 1, 0, 1, 2, 0, 0, 0, 0, 0, 0 },
 
-            //new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+
+            new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 1, 1, 0, 3, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0 },
 
             /*
             
@@ -143,6 +143,10 @@ namespace HaloShaderGenerator
             // not passing but fine anyway
 
             /*
+            new List<int> { 0, 1, 0, 1, 2, 2, 0, 0, 0, 0, 0 },
+            new List<int> { 0, 1, 0, 1, 2, 1, 0, 0, 0, 0, 0 },
+            new List<int> { 0, 1, 0, 1, 2, 0, 0, 0, 0, 0, 0 },
+
             new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 1, 0, 0 },
             new List<int> { 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0 },
             
@@ -152,8 +156,7 @@ namespace HaloShaderGenerator
             */
 
 
-            //new List<int> { 0, 0, 0, 0, 1, 1, 0, 3, 0, 0, 0 },
-            //new List<int> { 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0 },
+            
 
             /*
             // envmap
