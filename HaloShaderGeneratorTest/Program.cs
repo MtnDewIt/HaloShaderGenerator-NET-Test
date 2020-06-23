@@ -19,12 +19,15 @@ namespace HaloShaderGenerator
             if (TestSpecificShader)
             {
                 List<ShaderStage> stages_to_gen_prt = new List<ShaderStage> { ShaderStage.Static_Sh, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Prt_Linear, ShaderStage.Static_Prt_Quadratic };
-                List<ShaderStage> stages_to_gen = new List<ShaderStage> {ShaderStage.Static_Per_Pixel};
+                List<ShaderStage> stages_to_gen = new List<ShaderStage> {ShaderStage.Static_Sh, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Per_Pixel};
 
                 List<List<int>> shaders_to_gen = new List<List<int>> {
                     new List<int> { 0, 1, 0, 1, 2, 2, 0, 0, 0, 0, 0 },
-                    new List<int> { 0, 0, 0, 0, 1, 1, 0, 3, 0, 0, 0 },
-                    new List<int> { 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0 },
+                    //new List<int> { 0, 1, 0, 1, 2, 1, 0, 0, 0, 0, 0 },
+                    //new List<int> { 0, 1, 0, 1, 2, 0, 0, 0, 0, 0, 0 },
+                    //new List<int> { 0, 0, 0, 0, 1, 1, 0, 3, 0, 0, 0 },
+                    //new List<int> { 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0 },
+                    //new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
                 };
 
                 foreach (var stage in stages_to_gen)

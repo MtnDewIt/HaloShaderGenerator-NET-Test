@@ -66,15 +66,13 @@ out float4 unknown_output)
 
 	float4 dynamic_envmap_texcoord;
 	dynamic_envmap_texcoord.w = max(lod_level, 4 * roughness_level);
-	dynamic_envmap_texcoord.xyz = env_mapping_common_data.reflect_dir;
-	dynamic_envmap_texcoord.xyz *= float3(1, -1, 1);
+	dynamic_envmap_texcoord.xyz = env_mapping_common_data.reflect_dir * float3(1, -1, 1);
 	
 	float4 dynamic_environment_map_0_sample = texCUBElod(dynamic_environment_map_0, dynamic_envmap_texcoord);
 	float4 dynamic_environment_map_1_sample = texCUBElod(dynamic_environment_map_1, dynamic_envmap_texcoord);
 	
 	unknown_output.rgb = env_tint_color.rgb * env_mapping_common_data.specular_coefficient;
 	unknown_output.a = roughness_level;
-	
 	
 	float3 env_color_0 = dynamic_environment_map_0_sample.rgb * dynamic_environment_map_0_sample.w;
 	env_color_0 *= dynamic_environment_blend.rgb;

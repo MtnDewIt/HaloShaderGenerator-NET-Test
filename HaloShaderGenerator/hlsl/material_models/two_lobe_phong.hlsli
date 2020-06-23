@@ -36,7 +36,7 @@ out float3 area_specular)
 	area_specular += 0.380523592 * band_1_reflect_color.rgb;
 	
 	// no basis rotation into local frame? hmmm
-	float3 test = reflect_dir.yzx * reflect_dir.xyz;
+	float3 test = reflect_dir.xyz * reflect_dir.yzx;
 	float3 band_2_457_reflect_color = float3(-dot(test, sh_457[0].xyz), -dot(test, sh_457[1].xyz), -dot(test, sh_457[2].xyz));
 	area_specular += 0.401889086 * band_2_457_reflect_color.rgb;
 	

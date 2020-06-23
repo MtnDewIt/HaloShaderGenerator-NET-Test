@@ -23,10 +23,10 @@ float3 calc_lighting_diffuse_only_ps(SHADER_COMMON common_data, out float4 unkno
 		
 		calc_material_lambert_diffuse_ps(common_data.surface_normal, common_data.world_position, 0, 0, diffuse_accumulation, specular_accumulation);
 		
-		diffuse = common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer + diffuse_accumulation;
+		diffuse = common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer.x + diffuse_accumulation;
 	}
 	else
-		diffuse = common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer;
+		diffuse = common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer.x;
 	
 	diffuse *= common_data.albedo.rgb;
 	

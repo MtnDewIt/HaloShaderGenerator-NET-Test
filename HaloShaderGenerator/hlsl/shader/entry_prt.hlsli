@@ -26,7 +26,7 @@ float3 tangent,
 float3 binormal,
 float3 sky_radiance,
 float3 extinction_factor,
-float prt)
+float4 prt)
 {
 	SHADER_COMMON common_data;
 	{
@@ -68,8 +68,6 @@ float prt)
 		common_data.sh_312_no_dominant_light[1] = common_data.sh_312[1];
 		common_data.sh_312_no_dominant_light[2] = common_data.sh_312[2];
 		
-		remove_dominant_light_contribution(common_data.dominant_light_direction, common_data.dominant_light_intensity, common_data.sh_0_no_dominant_light, common_data.sh_312_no_dominant_light);
-	
 		common_data.diffuse_reflectance = diffuse_reflectance(common_data.surface_normal);
 		
 		common_data.precomputed_radiance_transfer = prt;
@@ -138,7 +136,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_sh(VS_OUTPUT_STATIC_SH input)
 
 PS_OUTPUT_DEFAULT shader_entry_static_prt(VS_OUTPUT_STATIC_PRT input)
 {
-	return entry_static_sh_prt(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector.x);
+	return entry_static_sh_prt(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector);
 }
 
 #endif

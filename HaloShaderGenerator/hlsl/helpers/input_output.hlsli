@@ -40,7 +40,7 @@ struct SHADER_COMMON
 	float4 sh_0_no_dominant_light, sh_312_no_dominant_light[3];
 	float3 dominant_light_direction, dominant_light_intensity;
 	float3 diffuse_reflectance;
-	float3 precomputed_radiance_transfer;
+	float4 precomputed_radiance_transfer;
 	float3 per_vertex_color;
 	float3 view_dir;
 	float3 n_view_dir;

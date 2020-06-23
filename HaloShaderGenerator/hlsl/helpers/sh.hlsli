@@ -4,6 +4,8 @@
 #include "../registers/shader.hlsli"
 #include "math.hlsli"
 #include "color_processing.hlsli"
+#include "definition_helper.hlsli"
+
 
 void remove_dominant_light_contribution(
 float3 dominant_light_direction,
@@ -57,7 +59,6 @@ out float4 sh_312_no_dominant_light[3])
 	sh_312_no_dominant_light[0] = sh_312[0];
 	sh_312_no_dominant_light[1] = sh_312[1];
 	sh_312_no_dominant_light[2] = sh_312[2];
-	
 
 	float c2 = 0.511664f;
 	float c3 = 0.280999988;
@@ -65,8 +66,7 @@ out float4 sh_312_no_dominant_light[3])
 	float3 x1;
 	
 	remove_dominant_light_contribution(dominant_light_dir, dominant_light_intensity, sh_0_no_dominant_light, sh_312_no_dominant_light);
-	
-	
+
 	//linear
 	x1.r = dot(normal, sh_312_no_dominant_light[0].xyz);
 	x1.g = dot(normal, sh_312_no_dominant_light[1].xyz);
@@ -75,7 +75,7 @@ out float4 sh_312_no_dominant_light[3])
 	float3 lightprobe_color = c4 * sh_0_no_dominant_light.rgb + (-2.f * c2) * x1;
 	lightprobe_color /= PI;
 	
-	float n_dot_light = dot(dominant_light_dir, normal); // move up to fix per pixel lighting with envmap (per pixel envmap)
+	float n_dot_light = dot(dominant_light_dir, normal);
 	float3 diffuse_reflectance;
 
 	if (n_dot_light < 0)
@@ -180,5 +180,23 @@ float3 sh_rotate_023(int irgb, float3 rotate_x, float3 rotate_z, float4 sh_0, fl
 	float3 result = float3(sh_0[irgb], -dot(rotate_z.xyz, sh_312[irgb].xyz), dot(rotate_x.xyz, sh_312[irgb].xyz));
 	return result;
 }
+
+void get_sh_coefficients_no_dominant_light(
+in float3 dominant_light_direction,
+in float3 dominant_light_intensity,
+inout float4 sh_0_no_dominant_light,
+inout float4 sh_312_no_dominant_light[3])
+{
+	if (shaderstage != k_shaderstage_static_per_pixel && shaderstage != k_shaderstage_static_per_vertex)
+	{
+		float c2 = 0.4886025f;
+		float c1 = 0.282094806f;
+		sh_312_no_dominant_light[0].xyz -= -c2 * dominant_light_direction.xyz * dominant_light_intensity.r;
+		sh_312_no_dominant_light[1].xyz -= -c2 * dominant_light_direction.xyz * dominant_light_intensity.g;
+		sh_312_no_dominant_light[2].xyz -= -c2 * dominant_light_direction.xyz * dominant_light_intensity.b;
+		sh_0_no_dominant_light.rgb += -(c1 * dominant_light_intensity.rgb);
+	}
+}
+
 
 #endif
