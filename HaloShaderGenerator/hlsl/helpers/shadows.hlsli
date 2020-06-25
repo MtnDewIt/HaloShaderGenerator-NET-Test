@@ -10,7 +10,7 @@ float sample_shadowmap(float2 texcoord, float2 offset, float depth_offset, float
 {
 	float map_sample = tex2D(shadow_depth_map_1, texcoord + offset).x;
 	float depth = map_sample - depth_offset * scale;
-	return depth < 0.0 ? 0.0 : 1.0;
+	return step(-depth, 0);
 }
 
 float shadows_percentage_closer_filtering_3x3(float2 shadowmap_texcoord, float shadowmap_size, float depth_scale, float depth_offset)
