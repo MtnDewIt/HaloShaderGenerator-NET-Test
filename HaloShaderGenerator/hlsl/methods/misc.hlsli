@@ -3,56 +3,42 @@
 
 #include "../helpers/math.hlsli"
 
-void bitmap_rotation_1
-(
+void bitmap_rotation_1(
     in float4 xform,
     in float2 texcoord,
-    out float2 new_texcoord
-)
+    out float2 new_texcoord)
 {
-    float rotation = 0.5f;
-    rotation += 0.159154937f * xform.x;
-    rotation = frac(rotation);
-    rotation = rotation * (2.0f * PI) - PI;
+	float sin, cos;
+	sincos((2.0f * PI) * frac(0.159154937f * xform.x + 0.5) - PI, sin, cos);
     
-    float2 sin_cos;
-    sincos(rotation, sin_cos.x, sin_cos.y);
-    
-    texcoord.x -= xform.z;
-    texcoord.y -= xform.w;
-    
-    new_texcoord.x = xform.y * (-(sin_cos.x * texcoord.y) + sin_cos.y * texcoord.x);
-    new_texcoord.y = xform.y * dot(sin_cos.xy, texcoord.xy); //(sin_cos.x * offset_texcoord.y + sin_cos.y * offset_texcoord.x);
+    texcoord.xy -= xform.zw;
+
+	new_texcoord.x = xform.y * (cos * texcoord.x - sin * texcoord.y);
+	new_texcoord.y = xform.y * (sin * texcoord.x + cos * texcoord.y);
     
     new_texcoord = new_texcoord.xy + xform.zw;
 }
 
-void bitmap_rotation_0
-(
+void bitmap_rotation_0(
     in float4 xform,
     in float2 texcoord,
-    out float2 new_texcoord
-)
+    out float2 new_texcoord)
 {
     
 }
 
-void bitmap_rotation_unapply_1
-(
+void bitmap_rotation_unapply_1(
     in float4 xform,
     in float2 texcoord,
-    out float2 new_texcoord
-)
+    out float2 new_texcoord)
 {
     // TODO
 }
 
-void bitmap_rotation_unapply_0
-(
+void bitmap_rotation_unapply_0(
     in float4 xform,
     in float2 texcoord,
-    out float2 new_texcoord
-)
+    out float2 new_texcoord)
 {
     
 }

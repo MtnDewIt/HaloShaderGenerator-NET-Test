@@ -9,9 +9,9 @@ uniform sampler bump_map;
 uniform xform2d bump_map_xform;
 uniform sampler bump_detail_map;
 uniform xform2d bump_detail_map_xform;
-uniform float bump_detail_coefficient;
 uniform sampler bump_detail_mask_map;
 uniform xform2d bump_detail_mask_map_xform;
+uniform float bump_detail_coefficient;
 
 float3 calc_bumpmap_off_ps(
 	float3 tangent,
