@@ -9,6 +9,7 @@
 #include "../shader_lighting/two_lobe_phong_lighting.hlsli"
 #include "../shader_lighting/single_lobe_phong_lighting.hlsli"
 #include "../shader_lighting/organism_lighting.hlsli"
+#include "../shader_lighting/glass_lighting.hlsli"
 
 #ifndef calc_lighting_ps
 #define calc_lighting_ps calc_lighting_diffuse_only_ps
