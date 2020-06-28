@@ -26,7 +26,7 @@ out float3 out_normal)
 	if (calc_albedo)
 	{
 		out_normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, texcoord);
-		albedo = calc_albedo_ps(texcoord, fragcoord);
+		albedo = calc_albedo_ps(texcoord, fragcoord, out_normal, camera_dir);
 	}
 	else
 	{
@@ -56,7 +56,7 @@ PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
 	output.diffuse = albedo;
 	output.normal = float4(normal_export(normal), albedo.w);
 	
-	if (blend_type_arg == k_blend_mode_opaque &&  albedo_arg == k_albedo_constant_color)
+	if (blend_type_arg == k_blend_mode_opaque && albedo_arg == k_albedo_constant_color && material_type_arg == k_material_model_none)
 	{
 		output.normal.w = 1.0;
 		output.diffuse.w = 1.0;

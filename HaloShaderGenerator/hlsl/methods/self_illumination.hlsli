@@ -145,7 +145,7 @@ inout float3 diffuse)
 	float4 self_illum_map_sample = tex2D(self_illum_map, self_illum_map_texcoord);
 	float4 self_illum_detail_map_sample = tex2D(self_illum_detail_map, self_illum_detail_map_texcoord);
 	
-	self_illum_map_sample.rgb *= self_illum_detail_map_sample.rgb * DEBUG_TINT_FACTOR;
+	self_illum_map_sample.rgb *= self_illum_detail_map_sample.rgb * DETAIL_MULTIPLIER;
 	self_illum_map_sample.rgb *= self_illum_color.rgb;
 	self_illum_map_sample.rgb *= self_illum_intensity;
 	self_illum_map_sample.rgb *= g_alt_exposure.x;

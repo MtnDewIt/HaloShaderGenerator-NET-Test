@@ -35,7 +35,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 		if (actually_calc_albedo)
 		{
 			common_data.surface_normal = calc_bumpmap_ps(common_data.tangent, common_data.binormal, common_data.normal.xyz, common_data.texcoord);
-			common_data.albedo = calc_albedo_ps(common_data.texcoord, common_data.fragcoord);
+			common_data.albedo = calc_albedo_ps(common_data.texcoord, common_data.fragcoord, common_data.surface_normal, common_data.view_dir);
 		}
 		else
 		{

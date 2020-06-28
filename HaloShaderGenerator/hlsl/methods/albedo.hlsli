@@ -29,15 +29,20 @@ uniform sampler color_mask_map;
 uniform xform2d color_mask_map_xform;
 uniform float4 neutral_gray;
 
+uniform float4 primary_change_color_anim;
+uniform float4 secondary_change_color_anim;
+
+#define DETAIL_MULTIPLIER 4.59478998
+
 float3 apply_debug_tint(float3 color)
 {
-	float debug_tint_factor = DEBUG_TINT_FACTOR;
+	float debug_tint_factor = DETAIL_MULTIPLIER;
 	float3 positive_color = color * debug_tint_factor;
 	float3 negative_tinted_color = debug_tint.rgb - color * debug_tint_factor;
 	return positive_color + debug_tint.a * negative_tinted_color;
 }
 
-float4 calc_albedo_default_ps(float2 texcoord, float2 position)
+float4 calc_albedo_default_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
     float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
     float4 base_map_sample = tex2D(base_map, base_map_texcoord);
@@ -49,7 +54,7 @@ float4 calc_albedo_default_ps(float2 texcoord, float2 position)
 	return albedo;
 }
 
-float4 calc_albedo_detail_blend_ps(float2 texcoord, float2 position)
+float4 calc_albedo_detail_blend_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
     float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
     float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
@@ -65,13 +70,13 @@ float4 calc_albedo_detail_blend_ps(float2 texcoord, float2 position)
 	return float4(albedo, blended_detail.w);
 }
 
-float4 calc_albedo_constant_color_ps(float2 texcoord, float2 position)
+float4 calc_albedo_constant_color_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
 	float3 albedo = lerp(albedo_color.rgb, debug_tint.rgb, debug_tint.w);
 	return float4(albedo, albedo_color.a);
 }
 
-float4 calc_albedo_two_change_color_ps(float2 texcoord, float2 position)
+float4 calc_albedo_two_change_color_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
 	float3 primary_change;
 	float3 secondary_change;
@@ -100,13 +105,13 @@ float4 calc_albedo_two_change_color_ps(float2 texcoord, float2 position)
 
     float3 change_aggregate = change_primary * change_secondary;
 
-    float4 base_detail_aggregate = base_map_sample * detail_map_sample;
+	float4 base_detail_aggregate = detail_map_sample * base_map_sample;
 	float4 albedo = float4(base_detail_aggregate.xyz * change_aggregate, base_detail_aggregate.w); 
 	albedo.rgb = apply_debug_tint(albedo.rgb);
 	return albedo;
 }
 
-float4 calc_albedo_four_change_color_ps(float2 texcoord, float2 position)
+float4 calc_albedo_four_change_color_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
     float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
     float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
@@ -133,7 +138,7 @@ float4 calc_albedo_four_change_color_ps(float2 texcoord, float2 position)
 	return albedo;
 }
 
-float4 calc_albedo_three_detail_blend_ps(float2 texcoord, float2 position)
+float4 calc_albedo_three_detail_blend_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
     float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
     float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
@@ -156,7 +161,7 @@ float4 calc_albedo_three_detail_blend_ps(float2 texcoord, float2 position)
 	return albedo;
 }
 
-float4 calc_albedo_two_detail_overlay_ps(float2 texcoord, float2 position)
+float4 calc_albedo_two_detail_overlay_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
     float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
     float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
@@ -170,7 +175,7 @@ float4 calc_albedo_two_detail_overlay_ps(float2 texcoord, float2 position)
 
     float4 detail_blend = lerp(detail_map_sample, detail_map2_sample, base_map_sample.w);
 
-	float3 detail_color = base_map_sample.xyz * detail_blend.xyz * detail_map_overlay_sample.xyz * DEBUG_TINT_FACTOR;
+	float3 detail_color = base_map_sample.xyz * detail_blend.xyz * detail_map_overlay_sample.xyz * DETAIL_MULTIPLIER;
 
 	float alpha = detail_blend.w * detail_map_overlay_sample.w;
 
@@ -179,7 +184,7 @@ float4 calc_albedo_two_detail_overlay_ps(float2 texcoord, float2 position)
 	return albedo;
 }
 
-float4 calc_albedo_two_detail_ps(float2 texcoord, float2 position)
+float4 calc_albedo_two_detail_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
     float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
     float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
@@ -191,11 +196,11 @@ float4 calc_albedo_two_detail_ps(float2 texcoord, float2 position)
 
 	float4 albedo = base_map_sample * detail_map_sample * detail_map2_sample;
 
-	albedo.rgb = apply_debug_tint(albedo.rgb * DEBUG_TINT_FACTOR);
+	albedo.rgb = apply_debug_tint(albedo.rgb * DETAIL_MULTIPLIER);
 	return albedo;
 }
 
-float4 calc_albedo_color_mask_ps(float2 texcoord, float2 position)
+float4 calc_albedo_color_mask_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
 	float4 masked_color;
 	float4 color;
@@ -227,7 +232,7 @@ float4 calc_albedo_color_mask_ps(float2 texcoord, float2 position)
 	return albedo;
 }
 
-float4 calc_albedo_two_detail_black_point_ps(float2 texcoord, float2 position)
+float4 calc_albedo_two_detail_black_point_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
 	float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
 	float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
@@ -239,7 +244,7 @@ float4 calc_albedo_two_detail_black_point_ps(float2 texcoord, float2 position)
 
 	float4 albedo = base_map_sample * detail_map_sample * detail_map2_sample;
 
-	albedo.rgb = apply_debug_tint(albedo.rgb * DEBUG_TINT_FACTOR);
+	albedo.rgb = apply_debug_tint(albedo.rgb * DETAIL_MULTIPLIER);
     
     // blackpoint code
     
@@ -252,39 +257,190 @@ float4 calc_albedo_two_detail_black_point_ps(float2 texcoord, float2 position)
 	return albedo;
 }
 
-uniform float4 primary_change_color_anim;
-uniform float4 secondary_change_color_anim;
-
-float4 calc_albedo_two_change_color_anim_ps(float2 texcoord, float2 position)
+float4 calc_albedo_two_change_color_anim_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
-	return random_debug_color(11);
+	float3 primary_change;
+	float3 secondary_change;
+
+    
+	float anim = position.y * secondary_change_color_anim.w - primary_change_color_anim.w;
+	anim = saturate(anim * 15.0 + 0.5);
+	
+	
+	primary_change = anim * (primary_change_color_anim.rgb - primary_change_color.rgb) + primary_change_color.rgb;
+	secondary_change = anim * (secondary_change_color_anim.rgb - secondary_change_color.rgb) + secondary_change_color.rgb;
+
+	float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
+	float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
+	float4 base_map_sample = tex2D(base_map, base_map_texcoord);
+	float4 detail_map_sample = tex2D(detail_map, detail_map_texcoord);
+	float4 base_detail_aggregate = detail_map_sample * base_map_sample;
+	base_detail_aggregate.rgb *= DETAIL_MULTIPLIER;
+	
+	primary_change = primary_change * base_detail_aggregate.rgb - base_detail_aggregate.rgb;
+	
+	float2 change_color_map_texcoord = apply_xform2d(texcoord, change_color_map_xform);
+	float4 change_color_map_sample = tex2D(change_color_map, change_color_map_texcoord);
+
+	float2 change_color_value = change_color_map_sample.xy;
+	
+	primary_change = change_color_value.x * primary_change + base_detail_aggregate.rgb;
+	
+	secondary_change = secondary_change * base_detail_aggregate.rgb - primary_change;
+	
+	float3 change_aggregate = change_color_value.y * secondary_change + primary_change;
+
+	
+	float4 albedo = float4(change_aggregate, base_detail_aggregate.w);
+
+	float3 negative_tinted_color = debug_tint.rgb - albedo.rgb;
+	albedo.rgb = albedo.rgb + debug_tint.a * negative_tinted_color;
+	
+	return albedo;
 }
 
-float4 calc_albedo_chameleon_ps(float2 texcoord, float2 position)
+uniform float3 chameleon_color0;
+uniform float3 chameleon_color1;
+uniform float3 chameleon_color2;
+uniform float3 chameleon_color3;
+uniform float chameleon_color_offset1;
+uniform float chameleon_color_offset2;
+uniform float chameleon_fresnel_power;
+uniform sampler2D chameleon_mask_map;
+uniform xform2d chameleon_mask_map_xform;
+
+
+float4 calc_albedo_chameleon_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
+{
+	float4 albedo;
+	float3 chameleon;
+	float fresnel = pow(max(dot(surface_normal, normalize(camera_dir)), 0), chameleon_fresnel_power);
+	float3 color0, color1;
+	float t;
+
+	if (chameleon_color_offset1 - fresnel < 0)
+	{
+		t = fresnel / chameleon_color_offset1;
+		color0 = chameleon_color1;
+		color1 = chameleon_color2;
+	}
+	else
+	{
+		t = (fresnel - chameleon_color_offset1) / (chameleon_color_offset2 - chameleon_color_offset1);
+		color0 = chameleon_color0;
+		color1 = chameleon_color1;
+	}
+	if (chameleon_color_offset2 - fresnel < 0)
+	{
+		color0 = chameleon_color2;
+		color1 = chameleon_color3;
+	}
+	else
+	{
+		t = (fresnel - chameleon_color_offset2) / (1.0f - fresnel);
+	}
+
+	chameleon = lerp(color0, color1, t);
+	
+	float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
+	float4 base_map_sample = tex2D(base_map, base_map_texcoord);
+	float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
+	float4 detail_map_sample = tex2D(detail_map, detail_map_texcoord);
+	albedo = base_map_sample * detail_map_sample;
+	albedo.rgb = chameleon * albedo.rgb;
+	albedo.rgb = apply_debug_tint(albedo.rgb);
+	
+	return albedo;
+}
+
+float4 calc_albedo_two_change_color_chameleon_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
 	return random_debug_color(12);
 }
 
-float4 calc_albedo_two_change_color_chameleon_ps(float2 texcoord, float2 position)
+float4 calc_albedo_chameleon_masked_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
-	return random_debug_color(13);
+	float4 albedo;
+	float3 chameleon;
+	float fresnel = pow(max(dot(surface_normal, normalize(camera_dir)), 0), chameleon_fresnel_power);
+	float3 color0, color1;
+	float t;
+
+	if (chameleon_color_offset1 - fresnel < 0)
+	{
+		t = fresnel / chameleon_color_offset1;
+		color0 = chameleon_color1;
+		color1 = chameleon_color2;
+	}
+	else
+	{
+		t = (fresnel - chameleon_color_offset1) / (chameleon_color_offset2 - chameleon_color_offset1);
+		color0 = chameleon_color0;
+		color1 = chameleon_color1;
+	}
+	if (chameleon_color_offset2 - fresnel < 0)
+	{
+		color0 = chameleon_color2;
+		color1 = chameleon_color3;
+	}
+	else
+	{
+		t = (fresnel - chameleon_color_offset2) / (1.0f - fresnel);
+	}
+
+	chameleon = lerp(color0, color1, t);
+	
+	float2 chameleon_mask_texcoord = apply_xform2d(texcoord, chameleon_mask_map_xform);
+	float4 chameleon_mask_sample = tex2D(chameleon_mask_map, chameleon_mask_texcoord);
+	chameleon = lerp(1, chameleon, chameleon_mask_sample.x);
+	
+	float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
+	float4 base_map_sample = tex2D(base_map, base_map_texcoord);
+	float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
+	float4 detail_map_sample = tex2D(detail_map, detail_map_texcoord);
+	albedo = base_map_sample * detail_map_sample;
+	albedo.rgb = chameleon * albedo.rgb;
+	albedo.rgb = apply_debug_tint(albedo.rgb);
+	
+	return albedo;
 }
 
-float4 calc_albedo_chameleon_masked_ps(float2 texcoord, float2 position)
+float4 calc_albedo_color_mask_hard_light_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
-	return random_debug_color(14);
+	float4 albedo;
+	
+	float2 color_mask_map_texcoord = apply_xform2d(texcoord, color_mask_map_xform);
+	float4 color_mask_map_sample = tex2D(color_mask_map, color_mask_map_texcoord);
+	
+	float color_mask = color_mask_map_sample.x * 2 - 1;
+	float3 masked_albedo = color_mask * albedo_color.rgb;
+	float3 masked_albedo_2 = masked_albedo * 0.5 + 0.5;
+	albedo.rgb = 1.0 - masked_albedo_2;
+	
+	float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
+	float4 base_map_sample = tex2D(base_map, base_map_texcoord);
+	
+	albedo.rgb *= base_map_sample.rgb;
+	masked_albedo += 2 * albedo.rgb;
+	
+	float3 temp = 0.5 - masked_albedo_2;
+	masked_albedo_2 *= base_map_sample.rgb;
+	masked_albedo_2 *= 2;
+	albedo.rgb = temp < 0 ? masked_albedo : masked_albedo_2;
+	float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
+	float4 detail_map_sample = tex2D(detail_map, detail_map_texcoord);
+	
+	albedo.rgb *= detail_map_sample.rgb;
+	albedo.a = base_map_sample.a * detail_map_sample.a * albedo_color.a;
+	albedo.rgb = apply_debug_tint(albedo.rgb);
+	return albedo;
 }
 
-float4 calc_albedo_color_mask_hard_light_ps(float2 texcoord, float2 position)
+
+
+float4 calc_albedo_default_vs(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
-	return random_debug_color(15);
-}
-
-
-
-float4 calc_albedo_default_vs(float2 texcoord, float2 position)
-{
-	return random_debug_color(0);
+	return 0;
 }
 
 

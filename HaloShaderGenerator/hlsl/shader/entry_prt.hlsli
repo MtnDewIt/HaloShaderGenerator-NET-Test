@@ -42,7 +42,7 @@ float4 prt)
 		if (actually_calc_albedo)
 		{
 			common_data.surface_normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, common_data.texcoord);
-			common_data.albedo = calc_albedo_ps(common_data.texcoord, position);
+			common_data.albedo = calc_albedo_ps(common_data.texcoord, position, common_data.surface_normal, common_data.view_dir);
 		}
 		else
 		{
