@@ -8,211 +8,368 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HaloShaderGenerator.Generator;
 
 namespace HaloShaderGenerator
 {
-    public static class PixelShaderUnitTest
+    public class ShaderUnitTest : GenericUnitTest
     {
-        static readonly string PathToReferenceShaders = @"D:\Halo\Repositories\TagTool\TagTool\bin\x64\Debug\Shaders\shader_templates";
+        public ShaderUnitTest(string referencePath) : base(referencePath, new ShaderGenerator(), "shader") { }
 
-        static string BuildShaderName(List<int> methods)
+        public override string GeneratePixelShader(ShaderStage stage, List<int> shaderOptions)
+        {
+            var albedo = (Albedo)shaderOptions[0];
+            var bump_mapping = (Bump_Mapping)shaderOptions[1];
+            var alpha_test = (Alpha_Test)shaderOptions[2];
+            var specular_mask = (Specular_Mask)shaderOptions[3];
+            var material_model = (Material_Model)shaderOptions[4];
+            var environment_mapping = (Environment_Mapping)shaderOptions[5];
+            var self_illumination = (Self_Illumination)shaderOptions[6];
+            var blend_mode = (Blend_Mode)shaderOptions[7];
+            var parallax = (Parallax)shaderOptions[8];
+            var misc = (Misc)shaderOptions[9];
+            var distortion = (Distortion)shaderOptions[10];
+            var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion);
+            var bytecode = gen.GeneratePixelShader(stage).Bytecode;
+            return D3DCompiler.Disassemble(bytecode);
+        }
+
+        public override string GenerateSharedPixelShader(ShaderStage stage, int methodIndex, int optionIndex)
+        {
+            var gen = new ShaderGenerator();
+            var bytecode = gen.GenerateSharedPixelShader(stage, methodIndex, optionIndex).Bytecode;
+            return D3DCompiler.Disassemble(bytecode);
+        }
+
+        public override string GenerateVertexShader(VertexType vertex, ShaderStage stage)
+        {
+            var gen = new ShaderGenerator();
+            var bytecode = gen.GenerateVertexShader(vertex, stage).Bytecode;
+            return D3DCompiler.Disassemble(bytecode);
+        }
+
+        public override string GenerateSharedVertexShader(VertexType vertex, ShaderStage stage)
+        {
+            var gen = new ShaderGenerator();
+            var bytecode = gen.GenerateSharedVertexShader(vertex, stage).Bytecode;
+            return D3DCompiler.Disassemble(bytecode);
+        }
+    }
+    
+    public abstract class GenericUnitTest
+    {
+        private static string ReferencePath;
+        private IShaderGenerator ReferenceGenerator;
+        private static string ShaderType;
+
+        public GenericUnitTest(string referencePath, IShaderGenerator referenceGenerator, string shaderType)
+        {
+            ReferencePath = referencePath;
+            ReferenceGenerator = referenceGenerator;
+            ShaderType = shaderType;
+        }
+
+        public static List<ShaderStage> GetAllShaderStages()
+        {
+            var stages = new List<ShaderStage>();
+            foreach (var stage in Enum.GetValues(typeof(ShaderStage)))
+                stages.Add((ShaderStage)stage);
+            return stages;
+        }
+
+        public static List<VertexType> GetAllVertexFormats()
+        {
+            var vertices = new List<VertexType>();
+            foreach (var vertex in Enum.GetValues(typeof(VertexType)))
+                vertices.Add((VertexType)vertex);
+            return vertices;
+        }
+
+        public static string BuildShaderName(List<int> methods)
         {
             string result = "";
-            foreach(var m in methods)
+            foreach (var m in methods)
             {
                 result += $"_{m}";
             }
             return result;
         }
 
-        static string BuildPixelShaderEntryPointName(ShaderStage stage)
+        public static string BuildPixelShaderEntryPointName(ShaderStage stage)
         {
             return $"{stage.ToString().ToLower()}.pixel_shader";
         }
 
-        static void WriteShaderFile(string name, string disassembly)
+        public static List<List<int>> GetAllTestPixelShaders()
         {
-            using (FileStream test = new FileInfo(name).Create())
-            using (StreamWriter writer = new StreamWriter(test))
+            var pixelShaderPath = Path.Combine(ReferencePath, $"{ShaderType}_templates");
+            List<string> availableShaders = Directory.GetDirectories(pixelShaderPath).ToList();
+            List<List<int>> availableShaderMethods = new List<List<int>>();
+            foreach (var shader in availableShaders)
             {
-                writer.WriteLine(disassembly);
+                var folder = shader.Split('\\').Last();
+                var methods = folder.Remove(0, 1).Split('_');
+                List<int> methodIndices = new List<int>();
+                foreach (var method in methods)
+                    methodIndices.Add(Int32.Parse(method));
+                availableShaderMethods.Add(methodIndices);
+            }
+            return availableShaderMethods;
+        }
+
+        public static string GetTestSharedVertexShader(VertexType vertex, ShaderStage stage)
+        {
+            var vertexShaderPath = Path.Combine(ReferencePath, $"{ShaderType}_shared_vertex_shaders.glvs");
+            vertexShaderPath = Path.Combine(vertexShaderPath, $"{vertex.ToString().ToLower()}");
+            vertexShaderPath = Path.Combine(vertexShaderPath, $"{stage.ToString().ToLower()}.shared_vertex_shader");
+            return vertexShaderPath;
+        }
+
+        public static string GetTestSharedPixelShader(ShaderStage stage, int methodIndex = -1, int optionIndex = -1)
+        {
+            var vertexShaderPath = Path.Combine(ReferencePath, $"{ShaderType}_shared_pixel_shaders.glps");
+            var filename = $"{stage.ToString().ToLower()}";
+            if(methodIndex != -1 && optionIndex != -1)
+            {
+                filename += $"_{methodIndex}_{optionIndex}";
+            }
+            vertexShaderPath = Path.Combine(vertexShaderPath, $"{filename}.shared_pixel_shader");
+
+            return vertexShaderPath;
+        }
+
+        public static void DisplayPixelShaderTestResults(bool success, List<int> testShader, ShaderStage stage)
+        {
+            if (!success)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Generated shader for {BuildShaderName(testShader)} at {stage.ToString().ToLower()} is not identical to reference.");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Generated shader for {BuildShaderName(testShader)} at {stage.ToString().ToLower()} is identical to reference.");
+                Console.ResetColor();
             }
         }
 
-        static public void RunTests()
+        public static void DisplayVertexShaderTestResults(bool success, VertexType vertex, ShaderStage stage)
+        {
+            if (!success)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Generated shader for {stage.ToString().ToLower()} vertex format {vertex.ToString().ToLower()} is not identical to reference.");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Generated shader for {stage.ToString().ToLower()} vertex format {vertex.ToString().ToLower()} is identical to reference.");
+                Console.ResetColor();
+            }
+        }
+
+        public static void DisplaySharedPixelShaderTestResults(bool success, int methodIndex, int optionIndex, ShaderStage stage)
+        {
+            if (!success)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Generated shader for {stage.ToString().ToLower()}_{methodIndex}_{optionIndex} is not identical to reference.");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Generated shader for {stage.ToString().ToLower()}_{methodIndex}_{optionIndex} is identical to reference.");
+                Console.ResetColor();
+            }
+        }
+
+        public static bool CompareShaders(string generatedDissassembly, string filePath)
+        {
+            var generatedShaderFile = new FileInfo("unittest.shader");
+            using (var genStream = generatedShaderFile.Create())
+            using (StreamWriter writer = new StreamWriter(genStream))
+            {
+                writer.WriteLine(generatedDissassembly);
+            }
+            var referenceDissasembly = File.ReadAllText(filePath);
+            generatedDissassembly = File.ReadAllText("unittest.shader");
+
+            bool equal = string.Equals(generatedDissassembly, referenceDissasembly);
+            generatedShaderFile.Delete();
+            return equal;
+        }
+
+        public bool TestAllPixelShaders(List<List<int>> shaderOverrides, List<ShaderStage> stageOverrides, List<List<int>> methodOverrides)
         {
             bool success = true;
 
-            foreach(var testShader in TestMethods)
+            List<List<int>> shaders;
+            if (shaderOverrides != null && shaderOverrides.Count > 0)
+                shaders = shaderOverrides;
+            else
+                shaders = GetAllTestPixelShaders();
+
+            foreach (var testShader in shaders)
             {
-                foreach(ShaderStage stage in Enum.GetValues(typeof(ShaderStage)))
+                List<ShaderStage> stages;
+                if (stageOverrides != null && stageOverrides.Count > 0)
+                    stages = stageOverrides;
+                else
+                    stages = GetAllShaderStages();
+
+                foreach (var stage in stages)
                 {
-                    if (stage == ShaderStage.Default || stage == ShaderStage.Shadow_Apply || stage == ShaderStage.Shadow_Generate || stage == ShaderStage.Static_Default || stage == ShaderStage.Water_Shading || stage == ShaderStage.Water_Tesselation || stage == ShaderStage.Z_Only)
-                        continue;
-
-                    /*
-                    if (stage != ShaderStage.Dynamic_Light && stage != ShaderStage.Dynamic_Light_Cinematic)
-                        continue;
-                    */
-
-                    string filePath = Path.Combine(PathToReferenceShaders, BuildShaderName(testShader));
-                    filePath = Path.Combine(filePath, BuildPixelShaderEntryPointName(stage));
-                    var file = new FileInfo(filePath);
-
-                    if(file.Exists == false)
+                    if (ReferenceGenerator.IsEntryPointSupported(stage) && !ReferenceGenerator.IsPixelShaderShared(stage))
                     {
-                        Console.WriteLine($"No reference shader for {BuildShaderName(testShader)} at {stage.ToString().ToLower()}");
-                        success = false;
-                        continue;
+                        if (methodOverrides != null && methodOverrides.Count == ReferenceGenerator.GetMethodCount())
+                        {
+                            bool validOptions = true;
+                            for (int i = 0; i < ReferenceGenerator.GetMethodCount(); i++)
+                            {
+                                var optionOverrides = methodOverrides[i];
+                                if(optionOverrides != null && optionOverrides.Count > 0)
+                                    validOptions &= optionOverrides.Contains(testShader[i]);
+                            }
+                                
+
+                            if (!validOptions)
+                                continue;
+                        }
+
+                        string filePath = Path.Combine(Path.Combine(ReferencePath, $"{ShaderType.ToLower()}_templates"), BuildShaderName(testShader));
+                        filePath = Path.Combine(filePath, BuildPixelShaderEntryPointName(stage));
+                        var file = new FileInfo(filePath);
+
+                        if (file.Exists == false)
+                        {
+                            Console.WriteLine($"No reference shader for {BuildShaderName(testShader)} at {stage.ToString().ToLower()}");
+                            success = false;
+                            continue;
+                        }
+
+                        bool equal = CompareShaders(GeneratePixelShader(stage, testShader), filePath);
+                        success &= equal;
+                        DisplayPixelShaderTestResults(equal, testShader, stage);
                     }
-                    var generatedDissassembly = TestPixelShader(stage, (Albedo)testShader[0], (Bump_Mapping)testShader[1], (Alpha_Test)testShader[2], (Specular_Mask)testShader[3], (Material_Model)testShader[4],
-                        (Environment_Mapping)testShader[5], (Self_Illumination)testShader[6], (Blend_Mode)testShader[7], (Parallax)testShader[8], (Misc)testShader[9], (Distortion)testShader[10]);
-
-                    
-
-                    var generatedShaderFile = new FileInfo("unittest.shader");
-                    using(var genStream = generatedShaderFile.Create())
-                    using (StreamWriter writer = new StreamWriter(genStream))
-                    {
-                        writer.WriteLine(generatedDissassembly);
-                    }
-                    var referenceDissasembly = File.ReadAllText(filePath);
-                    generatedDissassembly = File.ReadAllText("unittest.shader");
-
-                    bool equal = string.Equals(generatedDissassembly, referenceDissasembly);
-
-                    if (!equal)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"Generated shader for {BuildShaderName(testShader)} at {stage.ToString().ToLower()} is not equal to reference.");
-                        Console.ResetColor();
-                        string filename = $"unit_test_failed_{stage.ToString().ToLower()}{BuildShaderName(testShader)}.pixl";
-                        WriteShaderFile(filename, generatedDissassembly);
-                    }
-
-
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"Generated shader for {BuildShaderName(testShader)} at {stage.ToString().ToLower()} is identical to reference.");
-                        Console.ResetColor();
-                    }
-                        
-
-                    success &= equal;
-                    generatedShaderFile.Delete();
                 }
             }
 
             if (success)
-            {
                 Console.WriteLine("All unit tests passed sucessfully!");
-            }
             else
-            {
                 Console.WriteLine("Failed unit tests. See above for more details.");
-            }
+
+            return success;
         }
 
-        static string TestPixelShader(ShaderStage stage, Albedo albedo, Bump_Mapping bump_mapping, Alpha_Test alpha_test, Specular_Mask specular_mask, Material_Model material_model,
-            Environment_Mapping environment_mapping, Self_Illumination self_illumination, Blend_Mode blend_mode, Parallax parallax, Misc misc, Distortion distortion)
+        public bool TestAllSharedPixelShaders(List<List<int>> shaderOverrides, List<ShaderStage> stageOverrides)
         {
-            var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion);
-            var bytecode = gen.GeneratePixelShader(stage).Bytecode;
-            var parameters = gen.GetPixelShaderParameters();
-            var result = new ShaderGeneratorResult(bytecode);
-            return D3DCompiler.Disassemble(bytecode);
+            bool success = true;
+
+            List<ShaderStage> stages;
+            if (stageOverrides != null && stageOverrides.Count > 0)
+                stages = stageOverrides;
+            else
+                stages = GetAllShaderStages();
+
+            foreach (var stage in stages)
+            {
+                if (ReferenceGenerator.IsEntryPointSupported(stage) && ReferenceGenerator.IsPixelShaderShared(stage))
+                {
+                    for (int i = 0; i < ReferenceGenerator.GetMethodCount(); i++)
+                    {
+                        for(int j = 0; j < ReferenceGenerator.GetMethodOptionCount(i); i++)
+                        {
+                            if (ReferenceGenerator.IsMethodSharedInEntryPoint(stage, i))
+                            {
+                                string filePath = GetTestSharedPixelShader(stage, i, j);
+                                var file = new FileInfo(filePath);
+
+                                if (file.Exists == false)
+                                {
+                                    Console.WriteLine($"No reference shader for {stage}_{i}_{j} at {stage.ToString().ToLower()}");
+                                    success = false;
+                                    continue;
+                                }
+
+                                bool equal = CompareShaders(GenerateSharedPixelShader(stage, i,j), filePath);
+                                success &= equal;
+                                DisplaySharedPixelShaderTestResults(equal, i,j, stage);
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            if (success)
+                Console.WriteLine("All unit tests passed sucessfully!");
+            else
+                Console.WriteLine("Failed unit tests. See above for more details.");
+
+            return success;
         }
 
-        static readonly List<List<int>> TestMethods = new List<List<int>> {
+        public bool TestAllSharedVertexShaders(List<VertexType> vertexOverrides, List<ShaderStage> stageOverrides)
+        {
+            bool success = true;
 
+            List<VertexType> vertices;
+            if (vertexOverrides != null && vertexOverrides.Count > 0)
+                vertices = vertexOverrides;
+            else
+                vertices = GetAllVertexFormats();
 
+            foreach (var vertex in vertices)
+            {
+                if (!ReferenceGenerator.IsVertexFormatSupported(vertex))
+                    continue;
 
+                List<ShaderStage> stages;
+                if (stageOverrides != null && stageOverrides.Count > 0)
+                    stages = stageOverrides;
+                else
+                    stages = GetAllShaderStages();
 
+                foreach (var stage in stages)
+                {
+                    if (ReferenceGenerator.IsEntryPointSupported(stage) && !ReferenceGenerator.IsVertexShaderShared(stage))
+                    {
 
+                        string filePath = GetTestSharedVertexShader(vertex, stage);
+                        var file = new FileInfo(filePath);
 
-            // not passing but fine anyway
+                        if (file.Exists == false)
+                        {
+                            Console.WriteLine($"No reference shader for {stage.ToString().ToLower()} vertex format {vertex.ToString().ToLower()}");
+                            success = false;
+                            continue;
+                        }
 
-            /*
-            
-            new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 1, 1, 0, 3, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0 },
-            new List<int> { 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0 },
-            new List<int> { 0, 1, 0, 2, 1, 0, 0, 0, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0 },
-            
-            
-            new List<int> { 0, 1, 0, 1, 2, 2, 0, 0, 0, 0, 0 },
-            new List<int> { 0, 1, 0, 1, 2, 1, 0, 0, 0, 0, 0 },
-            new List<int> { 0, 1, 0, 1, 2, 0, 0, 0, 0, 0, 0 },
+                        bool equal = CompareShaders(GenerateSharedVertexShader(vertex, stage), filePath);
+                        success &= equal;
+                        DisplayVertexShaderTestResults(equal, vertex, stage);
+                    }
+                }
+            }
 
-            
-            new List<int> { 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0 },
-            new List<int> { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-            new List<int> { 6, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 4, 3, 2, 0, 0 },
-            */
+            if (success)
+                Console.WriteLine("All unit tests passed sucessfully!");
+            else
+                Console.WriteLine("Failed unit tests. See above for more details.");
 
-            
-             
-            // parallax
-            new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 1, 0, 0 },
-             
-            // envmap
-            new List<int> { 0, 0, 0, 0, 0, 1, 0, 3, 0, 0, 0 },
+            return success;
+        }
 
-            
-            // material_none test, all passing
-            new List<int> { 2, 0, 0, 0, 4, 0, 1, 0, 0, 1, 0 },
-            new List<int> { 2, 0, 0, 0, 4, 0, 1, 1, 0, 1, 0 },
-            new List<int> { 2, 0, 0, 0, 4, 0, 1, 3, 0, 1, 0 },
-            new List<int> { 2, 0, 0, 0, 4, 0, 3, 1, 0, 0, 0 },
-            new List<int> { 2, 0, 0, 0, 4, 0, 5, 1, 0, 0, 0 },
-            new List<int> { 2, 0, 0, 0, 4, 0, 6, 1, 0, 0, 0 },
-            new List<int> { 2, 0, 0, 0, 4, 0, 6, 1, 0, 1, 0 },
-            new List<int> { 0, 0, 0, 0, 4, 0, 1, 1, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 4, 0, 6, 1, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 4, 0, 6, 1, 0, 1, 0 },
+        public abstract string GeneratePixelShader(ShaderStage stage, List<int> shaderOptions);
 
-            // passing everything
-            
-            new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 0, 2, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 0, 4, 0, 1, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0 },
+        public abstract string GenerateSharedPixelShader(ShaderStage stage, int methodIndex, int optionIndex);
 
-            new List<int> { 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 1, 3, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 1, 3, 0, 1, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 3, 1, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 3, 1, 0, 1, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 4, 1, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 4, 3, 0, 0, 0 },
+        public abstract string GenerateVertexShader(VertexType vertex, ShaderStage stage);
 
-            new List<int> { 0, 0, 0, 0, 0, 0, 5, 1, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 5, 3, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 5, 3, 0, 1, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 7, 0, 0, 1, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 7, 1, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 0, 0, 0, 8, 3, 0, 0, 0 },
-
-            new List<int> { 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0 },
-            new List<int> { 5, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            
-            new List<int> { 0, 0, 0, 0, 3, 0, 3, 1, 0, 0, 0 },
-            
-
-
-        };
+        public abstract string GenerateSharedVertexShader(VertexType vertex, ShaderStage stage);
     }
 }
