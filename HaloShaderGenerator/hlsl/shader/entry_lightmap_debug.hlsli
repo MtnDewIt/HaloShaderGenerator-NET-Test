@@ -12,9 +12,7 @@ PS_OUTPUT_DEFAULT shader_entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE
 {	
 	float3 result_color = 0;
 	float debug_mode = p_render_debug_mode.x;
-	
-	float2 texcoord = calc_parallax_ps(input.texcoord.xy, input.camera_dir, input.tangent, input.binormal, input.normal.xyz);
-	float3 normal = calc_bumpmap_ps(input.tangent, input.binormal, input.normal, texcoord);
+	float3 normal = calc_bumpmap_ps(input.tangent, input.binormal, input.normal, input.texcoord);
 	
 	[branch]
 	if (debug_mode < 1)

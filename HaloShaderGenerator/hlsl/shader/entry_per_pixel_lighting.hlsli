@@ -2,7 +2,11 @@
 #define _SHADER_TEMPLATE_PER_PIXEL_LIGHTING_HLSLI
 
 
-#include "entry_albedo.hlsli"
+#include "..\methods\albedo.hlsli"
+#include "..\methods\parallax.hlsli"
+#include "..\methods\bump_mapping.hlsli"
+#include "..\methods\alpha_test.hlsli"
+#include "..\methods\specular_mask.hlsli"
 #include "..\helpers\lightmaps.hlsli"
 #include "..\methods\specular_mask.hlsli"
 #include "..\methods\material_model.hlsli"

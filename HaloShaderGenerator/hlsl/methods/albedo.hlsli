@@ -32,8 +32,6 @@ uniform float4 neutral_gray;
 uniform float4 primary_change_color_anim;
 uniform float4 secondary_change_color_anim;
 
-#define DETAIL_MULTIPLIER 4.59478998
-
 float3 apply_debug_tint(float3 color)
 {
 	float debug_tint_factor = DETAIL_MULTIPLIER;

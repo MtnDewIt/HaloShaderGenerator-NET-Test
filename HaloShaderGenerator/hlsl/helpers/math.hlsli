@@ -7,6 +7,7 @@
 #define SQRT3 1.7320508f
 #define LOG2_E 1.44269502f
 #define INV_2PI  0.159154564
+#define DETAIL_MULTIPLIER 4.59478998
 
 float rand2(float2 co)
 {
