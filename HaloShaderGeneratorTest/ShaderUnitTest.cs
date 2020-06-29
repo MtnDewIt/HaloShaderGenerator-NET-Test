@@ -199,8 +199,117 @@ namespace HaloShaderGenerator
 
             bool equal = string.Equals(generatedDissassembly, referenceDissasembly);
             generatedShaderFile.Delete();
+
+            if (!equal)
+            {
+                equal = ReorderConstantsAndTest(generatedDissassembly, referenceDissasembly);
+            }
+
             return equal;
         }
+
+        public struct DissasemblyConstants
+        {
+            public string Name;
+            public int Index;
+            public string X;
+            public string Y;
+            public string Z;
+            public string W;
+
+            public DissasemblyConstants(string name, int index, string x, string y, string z, string w)
+            {
+                Name = name;
+                Index = index;
+                X = x;
+                Y = y;
+                Z = z;
+                W = w;
+            }
+        }
+
+        public static Dictionary<string, DissasemblyConstants> GetConstants(string data)
+        {
+            var startIndex = data.IndexOf("ps_3_0") + 7;
+            var trimmedString = data.Substring(startIndex);
+            var endIndex = trimmedString.IndexOf("dcl_") - 5;
+            var constantsBlock = trimmedString.Substring(0, endIndex);
+            constantsBlock = constantsBlock.Replace("    def ", "");
+            List<string> registerConstants = constantsBlock.Split('\n').ToList();
+            Dictionary<string, DissasemblyConstants> constantsMapping = new Dictionary<string, DissasemblyConstants>();
+            for(int i = 0; i < registerConstants.Count; i++)
+            {
+                var register = registerConstants[i];
+                var regConstants = register.Split(',').ToList();
+                var name = regConstants[0];
+                regConstants.RemoveAt(0);
+                constantsMapping[name] = new DissasemblyConstants(name, i, regConstants[0], regConstants[1], regConstants[2], regConstants[3]);
+            }
+
+            return constantsMapping;
+        }
+
+        public static string RebuildConstants(DissasemblyConstants constant)
+        {
+            return $"{constant.X}, {constant.Y}, {constant.Z}, {constant.W}";
+        }
+
+        public static string ReplaceConstants(DissasemblyConstants genConstants, DissasemblyConstants refConstants, string genData)
+        {
+            genData = genData.Replace($"{genConstants.Name} ", $"shadergenprefix{refConstants.Name}shadergensuffix ");
+            genData = genData.Replace($"{genConstants.Name}.", $"shadergenprefix{refConstants.Name}shadergensuffix.");
+            genData = genData.Replace($"{genConstants.Name}\n", $"shadergenprefix{refConstants.Name}shadergensuffix\n");
+            return genData;
+        }
+
+        public static bool ReorderConstantsAndTest(string genData, string refData)
+        {
+            var refConstants = GetConstants(refData);
+            var genConstants = GetConstants(genData);
+
+            if (refConstants.Count != genConstants.Count)
+                return false;
+
+            Dictionary<DissasemblyConstants, DissasemblyConstants> swaps = new Dictionary<DissasemblyConstants, DissasemblyConstants>();
+
+            foreach(var refConstantName in refConstants.Keys)
+            {
+                var refConstant = refConstants[refConstantName];
+                var genConstant = genConstants[refConstantName];
+                var refConstantString = RebuildConstants(refConstant);
+                if (RebuildConstants(genConstant).Equals(refConstantString))
+                    continue;
+
+                // different constants, replace lines properly
+                foreach(var genConstantName in genConstants.Keys)
+                {
+                    // add per component here if needed
+                    if (RebuildConstants(genConstants[genConstantName]).Equals(refConstantString))
+                    {
+                        // found matching line
+                        genData = ReplaceConstants(genConstants[genConstantName], refConstant, genData);
+                        //swaps[genConstants[genConstantName]] = refConstant;
+                        break;
+                    }
+                }
+            }
+
+            genData = genData.Replace("shadergenprefix", "");
+            genData = genData.Replace("shadergensuffix", "");
+            var startIndex = genData.IndexOf("ps_3_0") + 7;
+            var sourceConstantBlock = genData.Substring(startIndex);
+            var endIndex = sourceConstantBlock.IndexOf("dcl_") - 5;
+            sourceConstantBlock = sourceConstantBlock.Substring(0, endIndex);
+
+            startIndex = refData.IndexOf("ps_3_0") + 7;
+            var destConstantBlock = refData.Substring(startIndex);
+            endIndex = destConstantBlock.IndexOf("dcl_") - 5;
+            destConstantBlock = destConstantBlock.Substring(0, endIndex);
+
+            genData = genData.Replace(sourceConstantBlock, destConstantBlock);
+            return string.Equals(genData, refData);
+        }
+
 
         public bool TestAllPixelShaders(List<List<int>> shaderOverrides, List<ShaderStage> stageOverrides, List<List<int>> methodOverrides)
         {

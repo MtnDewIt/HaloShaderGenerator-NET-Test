@@ -1,8 +1,6 @@
 ﻿#ifndef _SHADER_TEMPLATE_PRT_HLSLI
 #define _SHADER_TEMPLATE_PRT_HLSLI
 
-#pragma warning( disable : 3571 34)
-
 #include "..\methods\albedo.hlsli"
 #include "..\methods\parallax.hlsli"
 #include "..\methods\bump_mapping.hlsli"

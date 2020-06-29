@@ -1,6 +1,8 @@
 ﻿#ifndef _COOK_TORRANCE_LIGHTING_HLSLI
 #define _COOK_TORRANCE_LIGHTING_HLSLI
 
+#pragma warning( disable : 3571 34)
+
 #include "..\methods\specular_mask.hlsli"
 #include "..\material_models\material_shared_parameters.hlsli"
 #include "..\material_models\cook_torrance.hlsli"

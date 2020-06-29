@@ -1,6 +1,8 @@
 ﻿#ifndef _MATERIAL_SHARED_PARAMETERS_HLSLI
 #define _MATERIAL_SHARED_PARAMETERS_HLSLI
 
+#pragma warning( disable : 3571 34)
+
 #include "..\registers\shader.hlsli"
 #include "..\helpers\lighting.hlsli"
 #include "..\helpers\input_output.hlsli"

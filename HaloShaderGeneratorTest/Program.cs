@@ -15,7 +15,7 @@ namespace HaloShaderGenerator
         static readonly bool UnitTest = true;
         static readonly bool TestSpecificShader = false;
 
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { ShaderStage.Static_Per_Pixel };
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Static_Per_Vertex };
 
         static readonly List<int> AlbedoOverrides = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         static readonly List<int> BumpOverrides =       new List<int> { };
@@ -30,7 +30,7 @@ namespace HaloShaderGenerator
 
         static readonly List<List<int>> ShaderOverrides = new List<List<int>> 
         {
-            new List<int> { 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0 },
+            //new List<int> { 6, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0 },
         };
 
         
