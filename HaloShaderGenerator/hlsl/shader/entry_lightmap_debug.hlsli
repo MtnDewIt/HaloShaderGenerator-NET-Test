@@ -1,7 +1,7 @@
 ﻿#ifndef _SHADER_TEMPLATE_LIGHTMAP_DEBUG_HLSLI
 #define _SHADER_TEMPLATE_LIGHTMAP_DEBUG_HLSLI
 
-#include "entry_albedo.hlsli"
+#include "..\methods\bump_mapping.hlsli"
 
 #include "..\registers\shader.hlsli"
 #include "..\helpers\input_output.hlsli"

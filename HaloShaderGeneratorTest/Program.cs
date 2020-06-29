@@ -13,17 +13,17 @@ namespace HaloShaderGenerator
         static readonly string ShaderReferencePath = @"D:\Halo\Repositories\TagTool\TagTool\bin\x64\Debug\Shaders";
 
         static readonly bool UnitTest = true;
-        static readonly bool TestSpecificShader = true;
+        static readonly bool TestSpecificShader = false;
 
         static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { ShaderStage.Static_Per_Pixel };
 
         static readonly List<int> AlbedoOverrides = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         static readonly List<int> BumpOverrides =       new List<int> { };
-        static readonly List<int> AlphaOverrides =      new List<int> { 1};
+        static readonly List<int> AlphaOverrides =      new List<int> { };
         static readonly List<int> SpecularOverrides =   new List<int> { };
-        static readonly List<int> MaterialOverrides =   new List<int> { 0};
+        static readonly List<int> MaterialOverrides =   new List<int> { };
         static readonly List<int> EnvOverrides =        new List<int> { };
-        static readonly List<int> SelfIllumOverrides =  new List<int> { };
+        static readonly List<int> SelfIllumOverrides = new List<int> { };
         static readonly List<int> BlendModeOverrides =  new List<int> { };
         static readonly List<int> ParallaxOverrides =   new List<int> { };
         static readonly List<int> MiscOverrides =       new List<int> { };
@@ -33,12 +33,21 @@ namespace HaloShaderGenerator
             new List<int> { 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0 },
         };
 
+        
+
         //new List<int> { 11, 1, 0, 2, 1, 4, 0, 0, 0, 1, 0 },
 
         static int Main()
         {
+            ShaderUnitTest shaderTests = new ShaderUnitTest(ShaderReferencePath);
+
             if (TestSpecificShader)
             {
+                var methodOverrides = new List<List<int>> { AlbedoOverrides, BumpOverrides, AlphaOverrides, SpecularOverrides, MaterialOverrides,
+                EnvOverrides, SelfIllumOverrides, BlendModeOverrides, ParallaxOverrides, MiscOverrides, new List<int>() };
+
+                shaderTests.TestAllPixelShaders(ShaderOverrides, StageOverrides, methodOverrides);
+
                 foreach (var stage in StageOverrides)
                 {
                     foreach (var methods in ShaderOverrides)
@@ -51,13 +60,10 @@ namespace HaloShaderGenerator
 
             if (UnitTest)
             {
-                ShaderUnitTest shaderTests = new ShaderUnitTest(ShaderReferencePath);
-                var methodOverrides = new List<List<int>> { AlbedoOverrides, BumpOverrides, AlphaOverrides, SpecularOverrides, MaterialOverrides,
-                EnvOverrides, SelfIllumOverrides, BlendModeOverrides, ParallaxOverrides, MiscOverrides, new List<int>() };
-
-                shaderTests.TestAllPixelShaders(ShaderOverrides, StageOverrides, methodOverrides);
-                Console.ReadLine();
+                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
+                
             }
+            Console.ReadLine();
             return 0;
         }
 
@@ -139,5 +145,55 @@ namespace HaloShaderGenerator
             var bytecode = gen.GenerateSharedVertexShader(vertexType, stage).Bytecode;
             WriteShaderFile($"generated_shader_black_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}.glvs", D3DCompiler.Disassemble(bytecode));
         }
+
+        static readonly List<List<int>> ShaderTests = new List<List<int>>
+        {
+            new List<int> { 0, 0, 0, 0, 0, 1, 0, 3, 0, 0, 0 },
+
+            new List<int> { 2, 0, 0, 0, 4, 0, 1, 0, 0, 1, 0 },
+            new List<int> { 2, 0, 0, 0, 4, 0, 1, 1, 0, 1, 0 },
+            new List<int> { 2, 0, 0, 0, 4, 0, 1, 3, 0, 1, 0 },
+            new List<int> { 2, 0, 0, 0, 4, 0, 3, 1, 0, 0, 0 },
+            new List<int> { 2, 0, 0, 0, 4, 0, 5, 1, 0, 0, 0 },
+            new List<int> { 2, 0, 0, 0, 4, 0, 6, 1, 0, 0, 0 },
+            new List<int> { 2, 0, 0, 0, 4, 0, 6, 1, 0, 1, 0 },
+            new List<int> { 0, 0, 0, 0, 4, 0, 1, 1, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 4, 0, 6, 1, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 4, 0, 6, 1, 0, 1, 0 },
+
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 3, 0, 2, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 4, 0, 1, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0 },
+
+            new List<int> { 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 1, 3, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 1, 3, 0, 1, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 3, 1, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 3, 1, 0, 1, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 4, 1, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 4, 3, 0, 0, 0 },
+
+            new List<int> { 0, 0, 0, 0, 0, 0, 5, 1, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 5, 3, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 5, 3, 0, 1, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 7, 0, 0, 1, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 7, 1, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 0, 0, 0, 8, 3, 0, 0, 0 },
+
+            new List<int> { 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0 },
+            new List<int> { 5, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+
+            new List<int> { 0, 0, 0, 0, 3, 0, 3, 1, 0, 0, 0 },
+        };
     }
 }

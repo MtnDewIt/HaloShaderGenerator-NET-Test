@@ -5,14 +5,14 @@
 #include "..\methods\albedo.hlsli"
 #include "..\methods\parallax.hlsli"
 #include "..\methods\bump_mapping.hlsli"
-#include "..\methods\alpha_test.hlsli"
+
 #include "..\methods\specular_mask.hlsli"
 #include "..\helpers\lightmaps.hlsli"
 #include "..\methods\specular_mask.hlsli"
 #include "..\methods\material_model.hlsli"
-#include "..\shader_lighting\no_material_lighting.hlsli"
-#include "..\methods\environment_mapping.hlsli"
 #include "..\methods\self_illumination.hlsli"
+
+#include "..\methods\alpha_test.hlsli"
 #include "..\methods\blend_mode.hlsli"
 #include "..\methods\misc.hlsli"
 #include "..\registers\shader.hlsli"
