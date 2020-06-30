@@ -130,7 +130,8 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 	if (use_albedo_blend_with_specular_tint)
 		c_specular_tint = specular_tint * (1.0 - c_albedo_blend) + c_albedo_blend * common_data.albedo.rgb;
 	
-	env_area_specular = c_specular_tint * env_area_specular;
+	env_area_specular *= common_data.precomputed_radiance_transfer.z;
+	env_area_specular = env_area_specular * c_specular_tint;
 	
 	c_specular_tint = common_data.specular_mask * c_specular_coefficient * c_specular_tint;
 		
@@ -138,21 +139,21 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 	specular *= c_analytical_specular_coefficient;
 	specular += area_specular < 0 ? 0.0f : area_specular * c_area_specular_coefficient;
 	
-	float fresnel_coefficient = c_specular_coefficient * rim_fresnel_coefficient.x;
-	float3 temp = common_data.albedo.rgb - rim_fresnel_color.rgb;
-	temp = rim_fresnel_albedo_blend.x * temp + rim_fresnel_color;
-	temp *= fresnel_coefficient;
-	temp *= rim_area_specular;
+	float fresnel_coefficient = common_data.specular_mask * c_specular_coefficient * rim_fresnel_coefficient.x;
+	float3 rim_fresnel = common_data.albedo.rgb - rim_fresnel_color.rgb;
+	rim_fresnel = rim_fresnel_albedo_blend.x * rim_fresnel + rim_fresnel_color;
+	rim_fresnel *= fresnel_coefficient;
+	rim_fresnel *= rim_area_specular;
 	
-	specular = c_specular_tint * specular + temp;
+	specular = c_specular_tint * specular + rim_fresnel;
 
-	env_area_specular *= common_data.precomputed_radiance_transfer.z;
 	float env_specular_contribution = common_data.specular_mask * c_environment_map_specular_contribution * c_specular_coefficient;
 	
-	diffuse = common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer.x + diffuse_accumulation;
+	diffuse = diffuse_accumulation + common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer.x;
 	diffuse *= c_diffuse_coefficient;
 	diffuse *= common_data.albedo.rgb;
 	
+	specular *= common_data.precomputed_radiance_transfer.z;
 	env_area_specular = max(env_area_specular, 0.001);
 	
 	ENVIRONMENT_MAPPING_COMMON env_mapping_common_data;
@@ -166,7 +167,7 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 	float3 env_color = 0;
 	envmap_type(env_mapping_common_data, env_color, unknown_output);
 	
-	color = diffuse + specular * common_data.precomputed_radiance_transfer.z;
+	color = diffuse + specular;
 	color.rgb += env_color;
 	
 	

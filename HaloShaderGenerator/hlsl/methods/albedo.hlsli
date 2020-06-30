@@ -233,25 +233,24 @@ float4 calc_albedo_color_mask_ps(float2 texcoord, float2 position, float3 surfac
 float4 calc_albedo_two_detail_black_point_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
 	float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
-	float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
-	float2 detail_map2_texcoord = apply_xform2d(texcoord, detail_map2_xform);
-
 	float4 base_map_sample = tex2D(base_map, base_map_texcoord);
+	float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
 	float4 detail_map_sample = tex2D(detail_map, detail_map_texcoord);
+	
+	float2 detail_map2_texcoord = apply_xform2d(texcoord, detail_map2_xform);
 	float4 detail_map2_sample = tex2D(detail_map2, detail_map2_texcoord);
 
-	float4 albedo = base_map_sample * detail_map_sample * detail_map2_sample;
-
+	float4 albedo;
+	albedo.rgb = base_map_sample.rgb * detail_map_sample.rgb * detail_map2_sample.rgb;
 	albedo.rgb = apply_debug_tint(albedo.rgb * DETAIL_MULTIPLIER);
-    
+	
     // blackpoint code
-    
+	float details = detail_map_sample.a * detail_map2_sample.a;
 	float base = (1.0 + base_map_sample.a) * 0.5;
-	float white_base = saturate(detail_map_sample.a * detail_map2_sample.a - base);
-	float scale = saturate((detail_map_sample.a * detail_map2_sample.a - base_map_sample.a) / lerp(-base_map_sample.a, 1.0, 0.5));
-    
-	albedo.a = base * scale + white_base;
-    
+	float x = (details - base_map_sample.a) / (base - base_map_sample.a);
+	float b = details - base;
+	albedo.a = base * saturate(x) + saturate(b);
+	
 	return albedo;
 }
 

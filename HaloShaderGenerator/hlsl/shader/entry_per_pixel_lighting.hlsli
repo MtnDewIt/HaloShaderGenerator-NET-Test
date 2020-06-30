@@ -9,10 +9,10 @@
 #include "..\methods\specular_mask.hlsli"
 #include "..\helpers\lightmaps.hlsli"
 #include "..\methods\specular_mask.hlsli"
-#include "..\methods\material_model.hlsli"
 #include "..\methods\self_illumination.hlsli"
-
 #include "..\methods\alpha_test.hlsli"
+#include "..\methods\material_model.hlsli"
+
 #include "..\methods\blend_mode.hlsli"
 #include "..\methods\misc.hlsli"
 #include "..\registers\shader.hlsli"

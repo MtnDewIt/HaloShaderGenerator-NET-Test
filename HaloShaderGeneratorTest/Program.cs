@@ -12,17 +12,17 @@ namespace HaloShaderGenerator
     {
         static readonly string ShaderReferencePath = @"D:\Halo\Repositories\TagTool\TagTool\bin\x64\Debug\Shaders";
 
-        static readonly bool UnitTest = true;
-        static readonly bool TestSpecificShader = false;
+        static readonly bool UnitTest = false;
+        static readonly bool TestSpecificShader = true;
 
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Static_Per_Vertex };
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {};
 
-        static readonly List<int> AlbedoOverrides = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        static readonly List<int> AlbedoOverrides = new List<int> {0};
         static readonly List<int> BumpOverrides =       new List<int> { };
         static readonly List<int> AlphaOverrides =      new List<int> { };
         static readonly List<int> SpecularOverrides =   new List<int> { };
-        static readonly List<int> MaterialOverrides =   new List<int> { };
-        static readonly List<int> EnvOverrides =        new List<int> { };
+        static readonly List<int> MaterialOverrides =   new List<int> {1 };
+        static readonly List<int> EnvOverrides =        new List<int> {1 };
         static readonly List<int> SelfIllumOverrides = new List<int> { };
         static readonly List<int> BlendModeOverrides =  new List<int> { };
         static readonly List<int> ParallaxOverrides =   new List<int> { };
@@ -30,7 +30,8 @@ namespace HaloShaderGenerator
 
         static readonly List<List<int>> ShaderOverrides = new List<List<int>> 
         {
-            //new List<int> { 6, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0 },
+            //new List<int> { 0, 0, 0, 0, 1, 0, 7, 1, 0, 0, 0 },
+            //new List<int> { 0, 0, 0, 1, 1, 2, 4, 0, 0, 1, 0 },
         };
 
         
@@ -48,7 +49,9 @@ namespace HaloShaderGenerator
 
                 shaderTests.TestAllPixelShaders(ShaderOverrides, StageOverrides, methodOverrides);
 
-                foreach (var stage in StageOverrides)
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : ShaderUnitTest.GetAllShaderStages();
+
+                foreach (var stage in stages)
                 {
                     foreach (var methods in ShaderOverrides)
                     {
@@ -80,12 +83,16 @@ namespace HaloShaderGenerator
             Environment_Mapping environment_mapping, Self_Illumination self_illumination, Blend_Mode blend_mode, Parallax parallax, Misc misc, Distortion distortion)
         {
             var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion);
-            var bytecode = gen.GeneratePixelShader(stage).Bytecode;
-            var parameters = gen.GetPixelShaderParameters();
+            if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
+            {
+                var bytecode = gen.GeneratePixelShader(stage).Bytecode;
+                var parameters = gen.GetPixelShaderParameters();
+
+                var disassembly = D3DCompiler.Disassemble(bytecode);
+                string filename = $"generated_{stage.ToString().ToLower()}_{(int)albedo}_{(int)bump_mapping}_{(int)alpha_test}_{(int)specular_mask}_{(int)material_model}_{(int)environment_mapping}_{(int)self_illumination}_{(int)blend_mode}_{(int)parallax}_{(int)misc}_{(int)distortion}.pixl";
+                WriteShaderFile(filename, disassembly);
+            }
             
-            var disassembly = D3DCompiler.Disassemble(bytecode);
-            string filename = $"generated_{stage.ToString().ToLower()}_{(int)albedo}_{(int)bump_mapping}_{(int)alpha_test}_{(int)specular_mask}_{(int)material_model}_{(int)environment_mapping}_{(int)self_illumination}_{(int)blend_mode}_{(int)parallax}_{(int)misc}_{(int)distortion}.pixl";
-            WriteShaderFile(filename, disassembly);
         }
 
         static void TestSharedVertexShader(VertexType vertexType, ShaderStage stage)

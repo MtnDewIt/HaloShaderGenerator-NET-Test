@@ -134,6 +134,18 @@ inout float3 diffuse)
 	diffuse = color;
 }
 
+void calc_self_illumination_from_diffuse_ps(
+in float2 texcoord,
+in float3 albedo,
+inout float3 diffuse)
+{
+	float3 color = albedo.rgb;
+	color.rgb *= self_illum_color.rgb;
+	color.rgb *= self_illum_intensity;
+	color.rgb *= g_alt_exposure.x;
+	diffuse += color;
+}
+
 void calc_self_illumination_detail_ps(
 in float2 texcoord,
 in float3 albedo,
@@ -224,7 +236,6 @@ inout float3 diffuse)
 #define calc_self_illumination_off_ps calc_self_illumination_none_ps
 #define calc_self_illumination_3_channel_self_illum_ps calc_self_illumination_three_channel_ps
 #define calc_self_illumination__3_channel_self_illum_ps calc_self_illumination_three_channel_ps
-#define calc_self_illumination_from_diffuse_ps calc_self_illumination_from_albedo_ps
 #define calc_self_illumination_illum_detail_ps calc_self_illumination_detail_ps
 #define calc_self_illumination_self_illum_times_diffuse_ps calc_self_illumination_times_diffuse_ps
 
