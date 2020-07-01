@@ -7,6 +7,7 @@
 #include "..\material_models\material_shared_parameters.hlsli"
 #include "..\material_models\cook_torrance.hlsli"
 #include "..\helpers\sh.hlsli"
+#include "..\methods\self_illumination.hlsli"
 #include "..\methods\environment_mapping.hlsli"
 #include "..\registers\shader.hlsli"
 #include "..\helpers\input_output.hlsli"
@@ -57,9 +58,8 @@ out float c_environment_map_specular_contribution)
 void calc_dynamic_lighting_cook_torrance_ps(SHADER_DYNAMIC_LIGHT_COMMON common_data, out float3 color)
 {
 	float v_dot_n = dot(common_data.light_direction, common_data.surface_normal);
-	float c_specular_mask = 1.0;
-	calc_specular_mask_ps(common_data.albedo, common_data.texcoord, c_specular_mask);
-	float3 specular_contribution = c_specular_mask * specular_coefficient * analytical_specular_contribution;
+
+	float3 specular_contribution = common_data.specular_mask * specular_coefficient * analytical_specular_contribution;
 	
 	float c_albedo_blend, c_roughness, c_specular_coefficient;
 	float c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient, c_environment_map_specular_contribution;
@@ -106,6 +106,9 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 	if (use_analytical_antishadow_control)
 		specular = anti_shadow_control;
 	
+	
+	
+	
 	float3 diffuse;
 	float3 diffuse_accumulation = 0;
 	float3 specular_accumulation = 0;
@@ -124,11 +127,12 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 	float3 rim_area_specular = 0;
 	float3 env_area_specular = 0;
 	calc_material_area_specular_cook_torrance_ps(common_data.n_view_dir, common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, c_roughness, fresnel_power, rim_fresnel_power, rim_fresnel_coefficient, fresnel_f0, fresnel_env_f0, r_dot_l_area_specular, area_specular, rim_area_specular, env_area_specular);
-	
+	env_area_specular = use_fresnel_color_environment ? env_area_specular : area_specular;
 	float3 c_specular_tint = specular_tint;
 	
 	if (use_albedo_blend_with_specular_tint)
 		c_specular_tint = specular_tint * (1.0 - c_albedo_blend) + c_albedo_blend * common_data.albedo.rgb;
+	
 	
 	env_area_specular *= common_data.precomputed_radiance_transfer.z;
 	env_area_specular = env_area_specular * c_specular_tint;
@@ -155,7 +159,6 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 	
 	specular *= common_data.precomputed_radiance_transfer.z;
 	env_area_specular = max(env_area_specular, 0.001);
-	
 	ENVIRONMENT_MAPPING_COMMON env_mapping_common_data;
 	
 	env_mapping_common_data.reflect_dir = common_data.reflect_dir;
@@ -164,13 +167,26 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 	env_mapping_common_data.specular_coefficient = env_specular_contribution;
 	env_mapping_common_data.area_specular = area_specular;
 	env_mapping_common_data.specular_exponent = c_roughness;
+	
 	float3 env_color = 0;
 	envmap_type(env_mapping_common_data, env_color, unknown_output);
 	
-	color = diffuse + specular;
-	color.rgb += env_color;
+	float3 self_illum = 0;
+	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, self_illum);
 	
+	if (self_illum_is_diffuse)
+	{
+		color = specular + self_illum;
+	}
+		
+	else
+	{
+		color = diffuse + specular;
+		color += self_illum;
+	}	
 	
+	color += env_color;
+
 	return color;
 }
 #endif

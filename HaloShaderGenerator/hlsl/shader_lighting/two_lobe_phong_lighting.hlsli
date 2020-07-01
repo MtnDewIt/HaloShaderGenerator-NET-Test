@@ -7,6 +7,7 @@
 #include "..\material_models\two_lobe_phong.hlsli"
 #include "..\helpers\sh.hlsli"
 #include "..\methods\environment_mapping.hlsli"
+#include "..\methods\self_illumination.hlsli"
 #include "..\helpers\math.hlsli"
 #include "..\registers\shader.hlsli"
 
@@ -59,9 +60,7 @@ void calc_dynamic_lighting_two_lobe_phong_ps(SHADER_DYNAMIC_LIGHT_COMMON common_
 	float3 c_specular_tint = normal_specular_tint + fresnel_curve * (glancing_specular_tint - normal_specular_tint);
 	c_specular_tint = lerp(c_specular_tint, common_data.albedo.rgb, albedo_specular_tint_blend);
 
-	float specular_mask = 1.0;
-	calc_specular_mask_ps(common_data.albedo, common_data.texcoord, specular_mask);
-	float3 specular_contribution = specular_mask * specular_coefficient * analytical_specular_contribution;
+	float3 specular_contribution = common_data.specular_mask * specular_coefficient * analytical_specular_contribution;
 	
 	[flatten]
 	if (dot(specular_contribution, specular_contribution) > 0.0001f)
@@ -126,7 +125,7 @@ float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data, out float4 unk
 	float3 diffuse = common_data.precomputed_radiance_transfer.x * common_data.diffuse_reflectance;
 	diffuse += diffuse_accumulation;
 	diffuse = diffuse * diffuse_coefficient;
-	
+	diffuse *= common_data.albedo.rgb;
 	env_area_specular = max(env_area_specular, 0.001);
 	
 	ENVIRONMENT_MAPPING_COMMON env_mapping_common_data;
@@ -137,11 +136,24 @@ float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data, out float4 unk
 	env_mapping_common_data.specular_coefficient = envmap_specular_contribution;
 	env_mapping_common_data.area_specular = area_specular;
 	env_mapping_common_data.specular_exponent = env_specular_exponent;
+	
 	float3 env_color = 0;
 	envmap_type(env_mapping_common_data, env_color, unknown_output);
+
+	float3 self_illum = 0;
+	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, self_illum);
 	
-	color.rgb = env_color;
-	color.rgb += diffuse * common_data.albedo.rgb + specular;
+	if (self_illum_is_diffuse)
+	{
+		color = specular + self_illum;
+	}
+	else
+	{
+		color.rgb = diffuse + specular;
+		color += self_illum;
+	}
+	
+	color += env_color;
 	
 	return color;
 }

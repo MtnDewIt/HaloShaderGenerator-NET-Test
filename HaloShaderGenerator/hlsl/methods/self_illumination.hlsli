@@ -63,15 +63,13 @@ inout float3 diffuse)
 {
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
     float3 self_illum_map_sample = tex2D(self_illum_map, self_illum_map_texcoord).rgb;
+	float3 color = float3(0, 0, 0);
 	
     self_illum_map_sample.r *= channel_a.a;
-    self_illum_map_sample.g *= channel_b.a;
-    self_illum_map_sample.b *= channel_c.a;
-	
-    float3 color = float3(0, 0, 0);
-	
     color.rgb += self_illum_map_sample.r * channel_a.rgb;
+	self_illum_map_sample.g *= channel_b.a;
     color.rgb += self_illum_map_sample.g * channel_b.rgb;
+	self_illum_map_sample.b *= channel_c.a;
     color.rgb += self_illum_map_sample.b * channel_c.rgb;
 	
     color.rgb *= self_illum_intensity;
@@ -122,7 +120,7 @@ inout float3 diffuse)
 	diffuse += color;
 }
 
-void calc_self_illumination_from_albedo_ps(
+void calc_self_illumination_from_diffuse_ps(
 in float2 texcoord,
 in float3 albedo,
 inout float3 diffuse)
@@ -134,27 +132,14 @@ inout float3 diffuse)
 	diffuse = color;
 }
 
-void calc_self_illumination_from_diffuse_ps(
-in float2 texcoord,
-in float3 albedo,
-inout float3 diffuse)
-{
-	float3 color = albedo.rgb;
-	color.rgb *= self_illum_color.rgb;
-	color.rgb *= self_illum_intensity;
-	color.rgb *= g_alt_exposure.x;
-	diffuse += color;
-}
-
 void calc_self_illumination_detail_ps(
 in float2 texcoord,
 in float3 albedo,
 inout float3 diffuse)
 {
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
-	float2 self_illum_detail_map_texcoord = apply_xform2d(texcoord, self_illum_detail_map_xform);
-	
 	float4 self_illum_map_sample = tex2D(self_illum_map, self_illum_map_texcoord);
+	float2 self_illum_detail_map_texcoord = apply_xform2d(texcoord, self_illum_detail_map_xform);
 	float4 self_illum_detail_map_sample = tex2D(self_illum_detail_map, self_illum_detail_map_texcoord);
 	
 	self_illum_map_sample.rgb *= self_illum_detail_map_sample.rgb * DETAIL_MULTIPLIER;
@@ -197,9 +182,11 @@ inout float3 diffuse)
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
 	float4 self_illum_map_sample = tex2D(self_illum_map, self_illum_map_texcoord);
 	float a = max(0, 10 * self_illum_map_sample.y - 9);
-	float3 color = primary_change_color_blend * primary_change_color + (1.0 - primary_change_color_blend) * self_illum_color.rgb;
 	
 	float3 interpolation = lerp(a, 1.0, albedo);
+	float3 color = primary_change_color_blend * primary_change_color + (1.0 - primary_change_color_blend) * self_illum_color.rgb;
+	
+	
 
 	float3 result = 0;
 	result.rgb = color * interpolation;
@@ -229,7 +216,13 @@ in float2 texcoord,
 in float3 albedo,
 inout float3 diffuse)
 {
+	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
+	float3 self_illum_map_sample = tex2D(self_illum_map, self_illum_map_texcoord).rgb;
+	self_illum_map_sample *= self_illum_color.rgb;
+	self_illum_map_sample *= self_illum_intensity;
+	self_illum_map_sample *= g_alt_exposure.x;
 
+	diffuse += self_illum_map_sample;
 }
 
 // fixups

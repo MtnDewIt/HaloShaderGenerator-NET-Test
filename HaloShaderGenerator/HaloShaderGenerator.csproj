@@ -311,6 +311,9 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\shader_lighting\glass_lighting.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\shader_lighting\per_vertex_color_lighting.hlsli" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>

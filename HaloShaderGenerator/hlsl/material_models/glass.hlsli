@@ -12,22 +12,23 @@ in float roughness,
 out float3 analytic_specular)
 {
     // Beckmann distribution for specular highlight (microfacet)
-    float cos_alpha = dot(light_dir, reflect_dir);
-    cos_alpha = max(cos_alpha, 0);
-    
-    float roughness_squared = roughness * roughness;
-    
-    float cos_alpha_squared = cos_alpha * cos_alpha;
-    float sin_alpha_squared = 1 - cos_alpha_squared;
+	float roughness_squared = roughness * roughness;
+	float cos_alpha = dot(light_dir, reflect_dir);
+	cos_alpha = max(cos_alpha, 0);
 
-    float roughness_part = cos_alpha_squared * cos_alpha * roughness_squared * 3.1415925; // should be cos_alpha_squared * cos_alpha_squared * roughness_squared
-    
-    float numerator = -sin_alpha_squared / cos_alpha_squared;
-    numerator /= roughness_squared;
-    numerator = exp(numerator);
-    
-    float specular_value = numerator * roughness_part; // should be a division according to wikipedia
-    analytic_specular = light_intensity * specular_value;
+	float cos_alpha_squared = cos_alpha * cos_alpha;
+	float sin_alpha_squared = 1 - cos_alpha_squared;
+	float numerator = sin_alpha_squared / cos_alpha_squared;
+	
+	
+	float roughness_part = (cos_alpha * roughness_squared * cos_alpha_squared) * 3.1415925; // should be cos_alpha_squared * cos_alpha_squared * roughness_squared
+	
+	
+	numerator = - numerator / roughness_squared;
+	numerator = exp(numerator);
+	
+	float specular_value = roughness_part * numerator; // should be a division according to wikipedia
+	analytic_specular = specular_value * light_intensity;
 }
 
 void calc_material_area_specular_order_3_glass_ps(

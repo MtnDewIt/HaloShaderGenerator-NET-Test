@@ -16,6 +16,7 @@ in float roughness,
 out float3 analytic_specular)
 {
 	// Beckmann distribution for specular highlight (microfacet)
+	float roughness_squared = roughness * roughness;
 	float cos_alpha = dot(light_dir, reflect_dir);
 	cos_alpha = max(cos_alpha, 0);
 
@@ -23,7 +24,7 @@ out float3 analytic_specular)
 	float sin_alpha_squared = 1 - cos_alpha_squared;
 	float numerator = sin_alpha_squared / cos_alpha_squared;
 	
-	float roughness_squared = roughness * roughness;
+	
 	float roughness_part = (cos_alpha * roughness_squared * cos_alpha_squared) * 3.1415925; // should be cos_alpha_squared * cos_alpha_squared * roughness_squared
 	
 	

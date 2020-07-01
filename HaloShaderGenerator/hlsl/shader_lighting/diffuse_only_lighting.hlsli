@@ -5,6 +5,7 @@
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\sh.hlsli"
 #include "..\methods\environment_mapping.hlsli"
+#include "..\methods\self_illumination.hlsli"
 
 void calc_dynamic_lighting_diffuse_only_ps(SHADER_DYNAMIC_LIGHT_COMMON common_data, out float3 color)
 {
@@ -43,12 +44,11 @@ float3 calc_lighting_diffuse_only_ps(SHADER_COMMON common_data, out float4 unkno
 	envmap_type(env_mapping_common_data, diffuse, unknown_output);
 	
 #else
-	
 	unknown_output = 0.0f;
-	
 #endif
-
-
+	
+	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, diffuse.rgb);
+	
 	return diffuse;
 }
 #endif

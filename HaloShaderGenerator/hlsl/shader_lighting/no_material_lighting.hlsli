@@ -4,7 +4,7 @@
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\sh.hlsli"
 #include "..\methods\environment_mapping.hlsli"
-
+#include "..\methods\self_illumination.hlsli"
 
 float3 calc_lighting_no_material_ps(SHADER_COMMON common_data, inout float3 color, out float4 unknown_output)
 {
@@ -17,6 +17,8 @@ float3 calc_lighting_no_material_ps(SHADER_COMMON common_data, inout float3 colo
 	env_mapping_common_data.area_specular = 0;
 	env_mapping_common_data.specular_exponent = 0.0;
 	envmap_type(env_mapping_common_data, color, unknown_output);
+	
+	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, color.rgb);
 	
 	return color;
 }

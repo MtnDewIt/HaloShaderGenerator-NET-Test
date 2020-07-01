@@ -18,11 +18,6 @@
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 
-// hack to make it compile 1-1, probably a mistake in the original code
-#ifdef calc_lighting_ps
-#define calc_lighting_ps_vertex_color calc_lighting_diffuse_only_ps
-#endif
-
 PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLOR input)
 {
 	SHADER_COMMON common_data;
@@ -54,6 +49,10 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 		}
 		
 		common_data.surface_normal = normalize(common_data.normal);
+		
+		common_data.specular_mask = 1.0;
+		calc_specular_mask_ps(common_data.albedo, common_data.texcoord, common_data.specular_mask);
+		
 		float v_dot_n = dot(common_data.n_view_dir, common_data.surface_normal);
 		common_data.half_dir = v_dot_n * common_data.surface_normal - common_data.n_view_dir;
 		common_data.reflect_dir = common_data.half_dir * 2 + common_data.n_view_dir;
@@ -84,20 +83,15 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 			common_data.sky_radiance = input.sky_radiance;
 			common_data.extinction_factor = input.extinction_factor;
 		}
-		
-		common_data.specular_mask = 1.0;
-		calc_specular_mask_ps(common_data.albedo, common_data.texcoord, common_data.specular_mask);
-		
 	}
 	
 	
 	float4 color = 0.0f;
-	float3 self_illum = 0.0f;
-	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, self_illum);
+
 	float4 unknown_color = 0;
 	if (calc_material)
 	{
-		color.rgb = calc_lighting_ps_vertex_color(common_data, unknown_color);
+		color.rgb = calc_per_vertex_color_lighting(common_data, unknown_color);
 	}
 	else
 	{
@@ -107,8 +101,6 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 			color.rgb *= common_data.albedo.rgb;
 		}
 	}
-	
-	color.rgb += self_illum;
 
 	color.rgb = color.rgb * common_data.extinction_factor;
 		

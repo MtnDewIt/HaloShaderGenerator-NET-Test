@@ -42,8 +42,9 @@ float3 calc_bumpmap_detail_ps(
 )
 {
     float3 bump_map_sample = sample_normal_2d(bump_map, apply_xform2d(texcoord, bump_map_xform));
-    float3 bump_detail_map_sample = sample_normal_2d(bump_detail_map, apply_xform2d(texcoord, bump_detail_map_xform));
 	float3 bump = normalize(bump_map_sample);
+    float3 bump_detail_map_sample = sample_normal_2d(bump_detail_map, apply_xform2d(texcoord, bump_detail_map_xform));
+	
 	bump.xy += normalize(bump_detail_map_sample).xy * bump_detail_coefficient.x;
 	return normal_transform(tangent, binormal, normal, bump);
 }

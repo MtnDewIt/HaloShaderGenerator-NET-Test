@@ -21,6 +21,7 @@ struct SHADER_DYNAMIC_LIGHT_COMMON
 	float3 reflect_dir;
 	float3 light_direction;
 	float3 light_intensity;
+	float specular_mask;
 };
 
 struct SHADER_COMMON

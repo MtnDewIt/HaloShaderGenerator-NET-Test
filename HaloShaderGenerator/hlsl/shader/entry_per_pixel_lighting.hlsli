@@ -1,11 +1,9 @@
 ﻿#ifndef _SHADER_TEMPLATE_PER_PIXEL_LIGHTING_HLSLI
 #define _SHADER_TEMPLATE_PER_PIXEL_LIGHTING_HLSLI
 
-
 #include "..\methods\albedo.hlsli"
 #include "..\methods\parallax.hlsli"
 #include "..\methods\bump_mapping.hlsli"
-
 #include "..\methods\specular_mask.hlsli"
 #include "..\helpers\lightmaps.hlsli"
 #include "..\methods\specular_mask.hlsli"
@@ -54,6 +52,9 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 		}
 		
 		common_data.surface_normal = normalize(common_data.surface_normal);
+				
+		common_data.specular_mask = 1.0;
+		calc_specular_mask_ps(common_data.albedo, common_data.texcoord, common_data.specular_mask);
 		
 		float v_dot_n = dot(common_data.n_view_dir, common_data.surface_normal);
 		common_data.half_dir = v_dot_n * common_data.surface_normal - common_data.n_view_dir;
@@ -78,9 +79,6 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 			common_data.extinction_factor = input.extinction_factor;
 		}
 		
-		common_data.specular_mask = 1.0;
-		calc_specular_mask_ps(common_data.albedo, common_data.texcoord, common_data.specular_mask);
-		
 	}
 	
 	float4 color;
@@ -95,8 +93,6 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 		calc_lighting_no_material_ps(common_data, color.rgb, unknown_color);
 	}
 
-	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, color.rgb);
-	
 	color.rgb = color.rgb * common_data.extinction_factor;
 		
 	color.a = blend_type_calculate_alpha_blending(common_data.albedo, common_data.alpha);

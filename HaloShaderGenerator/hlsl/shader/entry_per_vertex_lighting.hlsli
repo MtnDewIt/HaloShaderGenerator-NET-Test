@@ -7,11 +7,12 @@
 #include "..\methods\bump_mapping.hlsli"
 
 #include "..\methods\specular_mask.hlsli"
+#include "..\methods\self_illumination.hlsli"
+#include "..\methods\alpha_test.hlsli"
 #include "..\methods\material_model.hlsli"
 #include "..\shader_lighting\no_material_lighting.hlsli"
 #include "..\methods\environment_mapping.hlsli"
-#include "..\methods\self_illumination.hlsli"
-#include "..\methods\alpha_test.hlsli"
+
 #include "..\methods\blend_mode.hlsli"
 #include "..\methods\misc.hlsli"
 
@@ -56,6 +57,9 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 		
 		common_data.surface_normal = normalize(common_data.surface_normal);
 		
+		common_data.specular_mask = 1.0;
+		calc_specular_mask_ps(common_data.albedo, common_data.texcoord, common_data.specular_mask);
+		
 		float v_dot_n = dot(common_data.n_view_dir, common_data.surface_normal);
 		common_data.half_dir = v_dot_n * common_data.surface_normal - common_data.n_view_dir;
 		common_data.reflect_dir = common_data.half_dir * 2 + common_data.n_view_dir;
@@ -79,9 +83,6 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 			common_data.sky_radiance = float3(input.texcoord.zw, input.sky_radiance.w);
 			common_data.extinction_factor = input.sky_radiance.rgb;
 		}
-		
-		common_data.specular_mask = 1.0;
-		calc_specular_mask_ps(common_data.albedo, common_data.texcoord, common_data.specular_mask);
 	}
 	
 	float4 color;
@@ -95,9 +96,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 		color.rgb = common_data.albedo.rgb;
 		calc_lighting_no_material_ps(common_data, color.rgb, unknown_color);
 	}
-	
-	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, color.rgb);
-	
+
 	color.rgb = color.rgb * common_data.extinction_factor;
 		
 	color.a = blend_type_calculate_alpha_blending(common_data.albedo, common_data.alpha);

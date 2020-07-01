@@ -4,6 +4,8 @@
 #include "..\methods\albedo.hlsli"
 #include "..\methods\parallax.hlsli"
 #include "..\methods\bump_mapping.hlsli"
+#include "..\methods\self_illumination.hlsli"
+
 
 #include "..\registers\shader.hlsli"
 #include "..\helpers\input_output.hlsli"
@@ -13,11 +15,10 @@
 #include "..\methods\material_model.hlsli"
 #include "..\shader_lighting\no_material_lighting.hlsli"
 #include "..\methods\environment_mapping.hlsli"
-#include "..\methods\self_illumination.hlsli"
-#include "..\methods\alpha_test.hlsli"
+
 #include "..\methods\blend_mode.hlsli"
 #include "..\methods\misc.hlsli"
-
+#include "..\methods\alpha_test.hlsli"
 PS_OUTPUT_DEFAULT entry_static_sh_prt(
 float2 position,
 float2 texcoord,
@@ -57,6 +58,10 @@ float4 prt)
 		}
 		
 		common_data.surface_normal = normalize(common_data.surface_normal);
+		
+		common_data.specular_mask = 1.0;
+		calc_specular_mask_ps(common_data.albedo, common_data.texcoord, common_data.specular_mask);
+		
 		float v_dot_n = dot(common_data.n_view_dir, common_data.surface_normal);
 		common_data.half_dir = v_dot_n * common_data.surface_normal - common_data.n_view_dir;
 		common_data.reflect_dir = common_data.half_dir * 2 + common_data.n_view_dir;
@@ -85,9 +90,6 @@ float4 prt)
 			common_data.sky_radiance = sky_radiance;
 			common_data.extinction_factor = extinction_factor;
 		}
-		
-		common_data.specular_mask = 1.0;
-		calc_specular_mask_ps(common_data.albedo, common_data.texcoord, common_data.specular_mask);
 	}
 
 	float4 color;
@@ -101,12 +103,17 @@ float4 prt)
 		color.rgb = common_data.albedo.rgb;
 		calc_lighting_no_material_ps(common_data, color.rgb, unknown_color);
 	}
-	
-	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, color.rgb);
-	
+
 	color.rgb = color.rgb * common_data.extinction_factor;
-		
+	
+	if (self_illum_is_diffuse)
+	{
+		common_data.alpha = 1.0;
+	}
+	
 	color.a = blend_type_calculate_alpha_blending(common_data.albedo, common_data.alpha);
+	
+	
 	
 	if (blend_type_arg != k_blend_mode_additive)
 	{

@@ -25,14 +25,6 @@ xform2d material_texture_xform;
 float3 fresnel_color;
 float fresnel_power;
 
-uniform float normal_specular_power;
-uniform float3 normal_specular_tint;
-uniform float glancing_specular_power;
-uniform float3 glancing_specular_tint;
-
-uniform float fresnel_coefficient;
-uniform float fresnel_curve_steepness;
-uniform float fresnel_curve_bias;
 
 float roughness;
 float albedo_blend;
@@ -49,6 +41,16 @@ float rim_fresnel_albedo_blend;
 uniform bool order3_area_specular;
 
 // two lobe phong
+
+uniform float normal_specular_power;
+uniform float3 normal_specular_tint;
+uniform float glancing_specular_power;
+uniform float3 glancing_specular_tint;
+
+uniform float fresnel_coefficient;
+uniform float fresnel_curve_steepness;
+uniform float fresnel_curve_bias;
+//float roughness;
 
 uniform float albedo_specular_tint_blend;
 

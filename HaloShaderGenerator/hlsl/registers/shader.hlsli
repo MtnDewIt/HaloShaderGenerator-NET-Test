@@ -32,9 +32,13 @@ uniform bool actually_calc_albedo : register(b12);
 #define is_dynamic_light false
 #endif
 
+#if self_illumination_arg == k_self_illumination_from_diffuse
+#define self_illum_is_diffuse true
+#else
+#define self_illum_is_diffuse false
+#endif
 
-
-#if blend_type_arg == k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply || self_illumination_arg == k_self_illumination_from_diffuse
+#if blend_type_arg == k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply
 #define calc_material false
 #else
 #define calc_material true

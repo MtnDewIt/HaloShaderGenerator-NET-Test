@@ -20,18 +20,31 @@ namespace HaloShaderGenerator
         static readonly List<int> AlbedoOverrides = new List<int> {0};
         static readonly List<int> BumpOverrides =       new List<int> { };
         static readonly List<int> AlphaOverrides =      new List<int> { };
-        static readonly List<int> SpecularOverrides =   new List<int> { };
-        static readonly List<int> MaterialOverrides =   new List<int> {1 };
-        static readonly List<int> EnvOverrides =        new List<int> {1 };
-        static readonly List<int> SelfIllumOverrides = new List<int> { };
+        static readonly List<int> SpecularOverrides =   new List<int> {};
+        static readonly List<int> MaterialOverrides =   new List<int> { };
+        static readonly List<int> EnvOverrides =        new List<int> {};
+        static readonly List<int> SelfIllumOverrides = new List<int> {};
         static readonly List<int> BlendModeOverrides =  new List<int> { };
-        static readonly List<int> ParallaxOverrides =   new List<int> { };
+        static readonly List<int> ParallaxOverrides =   new List<int> {};
         static readonly List<int> MiscOverrides =       new List<int> { };
 
-        static readonly List<List<int>> ShaderOverrides = new List<List<int>> 
+        static readonly List<List<int>> ShaderOverrides = new List<List<int>>
         {
-            //new List<int> { 0, 0, 0, 0, 1, 0, 7, 1, 0, 0, 0 },
-            //new List<int> { 0, 0, 0, 1, 1, 2, 4, 0, 0, 1, 0 },
+            /*
+            new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
+            new List<int> { 0, 0, 0, 1, 1, 2, 4, 0, 0, 1, 0 },
+            new List<int> { 0, 0, 0, 0, 1, 0, 4, 1, 0, 1, 0 },
+            new List<int> { 0, 0, 0, 0, 1, 0, 7, 1, 0, 0, 0 },
+            new List<int> { 0, 2, 0, 1, 1, 1, 1, 0, 0, 1, 0 },
+            new List<int> { 0, 1, 0, 1, 1, 2, 0, 0, 2, 0, 0 },
+            new List<int> { 0, 1, 0, 1, 1, 0, 2, 0, 1, 0, 0 },
+            new List<int> { 0, 1, 0, 2, 1, 0, 2, 3, 1, 1, 0 },
+            new List<int> { 0, 2, 0, 1, 1, 2, 5, 0, 0, 1, 0 },
+            new List<int> { 0, 1, 0, 0, 1, 4, 9, 0, 0, 1, 0 },
+            new List<int> { 0, 1, 1, 0, 1, 2, 4, 3, 0, 0, 0 },*/
+            //new List<int> { 0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0 },
+            //new List<int> { 0, 1, 0, 2, 5, 1, 0, 5, 0, 0, 0 },
+            //new List<int> { 0, 1, 0, 1, 7, 0, 0, 0, 0, 0, 0 }
         };
 
         

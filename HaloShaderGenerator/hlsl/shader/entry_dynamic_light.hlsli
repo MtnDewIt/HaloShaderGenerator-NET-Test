@@ -53,7 +53,8 @@ bool is_cinematic)
 	float4 albedo;
 	float3 surface_normal;
 	get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz, albedo, surface_normal);
-	
+	float c_specular_mask = 1.0;
+	calc_specular_mask_ps(albedo, texcoord, c_specular_mask);
 	float3 reflect_dir = 2 * dot(view_dir, surface_normal) * surface_normal - camera_dir;
 	
 	
@@ -69,6 +70,7 @@ bool is_cinematic)
 	common_data.reflect_dir = reflect_dir;
 	common_data.light_intensity = light_intensity;
 	common_data.light_direction = L;
+	common_data.specular_mask = c_specular_mask;
 	
 	calc_dynamic_lighting_ps(common_data, color);
 	

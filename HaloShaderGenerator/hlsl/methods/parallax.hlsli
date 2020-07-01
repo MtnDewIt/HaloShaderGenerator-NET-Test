@@ -3,6 +3,7 @@
 
 #include "../helpers/math.hlsli"
 #include "../helpers/types.hlsli"
+#include "../helpers/definition_helper.hlsli"
 
 uniform float height_scale;
 uniform sampler height_map;
@@ -56,8 +57,19 @@ float2 calc_parallax_interpolated_ps(float2 texcoord, float3 view_dir, float3 ta
 	
 	float2 outcome_1 = step_2 * delta.xy + height_map_texcoord_2.xy;
 	
+	float sign1 = sign(step_1);
+	
+	// equivalent to sign, get rid of that asap
+#if shaderstage == k_shaderstage_albedo
+	float sign2 = sign(step_2);
+#else 
+	float test1 = -(step_2 < 0 ? 1 : 0);
+	float test2 = step_2 > 0 ? 1 : 0;
+	float sign2 = test2 + test1;
+#endif
+
 	[flatten]
-	if (sign(step_2) != sign(step_1))
+	if (sign2 - sign1 != 0)
 	{
 		output_texcoord = outcome_2;
 	}

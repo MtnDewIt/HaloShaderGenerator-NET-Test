@@ -233,6 +233,8 @@ namespace HaloShaderGenerator
             var startIndex = data.IndexOf("ps_3_0") + 7;
             var trimmedString = data.Substring(startIndex);
             var endIndex = trimmedString.IndexOf("dcl_") - 5;
+            if (endIndex < 0)
+                return null;
             var constantsBlock = trimmedString.Substring(0, endIndex);
             constantsBlock = constantsBlock.Replace("    def ", "");
             List<string> registerConstants = constantsBlock.Split('\n').ToList();
@@ -267,6 +269,9 @@ namespace HaloShaderGenerator
             var refConstants = GetConstants(refData);
             var genConstants = GetConstants(genData);
 
+            if (refConstants == null || genConstants == null)
+                return false;
+
             if (refConstants.Count != genConstants.Count)
                 return false;
 
@@ -274,6 +279,8 @@ namespace HaloShaderGenerator
 
             foreach(var refConstantName in refConstants.Keys)
             {
+                if (!genConstants.ContainsKey(refConstantName))
+                    return false;
                 var refConstant = refConstants[refConstantName];
                 var genConstant = genConstants[refConstantName];
                 var refConstantString = RebuildConstants(refConstant);
