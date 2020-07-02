@@ -74,7 +74,7 @@ float get_simple_light_max_range(SimpleLight light)
 	return light.unknown4.x;
 }
 
-void calculate_simple_light(
+void calculate_lambert_diffuse_simple_light(
 SimpleLight simple_light, 
 float3 normal,
 float3 vertex_world_position,
@@ -104,6 +104,30 @@ inout float3 specular_accumulation)
 		float specular_c = pow(max(dl_dot_l, 0), other_specular);
 		float3 specular = light_result * specular_c;
 		specular_accumulation += specular;
+	}
+}
+
+void calculate_transparence_diffuse_simple_light(
+SimpleLight simple_light,
+float3 vertex_world_position,
+float3 dominant_light_reflect_dir,
+inout float3 diffuse_accumulation)
+{
+	float3 v_to_light_dir = simple_light.position.xyz - vertex_world_position;
+	float light_dist_squared = dot(v_to_light_dir, v_to_light_dir);
+
+	[flatten]
+	if (light_dist_squared - get_simple_light_max_range(simple_light) < 0)
+	{
+		float3 L = normalize(v_to_light_dir); // normalized surface to light direction
+
+		float distance_attenuation, cone_attenuation;
+		get_simple_light_parameters(simple_light, L, light_dist_squared, distance_attenuation, cone_attenuation);
+
+		float intensity = cone_attenuation * distance_attenuation;
+		float3 light_result = get_simple_light_color(simple_light) * intensity;
+		float3 diffuse = light_result;
+		diffuse_accumulation += diffuse;
 	}
 }
 
