@@ -354,8 +354,8 @@ namespace HaloShaderGenerator.Shader
                     result.AddSamplerParameter("base_map");
                     result.AddSamplerParameter("detail_map");
                     result.AddSamplerParameter("change_color_map");
-                    result.AddFloat4Parameter("primary_change_color");
-                    result.AddFloat4Parameter("secondary_change_color");
+                    result.AddFloat4Parameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
+                    result.AddFloat4Parameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
                     break;
                 case Albedo.Four_Change_Color:
                     result.AddSamplerParameter("base_map");
@@ -563,14 +563,13 @@ namespace HaloShaderGenerator.Shader
                     result.AddFloatParameter("env_roughness_scale");
                     break;
                 case Environment_Mapping.From_Flat_Texture:
-                    
-                    result.AddSamplerParameter("flat_environment_map");
+                    result.AddSamplerWithoutXFormParameter("flat_environment_map");
                     result.AddFloat4Parameter("env_tint_color");
-                    result.AddIntegerParameter("flat_envmap_matrix_x", RenderMethodExtern.flat_envmap_matrix_x);
-                    result.AddIntegerParameter("flat_envmap_matrix_y", RenderMethodExtern.flat_envmap_matrix_y);
-                    result.AddIntegerParameter("flat_envmap_matrix_z", RenderMethodExtern.flat_envmap_matrix_z);
+                    result.AddFloat4Parameter("flat_envmap_matrix_x", RenderMethodExtern.flat_envmap_matrix_x);
+                    result.AddFloat4Parameter("flat_envmap_matrix_y", RenderMethodExtern.flat_envmap_matrix_y);
+                    result.AddFloat4Parameter("flat_envmap_matrix_z", RenderMethodExtern.flat_envmap_matrix_z);
                     result.AddFloatParameter("hemisphere_percentage");
-                    result.AddInteger4Parameter("env_bloom_override");
+                    result.AddFloat4Parameter("env_bloom_override");
                     result.AddFloatParameter("env_bloom_override_intensity");
                     break;
             }
