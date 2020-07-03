@@ -6,18 +6,15 @@
 #include "..\methods\bump_mapping.hlsli"
 #include "..\methods\specular_mask.hlsli"
 #include "..\helpers\lightmaps.hlsli"
-#include "..\methods\specular_mask.hlsli"
 #include "..\methods\self_illumination.hlsli"
-#include "..\methods\alpha_test.hlsli"
 #include "..\methods\material_model.hlsli"
-
 #include "..\methods\blend_mode.hlsli"
 #include "..\methods\misc.hlsli"
 #include "..\registers\shader.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
-
+#include "..\methods\alpha_test.hlsli"
 
 PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 {

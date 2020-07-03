@@ -261,9 +261,6 @@
     <EmbeddedResource Include="hlsl\shader\entry_per_vertex_lighting.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\material_models\material_shared_parameters.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="hlsl\shader_lighting\diffuse_only_lighting.hlsli" />
   </ItemGroup>
   <ItemGroup>
@@ -313,6 +310,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\shader_lighting\per_vertex_color_lighting.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\material_models\lambert.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\helpers\anti_shadow.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

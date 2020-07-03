@@ -3,15 +3,13 @@
 
 #include "../registers/shader.hlsli"
 #include "../helpers/math.hlsli"
-#include "../helpers/color_processing.hlsli"
-#include "../helpers/sh.hlsli"
-#include "material_shared_parameters.hlsli"
 #include "../helpers/definition_helper.hlsli"
 
+uniform float diffuse_coefficient;
 uniform float3 diffuse_tint;
-uniform float analytical_specular_coefficient;
 uniform float area_specular_coefficient;
-
+uniform float analytical_specular_coefficient;
+uniform float3 specular_tint;
 uniform float specular_power;
 uniform sampler2D specular_map;
 uniform sampler2D occlusion_parameter_map;
@@ -37,6 +35,7 @@ uniform float transparence_normal_bias;
 uniform float transparence_normal_detail;
 
 uniform float3 final_tint;
+
 
 void calc_material_analytic_specular_organism_ps(
 in float specular_coefficient,

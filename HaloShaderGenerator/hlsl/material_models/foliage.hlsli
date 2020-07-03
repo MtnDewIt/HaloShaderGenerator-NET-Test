@@ -1,7 +1,6 @@
 ﻿#ifndef _FOLIAGE_HLSL
 #define _FOLIAGE_HLSL
 
-
 void calc_material_analytic_specular_foliage_ps(
 in float3 view_dir,
 in float3 normal_dir,

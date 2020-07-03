@@ -15,13 +15,13 @@ namespace HaloShaderGenerator
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
 
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {};
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Per_Pixel};
 
         static readonly List<int> AlbedoOverrides = new List<int> {0};
         static readonly List<int> BumpOverrides =       new List<int> { };
         static readonly List<int> AlphaOverrides =      new List<int> { };
         static readonly List<int> SpecularOverrides =   new List<int> {};
-        static readonly List<int> MaterialOverrides =   new List<int> { };
+        static readonly List<int> MaterialOverrides =   new List<int> {0 };
         static readonly List<int> EnvOverrides =        new List<int> {};
         static readonly List<int> SelfIllumOverrides = new List<int> {};
         static readonly List<int> BlendModeOverrides =  new List<int> { };
@@ -30,6 +30,7 @@ namespace HaloShaderGenerator
 
         static readonly List<List<int>> ShaderOverrides = new List<List<int>>
         {
+            //new List<int> { 0, 1, 0, 1, 7, 0, 0, 0, 0, 0, 0 }
             /*
             new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
             new List<int> { 0, 0, 0, 1, 1, 2, 4, 0, 0, 1, 0 },
@@ -45,6 +46,7 @@ namespace HaloShaderGenerator
             //new List<int> { 0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0 },
             //new List<int> { 0, 1, 0, 2, 5, 1, 0, 5, 0, 0, 0 },
             //new List<int> { 0, 1, 0, 1, 7, 0, 0, 0, 0, 0, 0 }
+            //new List<int> { 0, 1, 0, 1, 6, 0, 0, 0, 0, 0, 0 }
         };
 
         

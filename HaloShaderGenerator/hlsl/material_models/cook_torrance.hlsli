@@ -3,13 +3,41 @@
 
 #include "../registers/shader.hlsli"
 #include "../helpers/math.hlsli"
-#include "../helpers/color_processing.hlsli"
 #include "../helpers/sh.hlsli"
-#include "material_shared_parameters.hlsli"
+
+uniform sampler2D material_texture;
+
+uniform float diffuse_coefficient;
+uniform float specular_coefficient;
+
+uniform float area_specular_contribution;
+uniform float analytical_specular_contribution;
+uniform float environment_map_specular_contribution;
+
+uniform xform2d material_texture_xform;
+
+uniform float3 fresnel_color;
+uniform float fresnel_power;
+
+uniform float roughness;
+uniform float albedo_blend;
+uniform float3 specular_tint;
+uniform bool albedo_blend_with_specular_tint;
+uniform bool use_fresnel_color_environment;
+uniform float3 fresnel_color_environment;
+uniform float rim_fresnel_coefficient;
+uniform float3 rim_fresnel_color;
+uniform float rim_fresnel_power;
+uniform float rim_fresnel_albedo_blend;
+uniform float analytical_anti_shadow_control;
 
 uniform sampler2D g_sampler_cc0236;
 uniform sampler2D g_sampler_dd0236;
 uniform sampler2D g_sampler_c78d78;
+
+uniform bool order3_area_specular;
+
+uniform bool use_material_texture;
 
 // Lighting and materials of Halo 3 + modified to eliminate potential divisions by 0
 

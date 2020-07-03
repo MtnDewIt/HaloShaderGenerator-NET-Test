@@ -5,7 +5,6 @@
 #include "..\methods\albedo.hlsli"
 #include "..\methods\parallax.hlsli"
 #include "..\methods\bump_mapping.hlsli"
-
 #include "..\methods\specular_mask.hlsli"
 #include "..\methods\material_model.hlsli"
 #include "..\methods\environment_mapping.hlsli"

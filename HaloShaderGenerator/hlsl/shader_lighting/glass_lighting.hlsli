@@ -1,7 +1,7 @@
 ﻿#ifndef _GLASS_LIGHTING_HLSLI
 #define _GLASS_LIGHTING_HLSLI
 
-#include "..\material_models\material_shared_parameters.hlsli"
+#include "..\material_models\lambert.hlsli"
 #include "..\material_models\glass.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\sh.hlsli"
@@ -11,17 +11,9 @@
 
 void get_material_parameters_glass(
 in SHADER_COMMON common_data,
-//out float c_fresnel_contribution,
 out float c_roughness
 )
 {
-    /*float sn_dot_n = dot(common_data.n_view_dir, common_data.surface_normal);
-    float fresnel_curve = pow(1 - sn_dot_n, fresnel_curve_steepness);
-    fresnel_curve = sn_dot_n < 0 ? 1 : fresnel_curve;
-    
-    c_fresnel_contribution = fresnel_coefficient + fresnel_curve * (1 - fresnel_coefficient);
-    c_fresnel_contribution += fresnel_curve_bias;*/
-    
     c_roughness = roughness.x;
 }
 
@@ -31,7 +23,7 @@ out float3 color
 )
 {
     float l_dot_n = dot(common_data.light_direction, common_data.surface_normal);
-    color = common_data.light_intensity * l_dot_n * common_data.albedo.rgb; // lambertian diffuse
+    color = common_data.light_intensity * l_dot_n * common_data.albedo.rgb;
 }
 
 float3 calc_lighting_glass_ps(inout SHADER_COMMON common_data, out float4 unknown_output)
@@ -39,12 +31,9 @@ float3 calc_lighting_glass_ps(inout SHADER_COMMON common_data, out float4 unknow
     float3 color = 0;
     
     float c_roughness;
-    //float c_fresnel_contribution;
-    get_material_parameters_glass(common_data, /*c_fresnel_contribution,*/ c_roughness);
-    
-    /*analytic_specular *= analytical_specular_contribution;
-    analytic_specular = max(analytic_specular, 0);*/
-        
+
+	get_material_parameters_glass(common_data, c_roughness);
+      
 	float sn_dot_n = dot(common_data.n_view_dir, common_data.surface_normal);
 	float fresnel_curve = pow(1 - sn_dot_n, fresnel_curve_steepness);
 	fresnel_curve = sn_dot_n < 0 ? 1 : fresnel_curve;

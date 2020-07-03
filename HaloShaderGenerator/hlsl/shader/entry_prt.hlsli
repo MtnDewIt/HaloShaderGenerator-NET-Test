@@ -4,9 +4,8 @@
 #include "..\methods\albedo.hlsli"
 #include "..\methods\parallax.hlsli"
 #include "..\methods\bump_mapping.hlsli"
+#include "..\methods\specular_mask.hlsli"
 #include "..\methods\self_illumination.hlsli"
-
-
 #include "..\registers\shader.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\definition_helper.hlsli"

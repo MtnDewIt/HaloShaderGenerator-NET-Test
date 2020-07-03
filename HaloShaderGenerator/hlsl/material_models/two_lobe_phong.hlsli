@@ -3,10 +3,30 @@
 
 #include "../registers/shader.hlsli"
 #include "../helpers/math.hlsli"
-#include "../helpers/color_processing.hlsli"
 #include "../helpers/sh.hlsli"
-#include "material_shared_parameters.hlsli"
 #include "../helpers/definition_helper.hlsli"
+
+uniform float diffuse_coefficient;
+uniform float specular_coefficient;
+uniform float area_specular_contribution;
+uniform float analytical_specular_contribution;
+uniform float environment_map_specular_contribution;
+
+uniform bool order3_area_specular;
+
+uniform float normal_specular_power;
+uniform float3 normal_specular_tint;
+uniform float glancing_specular_power;
+uniform float3 glancing_specular_tint;
+
+uniform float fresnel_coefficient;
+uniform float fresnel_curve_steepness;
+uniform float fresnel_curve_bias;
+
+uniform float albedo_specular_tint_blend;
+uniform float analytical_anti_shadow_control;
+
+
 
 void calc_material_analytic_specular_two_lobe_phong_ps(
 in float3 reflect_dir,

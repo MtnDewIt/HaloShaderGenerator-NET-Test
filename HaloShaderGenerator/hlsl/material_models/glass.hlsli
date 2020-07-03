@@ -1,8 +1,20 @@
 ﻿#ifndef _GLASS_HLSL
 #define _GLASS_HLSL
 
-#include "..\material_models\material_shared_parameters.hlsli"
 #include "..\helpers\math.hlsli"
+
+uniform float diffuse_coefficient;
+uniform float specular_coefficient;
+
+uniform float area_specular_contribution;
+uniform float analytical_specular_contribution;
+uniform float environment_map_specular_contribution;
+
+uniform float fresnel_coefficient;
+uniform float fresnel_curve_steepness;
+uniform float fresnel_curve_bias;
+uniform float roughness;
+
 
 void calc_material_analytic_specular_glass_ps(
 in float3 reflect_dir,

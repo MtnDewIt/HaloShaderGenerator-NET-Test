@@ -3,7 +3,7 @@
 
 #include "..\helpers\input_output.hlsli"
 #include "..\methods\specular_mask.hlsli"
-#include "..\material_models\material_shared_parameters.hlsli"
+#include "..\helpers\anti_shadow.hlsli"
 #include "..\material_models\two_lobe_phong.hlsli"
 #include "..\helpers\sh.hlsli"
 #include "..\methods\environment_mapping.hlsli"
@@ -13,6 +13,7 @@
 
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
+#include "..\material_models\lambert.hlsli"
 
 void get_two_lobe_phong_parameters(
 in SHADER_COMMON common_data,
@@ -86,7 +87,7 @@ float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data, out float4 unk
 	calc_material_analytic_specular_two_lobe_phong_ps(common_data.reflect_dir, common_data.dominant_light_direction, common_data.dominant_light_intensity, specular_tint, specular_power, analytic_specular);
 	
 	float3 anti_shadow_control;
-	calc_analytical_specular_with_anti_shadow(common_data, analytic_specular, anti_shadow_control);
+	calc_analytical_specular_with_anti_shadow(common_data, analytical_anti_shadow_control, analytic_specular, anti_shadow_control);
 	
 	bool use_analytical_antishadow_control = analytical_anti_shadow_control.x > 0 ? true : false;
 	if (use_analytical_antishadow_control)

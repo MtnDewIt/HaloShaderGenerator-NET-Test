@@ -1,7 +1,7 @@
 ﻿#ifndef _DIFFUSE_ONLY_LIGHTING_HLSLI
 #define _DIFFUSE_ONLY_LIGHTING_HLSLI
 
-#include "..\material_models\material_shared_parameters.hlsli"
+#include "..\material_models\lambert.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\sh.hlsli"
 #include "..\methods\environment_mapping.hlsli"

@@ -3,10 +3,15 @@
 
 #include "../registers/shader.hlsli"
 #include "../helpers/math.hlsli"
-#include "../helpers/color_processing.hlsli"
-#include "../helpers/sh.hlsli"
-#include "material_shared_parameters.hlsli"
-#include "../helpers/definition_helper.hlsli"
+
+uniform float diffuse_coefficient;
+uniform float specular_coefficient;
+uniform float area_specular_contribution;
+uniform float analytical_specular_contribution;
+uniform float environment_map_specular_contribution;
+uniform float roughness;
+uniform float3 specular_tint;
+uniform bool order3_area_specular;
 
 void calc_material_analytic_specular_single_lobe_phong_ps(
 in float3 reflect_dir,

@@ -4,7 +4,7 @@
 #pragma warning( disable : 3571 34)
 
 #include "..\methods\specular_mask.hlsli"
-#include "..\material_models\material_shared_parameters.hlsli"
+#include "..\helpers\anti_shadow.hlsli"
 #include "..\material_models\cook_torrance.hlsli"
 #include "..\helpers\sh.hlsli"
 #include "..\methods\self_illumination.hlsli"
@@ -13,6 +13,7 @@
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
+#include "..\material_models\lambert.hlsli"
 
 void get_material_parameters_2(
 in float2 texcoord,
@@ -100,14 +101,11 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 	calc_material_analytic_specular_cook_torrance_ps(common_data.n_view_dir, common_data.surface_normal, common_data.reflect_dir, common_data.dominant_light_direction, common_data.dominant_light_intensity, fresnel_f0, c_roughness, unknown_thing, analytic_specular);
 
 	float3 anti_shadow_control;
-	calc_analytical_specular_with_anti_shadow(common_data, analytic_specular, anti_shadow_control);
+	calc_analytical_specular_with_anti_shadow(common_data, analytical_anti_shadow_control, analytic_specular, anti_shadow_control);
 		
 	float3 specular = analytic_specular;
 	if (use_analytical_antishadow_control)
 		specular = anti_shadow_control;
-	
-	
-	
 	
 	float3 diffuse;
 	float3 diffuse_accumulation = 0;
