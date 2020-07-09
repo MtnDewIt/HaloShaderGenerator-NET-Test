@@ -9,9 +9,9 @@
 PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_BLACK_ALBEDO input) : COLOR
 {
     PS_OUTPUT_ALBEDO output;
-	output.diffuse.rgb = expose_color(input.color.rgb);
+    output.diffuse.rgb = input.color.rgb * g_exposure.x; // should be expose_color(), doesnt show g_exposure as a pixl parameter though?
 	output.diffuse.a = 1.0;
-    output.normal = 0; // no idea what this is in H3, no constants defined
+    output.normal = 0;
 	output.unknown = 0;
     return output;
 }
