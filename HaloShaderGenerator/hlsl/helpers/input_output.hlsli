@@ -209,4 +209,21 @@ struct VS_OUTPUT_PER_VERTEX_COLOR
 	float3 sky_radiance : COLOR1;
 };
 
+struct VS_OUTPUT_PARTICLE
+{
+    float4 position : SV_Position;
+    float4 color : COLOR;
+    float4 o2 : COLOR1; // color2 ???
+    float4 texcoord : TEXCOORD;
+    float4 o4 : TEXCOORD1; // TODO
+    float4 o5 : TEXCOORD2; // TODO
+};
+
+struct PS_OUTPUT_PARTICLE
+{
+    float4 diffuse;
+    float4 oC1; // TODO (assigned values on certain shaders??)
+    float4 oC2; // TODO
+};
+
 #endif

@@ -14,19 +14,22 @@ namespace HaloShaderGenerator
 
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
+        static readonly string TestShaderType = "particle";
 
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Per_Pixel};
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Default};
 
-        static readonly List<int> AlbedoOverrides = new List<int> {0};
-        static readonly List<int> BumpOverrides =       new List<int> { };
-        static readonly List<int> AlphaOverrides =      new List<int> { };
-        static readonly List<int> SpecularOverrides =   new List<int> {};
-        static readonly List<int> MaterialOverrides =   new List<int> {0 };
-        static readonly List<int> EnvOverrides =        new List<int> {};
-        static readonly List<int> SelfIllumOverrides = new List<int> {};
-        static readonly List<int> BlendModeOverrides =  new List<int> { };
-        static readonly List<int> ParallaxOverrides =   new List<int> {};
-        static readonly List<int> MiscOverrides =       new List<int> { };
+        // Shader
+
+        static readonly List<int> ShaderAlbedoOverrides =         new List<int> {0};
+        static readonly List<int> ShaderBumpOverrides =           new List<int> { };
+        static readonly List<int> ShaderAlphaOverrides =          new List<int> { };
+        static readonly List<int> ShaderSpecularOverrides =       new List<int> {};
+        static readonly List<int> ShaderMaterialOverrides =       new List<int> {0 };
+        static readonly List<int> ShaderEnvOverrides =            new List<int> {};
+        static readonly List<int> ShaderSelfIllumOverrides =      new List<int> {};
+        static readonly List<int> ShaderBlendModeOverrides =      new List<int> { };
+        static readonly List<int> ShaderParallaxOverrides =       new List<int> {};
+        static readonly List<int> ShaderMiscOverrides =           new List<int> { };
 
         static readonly List<List<int>> ShaderOverrides = new List<List<int>>
         {
@@ -47,20 +50,36 @@ namespace HaloShaderGenerator
             //new List<int> { 0, 1, 0, 2, 5, 1, 0, 5, 0, 0, 0 },
             //new List<int> { 0, 1, 0, 1, 7, 0, 0, 0, 0, 0, 0 }
             //new List<int> { 0, 1, 0, 1, 6, 0, 0, 0, 0, 0, 0 }
+
+            //new List<int> { 11, 1, 0, 2, 1, 4, 0, 0, 0, 1, 0 },
         };
 
-        
+        // Particle
 
-        //new List<int> { 11, 1, 0, 2, 1, 4, 0, 0, 0, 1, 0 },
+        static readonly List<int> ParticleAlbedoOverrides =                 new List<int> { };
+        static readonly List<int> ParticleBlendModeOverrides =              new List<int> { };
+        static readonly List<int> ParticleSpecializedRenderingOverrides =   new List<int> { };
+        static readonly List<int> ParticleLightingOverrides =               new List<int> { };
+        static readonly List<int> ParticleRenderTargetsOverrides =          new List<int> { };
+        static readonly List<int> ParticleDepthFadeOverrides =              new List<int> { };
+        static readonly List<int> ParticleBlackPointOverrides =             new List<int> { };
+        static readonly List<int> ParticleFogOverrides =                    new List<int> { };
+        static readonly List<int> ParticleFrameBlendOverrides =             new List<int> { };
+        static readonly List<int> ParticleSelfIlluminationOverrides =       new List<int> { };
 
-        static int Main()
+        static readonly List<List<int>> ParticleOverrides = new List<List<int>>
+        {
+            //new List<int> { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
+        };
+
+        static void RunShaderUnitTest()
         {
             ShaderUnitTest shaderTests = new ShaderUnitTest(ShaderReferencePath);
 
             if (TestSpecificShader)
             {
-                var methodOverrides = new List<List<int>> { AlbedoOverrides, BumpOverrides, AlphaOverrides, SpecularOverrides, MaterialOverrides,
-                EnvOverrides, SelfIllumOverrides, BlendModeOverrides, ParallaxOverrides, MiscOverrides, new List<int>() };
+                var methodOverrides = new List<List<int>> { ShaderAlbedoOverrides, ShaderBumpOverrides, ShaderAlphaOverrides, ShaderSpecularOverrides, ShaderMaterialOverrides,
+                ShaderEnvOverrides, ShaderSelfIllumOverrides, ShaderBlendModeOverrides, ShaderParallaxOverrides, ShaderMiscOverrides, new List<int>() };
 
                 shaderTests.TestAllPixelShaders(ShaderOverrides, StageOverrides, methodOverrides);
 
@@ -70,8 +89,7 @@ namespace HaloShaderGenerator
                 {
                     foreach (var methods in ShaderOverrides)
                     {
-                        TestPixelShader(stage, (Albedo)methods[0], (Bump_Mapping)methods[1], (Alpha_Test)methods[2], (Specular_Mask)methods[3], (Material_Model)methods[4],
-                            (Environment_Mapping)methods[5], (Self_Illumination)methods[6], (Blend_Mode)methods[7], (Parallax)methods[8], (Misc)methods[9], (Distortion)methods[10]);
+                        TestPixelShader(stage, methods);
                     }
                 }
             }
@@ -79,8 +97,47 @@ namespace HaloShaderGenerator
             if (UnitTest)
             {
                 shaderTests.TestAllPixelShaders(ShaderTests, null, null);
-                
             }
+        }
+
+        static void RunParticleUnitTest()
+        {
+            ParticleUnitTest shaderTests = new ParticleUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                var methodOverrides = new List<List<int>> { ParticleAlbedoOverrides, ParticleBlendModeOverrides, ParticleSpecializedRenderingOverrides, ParticleLightingOverrides,
+                    ParticleRenderTargetsOverrides, ParticleDepthFadeOverrides, ParticleBlackPointOverrides, ParticleFogOverrides, ParticleFrameBlendOverrides, ParticleSelfIlluminationOverrides };
+
+                shaderTests.TestAllPixelShaders(ParticleOverrides, StageOverrides, methodOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : ParticleUnitTest.GetAllShaderStages();
+
+                foreach (var stage in stages)
+                {
+                    foreach (var methods in ParticleOverrides)
+                    {
+                        TestPixelShader(stage, methods);
+                    }
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
+            }
+        }
+
+        static int Main()
+        {
+            Console.WriteLine($"TESTING {TestShaderType.ToUpper()}");
+
+            switch (TestShaderType)
+            {
+                case "shader": RunShaderUnitTest(); break;
+                case "particle": RunParticleUnitTest(); break;
+            }
+
             Console.ReadLine();
             return 0;
         }
@@ -94,20 +151,57 @@ namespace HaloShaderGenerator
             }
         }
 
-        static void TestPixelShader(ShaderStage stage, Albedo albedo, Bump_Mapping bump_mapping, Alpha_Test alpha_test, Specular_Mask specular_mask, Material_Model material_model,
-            Environment_Mapping environment_mapping, Self_Illumination self_illumination, Blend_Mode blend_mode, Parallax parallax, Misc misc, Distortion distortion)
+        static void TestPixelShader(ShaderStage stage, List<int> methods)
         {
-            var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion);
-            if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
+            if (TestShaderType == "shader")
             {
-                var bytecode = gen.GeneratePixelShader(stage).Bytecode;
-                var parameters = gen.GetPixelShaderParameters();
+                var albedo = (Albedo)methods[0]; 
+                var bump_mapping = (Bump_Mapping)methods[1]; 
+                var alpha_test = (Alpha_Test)methods[2]; 
+                var specular_mask = (Specular_Mask)methods[3]; 
+                var material_model = (Material_Model)methods[4];
+                var environment_mapping = (Environment_Mapping)methods[5]; 
+                var self_illumination = (Self_Illumination)methods[6]; 
+                var blend_mode = (Blend_Mode)methods[7]; 
+                var parallax = (Parallax)methods[8]; 
+                var misc = (Misc)methods[9];
+                var distortion = (Distortion)methods[10];
 
-                var disassembly = D3DCompiler.Disassemble(bytecode);
-                string filename = $"generated_{stage.ToString().ToLower()}_{(int)albedo}_{(int)bump_mapping}_{(int)alpha_test}_{(int)specular_mask}_{(int)material_model}_{(int)environment_mapping}_{(int)self_illumination}_{(int)blend_mode}_{(int)parallax}_{(int)misc}_{(int)distortion}.pixl";
-                WriteShaderFile(filename, disassembly);
+                var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion);
+                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
+                {
+                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
+                    var parameters = gen.GetPixelShaderParameters();
+
+                    var disassembly = D3DCompiler.Disassemble(bytecode);
+                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
+                    WriteShaderFile(filename, disassembly);
+                }
             }
-            
+            else if (TestShaderType == "particle")
+            {
+                var albedo = (Particle.Albedo)methods[0];
+                var blend_mode = (Particle.Blend_Mode)methods[1];
+                var specialized_rendering = (Particle.Specialized_Rendering)methods[2];
+                var lighting = (Particle.Lighting)methods[3];
+                var render_targets = (Particle.Render_Targets)methods[4];
+                var depth_fade = (Particle.Depth_Fade)methods[5];
+                var black_point = (Particle.Black_Point)methods[6];
+                var fog = (Particle.Fog)methods[7];
+                var frame_blend = (Particle.Frame_Blend)methods[8];
+                var self_illumination = (Particle.Self_Illumination)methods[9];
+
+                var gen = new Particle.ParticleGenerator(albedo, blend_mode, specialized_rendering, lighting, render_targets, depth_fade, black_point, fog, frame_blend, self_illumination);
+                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
+                {
+                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
+                    var parameters = gen.GetPixelShaderParameters();
+
+                    var disassembly = D3DCompiler.Disassemble(bytecode);
+                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
+                    WriteShaderFile(filename, disassembly);
+                }
+            }
         }
 
         static void TestSharedVertexShader(VertexType vertexType, ShaderStage stage)

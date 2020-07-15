@@ -32,6 +32,10 @@ uniform float4 neutral_gray;
 uniform float4 primary_change_color_anim;
 uniform float4 secondary_change_color_anim;
 
+//
+// Shader
+//
+
 float3 apply_debug_tint(float3 color)
 {
 	float debug_tint_factor = DETAIL_MULTIPLIER;
@@ -449,6 +453,26 @@ float4 calc_albedo_default_vs(float2 texcoord, float2 position, float3 surface_n
 #endif
 #ifndef calc_albedo_vs
 #define calc_albedo_vs calc_albedo_default_vs
+#endif
+
+//
+// Particle
+//
+
+float4 albedo_diffuse_only(in float2 texcoord, in float4 color, in float3 o2)
+{
+    float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
+    float4 base_map_sample = tex2D(base_map, base_map_texcoord);
+	
+    float4 albedo;
+    albedo.a = base_map_sample.a * color.a;
+    albedo.rgb = base_map_sample.rgb * color.rgb + o2.rgb;
+	
+    return albedo;
+}
+
+#ifndef particle_albedo
+#define particle_albedo albedo_diffuse_only
 #endif
 
 #endif

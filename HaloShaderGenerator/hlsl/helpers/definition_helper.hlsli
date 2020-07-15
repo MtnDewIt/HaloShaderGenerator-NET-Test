@@ -109,6 +109,9 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_misc_first_person_always 2
 #define k_misc_first_person_never_with_rotating_bitmaps 3
 
+#define k_fog_off 0
+#define k_fog_on 1
+
 // Methods
 
 //NOTE: these are defined in the methods hlsl with a default
@@ -136,6 +139,8 @@ This file contains a list of blank definitions to help with Intellisense
 #define envmap_type_arg 0
 #define blend_type_arg 0
 #define misc_arg 0
+// Particle
+#define fog_arg 0
 
 #endif
 

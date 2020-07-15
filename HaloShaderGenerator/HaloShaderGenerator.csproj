@@ -107,6 +107,8 @@
     <Compile Include="Globals\ShaderStage.cs" />
     <Compile Include="Globals\ShaderType.cs" />
     <Compile Include="Globals\VertexType.cs" />
+    <Compile Include="Particle\MethodOptions.cs" />
+    <Compile Include="Particle\ParticleGenerator.cs" />
     <Compile Include="Shader\MethodOptions.cs" />
     <Compile Include="Shader\ShaderGenerator.cs" />
     <Compile Include="Generator\ShaderGeneratorBase.cs" />
@@ -172,7 +174,6 @@
   <ItemGroup>
     <Folder Include="Beam\" />
     <Folder Include="hlsl\black\" />
-    <Folder Include="hlsl\particle\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\registers\vertex_shader.hlsli" />
@@ -316,6 +317,15 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\anti_shadow.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\particle\entry_default.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\registers\particle.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\fog.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
