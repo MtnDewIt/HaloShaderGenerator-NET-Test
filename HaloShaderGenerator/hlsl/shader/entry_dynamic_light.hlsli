@@ -2,7 +2,7 @@
 #define _SHADER_TEMPLATE_DYNAMIC_LIGHT_HLSLI
 
 #include "entry_albedo.hlsli"
-#include "..\registers\shader.hlsli"
+#include "..\registers\global_parameters.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"

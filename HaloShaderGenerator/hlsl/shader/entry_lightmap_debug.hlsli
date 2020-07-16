@@ -3,7 +3,7 @@
 
 #include "..\methods\bump_mapping.hlsli"
 
-#include "..\registers\shader.hlsli"
+#include "..\registers\global_parameters.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"

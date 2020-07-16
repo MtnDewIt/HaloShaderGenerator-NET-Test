@@ -1,7 +1,7 @@
 ﻿#ifndef _COOK_TORRANCE_HLSL
 #define _COOK_TORRANCE_HLSL
 
-#include "../registers/shader.hlsli"
+#include "../registers/global_parameters.hlsli"
 #include "../helpers/math.hlsli"
 #include "../helpers/sh.hlsli"
 

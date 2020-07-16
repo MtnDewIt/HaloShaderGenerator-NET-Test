@@ -10,7 +10,7 @@
 #include "..\methods\material_model.hlsli"
 #include "..\methods\blend_mode.hlsli"
 #include "..\methods\misc.hlsli"
-#include "..\registers\shader.hlsli"
+#include "..\registers\global_parameters.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"

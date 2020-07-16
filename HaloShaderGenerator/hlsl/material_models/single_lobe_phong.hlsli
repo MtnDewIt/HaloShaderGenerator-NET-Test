@@ -1,7 +1,7 @@
 ﻿#ifndef _SINGLE_LOBE_PHONG_HLSL
 #define _SINGLE_LOBE_PHONG_HLSL
 
-#include "../registers/shader.hlsli"
+#include "../registers/global_parameters.hlsli"
 #include "../helpers/math.hlsli"
 
 uniform float diffuse_coefficient;

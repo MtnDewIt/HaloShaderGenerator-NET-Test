@@ -1,7 +1,7 @@
 ﻿#ifndef _LIGHTMAP_HLSL
 #define _LIGHTMAP_HLSL
 
-#include "../registers/shader.hlsli"
+#include "../registers/global_parameters.hlsli"
 #include "math.hlsli"
 #include "input_output.hlsli"
 

@@ -1,4 +1,4 @@
-﻿#include "registers/shader.hlsli"
+﻿#include "registers/global_parameters.hlsli"
 #include "helpers/input_output.hlsli"
 #include "helpers/albedo_pass.hlsli"
 #include "helpers/shadows.hlsli"

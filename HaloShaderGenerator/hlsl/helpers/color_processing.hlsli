@@ -1,7 +1,7 @@
 ﻿#ifndef _COLOR_PROCESSING_HLSLI
 #define _COLOR_PROCESSING_HLSLI
 
-#include "../registers/shader.hlsli"
+#include "../registers/global_parameters.hlsli"
 #include "input_output.hlsli"
 #include "../helpers/definition_helper.hlsli"
 

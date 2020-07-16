@@ -9,7 +9,7 @@
 #include "..\methods\environment_mapping.hlsli"
 #include "..\methods\self_illumination.hlsli"
 #include "..\helpers\math.hlsli"
-#include "..\registers\shader.hlsli"
+#include "..\registers\global_parameters.hlsli"
 
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"

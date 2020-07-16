@@ -1,7 +1,7 @@
 ﻿#ifndef _TWO_LOBE_PHONG_HLSL
 #define _TWO_LOBE_PHONG_HLSL
 
-#include "../registers/shader.hlsli"
+#include "../registers/global_parameters.hlsli"
 #include "../helpers/math.hlsli"
 #include "../helpers/sh.hlsli"
 #include "../helpers/definition_helper.hlsli"

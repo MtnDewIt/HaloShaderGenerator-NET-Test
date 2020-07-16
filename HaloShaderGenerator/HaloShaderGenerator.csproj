@@ -145,7 +145,7 @@
     <EmbeddedResource Include="hlsl\helpers\math.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\registers\shader.hlsli" />
+    <EmbeddedResource Include="hlsl\registers\global_parameters.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\types.hlsli" />
@@ -322,9 +322,6 @@
     <EmbeddedResource Include="hlsl\particle\entry_default.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\registers\particle.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="hlsl\methods\fog.hlsli" />
   </ItemGroup>
   <ItemGroup>
@@ -335,6 +332,15 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\methods\depth_fade.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\particle\particle.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\particle_lighting\ravi_order_3.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\albedo_particle.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -218,9 +218,9 @@ struct VS_OUTPUT_PARTICLE
 {
     float4 position : SV_Position;
     float4 color : COLOR;
-    float4 o2 : COLOR1; // color2 ???
+    float4 color2 : COLOR1; // w is depth
     float4 texcoord : TEXCOORD;
-    float4 o4 : TEXCOORD1; // TODO
+    float4 parameters : TEXCOORD1;
     float4 normal : TEXCOORD2;
 };
 

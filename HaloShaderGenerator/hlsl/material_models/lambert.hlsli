@@ -3,7 +3,7 @@
 
 #pragma warning( disable : 3571 34)
 
-#include "..\registers\shader.hlsli"
+#include "..\registers\global_parameters.hlsli"
 #include "..\helpers\lighting.hlsli"
 
 void calc_material_lambert_diffuse_ps(

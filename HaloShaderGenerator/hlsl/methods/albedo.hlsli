@@ -456,34 +456,4 @@ float4 calc_albedo_default_vs(float2 texcoord, float2 position, float3 surface_n
 #define calc_albedo_vs calc_albedo_default_vs
 #endif
 
-//
-// Particle
-//
-
-float4 albedo_diffuse_only(in float4 texcoord, in float frame_blend, in float3 o2)
-{
-    float4 base_map_sample;
-	
-	if (frame_blend_arg == k_frame_blend_on)
-    {
-        float2 base_map_texcoord_1 = apply_xform2d(texcoord.xy, base_map_xform);
-        float2 base_map_texcoord_2 = apply_xform2d(texcoord.zw, base_map_xform);
-        float4 base_map_sample_1 = tex2D(base_map, base_map_texcoord_1);
-        float4 base_map_sample_2 = tex2D(base_map, base_map_texcoord_2);
-		
-        base_map_sample = base_map_sample_1 + frame_blend * (base_map_sample_2 - base_map_sample_1);
-    }
-	else
-    {
-        float2 base_map_texcoord = apply_xform2d(texcoord.xy, base_map_xform);
-        base_map_sample = tex2D(base_map, base_map_texcoord);
-    }
-	
-    return base_map_sample;
-}
-
-#ifndef particle_albedo
-#define particle_albedo albedo_diffuse_only
-#endif
-
 #endif

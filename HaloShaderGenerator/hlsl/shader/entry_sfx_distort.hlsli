@@ -1,7 +1,7 @@
 ﻿#ifndef _SHADER_TEMPLATE_SFX_DISTORT
 #define _SHADER_TEMPLATE_SFX_DISTORT
 
-#include "..\registers\shader.hlsli"
+#include "..\registers\global_parameters.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"

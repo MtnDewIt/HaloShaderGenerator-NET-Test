@@ -1,6 +1,6 @@
 ﻿#define shader_template
 
-#include "registers/shader.hlsli"
+#include "registers/global_parameters.hlsli"
 #include "helpers/input_output.hlsli"
 #include "helpers/shadows.hlsli"
 

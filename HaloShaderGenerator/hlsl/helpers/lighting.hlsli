@@ -2,7 +2,7 @@
 #define _LIGHTING_HLSLI
 
 #include "../helpers/math.hlsli"
-#include "../registers/shader.hlsli"
+#include "../registers/global_parameters.hlsli"
 
 
 struct SimpleLight

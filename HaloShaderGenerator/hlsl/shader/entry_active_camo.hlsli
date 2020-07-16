@@ -2,7 +2,7 @@
 #define _SHADER_TEMPLATE_ACTIVE_CAMO_HLSLI
 
 #include "..\methods\blend_mode.hlsli"
-#include "..\registers\shader.hlsli"
+#include "..\registers\global_parameters.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"

@@ -4,7 +4,7 @@
 #include "../helpers/types.hlsli"
 #include "../helpers/math.hlsli"
 #include "../helpers/sh.hlsli"
-#include "../registers/shader.hlsli"
+#include "../registers/global_parameters.hlsli"
 #include "../methods/blend_mode.hlsli"
 #include "../helpers/input_output.hlsli"
 

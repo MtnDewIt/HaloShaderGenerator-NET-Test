@@ -92,8 +92,11 @@ uniform xform2d p_dynamic_light_gel_xform : register(c5);
 
 uniform sampler2D albedo_texture;
 
-// this should not be here, it belongs to particle (fix pls)
+// particle only
+
 uniform sampler2D depth_buffer;
+
+//
 
 #if envmap_type_arg != k_environment_mapping_dynamic
 #define environment_map_register : register(s1)
