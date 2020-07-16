@@ -17,6 +17,6 @@ uniform float4 p_lighting_constant_8 : register(c9);
 uniform float4 p_lighting_constant_9 : register(c10);
 //uniform float2 texture_size : register(c14); // FIX
 
-//uniform sampler2D depth_buffer : register(s0); //FIX
+//uniform sampler2D depth_buffer //FIX
 
 #endif
