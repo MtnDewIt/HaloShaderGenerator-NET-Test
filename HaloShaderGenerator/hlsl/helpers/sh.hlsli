@@ -115,7 +115,7 @@ float3 diffuse_reflectance(float3 normal)
 	return lightprobe_color / PI;
 }
 
-void diffuse_reflectance_ravi_order_3(float3 normal, inout float4 albedo)
+void diffuse_reflectance_ravi_order_3(float3 normal, inout float4 color)
 {
     float c0 = -0.85808599f;
     float c1 = 0.429043f;
@@ -146,9 +146,9 @@ void diffuse_reflectance_ravi_order_3(float3 normal, inout float4 albedo)
     lightprobe_color -= c1 * x3;
 	
     lightprobe_color = (lightprobe_color.rgb / PI) - light_cont.rgb;
-    lightprobe_color = albedo.a * lightprobe_color.rgb + light_cont.rgb;
+    lightprobe_color = color.a * lightprobe_color.rgb + light_cont.rgb;
 	
-    albedo.rgb *= lightprobe_color.rgb;
+    color.rgb *= lightprobe_color.rgb;
 }
 
 void get_current_sh_coefficients_quadratic(

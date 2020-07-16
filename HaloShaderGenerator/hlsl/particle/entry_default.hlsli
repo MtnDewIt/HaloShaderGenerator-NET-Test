@@ -14,16 +14,34 @@ float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
 {
     float3 normal = normalize(input.normal.xyz);
     
-    float4 albedo = particle_albedo(input.texcoord.xy, input.color, input.o2.rgb);
+    float4 albedo = particle_albedo(input.texcoord, input.o4.x, input.o2.rgb);
     
-    if (lighting_arg == k_lighting_per_pixel_ravi_order_3)
+    float color_alpha;
+    if (black_point_arg == k_black_point_on)
     {
-        diffuse_reflectance_ravi_order_3(normal, albedo);
+        float r0_x = 1 / (-input.o4.y + 0.5f * (1 - -input.o4.y));
+        float r0_y = albedo.a - input.o4.y;
+        r0_x = saturate(r0_y * r0_x);
+        r0_y = 1.0f + input.o4.y;
+        float r0_z = r0_y * 0.5f;
+        r0_y = saturate(-(r0_y * 0.5f) + albedo.a);
+        color_alpha = r0_z * r0_x + r0_y;
+    }
+    else
+    {
+        color_alpha = albedo.a;
     }
     
     float4 color;
-    color.rgb = albedo.rgb + input.o2.rgb;
-    color.a = albedo.a;
+    color.rgb = albedo.rgb * input.color.rgb;
+    color.a = color_alpha * input.color.a;
+    
+    if (lighting_arg == k_lighting_per_pixel_ravi_order_3)
+    {
+        diffuse_reflectance_ravi_order_3(normal, color);
+    }
+    
+    color.rgb += input.o2.rgb;
     
     return color;
 }

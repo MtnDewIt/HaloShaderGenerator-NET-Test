@@ -4,6 +4,7 @@
 #include "../helpers/types.hlsli"
 #include "../helpers/math.hlsli"
 #include "../helpers/color_processing.hlsli"
+#include "../helpers/definition_helper.hlsli"
 
 uniform float4 albedo_color;
 uniform float4 albedo_color2;
@@ -459,16 +460,26 @@ float4 calc_albedo_default_vs(float2 texcoord, float2 position, float3 surface_n
 // Particle
 //
 
-float4 albedo_diffuse_only(in float2 texcoord, in float4 color, in float3 o2)
+float4 albedo_diffuse_only(in float4 texcoord, in float frame_blend, in float3 o2)
 {
-    float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
-    float4 base_map_sample = tex2D(base_map, base_map_texcoord);
+    float4 base_map_sample;
 	
-    float4 albedo;
-    albedo.rgb = base_map_sample.rgb * color.rgb;
-    albedo.a = base_map_sample.a * color.a;
+	if (frame_blend_arg == k_frame_blend_on)
+    {
+        float2 base_map_texcoord_1 = apply_xform2d(texcoord.xy, base_map_xform);
+        float2 base_map_texcoord_2 = apply_xform2d(texcoord.zw, base_map_xform);
+        float4 base_map_sample_1 = tex2D(base_map, base_map_texcoord_1);
+        float4 base_map_sample_2 = tex2D(base_map, base_map_texcoord_2);
+		
+        base_map_sample = base_map_sample_1 + frame_blend * (base_map_sample_2 - base_map_sample_1);
+    }
+	else
+    {
+        float2 base_map_texcoord = apply_xform2d(texcoord.xy, base_map_xform);
+        base_map_sample = tex2D(base_map, base_map_texcoord);
+    }
 	
-    return albedo;
+    return base_map_sample;
 }
 
 #ifndef particle_albedo
