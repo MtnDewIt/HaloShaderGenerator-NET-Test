@@ -112,6 +112,8 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_lighting_none 0
 #define k_lighting_per_pixel_ravi_order_3 1
 #define k_lighting_per_vertex_ravi_order_0 2
+#define k_depth_fade_off 0
+#define k_depth_fade_on 1
 #define k_render_targets_ldr_and_hdr 0
 #define k_render_targets_ldr_only 1
 #define k_black_point_off 0
@@ -149,8 +151,10 @@ This file contains a list of blank definitions to help with Intellisense
 #define blend_type_arg 0
 #define misc_arg 0
 // Particle
+#define particle_blend_type_arg 0
 #define render_targets_arg 0
 #define lighting_arg 0
+#define depth_fade_arg 0
 #define black_point_arg 0
 #define fog_arg 0
 #define frame_blend_arg 0

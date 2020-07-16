@@ -1,9 +1,12 @@
 ﻿#ifndef _PARTICLE_HLSLI
 #define _PARTICLE_HLSLI
 
+#include "..\methods\depth_fade.hlsli"
 #include "..\methods\albedo.hlsli"
+#include "..\methods\black_point.hlsli"
 #include "..\methods\fog.hlsli"
 
+#include "../helpers/particle_helper.hlsli"
 #include "../helpers/definition_helper.hlsli"
 #include "../helpers/types.hlsli"
 #include "../helpers/math.hlsli"
@@ -14,27 +17,19 @@ float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
 {
     float3 normal = normalize(input.normal.xyz);
     
-    float4 albedo = particle_albedo(input.texcoord, input.o4.x, input.o2.rgb);
+    float4 color = particle_albedo(input.texcoord, input.o4.x, input.o2.rgb);
     
-    float color_alpha;
+    if (depth_fade_arg == k_depth_fade_on)
+    {
+        // would rather not input these global registers but cant use in the hlsli file???
+        color.a = depth_fade_on(color.a, input.position.xy, input.o2.w, texture_size.xy, depth_buffer);
+    }
     if (black_point_arg == k_black_point_on)
     {
-        float r0_x = 1 / (-input.o4.y + 0.5f * (1 - -input.o4.y));
-        float r0_y = albedo.a - input.o4.y;
-        r0_x = saturate(r0_y * r0_x);
-        r0_y = 1.0f + input.o4.y;
-        float r0_z = r0_y * 0.5f;
-        r0_y = saturate(-(r0_y * 0.5f) + albedo.a);
-        color_alpha = r0_z * r0_x + r0_y;
-    }
-    else
-    {
-        color_alpha = albedo.a;
+        color.a = black_point_on(color.a, input.o4.y);
     }
     
-    float4 color;
-    color.rgb = albedo.rgb * input.color.rgb;
-    color.a = color_alpha * input.color.a;
+    color.rgba *= input.color.rgba;
     
     if (lighting_arg == k_lighting_per_pixel_ravi_order_3)
     {
@@ -42,6 +37,9 @@ float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
     }
     
     color.rgb += input.o2.rgb;
+    
+    if (particle_blend_type_arg == 10)
+        color.rgb *= color.a;
     
     return color;
 }
