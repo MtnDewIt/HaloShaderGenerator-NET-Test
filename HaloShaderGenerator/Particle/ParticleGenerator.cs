@@ -98,8 +98,8 @@ namespace HaloShaderGenerator.Particle
             //macros.Add(ShaderGeneratorBase.CreateMacro("albedo_arg", albedo, "k_albedo_"));
             //macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", blend_mode, "k_blend_mode_"));
             //macros.Add(ShaderGeneratorBase.CreateMacro("specialized_rendering_arg", specialized_rendering, "k_specialized_rendering_"));
-            //macros.Add(ShaderGeneratorBase.CreateMacro("lighting_arg", lighting, "k_lighting_"));
-            //macros.Add(ShaderGeneratorBase.CreateMacro("render_targets_arg", render_targets, "k_render_targets_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("lighting_arg", lighting, "k_lighting_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("render_targets_arg", render_targets, "k_render_targets_"));
             //macros.Add(ShaderGeneratorBase.CreateMacro("depth_fade_arg", depth_fade, "k_depth_fade_"));
             //macros.Add(ShaderGeneratorBase.CreateMacro("black_point_arg", black_point, "k_black_point_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("fog_arg", fog, "k_fog_"));

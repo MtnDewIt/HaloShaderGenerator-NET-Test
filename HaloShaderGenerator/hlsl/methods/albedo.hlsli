@@ -465,8 +465,8 @@ float4 albedo_diffuse_only(in float2 texcoord, in float4 color, in float3 o2)
     float4 base_map_sample = tex2D(base_map, base_map_texcoord);
 	
     float4 albedo;
+    albedo.rgb = base_map_sample.rgb * color.rgb;
     albedo.a = base_map_sample.a * color.a;
-    albedo.rgb = base_map_sample.rgb * color.rgb + o2.rgb;
 	
     return albedo;
 }

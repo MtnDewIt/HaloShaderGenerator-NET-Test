@@ -147,6 +147,11 @@ struct PS_OUTPUT_DEFAULT
 	float4 unknown;
 };
 
+struct PS_OUTPUT_DEFAULT_LDR_ONLY
+{
+    float4 low_frequency;
+};
+
 struct VS_OUTPUT_STATIC_SH
 {
 	float4 position : SV_Position;
@@ -216,14 +221,7 @@ struct VS_OUTPUT_PARTICLE
     float4 o2 : COLOR1; // color2 ???
     float4 texcoord : TEXCOORD;
     float4 o4 : TEXCOORD1; // TODO
-    float4 o5 : TEXCOORD2; // TODO
-};
-
-struct PS_OUTPUT_PARTICLE
-{
-    float4 diffuse;
-    float4 oC1; // TODO (assigned values on certain shaders??)
-    float4 oC2; // TODO
+    float4 normal : TEXCOORD2;
 };
 
 #endif
