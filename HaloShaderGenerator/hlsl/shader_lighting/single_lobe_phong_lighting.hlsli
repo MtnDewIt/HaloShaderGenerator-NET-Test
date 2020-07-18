@@ -21,7 +21,11 @@ float3 calc_lighting_single_lobe_phong_ps(SHADER_COMMON common_data, out float4 
 	float3 analytic_specular;
 	calc_material_analytic_specular_single_lobe_phong_ps(common_data.reflect_dir, common_data.dominant_light_direction, common_data.dominant_light_intensity, roughness, analytic_specular);
 
-
+	
+	float3 area_specular;
+	calc_material_area_specular_single_lobe_phong_ps(common_data.reflect_dir, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, specular_tint, area_specular);
+	
+	
 	float3 diffuse_accumulation = 0;
 	float3 specular_accumulation = 0;
 	if (!common_data.no_dynamic_lights)
@@ -30,9 +34,6 @@ float3 calc_lighting_single_lobe_phong_ps(SHADER_COMMON common_data, out float4 
 		calc_material_lambert_diffuse_ps(common_data.surface_normal, common_data.world_position, common_data.reflect_dir, dynamic_light_roughness, diffuse_accumulation, specular_accumulation);
 		specular_accumulation *= dynamic_light_roughness;
 	}
-	
-	float3 area_specular;
-	calc_material_area_specular_single_lobe_phong_ps(common_data.reflect_dir, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, specular_tint, area_specular);
 	
 	
 	float3 diffuse = common_data.diffuse_reflectance + diffuse_accumulation;
@@ -53,7 +54,9 @@ float3 calc_lighting_single_lobe_phong_ps(SHADER_COMMON common_data, out float4 
 
 	float envmap_specular_contribution = common_data.specular_mask * environment_map_specular_contribution * specular_coefficient;
 	float env_specular_exponent = roughness;
+	
 	env_area_specular = max(env_area_specular, 0.001);
+	env_area_specular *= common_data.precomputed_radiance_transfer.z;
 	
 	ENVIRONMENT_MAPPING_COMMON env_mapping_common_data;
 	
