@@ -11,7 +11,7 @@ namespace HaloShaderGenerator.Globals
         Float,
         Float2,
         Float3,
-        FLoat4,
+        Float4,
 
         Xform_2d,
         Xform_3d,

@@ -15,6 +15,10 @@ namespace HaloShaderGenerator.Globals
             Parameters = new List<ShaderParameter>();
         }
 
+        //
+        // Pixel shader parameters easy add methods
+        //
+
         public void AddSamplerWithoutXFormParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
             Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.sampler2D, rmExtern));
@@ -26,9 +30,29 @@ namespace HaloShaderGenerator.Globals
             Parameters.Add(new ShaderParameter(parameterName, parameterName + "_xform", HLSLType.Xform_2d, rmExtern));
         }
 
+        public void AddFloat4ColorParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, isColor: true));
+        }
+
+        public void AddFloat3ColorParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern, isColor: true));
+        }
+
         public void AddFloat4Parameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.FLoat4, rmExtern));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern));
+        }
+
+        public void AddFloat3Parameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern));
+        }
+
+        public void AddFloat2Parameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float2, rmExtern));
         }
 
         public void AddFloatParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
@@ -51,78 +75,212 @@ namespace HaloShaderGenerator.Globals
             Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Int, rmExtern));
         }
 
-        public List<ShaderParameter> GetRealParameters()
+        //
+        // Vertex shader parameters easy add methods
+        //
+
+        public void AddFloat4ColorVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, isColor: true, isVertexShader: true));
+        }
+
+        public void AddFloat3ColorVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern, isColor: true, isVertexShader: true));
+        }
+
+        public void AddFloat4VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, isVertexShader: true));
+        }
+
+        public void AddFloat3VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern, isVertexShader: true));
+        }
+
+        public void AddFloat2VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float2, rmExtern, isVertexShader: true));
+        }
+
+        public void AddFloatVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float, rmExtern, isVertexShader: true));
+        }
+
+        public void AddBooleanVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Bool, rmExtern, isVertexShader: true));
+        }
+
+        public void AddInteger4VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Int4, rmExtern, isVertexShader: true));
+        }
+
+        public void AddIntegerVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Int, rmExtern, isVertexShader: true));
+        }
+
+        //
+        // Getters for specific types of paramaters for pixel shaders
+        //
+
+        public List<ShaderParameter> GetRealPixelParameters()
         {
             var result = new List<ShaderParameter>();
             foreach(var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern == RenderMethodExtern.none)
+                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == false)
                     result.Add(parameter);
             }
             return result;
         }
 
-        public List<ShaderParameter> GetBooleanParameters()
+        public List<ShaderParameter> GetBooleanPixelParameters()
         {
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Boolean && parameter.RenderMethodExtern == RenderMethodExtern.none)
+                if (parameter.RegisterType == RegisterType.Boolean && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == false)
                     result.Add(parameter);
             }
             return result;
         }
 
-        public List<ShaderParameter> GetIntegerParameters()
+        public List<ShaderParameter> GetIntegerPixelParameters()
         {
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern == RenderMethodExtern.none)
+                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == false)
                     result.Add(parameter);
             }
             return result;
         }
 
-        public List<ShaderParameter> GetSamplerParameters()
+        public List<ShaderParameter> GetSamplerPixelParameters()
         {
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern == RenderMethodExtern.none)
+                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == false)
                     result.Add(parameter);
             }
             return result;
         }
 
-        public List<ShaderParameter> GetRealExternParameters()
+        public List<ShaderParameter> GetRealExternPixelParameters()
         {
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern != RenderMethodExtern.none)
+                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.IsVertexShader == false)
                     result.Add(parameter);
             }
             return result;
         }
 
-        public List<ShaderParameter> GetIntegerExternParameters()
+        public List<ShaderParameter> GetIntegerExternPixelParameters()
         {
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern != RenderMethodExtern.none)
+                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.IsVertexShader == false)
                     result.Add(parameter);
             }
             return result;
         }
 
-        public List<ShaderParameter> GetSamplerExternParameters()
+        public List<ShaderParameter> GetSamplerExternPixelParameters()
         {
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern != RenderMethodExtern.none)
+                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.IsVertexShader == false)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
+        //
+        // Getters for specific types of paramaters for vertex shaders
+        //
+
+        public List<ShaderParameter> GetRealVertexParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == true)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
+        public List<ShaderParameter> GetBooleanVertexParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Boolean && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == true)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
+        public List<ShaderParameter> GetIntegerVertexParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == true)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
+        public List<ShaderParameter> GetSamplerVertexParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == true)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
+        public List<ShaderParameter> GetRealExternVertexParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.IsVertexShader == true)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
+        public List<ShaderParameter> GetIntegerExternVertexParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.IsVertexShader == true)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
+        public List<ShaderParameter> GetSamplerExternVertexParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.IsVertexShader == true)
                     result.Add(parameter);
             }
             return result;
@@ -138,16 +296,20 @@ namespace HaloShaderGenerator.Globals
         public RegisterType RegisterType;
         public HLSLType CodeType;
         public RenderMethodExtern RenderMethodExtern;
+        public bool IsVertexShader = false;
+        public bool IsColor = false;
 
         // TODO: add default values
 
-        public ShaderParameter(string parameterName, string registerName, HLSLType type, RenderMethodExtern renderMethodExtern = RenderMethodExtern.none)
+        public ShaderParameter(string parameterName, string registerName, HLSLType type, RenderMethodExtern renderMethodExtern = RenderMethodExtern.none, bool isColor=false, bool isVertexShader=false)
         {
             ParameterName = parameterName;
             RegisterName = registerName;
             CodeType = type;
             RegisterType = GetRegisterType(type);
             RenderMethodExtern = renderMethodExtern;
+            IsVertexShader = isVertexShader;
+            IsColor = isColor;
         }
 
         public string GenerateHLSLCode()
@@ -162,7 +324,7 @@ namespace HaloShaderGenerator.Globals
                 case HLSLType.Float:
                 case HLSLType.Float2:
                 case HLSLType.Float3:
-                case HLSLType.FLoat4:
+                case HLSLType.Float4:
                 case HLSLType.Xform_2d:
                 case HLSLType.Xform_3d:
                     return RegisterType.Vector;

@@ -354,17 +354,17 @@ namespace HaloShaderGenerator.Shader
                     result.AddSamplerParameter("base_map");
                     result.AddSamplerParameter("detail_map");
                     result.AddSamplerParameter("change_color_map");
-                    result.AddFloat4Parameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
-                    result.AddFloat4Parameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
+                    result.AddFloat3ColorParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
+                    result.AddFloat3ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
                     break;
                 case Albedo.Four_Change_Color:
                     result.AddSamplerParameter("base_map");
                     result.AddSamplerParameter("detail_map");
                     result.AddSamplerParameter("change_color_map");
-                    result.AddFloat4Parameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
-                    result.AddFloat4Parameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
-                    result.AddFloat4Parameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary);
-                    result.AddFloat4Parameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary);
+                    result.AddFloat3ColorParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
+                    result.AddFloat3ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
+                    result.AddFloat3ColorParameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary);
+                    result.AddFloat3ColorParameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary);
                     break;
                 case Albedo.Three_Detail_Blend:
                     result.AddSamplerParameter("base_map");
@@ -438,10 +438,10 @@ namespace HaloShaderGenerator.Shader
                 case Material_Model.Cook_Torrance:
                     result.AddFloatParameter("diffuse_coefficient");
                     result.AddFloatParameter("specular_coefficient");
-                    result.AddFloat4Parameter("specular_tint");
-                    result.AddFloat4Parameter("fresnel_color");
+                    result.AddFloat3ColorParameter("specular_tint");
+                    result.AddFloat3ColorParameter("fresnel_color");
                     result.AddBooleanParameter("use_fresnel_color_environment");
-                    result.AddFloat4Parameter("fresnel_color_environment");
+                    result.AddFloat3ColorParameter("fresnel_color_environment");
                     result.AddFloatParameter("fresnel_power");
                     result.AddFloatParameter("roughness");
                     result.AddFloatParameter("area_specular_contribution");
@@ -458,7 +458,7 @@ namespace HaloShaderGenerator.Shader
                     result.AddFloatParameter("albedo_blend");
                     result.AddFloatParameter("analytical_anti_shadow_control");
                     result.AddFloatParameter("rim_fresnel_coefficient");
-                    result.AddFloat4Parameter("rim_fresnel_color");
+                    result.AddFloat3ColorParameter("rim_fresnel_color");
                     result.AddFloatParameter("rim_fresnel_power");
                     result.AddFloatParameter("rim_fresnel_albedo_blend");
                     break;
@@ -466,9 +466,9 @@ namespace HaloShaderGenerator.Shader
                     result.AddFloatParameter("diffuse_coefficient");
                     result.AddFloatParameter("specular_coefficient");
                     result.AddFloatParameter("normal_specular_power");
-                    result.AddFloat4Parameter("normal_specular_tint");
+                    result.AddFloat3ColorParameter("normal_specular_tint");
                     result.AddFloatParameter("glancing_specular_power");
-                    result.AddFloat4Parameter("glancing_specular_tint");
+                    result.AddFloat3ColorParameter("glancing_specular_tint");
                     result.AddFloatParameter("fresnel_curve_steepness");
                     result.AddFloatParameter("area_specular_contribution");
                     result.AddFloatParameter("analytical_specular_contribution");
@@ -497,37 +497,37 @@ namespace HaloShaderGenerator.Shader
                     break;
                 case Material_Model.Organism:
                     result.AddFloatParameter("diffuse_coefficient");
-                    result.AddFloat4Parameter("diffuse_tint");
+                    result.AddFloat3ColorParameter("diffuse_tint");
                     result.AddFloatParameter("analytical_specular_coefficient");
                     result.AddFloatParameter("area_specular_coefficient");
-                    result.AddFloat4Parameter("specular_tint");
+                    result.AddFloat3ColorParameter("specular_tint");
                     result.AddFloatParameter("specular_power");
                     result.AddSamplerParameter("specular_map");
                     result.AddFloatParameter("environment_map_coefficient");
-                    result.AddFloat4Parameter("environment_map_tint");
+                    result.AddFloat3ColorParameter("environment_map_tint");
                     result.AddFloatParameter("fresnel_curve_steepness");
                     result.AddFloatParameter("rim_coefficient");
-                    result.AddFloat4Parameter("rim_tint");
+                    result.AddFloat3ColorParameter("rim_tint");
                     result.AddFloatParameter("rim_power");
                     result.AddFloatParameter("rim_start");
                     result.AddFloatParameter("rim_maps_transition_ratio");
                     result.AddFloatParameter("ambient_coefficient");
-                    result.AddFloat4Parameter("ambient_tint");
+                    result.AddFloat3ColorParameter("ambient_tint");
                     result.AddSamplerParameter("occlusion_parameter_map");
 
                     result.AddFloatParameter("subsurface_coefficient");
-                    result.AddFloat4Parameter("subsurface_tint");
+                    result.AddFloat3ColorParameter("subsurface_tint");
                     result.AddFloatParameter("subsurface_propagation_bias");
                     result.AddFloatParameter("subsurface_normal_detail");
                     result.AddSamplerParameter("subsurface_map");
 
                     result.AddFloatParameter("transparence_coefficient");
-                    result.AddFloat4Parameter("transparence_tint");
+                    result.AddFloat3ColorParameter("transparence_tint");
                     result.AddFloatParameter("transparence_normal_bias");
                     result.AddFloatParameter("transparence_normal_detail");
                     result.AddSamplerParameter("transparence_map");
 
-                    result.AddFloat4Parameter("final_tint");
+                    result.AddFloat3ColorParameter("final_tint");
                     result.AddBooleanParameter("no_dynamic_lights");
                     break;
                 case Material_Model.Single_Lobe_Phong:
@@ -537,7 +537,7 @@ namespace HaloShaderGenerator.Shader
                     result.AddFloatParameter("analytical_specular_contribution");
                     result.AddFloatParameter("area_specular_contribution");
                     result.AddFloatParameter("environment_map_specular_contribution");
-                    result.AddFloat4Parameter("specular_tint");
+                    result.AddFloat3ColorParameter("specular_tint");
                     result.AddBooleanParameter("order3_area_specular");
                     result.AddBooleanParameter("no_dynamic_lights");
                     break;
@@ -553,21 +553,21 @@ namespace HaloShaderGenerator.Shader
                 case Environment_Mapping.Per_Pixel:
                 case Environment_Mapping.Custom_Map:
                     result.AddSamplerWithoutXFormParameter("environment_map");
-                    result.AddFloat4Parameter("env_tint_color");
+                    result.AddFloat3ColorParameter("env_tint_color");
                     result.AddFloatParameter("env_roughness_scale");
                     break;
                 case Environment_Mapping.Dynamic:
-                    result.AddFloat4Parameter("env_tint_color");
+                    result.AddFloat3ColorParameter("env_tint_color");
                     result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
                     result.AddSamplerParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
                     result.AddFloatParameter("env_roughness_scale");
                     break;
                 case Environment_Mapping.From_Flat_Texture:
                     result.AddSamplerWithoutXFormParameter("flat_environment_map");
-                    result.AddFloat4Parameter("env_tint_color");
-                    result.AddFloat4Parameter("flat_envmap_matrix_x", RenderMethodExtern.flat_envmap_matrix_x);
-                    result.AddFloat4Parameter("flat_envmap_matrix_y", RenderMethodExtern.flat_envmap_matrix_y);
-                    result.AddFloat4Parameter("flat_envmap_matrix_z", RenderMethodExtern.flat_envmap_matrix_z);
+                    result.AddFloat3ColorParameter("env_tint_color");
+                    result.AddFloat3Parameter("flat_envmap_matrix_x", RenderMethodExtern.flat_envmap_matrix_x);
+                    result.AddFloat3Parameter("flat_envmap_matrix_y", RenderMethodExtern.flat_envmap_matrix_y);
+                    result.AddFloat3Parameter("flat_envmap_matrix_z", RenderMethodExtern.flat_envmap_matrix_z);
                     result.AddFloatParameter("hemisphere_percentage");
                     result.AddFloat4Parameter("env_bloom_override");
                     result.AddFloatParameter("env_bloom_override_intensity");
