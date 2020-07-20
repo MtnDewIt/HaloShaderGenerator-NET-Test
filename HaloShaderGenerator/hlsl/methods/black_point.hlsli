@@ -8,9 +8,8 @@
 
 void black_point_on(inout float alpha, float black_point)
 {
-    float r0_x = 1 / (-black_point + 0.5f * (1 - -black_point));
     float r0_y = alpha - black_point;
-    r0_x = saturate(r0_y * r0_x);
+    float r0_x = saturate(r0_y * (1 / (-black_point + 0.5f * (1 - -black_point))));
     r0_y = 1.0f + black_point;
     float r0_z = r0_y * 0.5f;
     r0_y = saturate(-(r0_y * 0.5f) + alpha);
