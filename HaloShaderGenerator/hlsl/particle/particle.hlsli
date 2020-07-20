@@ -48,6 +48,7 @@ float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
 float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
 {
     float4 depth_sample = sample_depth_buffer_distortion(input.position.xy);
+    //float4 depth_sample = sample_depth_buffer(input.position.xy); // temp fix
     
     float4 color = particle_albedo(input.texcoord, input.parameters.x);
     
@@ -60,10 +61,6 @@ float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
         depth_fade = depth_fade_on(depth_sample.x, input.color2.w);
     }
     
-    // SCREEN CONSTANTS
-    // xy is the inverted game resolution
-    // z is a distance variable of some sort
-    
     float2 screen_depth = (color.xz * screen_constants.z * input.color.w);
     screen_depth *= depth_fade;
     
@@ -75,11 +72,25 @@ float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
     r0.z = dot(r0.xy, r0.xy);
     
     r0.xy *= distortion_scale.x;
-    r0.xy *= screen_constants.xy; // val /= game_resolution.xy
+    float2 distortion_value = r0.xy * screen_constants.xy; // val /= game_resolution
     
     clip(-r0.z < 0 ? 1 : -1);
     
-    return float4(r0.x * 0.0312509537, r0.y * 0.0312509537, 0, 0);
+    if (specialized_rendering_arg == k_specialized_rendering_distortion_expensive || specialized_rendering_arg == k_specialized_rendering_distortion_expensive_diffuse)
+    {
+        // distortion_expensive
+        
+        float2 _zw = r0.xy * 0.000488296151 + input.position.xy;
+
+        float4 depth_sample_expensive = sample_depth_buffer_distortion(_zw);
+        //float4 depth_sample_expensive = sample_depth_buffer(_zw); // temp fix
+    
+        float depth_sat = saturate(depth_sample_expensive.x + -input.color2.w); // depth_fade code???
+    
+        clip(-depth_sat.x < 0 ? 1 : -1);
+    }
+    
+    return float4(distortion_value.x * 0.0312509537, distortion_value.y * 0.0312509537, 0, 0);
 }
 
 #endif
