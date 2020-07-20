@@ -440,7 +440,7 @@ namespace HaloShaderGenerator.Shader
                     result.AddFloatParameter("specular_coefficient");
                     result.AddFloat3ColorParameter("specular_tint");
                     result.AddFloat3ColorParameter("fresnel_color");
-                    result.AddBooleanParameter("use_fresnel_color_environment");
+                    result.AddFloatParameter("use_fresnel_color_environment");
                     result.AddFloat3ColorParameter("fresnel_color_environment");
                     result.AddFloatParameter("fresnel_power");
                     result.AddFloatParameter("roughness");
@@ -454,7 +454,7 @@ namespace HaloShaderGenerator.Shader
                     result.AddSamplerWithoutXFormParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
                     result.AddSamplerWithoutXFormParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
                     result.AddSamplerWithoutXFormParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
-                    result.AddBooleanParameter("albedo_blend_with_specular_tint");
+                    result.AddFloatParameter("albedo_blend_with_specular_tint");
                     result.AddFloatParameter("albedo_blend");
                     result.AddFloatParameter("analytical_anti_shadow_control");
                     result.AddFloatParameter("rim_fresnel_coefficient");
