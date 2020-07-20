@@ -93,9 +93,8 @@ uniform xform2d p_dynamic_light_gel_xform : register(c5);
 uniform sampler2D albedo_texture;
 
 // particle only
-
 uniform sampler2D depth_buffer;
-
+uniform float3 screen_constants;
 //
 
 #if envmap_type_arg != k_environment_mapping_dynamic

@@ -109,6 +109,12 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_misc_first_person_always 2
 #define k_misc_first_person_never_with_rotating_bitmaps 3
 
+#define k_specialized_rendering_none 0
+#define k_specialized_rendering_distortion 1
+#define k_specialized_rendering_distortion_expensive 2
+#define k_specialized_rendering_distortion_diffuse 3
+#define k_specialized_rendering_distortion_expensive_diffuse 4
+#define k_specialized_rendering_none 0
 #define k_lighting_none 0
 #define k_lighting_per_pixel_ravi_order_3 1
 #define k_lighting_per_vertex_ravi_order_0 2
@@ -152,6 +158,7 @@ This file contains a list of blank definitions to help with Intellisense
 #define misc_arg 0
 // Particle
 #define particle_blend_type_arg 0
+#define specialized_rendering_arg 0
 #define render_targets_arg 0
 #define lighting_arg 0
 #define depth_fade_arg 0

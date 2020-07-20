@@ -9,4 +9,10 @@ float4 sample_depth_buffer(float2 vPos)
     return tex2D(depth_buffer, depth_texcoord);
 }
 
+float4 sample_depth_buffer_distortion(float2 vPos)
+{
+    float2 depth_texcoord = (0.5f + vPos.xy * 2) / texture_size.xy;
+    return tex2D(depth_buffer, depth_texcoord);
+}
+
 #endif
