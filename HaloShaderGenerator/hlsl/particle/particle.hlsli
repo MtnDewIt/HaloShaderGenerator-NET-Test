@@ -52,7 +52,8 @@ float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
     
     float4 color = particle_albedo(input.texcoord, input.parameters.x);
     
-    color.xy = color.xy * 2.00787401 + -1.00787401;
+    if (specialized_rendering_arg == k_specialized_rendering_distortion || specialized_rendering_arg == k_specialized_rendering_distortion_expensive)
+        color.xy = color.xy * 2.00787401 + -1.00787401;
     color.z = -color.y;
     
     float depth_fade = 1.0f;
@@ -78,8 +79,6 @@ float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
     
     if (specialized_rendering_arg == k_specialized_rendering_distortion_expensive || specialized_rendering_arg == k_specialized_rendering_distortion_expensive_diffuse)
     {
-        // distortion_expensive
-        
         float2 _zw = r0.xy * 0.000488296151 + input.position.xy;
 
         float4 depth_sample_expensive = sample_depth_buffer_distortion(_zw);
