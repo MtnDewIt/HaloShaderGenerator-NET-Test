@@ -338,7 +338,7 @@ namespace HaloShaderGenerator.Shader
                 case Albedo.Default:
                     result.AddSamplerParameter("base_map");
                     result.AddSamplerParameter("detail_map");
-                    result.AddFloat4Parameter("albedo_color");
+                    result.AddFloat4ColorParameter("albedo_color");
                     break;
                 case Albedo.Two_Detail_Black_Point:
                 case Albedo.Two_Detail:
@@ -348,7 +348,7 @@ namespace HaloShaderGenerator.Shader
                     result.AddSamplerParameter("detail_map2");
                     break;
                 case Albedo.Constant_Color:
-                    result.AddFloat4Parameter("albedo_color");
+                    result.AddFloat4ColorParameter("albedo_color");
                     break;
                 case Albedo.Two_Change_Color:
                     result.AddSamplerParameter("base_map");
@@ -382,10 +382,10 @@ namespace HaloShaderGenerator.Shader
                     result.AddSamplerParameter("base_map");
                     result.AddSamplerParameter("detail_map");
                     result.AddSamplerParameter("color_mask_map");
-                    result.AddFloat4Parameter("albedo_color");
-                    result.AddFloat4Parameter("albedo_color2");
-                    result.AddFloat4Parameter("albedo_color3");
-                    result.AddFloat4Parameter("neutral_gray");
+                    result.AddFloat4ColorParameter("albedo_color");
+                    result.AddFloat4ColorParameter("albedo_color2");
+                    result.AddFloat4ColorParameter("albedo_color3");
+                    result.AddFloat4ColorParameter("neutral_gray");
                     break;
             }
 
