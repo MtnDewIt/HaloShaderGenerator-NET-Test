@@ -9,6 +9,7 @@ namespace HaloShaderGenerator.Particle
     public class ParticleGenerator : IShaderGenerator
     {
         private bool TemplateGenerationValid;
+        private bool ApplyFixes;
 
         Albedo albedo;
         Blend_Mode blend_mode;
@@ -40,7 +41,7 @@ namespace HaloShaderGenerator.Particle
         /// <param name="frame_blend"></param>
         /// <param name="self_illumination"></param>
         public ParticleGenerator(Albedo albedo, Blend_Mode blend_mode, Specialized_Rendering specialized_rendering, Lighting lighting, Render_Targets render_targets,
-            Depth_Fade depth_fade, Black_Point black_point, Fog fog, Frame_Blend frame_blend, Self_Illumination self_illumination)
+            Depth_Fade depth_fade, Black_Point black_point, Fog fog, Frame_Blend frame_blend, Self_Illumination self_illumination, bool applyFixes = false)
         {
             this.albedo = albedo;
             this.blend_mode = blend_mode;
@@ -53,6 +54,7 @@ namespace HaloShaderGenerator.Particle
             this.frame_blend = frame_blend;
             this.self_illumination = self_illumination;
 
+            ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
         }
 
@@ -76,6 +78,8 @@ namespace HaloShaderGenerator.Particle
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Fog>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Frame_Blend>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Self_Illumination>());
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes));
 
             //
             // The following code properly names the macros (like in rmdf)
