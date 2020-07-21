@@ -316,7 +316,19 @@ namespace HaloShaderGenerator.Particle
 
         public ShaderParameters GetVertexShaderParameters()
         {
-            return new ShaderParameters();
+            if (!TemplateGenerationValid)
+                return null;
+            var result = new ShaderParameters();
+
+            result.AddPrefixedFloat4VertexParameter("albedo", "category_");
+            result.AddPrefixedFloat4VertexParameter("blend_mode", "category_");
+            result.AddPrefixedFloat4VertexParameter("specialized_rendering", "category_");
+            result.AddPrefixedFloat4VertexParameter("lighting", "category_");
+            result.AddPrefixedFloat4VertexParameter("fog", "category_");
+            result.AddPrefixedFloat4VertexParameter("frame_blend", "category_");
+            result.AddPrefixedFloat4VertexParameter("self_illumination", "category_");
+
+            return result;
         }
 
         public ShaderParameters GetGlobalParameters()

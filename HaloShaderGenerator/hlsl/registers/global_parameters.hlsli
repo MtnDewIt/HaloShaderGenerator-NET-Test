@@ -78,6 +78,7 @@ uniform float4 simple_lights[40] : register(c18);
 uniform float4 p_render_debug_mode : register(c94);
 uniform float4 primary_change_color_old : register(c190);
 uniform float4 secondary_change_color_old : register(c191);
+uniform float3 depth_constants : register(c201);
 uniform float4 p_lightmap_compress_constant_0 : register(c210);
 uniform float4 p_lightmap_compress_constant_1 : register(c211);
 uniform float4 k_ps_active_camo_factor : register(c212);

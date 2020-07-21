@@ -93,6 +93,10 @@ namespace HaloShaderGenerator.Globals
         {
             Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, isVertexShader: true));
         }
+        public void AddPrefixedFloat4VertexParameter(string parameterName, string prefix, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, prefix + parameterName, HLSLType.Float4, rmExtern, isVertexShader: true));
+        }
 
         public void AddFloat3VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
