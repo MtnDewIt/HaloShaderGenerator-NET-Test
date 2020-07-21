@@ -54,8 +54,8 @@ float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
     
     float4 color = particle_albedo(input.texcoord, input.parameters.x);
     
-    if (specialized_rendering_arg == k_specialized_rendering_distortion || specialized_rendering_arg == k_specialized_rendering_distortion_expensive)
-        color.xy = color.xy * 2.00787401 + -1.00787401;
+    if (specialized_rendering_arg == k_specialized_rendering_distortion || !APPLY_HLSL_FIXES && specialized_rendering_arg == k_specialized_rendering_distortion_expensive)
+        color.xy = color.xy * 2.00787401 + -1.00787401; // TODO: figure what these are for
     color.z = -color.y;
     
     float depth_fade = 1.0f;
