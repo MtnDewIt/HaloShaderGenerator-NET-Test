@@ -269,11 +269,11 @@ namespace HaloShaderGenerator.Particle
                     break;
                 case Albedo.Palettized:
                     result.AddSamplerParameter("base_map");
-                    result.AddSamplerParameter("palette");
+                    result.AddSamplerWithoutXFormParameter("palette");
                     break;
                 case Albedo.Palettized_Plus_Billboard_Alpha:
                     result.AddSamplerParameter("base_map");
-                    result.AddSamplerParameter("palette");
+                    result.AddSamplerWithoutXFormParameter("palette");
                     result.AddSamplerParameter("alpha_map");
                     break;
                 case Albedo.Diffuse_Plus_Sprite_Alpha:
@@ -282,7 +282,7 @@ namespace HaloShaderGenerator.Particle
                     break;
                 case Albedo.Palettized_Plus_Sprite_Alpha:
                     result.AddSamplerParameter("base_map");
-                    result.AddSamplerParameter("palette");
+                    result.AddSamplerWithoutXFormParameter("palette");
                     result.AddSamplerParameter("alpha_map");
                     break;
             }

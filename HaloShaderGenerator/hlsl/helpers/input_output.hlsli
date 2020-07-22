@@ -216,12 +216,13 @@ struct VS_OUTPUT_PER_VERTEX_COLOR
 
 struct VS_OUTPUT_PARTICLE
 {
+	// TODO: fix these names - the render_distortion structure has different fields
     float4 position : SV_Position;
-    float4 color : COLOR;
-    float4 color2 : COLOR1; // w is depth
+    float4 color : COLOR; // float4 main_color
+    float4 color2 : COLOR1; // float3 add_color, float depth ////// float2 tangent
     float4 texcoord : TEXCOORD;
     float4 parameters : TEXCOORD1;
-    float4 normal : TEXCOORD2;
+    float4 normal : TEXCOORD2; // float3 normal, float palette_unknown ////// float2 binormal
 };
 
 #endif
