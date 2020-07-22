@@ -99,7 +99,7 @@ namespace HaloShaderGenerator.Particle
             macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", entryPoint, "shadertype_"));
 
-            //macros.Add(ShaderGeneratorBase.CreateMacro("albedo_arg", albedo, "k_albedo_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("particle_albedo_arg", albedo, "k_particle_albedo_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("particle_blend_type_arg", blend_mode, "k_particle_blend_mode_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("specialized_rendering_arg", specialized_rendering, "k_specialized_rendering_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("lighting_arg", lighting, "k_lighting_"));
