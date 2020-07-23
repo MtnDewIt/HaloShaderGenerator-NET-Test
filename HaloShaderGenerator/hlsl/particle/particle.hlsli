@@ -17,7 +17,7 @@ uniform float distortion_scale;
 
 float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
 {
-    float4 color = particle_albedo(input.texcoord, input.parameters.yzw, input.parameters.x, input.normal.w);
+    float4 color = particle_albedo(input.texcoord, input.parameters.yzw, input.parameters.x, input.normal.w, input.color.a);
     
     if (depth_fade_arg == k_depth_fade_on)
     {
@@ -51,7 +51,7 @@ float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
     
     float4 depth_sample = sample_depth_buffer_distortion(input.position.xy);
     
-    float4 color = particle_albedo(input.texcoord, input.parameters.yzw, input.parameters.x, input.normal.w);
+    float4 color = particle_albedo(input.texcoord, input.parameters.yzw, input.parameters.x, input.normal.w, input.color.a);
     
     if (specialized_rendering_arg == k_specialized_rendering_distortion || !APPLY_HLSL_FIXES && specialized_rendering_arg == k_specialized_rendering_distortion_expensive)
         color.xy = color.xy * 2.00787401 + -1.00787401; // range conversion

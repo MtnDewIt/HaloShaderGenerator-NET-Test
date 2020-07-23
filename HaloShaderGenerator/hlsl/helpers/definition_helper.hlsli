@@ -114,7 +114,10 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_particle_albedo_palettized 2
 #define k_particle_albedo_palettized_plus_billboard_alpha 3
 #define k_particle_albedo_diffuse_plus_sprite_alpha 4
-#define k_particle_albedo_palettized_plus_sprite_alphaa 5
+#define k_particle_albedo_palettized_plus_sprite_alpha 5
+#define k_particle_albedo_diffuse_modulated 6
+#define k_particle_albedo_palettized_glow 7
+#define k_particle_albedo_palettized_plasma 8
 #define k_specialized_rendering_none 0
 #define k_specialized_rendering_distortion 1
 #define k_specialized_rendering_distortion_expensive 2
