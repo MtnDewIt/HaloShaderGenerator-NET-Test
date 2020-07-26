@@ -5,7 +5,7 @@
 
 float3 transform_vector(float3 dir, float3x3 transform)
 {
-	return normalize(mul(transform, dir));
+	return normalize(mul(dir, transpose(transform)));
 }
 
 float3 transform_binormal(float3 normal, float3 tangent, float3 binormal)
@@ -21,7 +21,7 @@ float3 transform_binormal(float3 normal, float3 tangent, float3 binormal)
 
 float3 decompress_vertex_position(float3 position)
 {
-	return (position * position_compression_scale.xyz) + position_compression_offset.xyz;
+	return (position * Position_Compression_Scale.xyz) + Position_Compression_Offset.xyz;
 }
 
 void calculate_z_squish(inout float4 screen_position)
@@ -33,31 +33,34 @@ void calculate_z_squish_2(inout float4 screen_position)
 {
 	calculate_z_squish(screen_position);
 	// this appears in skinned ambient glvs for shader
+	float offset;
 	if (v_mesh_squished)
 	{
-		screen_position.z = screen_position.z - 0.000005;
+		offset = 0.000005;
 	}
 	else
 	{
-		screen_position.z = screen_position.z - 0.00002;
+		offset = 0.00002;
 	}
+	screen_position.z = screen_position.z - offset;
+
 }
 
 float4 calculate_screenspace_position(float4 vertex_position)
 {
-	return mul(vertex_position, view_projection);
+	return mul(vertex_position, View_Projection);
 }
 
 float2 calculate_texcoord(float4 texcoord)
 {
-	return texcoord.xy * uv_compression_scale_offset.xy + uv_compression_scale_offset.zw;
+	return texcoord.xy * UV_Compression_Scale_Offset.xy + UV_Compression_Scale_Offset.zw;
 }
 
 float3 rgbe_to_rgb(float4 rgbe)
 {
 	rgbe = 2.0 * rgbe - 1.0; // original data encoded with signed bytes so convert to unsigned scale
 	float exponent = pow(2.0, 31.75 * rgbe.w);
-	float3 rgb = exponent * rgbe.rgb;
+	float3 rgb = rgbe.rgb * exponent;
 	return rgb;
 }
 

@@ -14,17 +14,20 @@ namespace HaloShaderGenerator
 
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
-        static readonly string TestShaderType = "particle";
-
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Default};
+        static readonly string TestShaderType = "shader";
+        static readonly string TestStageType = "shared_vertex"; //shared_vertex, shader_pixel, vertex or pixel
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Albedo, ShaderStage.Active_Camo, ShaderStage.Shadow_Generate, ShaderStage.Lightmap_Debug_Mode,
+            ShaderStage.Dynamic_Light, ShaderStage.Dynamic_Light_Cinematic, ShaderStage.Sfx_Distort, ShaderStage.Static_Sh, ShaderStage.Static_Per_Vertex_Color,
+            ShaderStage.Static_Per_Pixel, ShaderStage.Static_Per_Vertex, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Prt_Linear, ShaderStage.Static_Prt_Quadratic};
 
         // Shader
+        static readonly List<VertexType> VertexOverrides = new List<VertexType> {VertexType.World, VertexType.Rigid };
 
-        static readonly List<int> ShaderAlbedoOverrides =         new List<int> {0};
+        static readonly List<int> ShaderAlbedoOverrides =         new List<int> {};
         static readonly List<int> ShaderBumpOverrides =           new List<int> { };
         static readonly List<int> ShaderAlphaOverrides =          new List<int> { };
         static readonly List<int> ShaderSpecularOverrides =       new List<int> {};
-        static readonly List<int> ShaderMaterialOverrides =       new List<int> {0 };
+        static readonly List<int> ShaderMaterialOverrides =       new List<int> {7 };
         static readonly List<int> ShaderEnvOverrides =            new List<int> {};
         static readonly List<int> ShaderSelfIllumOverrides =      new List<int> {};
         static readonly List<int> ShaderBlendModeOverrides =      new List<int> { };
@@ -33,25 +36,8 @@ namespace HaloShaderGenerator
 
         static readonly List<List<int>> ShaderOverrides = new List<List<int>>
         {
-            //new List<int> { 0, 1, 0, 1, 7, 0, 0, 0, 0, 0, 0 }
-            /*
-            new List<int> { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 },
-            new List<int> { 0, 0, 0, 1, 1, 2, 4, 0, 0, 1, 0 },
-            new List<int> { 0, 0, 0, 0, 1, 0, 4, 1, 0, 1, 0 },
-            new List<int> { 0, 0, 0, 0, 1, 0, 7, 1, 0, 0, 0 },
-            new List<int> { 0, 2, 0, 1, 1, 1, 1, 0, 0, 1, 0 },
-            new List<int> { 0, 1, 0, 1, 1, 2, 0, 0, 2, 0, 0 },
-            new List<int> { 0, 1, 0, 1, 1, 0, 2, 0, 1, 0, 0 },
-            new List<int> { 0, 1, 0, 2, 1, 0, 2, 3, 1, 1, 0 },
-            new List<int> { 0, 2, 0, 1, 1, 2, 5, 0, 0, 1, 0 },
-            new List<int> { 0, 1, 0, 0, 1, 4, 9, 0, 0, 1, 0 },
-            new List<int> { 0, 1, 1, 0, 1, 2, 4, 3, 0, 0, 0 },*/
-            //new List<int> { 0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0 },
-            //new List<int> { 0, 1, 0, 2, 5, 1, 0, 5, 0, 0, 0 },
-            //new List<int> { 0, 1, 0, 1, 7, 0, 0, 0, 0, 0, 0 }
-            //new List<int> { 0, 1, 0, 1, 6, 0, 0, 0, 0, 0, 0 }
-
-            //new List<int> { 11, 1, 0, 2, 1, 4, 0, 0, 0, 1, 0 },
+            new List<int> { 0, 2, 0, 1, 7, 2, 0, 0, 0, 0, 0 },
+            new List<int> { 0, 2, 0, 1, 7, 0, 0, 0, 0, 1, 0 },
         };
 
         // Particle
@@ -71,6 +57,31 @@ namespace HaloShaderGenerator
         {
             //new List<int> { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
         };
+
+        static void RunSharedVertexShaderUnitTest()
+        {
+            ShaderUnitTest shaderTests = new ShaderUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                shaderTests.TestAllSharedVertexShaders(VertexOverrides, StageOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : ShaderUnitTest.GetAllShaderStages();
+                var vertices = (VertexOverrides.Count > 0) ? VertexOverrides : ShaderUnitTest.GetAllVertexFormats();
+                foreach (var vertex in vertices)
+                {
+                    foreach (var stage in stages)
+                    {
+                        TestSharedVertexShader(vertex, stage);
+                    }
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllSharedVertexShaders(null, null);
+            }
+        }
 
         static void RunShaderUnitTest()
         {
@@ -134,7 +145,15 @@ namespace HaloShaderGenerator
 
             switch (TestShaderType)
             {
-                case "shader": RunShaderUnitTest(); break;
+                case "shader":
+                    switch (TestStageType)
+                    {
+                        case "shared_vertex":
+                            RunSharedVertexShaderUnitTest(); break;
+                        case "pixel":
+                            RunShaderUnitTest(); break;
+                    }
+                    break;
                 case "particle": RunParticleUnitTest(); break;
             }
 
@@ -207,10 +226,13 @@ namespace HaloShaderGenerator
         static void TestSharedVertexShader(VertexType vertexType, ShaderStage stage)
         {
             var gen = new ShaderGenerator();
-            var bytecode = gen.GenerateSharedVertexShader(vertexType, stage).Bytecode;
-
-            var disassembly = D3DCompiler.Disassemble(bytecode);
-            WriteShaderFile($"generated_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}.glvs", disassembly);
+            if(gen.IsEntryPointSupported(stage) && gen.IsVertexShaderShared(stage) && gen.IsVertexFormatSupported(vertexType))
+            {
+                var bytecode = gen.GenerateSharedVertexShader(vertexType, stage).Bytecode;
+                var disassembly = D3DCompiler.Disassemble(bytecode);
+                WriteShaderFile($"generated_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}.glvs", disassembly);
+            }
+           
         }
 
         static void TestSharedPixelShader(ShaderStage stage, int methodIndex, int optionIndex)

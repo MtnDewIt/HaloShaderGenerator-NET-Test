@@ -3,16 +3,16 @@
 
 uniform bool v_mesh_squished : register(b8);
 
-uniform float4x4 view_projection : register(c0);
-uniform float3 camera_forward : register(c4);
-uniform float3 camera_left : register(c5);
-uniform float3 camera_up : register(c6);
-uniform float3 camera_position : register(c7);
-uniform float4 position_compression_scale : register(c12);
-uniform float4 position_compression_offset : register(c13);
-uniform float4 uv_compression_scale_offset : register(c14);
+uniform float4x4 View_Projection : register(c0);
+uniform float3 Camera_Forward : register(c4);
+uniform float3 Camera_Left : register(c5);
+uniform float3 Camera_Up : register(c6);
+uniform float3 Camera_Position : register(c7);
+uniform float4 Position_Compression_Scale : register(c12);
+uniform float4 Position_Compression_Offset : register(c13);
+uniform float4 UV_Compression_Scale_Offset : register(c14);
 uniform float4 v_atmosphere_constant_extra : register(c15);
-uniform float4 nodes[210] : register(c16); // node transformations, supports up to 70 nodes
+uniform float4 Nodes[210] : register(c16); // node transformations, supports up to 70 nodes
 
 uniform float4 g_exposure : register(c232);
 uniform float4 v_atmosphere_constant_0 : register(c233);
