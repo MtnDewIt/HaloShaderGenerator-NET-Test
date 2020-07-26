@@ -108,7 +108,7 @@ VS_OUTPUT_PER_VERTEX entry_static_per_vertex(input_vertex_format input, STATIC_P
 {
 	VS_OUTPUT_PER_VERTEX output;
 	float4 world_position;
-	float3 extinction_factor;
+	float3 sky_radiance;
 	
 	// pack 5 rgb colors into 4  values
 	output.color4 = rgbe_to_rgb(per_vertex.color_1);
@@ -133,10 +133,10 @@ VS_OUTPUT_PER_VERTEX entry_static_per_vertex(input_vertex_format input, STATIC_P
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord.xy);
 	calculate_z_squish(output.position);
 	output.camera_dir = Camera_Position - world_position.xyz;
-	calculate_atmosphere_radiance(world_position, output.camera_dir, extinction_factor.rgb, output.sky_radiance.rgb);
+	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, sky_radiance);
 	// pack sky_radiance and extinction factor into the texcoord and radiance outputs
-	output.sky_radiance.w = extinction_factor.z;
-	output.texcoord.zw = extinction_factor.xy;
+	output.extinction_factor.w = sky_radiance.z;
+	output.texcoord.zw = sky_radiance.xy;
 	
 	return output;
 }

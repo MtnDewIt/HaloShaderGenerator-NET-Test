@@ -197,7 +197,7 @@ struct VS_OUTPUT_PER_VERTEX
 	float4 color3 : TEXCOORD7;
 	float3 color4 : TEXCOORD8;
 	
-	float4 sky_radiance : COLOR;
+	float4 extinction_factor : COLOR;
 };
 
 struct VS_OUTPUT_PER_VERTEX_COLOR

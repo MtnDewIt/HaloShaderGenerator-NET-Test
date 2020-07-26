@@ -80,8 +80,8 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 		}
 		else
 		{
-			common_data.sky_radiance = float3(input.texcoord.zw, input.sky_radiance.w);
-			common_data.extinction_factor = input.sky_radiance.rgb;
+			common_data.sky_radiance = float3(input.texcoord.zw, input.extinction_factor.w);
+			common_data.extinction_factor = input.extinction_factor.rgb;
 		}
 	}
 	
