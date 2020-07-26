@@ -56,14 +56,16 @@ float4 calculate_ambient_radiance_vector(float coefficient, float3 normal)
 
 float3 transform_unknown_vector_rigid(RIGID_VERTEX vert, float3 input)
 {
-	return input.x * Nodes[0].xyz + input.y * Nodes[1].xyz + input.z * Nodes[2].xyz;
+	float c1 = 0.33333333333;
+	input *= c1;
+	return input.x * Nodes[0].yzx + input.y * Nodes[1].yzx + input.z * Nodes[2].yzx;
 }
 
 float3 transform_unknown_vector_world(WORLD_VERTEX vert, float3 input)
 {
 	float c1 = 0.33333333333;
 	float4 r2 = input.xxyy * float4(0, c1, c1, 0);
-	r2.xyz = r2.zww + r2.xxy;
+	r2.xyz = r2.xxy + r2.zww;
 	return input.z * float3(0, c1, 0) + r2.xyz;
 	//dominant_light_direction = c1 * r1.yzx;
 }
@@ -76,7 +78,7 @@ float3 transform_unknown_vector_skinned(SKINNED_VERTEX vert, float3 input)
 	float4 basis1 = weights.x * Nodes[indices.x + 0] + weights.y * Nodes[indices.y + 0] + weights.z * Nodes[indices.z + 0] + weights.w * Nodes[indices.w + 0];
 	float4 basis2 = weights.x * Nodes[indices.x + 1] + weights.y * Nodes[indices.y + 1] + weights.z * Nodes[indices.z + 1] + weights.w * Nodes[indices.w + 1];
 	float4 basis3 = weights.x * Nodes[indices.x + 2] + weights.y * Nodes[indices.y + 2] + weights.z * Nodes[indices.z + 2] + weights.w * Nodes[indices.w + 2];
-	return input.x * basis1.xyz + input.y * basis2.xyz + input.z * basis3.xyz;
+	return input.x * basis1.yzx + input.y * basis2.yzx + input.z * basis3.yzx;
 }
 
 void get_local_transformation_rigid(input_vertex_format vert, out float3 rotate_x, out float3 rotate_y, out float3 rotate_z)
@@ -119,19 +121,21 @@ float4 calculate_linear_radiance_vector(input_vertex_format vert, float4 coeffic
 
 	float sh_0 = dot(v_lighting_constant_0.xyz, c1);
 	dominant_light_direction = v_lighting_constant_1.xyz + v_lighting_constant_3.xyz + v_lighting_constant_2.xyz;
+	float3 n_dld = normalize(dominant_light_direction);
+	float n_dot_dld = dot(normal, -n_dld);
 	
 	float3 sh_312 = c1 * dominant_light_direction;
 	float x1 = dot(normal, sh_312);
 	
-	float3 model_space_dld = transform_unknown_vector(vert, sh_312);
+	float3 model_space_dld = transform_unknown_vector(vert, dominant_light_direction);
 	model_space_dld = model_space_dld * float3(1, -1, 1);
 	float unknown = dot(float4(sh_0, model_space_dld), prt_coefficients);
 	
 	x1 = x1 * (-2.0f * c2);
 	float diffuse_reflectance = sh_0 * c4 + x1;
 	
-	float3 n_dld = normalize(dominant_light_direction);
-	float n_dot_dld = dot(normal, -n_dld);
+	
+	
 	unknown = max(0.01, unknown);
 	result.w = min(n_dot_dld, unknown);
 	diffuse_reflectance = diffuse_reflectance / PI;

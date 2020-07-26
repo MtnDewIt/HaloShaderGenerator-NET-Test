@@ -41,9 +41,9 @@ VS_OUTPUT_STATIC_PRT entry_static_prt_linear(input_vertex_format input, LINEAR_P
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord);
 	calculate_z_squish(output.position);
 	output.camera_dir = Camera_Position - world_position.xyz;
-	
-	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
 	output.prt_radiance_vector = calculate_linear_radiance_vector(input, input_prt.coefficients, output.normal);
+	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
+	
 	return output;
 }
 
