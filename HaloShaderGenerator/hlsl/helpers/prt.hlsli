@@ -72,12 +72,14 @@ float3 transform_unknown_vector_world(WORLD_VERTEX vert, float3 input)
 
 float3 transform_unknown_vector_skinned(SKINNED_VERTEX vert, float3 input)
 {
+	float c1 = 0.33333333333;
 	int4 indices = int4(3 * floor(vert.node_indices));
 	float4 weights = vert.node_weights * (1.0 / dot(vert.node_weights, 1));
 	// compute transformation matrix for weighted vertices
 	float4 basis1 = weights.x * Nodes[indices.x + 0] + weights.y * Nodes[indices.y + 0] + weights.z * Nodes[indices.z + 0] + weights.w * Nodes[indices.w + 0];
 	float4 basis2 = weights.x * Nodes[indices.x + 1] + weights.y * Nodes[indices.y + 1] + weights.z * Nodes[indices.z + 1] + weights.w * Nodes[indices.w + 1];
 	float4 basis3 = weights.x * Nodes[indices.x + 2] + weights.y * Nodes[indices.y + 2] + weights.z * Nodes[indices.z + 2] + weights.w * Nodes[indices.w + 2];
+	input *= c1;
 	return input.x * basis1.yzx + input.y * basis2.yzx + input.z * basis3.yzx;
 }
 
