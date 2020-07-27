@@ -15,7 +15,12 @@ void calc_distortion_world(WORLD_VERTEX input, out VS_OUTPUT_SFX_DISTORT output)
 	float4 world_position = float4(input.position.xyz, 1.0);
 	float4 screen_position = mul(world_position, View_Projection);
 	output.position = screen_position;
-	calculate_z_squish(screen_position);
+	
+	if (vertextype == k_vertextype_skinned)
+		calculate_z_squish_2(output.position);
+	else
+		calculate_z_squish(output.position);
+	
 	output.position.z = screen_position.z;
 	float3 camera_dir = normalize(world_position.xyz - Camera_Position);
 	float n_dot_c = dot(input.normal.xyz, camera_dir);

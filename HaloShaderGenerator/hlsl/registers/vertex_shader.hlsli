@@ -25,7 +25,6 @@ uniform float4 g_alt_exposure : register(c239);
 
 uniform float4x4 shadow_projection : register(c240);
 
-
 uniform float4 v_lighting_constant_0 : register(c240);
 uniform float4 v_lighting_constant_1 : register(c241);
 uniform float4 v_lighting_constant_2 : register(c242);

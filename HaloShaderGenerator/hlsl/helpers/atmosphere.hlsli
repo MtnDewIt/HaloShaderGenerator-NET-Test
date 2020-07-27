@@ -76,17 +76,13 @@ void calculate_atmosphere_radiance(float4 vertex_position, float3 camera_dir, ou
 			float one_over_thickness = 1.0 / atmosphere_thickness;
 			scale1 = calculate_atmosphere_particle_factor_with_thickness(overall_distance, atmosphere_height_at_camera_log2e, atmosphere_height_at_vertex, one_over_thickness, v_atmosphere_constant_4.w);
 			scale2 = calculate_atmosphere_particle_factor_with_thickness(overall_distance, atmosphere_height_at_camera_log2e, atmosphere_height_at_vertex, one_over_thickness, v_atmosphere_constant_5.w);
-			
-			extinction_factor.rgb = exp2(-(v_atmosphere_constant_2.rgb * scale2 + scale1 * v_atmosphere_constant_3.rgb));
 		}
 		else
 		{
 			scale1 = calculate_atmosphere_particle_factor_without_thickness(overall_distance, atmosphere_height_at_camera_log2e, v_atmosphere_constant_4.w);
 			scale2 = calculate_atmosphere_particle_factor_without_thickness(overall_distance, atmosphere_height_at_camera_log2e, v_atmosphere_constant_5.w);
-			
-			extinction_factor.rgb = exp2(-(v_atmosphere_constant_2.rgb * scale2 + scale1 * v_atmosphere_constant_3.rgb));
 		}
-		
+		extinction_factor.rgb = exp2(-(v_atmosphere_constant_2.rgb * scale2 + scale1 * v_atmosphere_constant_3.rgb));
 		float3 atmosphere_color = v_atmosphere_constant_1.rgb * ((v_atmosphere_constant_4.xyz * cts) + (v_atmosphere_constant_5.xyz * power));
 		sky_radiance.rgb = atmosphere_color * (1.0 - extinction_factor);
 	}

@@ -25,7 +25,12 @@ VS_OUTPUT_STATIC_PRT entry_static_prt_ambient(input_vertex_format input, AMBIENT
 	float4 world_position;
 	
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord);
-	calculate_z_squish(output.position);
+	
+	if (vertextype == k_vertextype_skinned)
+		calculate_z_squish_2(output.position);
+	else
+		calculate_z_squish(output.position);
+	
 	output.camera_dir = Camera_Position - world_position.xyz;
 	output.prt_radiance_vector = calculate_ambient_radiance_vector(input_prt.coefficient, output.normal);
 	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
@@ -39,7 +44,12 @@ VS_OUTPUT_STATIC_PRT entry_static_prt_linear(input_vertex_format input, LINEAR_P
 	float4 world_position;
 	
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord);
-	calculate_z_squish(output.position);
+	
+	if (vertextype == k_vertextype_skinned)
+		calculate_z_squish_2(output.position);
+	else
+		calculate_z_squish(output.position);
+	
 	output.camera_dir = Camera_Position - world_position.xyz;
 	output.prt_radiance_vector = calculate_linear_radiance_vector(input, input_prt.coefficients, output.normal);
 	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
@@ -53,7 +63,12 @@ VS_OUTPUT_STATIC_PRT entry_static_prt_quadratic(input_vertex_format input, QUADR
 	float4 world_position;
 	
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord);
-	calculate_z_squish(output.position);
+	
+	if (vertextype == k_vertextype_skinned)
+		calculate_z_squish_2(output.position);
+	else
+		calculate_z_squish(output.position);
+	
 	output.camera_dir = Camera_Position - world_position.xyz;
 	
 	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
@@ -67,7 +82,12 @@ VS_OUTPUT_STATIC_SH entry_static_sh(input_vertex_format input)
 	float4 world_position;
 	
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord.xy);
-	calculate_z_squish(output.position);
+	
+	if (vertextype == k_vertextype_skinned)
+		calculate_z_squish_2(output.position);
+	else
+		calculate_z_squish(output.position);
+	
 	output.camera_dir = Camera_Position - world_position.xyz;
 	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
 
@@ -83,7 +103,12 @@ VS_OUTPUT_PER_PIXEL entry_static_per_pixel(input_vertex_format input, STATIC_PER
 	float4 world_position;
 	
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord.xy);
-	calculate_z_squish(output.position);
+	
+	if (vertextype == k_vertextype_skinned)
+		calculate_z_squish_2(output.position);
+	else
+		calculate_z_squish(output.position);
+	
 	output.camera_dir = Camera_Position - world_position.xyz;
 	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
 	output.lightmap_texcoord = per_pixel.lightmap_texcoord;
@@ -96,7 +121,12 @@ VS_OUTPUT_PER_VERTEX_COLOR entry_static_per_vertex_color(input_vertex_format inp
 	float4 world_position;
 	
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord.xy);
-	calculate_z_squish(output.position);
+	
+	if (vertextype == k_vertextype_skinned)
+		calculate_z_squish_2(output.position);
+	else
+		calculate_z_squish(output.position);
+	
 	output.camera_dir = Camera_Position - world_position.xyz;
 	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor, output.sky_radiance);
 	output.vertex_color = per_vertex_color.color.rgb;
@@ -131,7 +161,12 @@ VS_OUTPUT_PER_VERTEX entry_static_per_vertex(input_vertex_format input, STATIC_P
 	output.color3.a = rgb_5.b;
 	
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord.xy);
-	calculate_z_squish(output.position);
+	
+	if (vertextype == k_vertextype_skinned)
+		calculate_z_squish_2(output.position);
+	else
+		calculate_z_squish(output.position);
+	
 	output.camera_dir = Camera_Position - world_position.xyz;
 	calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, sky_radiance);
 	// pack sky_radiance and extinction factor into the texcoord and radiance outputs
@@ -155,7 +190,12 @@ VS_OUTPUT_DYNAMIC_LIGHT entry_dynamic_light(input_vertex_format input)
 	float4 world_position;
 	
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord);
-	calculate_z_squish(output.position);
+	
+	if (vertextype == k_vertextype_skinned)
+		calculate_z_squish_2(output.position);
+	else
+		calculate_z_squish(output.position);
+	
 	output.camera_dir = Camera_Position - world_position.xyz;
 	output.shadowmap_texcoord = mul(world_position, shadow_projection);
 	
@@ -204,7 +244,10 @@ VS_OUTPUT_LIGHTMAP_DEBUG_MODE entry_lightmap_debug_mode(input_vertex_format inpu
 	float4 world_position;
 	output.camera_dir = Camera_Position - input.position.xyz;
 	calc_vertex_transform(input, world_position, output.position, output.normal.xyz, output.tangent, output.binormal, output.texcoord);
-	calculate_z_squish(output.position);
+	if (vertextype == k_vertextype_skinned)
+		calculate_z_squish_2(output.position);
+	else
+		calculate_z_squish(output.position);
 	output.lightmap_texcoord = lightmap_texcoord;
 	
 	return output;

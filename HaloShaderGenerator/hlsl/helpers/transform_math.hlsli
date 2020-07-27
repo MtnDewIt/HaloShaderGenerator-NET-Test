@@ -11,12 +11,10 @@ float3 transform_vector(float3 dir, float3x3 transform)
 float3 transform_binormal(float3 normal, float3 tangent, float3 binormal)
 {
 	//This is Halo Online broken tangent space binormal, just return the actual binormal
-	float3 computed_binormal = cross(normal, tangent);
-	float bin_sign = sign(dot(computed_binormal, binormal));
-	return bin_sign * binormal;
-	
+	// float3 computed_binormal = cross(normal, tangent);
+	// float bin_sign = sign(dot(computed_binormal, binormal));
+	// return bin_sign * binormal;
 	return binormal;
-	
 }
 
 float3 decompress_vertex_position(float3 position)
@@ -32,18 +30,12 @@ void calculate_z_squish(inout float4 screen_position)
 void calculate_z_squish_2(inout float4 screen_position)
 {
 	calculate_z_squish(screen_position);
-	// this appears in skinned ambient glvs for shader
 	float offset;
 	if (v_mesh_squished)
-	{
 		offset = 0.000005;
-	}
 	else
-	{
 		offset = 0.00002;
-	}
 	screen_position.z = screen_position.z - offset;
-
 }
 
 float4 calculate_screenspace_position(float4 vertex_position)
