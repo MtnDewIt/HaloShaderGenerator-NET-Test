@@ -15,7 +15,7 @@ namespace HaloShaderGenerator
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
         static readonly string TestShaderType = "shader";
-        static readonly string TestStageType = "shared_vertex"; //shared_vertex, shader_pixel, vertex or pixel
+        static readonly string TestStageType = "shared_pixel"; //shared_vertex, shader_pixel, vertex or pixel
         static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Albedo, ShaderStage.Active_Camo, ShaderStage.Shadow_Generate, ShaderStage.Lightmap_Debug_Mode,
             ShaderStage.Dynamic_Light, ShaderStage.Dynamic_Light_Cinematic, ShaderStage.Sfx_Distort, ShaderStage.Static_Sh, ShaderStage.Static_Per_Vertex_Color,
             ShaderStage.Static_Per_Pixel, ShaderStage.Static_Per_Vertex, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Prt_Linear, ShaderStage.Static_Prt_Quadratic};
@@ -80,6 +80,27 @@ namespace HaloShaderGenerator
             if (UnitTest)
             {
                 shaderTests.TestAllSharedVertexShaders(null, null);
+            }
+        }
+
+        static void RunSharedPixelShaderUnitTest()
+        {
+            ShaderUnitTest shaderTests = new ShaderUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                shaderTests.TestAllSharedPixelShaders(StageOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : ShaderUnitTest.GetAllShaderStages();
+                foreach (var stage in stages)
+                {
+                    TestSharedPixelShader(stage, -1, -1);
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllSharedPixelShaders(null);
             }
         }
 
@@ -152,6 +173,8 @@ namespace HaloShaderGenerator
                             RunSharedVertexShaderUnitTest(); break;
                         case "pixel":
                             RunShaderUnitTest(); break;
+                        case "shared_pixel":
+                            RunSharedPixelShaderUnitTest(); break;
                     }
                     break;
                 case "particle": RunParticleUnitTest(); break;
@@ -238,9 +261,29 @@ namespace HaloShaderGenerator
         static void TestSharedPixelShader(ShaderStage stage, int methodIndex, int optionIndex)
         {
             var gen = new ShaderGenerator();
-            var bytecode = gen.GenerateSharedPixelShader(stage, methodIndex, optionIndex).Bytecode;
-            var disassembly = D3DCompiler.Disassemble(bytecode);
-            WriteShaderFile($"generated_{stage.ToString().ToLower()}_{methodIndex}_{optionIndex}.glps", disassembly);
+            byte[] bytecode = null;
+            string disassembly = "";
+            if (methodIndex == -1 || optionIndex == -1)
+            {
+                for(int i = 0; i < gen.GetMethodCount(); i++)
+                {
+                    if(gen.IsMethodSharedInEntryPoint(stage, i) && gen.IsPixelShaderShared(stage))
+                    {
+                        for(int j = 0; j < gen.GetMethodOptionCount(i); j++)
+                        {
+                            bytecode = gen.GenerateSharedPixelShader(stage, i, j).Bytecode;
+                            disassembly = D3DCompiler.Disassemble(bytecode);
+                            WriteShaderFile($"generated_{stage.ToString().ToLower()}_{i}_{j}.glps", disassembly);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                bytecode = gen.GenerateSharedPixelShader(stage, methodIndex, optionIndex).Bytecode;
+                disassembly = D3DCompiler.Disassemble(bytecode);
+                WriteShaderFile($"generated_{stage.ToString().ToLower()}_{methodIndex}_{optionIndex}.glps", disassembly);
+            }
         }
 
         static void TestVertexShader(string name)

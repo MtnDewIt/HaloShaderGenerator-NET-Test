@@ -300,7 +300,7 @@ namespace HaloShaderGenerator.Shader
 
         public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
         {
-            return false;
+            return method_index == 2;
         }
 
         public bool IsPixelShaderShared(ShaderStage entryPoint)

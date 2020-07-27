@@ -384,7 +384,7 @@ namespace HaloShaderGenerator
             return success;
         }
 
-        public bool TestAllSharedPixelShaders(List<List<int>> shaderOverrides, List<ShaderStage> stageOverrides)
+        public bool TestAllSharedPixelShaders(List<ShaderStage> stageOverrides)
         {
             bool success = true;
 
@@ -400,7 +400,7 @@ namespace HaloShaderGenerator
                 {
                     for (int i = 0; i < ReferenceGenerator.GetMethodCount(); i++)
                     {
-                        for(int j = 0; j < ReferenceGenerator.GetMethodOptionCount(i); i++)
+                        for(int j = 0; j < ReferenceGenerator.GetMethodOptionCount(i); j++)
                         {
                             if (ReferenceGenerator.IsMethodSharedInEntryPoint(stage, i))
                             {
