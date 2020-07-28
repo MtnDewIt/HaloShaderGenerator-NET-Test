@@ -285,6 +285,11 @@ namespace HaloShaderGenerator.Particle
                     result.AddSamplerWithoutXFormParameter("palette");
                     result.AddSamplerParameter("alpha_map");
                     break;
+                case Albedo.Diffuse_Modulated:
+                    result.AddSamplerParameter("base_map");
+                    result.AddFloat4Parameter("tint_color");
+                    result.AddFloatParameter("modulation_factor");
+                    break;
                 case Albedo.Palettized_Plasma:
                     result.AddSamplerParameter("base_map");
                     result.AddSamplerParameter("base_map2");

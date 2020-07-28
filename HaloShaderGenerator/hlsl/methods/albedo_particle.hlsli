@@ -12,6 +12,8 @@ uniform sampler palette;
 uniform sampler alpha_map;
 uniform xform2d alpha_map_xform;
 uniform float alpha_modulation_factor;
+uniform float4 tint_color;
+uniform float modulation_factor;
 
 float4 albedo_diffuse_only(in float4 texcoord, in float3 alpha_tex, in float frame_blend, in float palettized_w, in float color_alpha)
 {
@@ -204,6 +206,47 @@ float4 albedo_palettized_plus_sprite_alpha(in float4 texcoord, in float3 alpha_t
 
 // ODST
 
+// 6
+float4 albedo_diffuse_modulated(in float4 texcoord, in float3 alpha_tex, in float frame_blend, in float palettized_w, in float color_alpha)
+{
+    float4 albedo = 0;
+    
+    if (frame_blend_arg == k_frame_blend_on)
+    {
+        float2 base_map_texcoord_1 = apply_xform2d(texcoord.xy, base_map_xform);
+        float4 base_map_sample_1 = tex2D(base_map, base_map_texcoord_1);
+        float2 base_map_texcoord_2 = apply_xform2d(texcoord.zw, base_map_xform);
+        float4 base_map_sample_2 = tex2D(base_map, base_map_texcoord_2);
+        
+        float3 tint = 1.0f - tint_color.rgb;
+        
+        float dot_sample1x = dot(base_map_sample_1.brg, base_map_sample_1.brg);
+        float dot_sample2y = dot(base_map_sample_2.brg, base_map_sample_2.brg);
+        
+        float2 u1 = (dot_sample2y * 0.57735f) * float2(dot_sample2y, dot_sample1x);
+        
+        float3 color2 = u1.x * tint.bgr + tint_color.bgr;
+        float3 color1 = u1.y * tint.rgb + tint_color.rgb;
+        
+        float3 color1thing = color1.bgr * base_map_sample_1.bgr;
+        
+        float modulated_alpha = color1thing.z - base_map_sample_1.a;
+        
+        // lerp
+        float3 modulated_color2 = color2.bgr * base_map_sample_2.rgb - base_map_sample_1.bgr;
+        float alpha = modulated_alpha * frame_blend.x + base_map_sample_1.a;
+        float3 modulated_color1 = modulated_color2.rgb * frame_blend.x - base_map_sample_1.bgr;
+        
+        albedo = float4(modulated_color1, alpha);
+    }
+    else
+    {
+        // TODO: cleanup above first then write a non-frameblend version
+    }
+    
+    return albedo;
+}
+
 // 8 
 float4 albedo_palettized_plasma(in float4 texcoord, in float3 alpha_tex, in float frame_blend, in float palettized_w, in float color_alpha)
 {
@@ -254,7 +297,6 @@ float4 albedo_palettized_plasma(in float4 texcoord, in float3 alpha_tex, in floa
     }
     
     return albedo;
-    
 }
 
 #ifndef particle_albedo
