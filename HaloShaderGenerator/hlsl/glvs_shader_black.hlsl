@@ -13,9 +13,9 @@ VS_OUTPUT_BLACK_ALBEDO entry_albedo(input_vertex_format input)
 	float3 tangent;
 	float3 binormal;
 	float2 texcoord;
-	float3 camera_dir;
 	float3 sky_radiance;
-	calc_vertex_transform(input, world_position, output.position, normal, tangent, binormal, texcoord, camera_dir);
+	calc_vertex_transform(input, world_position, output.position, normal, tangent, binormal, texcoord);
+    float3 camera_dir = Camera_Position - world_position.xyz;
 	calculate_z_squish(output.position);
 	calculate_atmosphere_radiance(world_position, camera_dir, output.color.rgb, sky_radiance);
 	return output;

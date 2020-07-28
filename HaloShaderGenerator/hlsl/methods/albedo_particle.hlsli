@@ -223,16 +223,18 @@ float4 albedo_palettized_plasma(in float4 texcoord, in float3 alpha_tex, in floa
     
         float2 alpha_map_texcoord = apply_xform2d(alpha_tex.yz, alpha_map_xform);
         float4 alpha_map_sample = tex2D(alpha_map, alpha_map_texcoord);
-        albedo.a = alpha_map_sample.w;
         
-        float2 palette_tex = float(-albedo.a * color_alpha + 1.0f).xx;
+        float2 palette_tex = float(-alpha_map_sample.a * color_alpha + 1.0f).xx;
         palette_tex = saturate(palette_tex * alpha_modulation_factor.x + abs(float2(base_map_sample.x - base_map2_sample.x, base_map_sample2.x - base_map2_sample2.x)));
         
         float4 palette_sample_1 = tex2D(palette, float2(palette_tex.x, palettized_w));
-        float4 palette_sample_2 = tex2D(palette, float2(palette_tex.x, palettized_w));
-		
-        albedo.rgb = (palette_sample_2.rgb - palette_sample_1.rgb) * frame_blend.x;
-        albedo += float4(palette_sample_1.rgb, alpha_map_sample.a);
+        palette_sample_1.a = alpha_map_sample.a;
+        float4 palette_sample_2 = tex2D(palette, float2(palette_tex.y, palettized_w));
+        palette_sample_2.a = alpha_map_sample.a;
+        
+        float4 interpolated = lerp(palette_sample_1, palette_sample_2, frame_blend);
+        
+        albedo += interpolated;
     }
     else
     {
@@ -243,12 +245,12 @@ float4 albedo_palettized_plasma(in float4 texcoord, in float3 alpha_tex, in floa
         
         float2 alpha_map_texcoord = apply_xform2d(alpha_tex.yz, alpha_map_xform);
         float4 alpha_map_sample = tex2D(alpha_map, alpha_map_texcoord);
-        albedo.a = alpha_map_sample.w;
         
-        float palette_tex = -albedo.a * color_alpha + 1.0f;
+        float palette_tex = -alpha_map_sample.w * color_alpha + 1.0f;
         palette_tex = saturate(palette_tex * alpha_modulation_factor.x + abs(base_map_sample.x - base_map2_sample.x));
         
         albedo.rgb = tex2D(palette, float2(palette_tex, palettized_w)).rgb;
+        albedo.a = alpha_map_sample.w;
     }
     
     return albedo;
