@@ -308,19 +308,6 @@ namespace HaloShaderGenerator.Particle
                     result.AddFloatParameter("depth_fade_range");
                     break;
             }
-            switch (frame_blend)
-            {
-                case Frame_Blend.On:
-                    result.AddFloatParameter("starting_uv_scale");
-                    result.AddFloatParameter("ending_uv_scale");
-                    break;
-            }
-            switch (self_illumination)
-            {
-                case Self_Illumination.Constant_Color:
-                    result.AddFloat4Parameter("self_illum_color");
-                    break;
-            }
 
             return result;
         }
@@ -336,7 +323,20 @@ namespace HaloShaderGenerator.Particle
             result.AddPrefixedFloat4VertexParameter("specialized_rendering", "category_");
             result.AddPrefixedFloat4VertexParameter("lighting", "category_");
             result.AddPrefixedFloat4VertexParameter("fog", "category_");
+            switch (frame_blend)
+            {
+                case Frame_Blend.On:
+                    result.AddFloatVertexParameter("starting_uv_scale");
+                    result.AddFloatVertexParameter("ending_uv_scale");
+                    break;
+            }
             result.AddPrefixedFloat4VertexParameter("frame_blend", "category_");
+            switch (self_illumination)
+            {
+                case Self_Illumination.Constant_Color:
+                    result.AddFloat4VertexParameter("self_illum_color");
+                    break;
+            }
             result.AddPrefixedFloat4VertexParameter("self_illumination", "category_");
 
             return result;

@@ -29,7 +29,16 @@ float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
         black_point_on(color.a, input.parameters.y);
     }
     
-    color *= input.color;
+    if (particle_blend_type_arg == k_particle_blend_mode_multiply)
+    {
+        color *= input.color;
+        color.rgb -= 1.0f;
+        color.rgb = color.a * color.rgb + 1.0f;
+    }
+    else
+    {
+        color *= input.color;
+    }
     
     if (lighting_arg == k_lighting_per_pixel_ravi_order_3)
     {
@@ -37,7 +46,10 @@ float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
         per_pixel_ravi_order_3(normal, color);
     }
     
-    color.rgb += input.color2.rgb;
+    if (particle_blend_type_arg != k_particle_blend_mode_multiply)
+    {
+        color.rgb += input.color2.rgb;
+    }
     
     if (particle_blend_type_arg == k_particle_blend_mode_pre_multiplied_alpha)
         color.rgb *= color.a;
