@@ -127,6 +127,11 @@ namespace HaloShaderGenerator.Generator
             return $"{prefix.ToLower()}{method_name}{suffix.ToLower()}";
         }
 
+        public static D3D.SHADER_MACRO CreateMacro(string name, string definition)
+        {
+            return new D3D.SHADER_MACRO { Name = name, Definition = definition };
+        }
+
         public static D3D.SHADER_MACRO CreateMacro(string name, object method, string prefix = "", string suffix = "")
         {
             return new D3D.SHADER_MACRO { Name = name, Definition = CreateMethodDefinition(method, prefix, suffix) };

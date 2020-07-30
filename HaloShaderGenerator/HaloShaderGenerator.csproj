@@ -112,6 +112,8 @@
     <Compile Include="Shader\MethodOptions.cs" />
     <Compile Include="Shader\ShaderGenerator.cs" />
     <Compile Include="Generator\ShaderGeneratorBase.cs" />
+    <Compile Include="Terrain\MethodOptions.cs" />
+    <Compile Include="Terrain\TerrainGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\methods\albedo.hlsli" />
@@ -341,7 +343,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\particle_depth.hlsli" />
-</ItemGroup>
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\vertices\vertex_definitions.hlsli" />
   </ItemGroup>
@@ -350,6 +352,30 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\apply_hlsl_fixes.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\glps_terrain.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\glvs_terrain.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\helpers\terrain_helper.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\terrain\entry_albedo.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\albedo_terrain.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\terrain_blending.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\terrain_bump_mapping.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\terrain\entry_lightmap_debug.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

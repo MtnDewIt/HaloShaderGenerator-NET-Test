@@ -14,33 +14,33 @@ namespace HaloShaderGenerator
 
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
-        static readonly string TestShaderType = "shader";
-        static readonly string TestStageType = "shared_pixel"; //shared_vertex, shader_pixel, vertex or pixel
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Albedo, ShaderStage.Active_Camo, ShaderStage.Shadow_Generate, ShaderStage.Lightmap_Debug_Mode,
-            ShaderStage.Dynamic_Light, ShaderStage.Dynamic_Light_Cinematic, ShaderStage.Sfx_Distort, ShaderStage.Static_Sh, ShaderStage.Static_Per_Vertex_Color,
-            ShaderStage.Static_Per_Pixel, ShaderStage.Static_Per_Vertex, ShaderStage.Static_Prt_Ambient, ShaderStage.Static_Prt_Linear, ShaderStage.Static_Prt_Quadratic};
+        static readonly string TestShaderType = "terrain";
+        static readonly string TestStageType = "pixel"; //shared_vertex, shader_pixel, vertex or pixel
 
-        // Shader
-        static readonly List<VertexType> VertexOverrides = new List<VertexType> {VertexType.World, VertexType.Rigid };
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Lightmap_Debug_Mode};
 
-        static readonly List<int> ShaderAlbedoOverrides =         new List<int> {};
-        static readonly List<int> ShaderBumpOverrides =           new List<int> { };
-        static readonly List<int> ShaderAlphaOverrides =          new List<int> { };
-        static readonly List<int> ShaderSpecularOverrides =       new List<int> {};
-        static readonly List<int> ShaderMaterialOverrides =       new List<int> {7 };
-        static readonly List<int> ShaderEnvOverrides =            new List<int> {};
-        static readonly List<int> ShaderSelfIllumOverrides =      new List<int> {};
-        static readonly List<int> ShaderBlendModeOverrides =      new List<int> { };
-        static readonly List<int> ShaderParallaxOverrides =       new List<int> {};
-        static readonly List<int> ShaderMiscOverrides =           new List<int> { };
+        #region Shader
+        static readonly List<VertexType> VertexOverrides = new List<VertexType> { VertexType.World, VertexType.Rigid };
+
+        static readonly List<int> ShaderAlbedoOverrides = new List<int> { };
+        static readonly List<int> ShaderBumpOverrides = new List<int> { };
+        static readonly List<int> ShaderAlphaOverrides = new List<int> { };
+        static readonly List<int> ShaderSpecularOverrides = new List<int> { };
+        static readonly List<int> ShaderMaterialOverrides = new List<int> { 7 };
+        static readonly List<int> ShaderEnvOverrides = new List<int> { };
+        static readonly List<int> ShaderSelfIllumOverrides = new List<int> { };
+        static readonly List<int> ShaderBlendModeOverrides = new List<int> { };
+        static readonly List<int> ShaderParallaxOverrides = new List<int> { };
+        static readonly List<int> ShaderMiscOverrides = new List<int> { };
 
         static readonly List<List<int>> ShaderOverrides = new List<List<int>>
         {
             new List<int> { 0, 2, 0, 1, 7, 2, 0, 0, 0, 0, 0 },
             new List<int> { 0, 2, 0, 1, 7, 0, 0, 0, 0, 1, 0 },
         };
+        #endregion
 
-        // Particle
+        #region particle
 
         static readonly List<int> ParticleAlbedoOverrides =                 new List<int> { };
         static readonly List<int> ParticleBlendModeOverrides =              new List<int> { };
@@ -57,6 +57,23 @@ namespace HaloShaderGenerator
         {
             //new List<int> { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
         };
+        #endregion
+
+        #region terrain
+        static readonly List<int> TerrainBlendingOverride = new List<int> { };
+        static readonly List<int> TerrainEnvMapOverride = new List<int> { };
+        static readonly List<int> TerrainMaterial0Override = new List<int> { };
+        static readonly List<int> TerrainMaterial1Override = new List<int> { };
+        static readonly List<int> TerrainMaterial2Override = new List<int> { };
+        static readonly List<int> TerrainMaterial3Override = new List<int> { };
+
+        static readonly List<List<int>> TerrainOverrides = new List<List<int>>
+        {
+            new List<int> { 0, 0, 0, 0, 0, 0},
+            new List<int> { 0, 0, 0, 0, 0, 1},
+            new List<int> { 0, 0, 1, 0, 2, 2},
+        };
+        #endregion
 
         static void RunSharedVertexShaderUnitTest()
         {
@@ -160,6 +177,34 @@ namespace HaloShaderGenerator
             }
         }
 
+        static void RunTerrainUnitTest()
+        {
+            TerrainUnitTest shaderTests = new TerrainUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                var methodOverrides = new List<List<int>> { TerrainBlendingOverride, TerrainEnvMapOverride, TerrainMaterial0Override, TerrainMaterial1Override,
+                    TerrainMaterial2Override, TerrainMaterial3Override};
+
+                shaderTests.TestAllPixelShaders(TerrainOverrides, StageOverrides, methodOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : TerrainUnitTest.GetAllShaderStages();
+
+                foreach (var stage in stages)
+                {
+                    foreach (var methods in TerrainOverrides)
+                    {
+                        TestPixelShader(stage, methods);
+                    }
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
+            }
+        }
+
         static int Main()
         {
             Console.WriteLine($"TESTING {TestShaderType.ToUpper()}");
@@ -178,6 +223,19 @@ namespace HaloShaderGenerator
                     }
                     break;
                 case "particle": RunParticleUnitTest(); break;
+                case "terrain":
+                    switch (TestStageType)
+                    {
+                        case "shared_vertex":
+                            //RunTerrainSharedVertexShaderUnitTest(); 
+                            break;
+                        case "pixel":
+                            RunTerrainUnitTest(); break;
+                        case "shared_pixel":
+                            //RunTerrainSharedPixelShaderUnitTest(); 
+                            break;
+                    }
+                    break;
             }
 
             Console.ReadLine();
@@ -193,6 +251,7 @@ namespace HaloShaderGenerator
             }
         }
 
+        #region test methods shader
         static void TestPixelShader(ShaderStage stage, List<int> methods)
         {
             if (TestShaderType == "shader")
@@ -244,6 +303,26 @@ namespace HaloShaderGenerator
                     WriteShaderFile(filename, disassembly);
                 }
             }
+            else if(TestShaderType == "terrain")
+            {
+                var blend_type = (Terrain.Blending)methods[0];
+                var env_map = (Terrain.Environment_Mapping)methods[1];
+                var material_0 = (Terrain.Material)methods[2];
+                var material_1 = (Terrain.Material)methods[3];
+                var material_2 = (Terrain.Material)methods[4];
+                var material_3 = (Terrain.Material_No_Detail_Bump)methods[5];
+
+                var gen = new Terrain.TerrainGenerator(blend_type, env_map, material_0, material_1, material_2, material_3);
+                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
+                {
+                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
+                    var parameters = gen.GetPixelShaderParameters();
+
+                    var disassembly = D3DCompiler.Disassemble(bytecode);
+                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
+                    WriteShaderFile(filename, disassembly);
+                }
+            }
         }
 
         static void TestSharedVertexShader(VertexType vertexType, ShaderStage stage)
@@ -285,7 +364,9 @@ namespace HaloShaderGenerator
                 WriteShaderFile($"generated_{stage.ToString().ToLower()}_{methodIndex}_{optionIndex}.glps", disassembly);
             }
         }
+        #endregion
 
+        #region test methods independent shaders
         static void TestVertexShader(string name)
         {
             var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(name);
@@ -311,8 +392,9 @@ namespace HaloShaderGenerator
 
             Console.WriteLine(str);
         }
+        #endregion
 
-
+        #region test methods shader black
         static void TestPixelBlack()
         {
             var gen = new ShaderBlackGenerator();
@@ -326,6 +408,7 @@ namespace HaloShaderGenerator
             var bytecode = gen.GenerateSharedVertexShader(vertexType, stage).Bytecode;
             WriteShaderFile($"generated_shader_black_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}.glvs", D3DCompiler.Disassemble(bytecode));
         }
+        #endregion
 
         static readonly List<List<int>> ShaderTests = new List<List<int>>
         {

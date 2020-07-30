@@ -1,0 +1,416 @@
+﻿using System.Collections.Generic;
+using HaloShaderGenerator.DirectX;
+using HaloShaderGenerator.Generator;
+using HaloShaderGenerator.Globals;
+
+namespace HaloShaderGenerator.Terrain
+{
+    public class TerrainGenerator : IShaderGenerator
+    {
+        private bool TemplateGenerationValid;
+
+        Blending blending;
+        Environment_Mapping environment_map;
+        Material material_0;
+        Material material_1;
+        Material material_2;
+        Material_No_Detail_Bump material_3;
+
+        /// <summary>
+        /// Generator insantiation for shared shaders. Does not require method options.
+        /// </summary>
+        public TerrainGenerator() { TemplateGenerationValid = false; }
+
+        /// <summary>
+        /// Generator instantiation for method specific shaders.
+        /// </summary>
+        /// <param name="albedo"></param>
+        /// <param name="bump_mapping"></param>
+        /// <param name="alpha_test"></param>
+        /// <param name="specular_mask"></param>
+        /// <param name="material_model"></param>
+        /// <param name="environment_mapping"></param>
+        /// <param name="self_illumination"></param>
+        /// <param name="blend_mode"></param>
+        /// <param name="parallax"></param>
+        /// <param name="misc"></param>
+        /// <param name="distortion"></param>
+        public TerrainGenerator(Blending blending, Environment_Mapping environment_map, Material material_0, Material material_1, Material material_2, Material_No_Detail_Bump material_3)
+        {
+            this.blending = blending;
+            this.environment_map = environment_map;
+            this.material_0 = material_0;
+            this.material_1 = material_1;
+            this.material_2 = material_2;
+            this.material_3 = material_3;
+            TemplateGenerationValid = true;
+        }
+
+
+        public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
+        {
+            if (!TemplateGenerationValid)
+                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
+
+            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
+
+            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
+            macros.Add(new D3D.SHADER_MACRO { Name = "_TERRAIN_HELPER_HLSLI", Definition = "1" });
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Blending>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Environment_Mapping>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Material>());
+            // macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Material_No_Detail_Bump>());
+
+            //
+            // The following code properly names the macros (like in rmdf)
+            //
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", blending));
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", environment_map, "envmap_type_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_0", material_0));
+            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_1", material_1));
+            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_2", material_2));
+            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_3", material_3));
+
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", entryPoint, "shadertype_"));
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", blending, "k_blend_type_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("env_map_arg", environment_map, "k_envmap_type_"));
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_0_arg", material_0, "k_material_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_1_arg", material_1, "k_material_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_2_arg", material_2, "k_material_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_3_arg", material_3, "k_material_"));
+
+            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_terrain.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
+
+            return new ShaderGeneratorResult(shaderBytecode);
+        }
+
+        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
+        {
+            if (!IsEntryPointSupported(entryPoint) || !IsPixelShaderShared(entryPoint))
+                return null;
+
+            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
+
+            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
+            macros.Add(new D3D.SHADER_MACRO { Name = "_TERRAIN_HELPER_HLSLI", Definition = "1" });
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
+
+            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"glps_terrain.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
+
+            return new ShaderGeneratorResult(shaderBytecode);
+        }
+
+        public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)
+        {
+            if (!IsVertexFormatSupported(vertexType) || !IsEntryPointSupported(entryPoint))
+                return null;
+
+            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
+
+            macros.Add(new D3D.SHADER_MACRO { Name = "_VERTEX_SHADER_HELPER_HLSLI", Definition = "1" });
+            macros.Add(new D3D.SHADER_MACRO { Name = "_TERRAIN_HELPER_HLSLI", Definition = "1" });
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<VertexType>());
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_vertex_transform", vertexType, "calc_vertex_transform_", ""));
+            macros.Add(ShaderGeneratorBase.CreateMacro("transform_dominant_light", vertexType, "transform_dominant_light_", ""));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_distortion", vertexType, "calc_distortion_", ""));
+            macros.Add(ShaderGeneratorBase.CreateVertexMacro("input_vertex_format", vertexType));
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("vertextype", vertexType, "k_vertextype_"));
+
+            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(@"glvs_terrain.hlsl", macros, $"entry_{entryPoint.ToString().ToLower()}", "vs_3_0");
+
+            return new ShaderGeneratorResult(shaderBytecode);
+        }
+
+        public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)
+        {
+            if (!TemplateGenerationValid)
+                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
+            return null;
+        }
+
+        public int GetMethodCount()
+        {
+            return 5;
+        }
+
+        public int GetMethodOptionCount(int methodIndex)
+        {
+            return 2;
+        }
+
+        public int GetMethodOptionValue(int methodIndex)
+        {
+            switch ((TerrainMethods)methodIndex)
+            {
+                case TerrainMethods.Blending:
+                    return (int)blending;
+                case TerrainMethods.Environment_Map:
+                    return (int)environment_map;
+                case TerrainMethods.Material_0:
+                    return (int)material_0;
+                case TerrainMethods.Material_1:
+                    return (int)material_1;
+                case TerrainMethods.Material_2:
+                    return (int)material_2;
+                case TerrainMethods.Material_3:
+                    return (int)material_3;
+                
+            }
+            return -1;
+        }
+
+        public bool IsEntryPointSupported(ShaderStage entryPoint)
+        {
+            switch (entryPoint)
+            {
+                case ShaderStage.Albedo:
+                case ShaderStage.Static_Per_Pixel:
+                case ShaderStage.Static_Per_Vertex:
+                case ShaderStage.Static_Sh:
+                case ShaderStage.Dynamic_Light:
+                case ShaderStage.Lightmap_Debug_Mode:
+                case ShaderStage.Shadow_Generate:
+                case ShaderStage.Dynamic_Light_Cinematic:
+                case ShaderStage.Static_Prt_Quadratic:
+                case ShaderStage.Static_Prt_Linear:
+                case ShaderStage.Static_Prt_Ambient:
+                    return true;
+                    
+                default:
+                case ShaderStage.Default:
+                case ShaderStage.Z_Only:
+                case ShaderStage.Water_Shading:
+                case ShaderStage.Water_Tesselation:
+                case ShaderStage.Shadow_Apply:
+                case ShaderStage.Static_Default:
+                case ShaderStage.Static_Per_Vertex_Color:
+                case ShaderStage.Active_Camo:
+                case ShaderStage.Sfx_Distort:
+                    return false;
+            }
+        }
+
+        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
+        {
+            return false;
+        }
+
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
+        {
+            return false;
+        }
+
+        public bool IsPixelShaderShared(ShaderStage entryPoint)
+        {
+            switch (entryPoint)
+            {
+                case ShaderStage.Shadow_Generate:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public bool IsVertexFormatSupported(VertexType vertexType)
+        {
+            switch (vertexType)
+            {
+                case VertexType.World:
+                case VertexType.Rigid:
+                case VertexType.Skinned:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public bool IsVertexShaderShared(ShaderStage entryPoint)
+        {
+            return true;
+        }
+
+        public ShaderParameters GetPixelShaderParameters()
+        {
+            if (!TemplateGenerationValid)
+                return null;
+            var result = new ShaderParameters();
+
+            result.AddSamplerParameter("blend_map");
+            result.AddFloatParameter("global_albedo_tint");
+            switch (blending)
+            {
+                case Blending.Dynamic_Morph:;
+                    result.AddFloatParameter("dynamic_material");
+                    result.AddFloatParameter("transition_sharpness");
+                    result.AddFloatParameter("transition_threshold");
+                    break;
+            }
+
+            switch (environment_map)
+            {
+                case Environment_Mapping.None:
+                    break;
+                case Environment_Mapping.Per_Pixel:
+                    result.AddSamplerWithoutXFormParameter("environment_map");
+                    result.AddFloat3ColorParameter("env_tint_color");
+                    result.AddFloatParameter("env_roughness_scale");
+                    break;
+            }
+
+            switch (material_0)
+            {
+                case Material.Off:
+                    break;
+
+                case Material.Diffuse_Only:
+                    result.AddSamplerParameter("base_map_m_0");
+                    result.AddSamplerParameter("detail_map_m_0");
+                    result.AddSamplerParameter("bump_map_m_0");
+                    result.AddSamplerParameter("detail_bump_m_0");
+                    break;
+
+                case Material.Diffuse_Plus_Specular:
+                    result.AddSamplerParameter("base_map_m_0");
+                    result.AddSamplerParameter("detail_map_m_0");
+                    result.AddSamplerParameter("bump_map_m_0");
+                    result.AddSamplerParameter("detail_bump_m_0");
+
+                    result.AddFloatParameter("diffuse_coefficient_m_0");
+                    result.AddFloatParameter("specular_coefficient_m_0");
+                    result.AddFloatParameter("specular_power_m_0");
+                    result.AddFloatParameter("specular_tint_m_0");
+                    result.AddFloatParameter("fresnel_curve_steepness_m_0");
+                    result.AddFloatParameter("area_specular_contribution_m_0");
+                    result.AddFloatParameter("analytical_specular_contribution_m_0");
+                    result.AddFloatParameter("environment_specular_contribution_m_0");
+                    result.AddFloatParameter("albedo_specular_tint_blend_m_0");
+                    break;
+            }
+
+            switch (material_1)
+            {
+                case Material.Off:
+                    break;
+
+                case Material.Diffuse_Only:
+                    result.AddSamplerParameter("base_map_m_1");
+                    result.AddSamplerParameter("detail_map_m_1");
+                    result.AddSamplerParameter("bump_map_m_1");
+                    result.AddSamplerParameter("detail_bump_m_1");
+                    break;
+
+                case Material.Diffuse_Plus_Specular:
+                    result.AddSamplerParameter("base_map_m_1");
+                    result.AddSamplerParameter("detail_map_m_1");
+                    result.AddSamplerParameter("bump_map_m_1");
+                    result.AddSamplerParameter("detail_bump_m_1");
+
+                    result.AddFloatParameter("diffuse_coefficient_m_1");
+                    result.AddFloatParameter("specular_coefficient_m_1");
+                    result.AddFloatParameter("specular_power_m_1");
+                    result.AddFloatParameter("specular_tint_m_1");
+                    result.AddFloatParameter("fresnel_curve_steepness_m_1");
+                    result.AddFloatParameter("area_specular_contribution_m_1");
+                    result.AddFloatParameter("analytical_specular_contribution_m_1");
+                    result.AddFloatParameter("environment_specular_contribution_m_1");
+                    result.AddFloatParameter("albedo_specular_tint_blend_m_1");
+                    break;
+            }
+
+            switch (material_2)
+            {
+                case Material.Off:
+                    break;
+
+                case Material.Diffuse_Only:
+                    result.AddSamplerParameter("base_map_m_2");
+                    result.AddSamplerParameter("detail_map_m_2");
+                    result.AddSamplerParameter("bump_map_m_2");
+                    result.AddSamplerParameter("detail_bump_m_2");
+                    break;
+
+                case Material.Diffuse_Plus_Specular:
+                    result.AddSamplerParameter("base_map_m_2");
+                    result.AddSamplerParameter("detail_map_m_2");
+                    result.AddSamplerParameter("bump_map_m_2");
+                    result.AddSamplerParameter("detail_bump_m_2");
+
+                    result.AddFloatParameter("diffuse_coefficient_m_2");
+                    result.AddFloatParameter("specular_coefficient_m_2");
+                    result.AddFloatParameter("specular_power_m_2");
+                    result.AddFloatParameter("specular_tint_m_2");
+                    result.AddFloatParameter("fresnel_curve_steepness_m_2");
+                    result.AddFloatParameter("area_specular_contribution_m_2");
+                    result.AddFloatParameter("analytical_specular_contribution_m_2");
+                    result.AddFloatParameter("environment_specular_contribution_m_2");
+                    result.AddFloatParameter("albedo_specular_tint_blend_m_2");
+                    break;
+            }
+
+            switch (material_3)
+            {
+                case Material_No_Detail_Bump.Off:
+                    break;
+
+                case Material_No_Detail_Bump.Diffuse_Only:
+                    result.AddSamplerParameter("base_map_m_3");
+                    result.AddSamplerParameter("detail_map_m_3");
+                    result.AddSamplerParameter("bump_map_m_3");
+                    result.AddSamplerParameter("detail_bump_m_3");
+                    break;
+
+                case Material_No_Detail_Bump.Diffuse_Plus_Specular:
+                    result.AddSamplerParameter("base_map_m_3");
+                    result.AddSamplerParameter("detail_map_m_3");
+                    result.AddSamplerParameter("bump_map_m_3");
+                    result.AddSamplerParameter("detail_bump_m_3");
+
+                    result.AddFloatParameter("diffuse_coefficient_m_3");
+                    result.AddFloatParameter("specular_coefficient_m_3");
+                    result.AddFloatParameter("specular_power_m_3");
+                    result.AddFloatParameter("specular_tint_m_3");
+                    result.AddFloatParameter("fresnel_curve_steepness_m_3");
+                    result.AddFloatParameter("area_specular_contribution_m_3");
+                    result.AddFloatParameter("analytical_specular_contribution_m_3");
+                    result.AddFloatParameter("environment_specular_contribution_m_3");
+                    result.AddFloatParameter("albedo_specular_tint_blend_m_3");
+                    break;
+            }
+
+            return result;
+        }
+
+        public ShaderParameters GetVertexShaderParameters()
+        {
+            return new ShaderParameters();
+        }
+
+        public ShaderParameters GetGlobalParameters()
+        {
+            var result = new ShaderParameters();
+            result.AddSamplerWithoutXFormParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerWithoutXFormParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
+            result.AddSamplerWithoutXFormParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
+            result.AddSamplerWithoutXFormParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1);
+            result.AddSamplerWithoutXFormParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
+            result.AddFloat4Parameter("debug_tint", RenderMethodExtern.debug_tint);
+            result.AddSamplerWithoutXFormParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
+            result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
+            result.AddSamplerWithoutXFormParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
+            return result;
+        }
+    }
+}
