@@ -18,3 +18,16 @@ PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input)
 	return shader_entry_lightmap_debug_mode(input);
 }
 #endif
+
+#if shaderstage == k_shaderstage_dynamic_light || shaderstage == k_shaderstage_dynamic_light_cinematic
+#include "terrain/entry_dynamic_light.hlsli"
+PS_OUTPUT_DEFAULT entry_dynamic_light(VS_OUTPUT_TERRAIN_DYNAMIC_LIGHT input) : COLOR
+{
+	return shader_entry_dynamic_light(input);
+}
+
+PS_OUTPUT_DEFAULT entry_dynamic_light_cinematic(VS_OUTPUT_TERRAIN_DYNAMIC_LIGHT input) : COLOR
+{
+	return shader_entry_dynamic_light_cinematic(input);
+}
+#endif

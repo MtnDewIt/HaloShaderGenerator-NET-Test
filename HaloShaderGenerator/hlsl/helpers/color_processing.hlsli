@@ -19,7 +19,7 @@ float3 srgb_to_rgb(float3 color)
 float3 expose_color(float3 input)
 {
 	if (color_export_multiply_alpha && !is_dynamic_light)
-		return input; // should compile as max but compiles as cmp for some reason, equivalent result
+		return input;
 	else
 		return input * g_exposure.x;
 }

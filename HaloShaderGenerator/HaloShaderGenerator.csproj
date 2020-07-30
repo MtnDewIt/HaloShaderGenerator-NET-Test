@@ -377,6 +377,9 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\terrain\entry_lightmap_debug.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\terrain\entry_dynamic_light.hlsli" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>
