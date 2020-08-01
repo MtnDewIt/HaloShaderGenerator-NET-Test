@@ -17,7 +17,7 @@ namespace HaloShaderGenerator
         static readonly string TestShaderType = "terrain";
         static readonly string TestStageType = "pixel"; //shared_vertex, shader_pixel, vertex or pixel
 
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Lightmap_Debug_Mode};
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Dynamic_Light};
 
         #region Shader
         static readonly List<VertexType> VertexOverrides = new List<VertexType> { VertexType.World, VertexType.Rigid };

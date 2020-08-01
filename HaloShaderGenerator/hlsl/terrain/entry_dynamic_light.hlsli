@@ -7,6 +7,8 @@
 #include "..\helpers\color_processing.hlsli"
 #include "..\helpers\lighting.hlsli"
 #include "..\helpers\shadows.hlsli"
+#include "..\terrain_lighting\terrain_lighting.hlsli"
+
 
 uniform sampler2D dynamic_light_gel_texture;
 
@@ -73,14 +75,25 @@ bool is_cinematic)
 	float3 light_intensity = intensity * light.color.rgb * gel_sample.rgb;
 
 	float3 color;
-	float l_dot_n = dot(L, surface_normal);
-	color = light_intensity * l_dot_n;
 	
+	SHADER_DYNAMIC_LIGHT_COMMON common_data;
+
+	common_data.albedo = albedo;
+	common_data.texcoord = texcoord;
+	common_data.surface_normal = surface_normal;
+	common_data.normal = normal;
+	common_data.view_dir = view_dir;
+	common_data.reflect_dir = 0;
+	common_data.light_intensity = light_intensity;
+	common_data.light_direction = L;
+	common_data.specular_mask = 1.0f;
+	
+	calc_dynamic_lighting_terrain(common_data, color);
+
 	float threshold = dot(light_intensity, light_intensity);
 	threshold = 0.0000001 - threshold;
 	color.rgb = threshold < 0 ? color.rgb : 0;
-	
-	color *= albedo.rgb;
+
 	
 	float shadow_coefficient;
 	if (is_cinematic)

@@ -52,7 +52,7 @@ This file contains a list of blank definitions to help with Intellisense
 #define material_type_0_arg 0
 #define material_type_1_arg 0
 #define material_type_2_arg 0
-#define material_type_3_arg 2
+#define material_type_3_arg 0
 
 
 

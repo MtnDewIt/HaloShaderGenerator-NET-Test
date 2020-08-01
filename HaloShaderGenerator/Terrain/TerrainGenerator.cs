@@ -61,19 +61,16 @@ namespace HaloShaderGenerator.Terrain
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Blending>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Environment_Mapping>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Material>());
-            // macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Material_No_Detail_Bump>());
 
             //
             // The following code properly names the macros (like in rmdf)
             //
 
+            Material material_3_translated = material_3 == Material_No_Detail_Bump.Off ? Material.Off : material_3 == Material_No_Detail_Bump.Diffuse_Only ? Material.Diffuse_Only : Material.Diffuse_Plus_Specular;
+
             macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", blending));
 
             macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", environment_map, "envmap_type_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_0", material_0));
-            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_1", material_1));
-            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_2", material_2));
-            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_3", material_3));
 
 
             macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
@@ -85,7 +82,7 @@ namespace HaloShaderGenerator.Terrain
             macros.Add(ShaderGeneratorBase.CreateMacro("material_type_0_arg", material_0, "k_material_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("material_type_1_arg", material_1, "k_material_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("material_type_2_arg", material_2, "k_material_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_3_arg", material_3, "k_material_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_3_arg", material_3_translated, "k_material_"));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_terrain.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
 
@@ -290,7 +287,7 @@ namespace HaloShaderGenerator.Terrain
                     result.AddFloatParameter("diffuse_coefficient_m_0");
                     result.AddFloatParameter("specular_coefficient_m_0");
                     result.AddFloatParameter("specular_power_m_0");
-                    result.AddFloatParameter("specular_tint_m_0");
+                    result.AddFloat3Parameter("specular_tint_m_0");
                     result.AddFloatParameter("fresnel_curve_steepness_m_0");
                     result.AddFloatParameter("area_specular_contribution_m_0");
                     result.AddFloatParameter("analytical_specular_contribution_m_0");
@@ -320,7 +317,7 @@ namespace HaloShaderGenerator.Terrain
                     result.AddFloatParameter("diffuse_coefficient_m_1");
                     result.AddFloatParameter("specular_coefficient_m_1");
                     result.AddFloatParameter("specular_power_m_1");
-                    result.AddFloatParameter("specular_tint_m_1");
+                    result.AddFloat3Parameter("specular_tint_m_1");
                     result.AddFloatParameter("fresnel_curve_steepness_m_1");
                     result.AddFloatParameter("area_specular_contribution_m_1");
                     result.AddFloatParameter("analytical_specular_contribution_m_1");
@@ -350,7 +347,7 @@ namespace HaloShaderGenerator.Terrain
                     result.AddFloatParameter("diffuse_coefficient_m_2");
                     result.AddFloatParameter("specular_coefficient_m_2");
                     result.AddFloatParameter("specular_power_m_2");
-                    result.AddFloatParameter("specular_tint_m_2");
+                    result.AddFloat3Parameter("specular_tint_m_2");
                     result.AddFloatParameter("fresnel_curve_steepness_m_2");
                     result.AddFloatParameter("area_specular_contribution_m_2");
                     result.AddFloatParameter("analytical_specular_contribution_m_2");
@@ -380,7 +377,7 @@ namespace HaloShaderGenerator.Terrain
                     result.AddFloatParameter("diffuse_coefficient_m_3");
                     result.AddFloatParameter("specular_coefficient_m_3");
                     result.AddFloatParameter("specular_power_m_3");
-                    result.AddFloatParameter("specular_tint_m_3");
+                    result.AddFloat3Parameter("specular_tint_m_3");
                     result.AddFloatParameter("fresnel_curve_steepness_m_3");
                     result.AddFloatParameter("area_specular_contribution_m_3");
                     result.AddFloatParameter("analytical_specular_contribution_m_3");
