@@ -392,6 +392,58 @@ namespace HaloShaderGenerator.Shader
                     result.AddFloat4ColorParameter("albedo_color3");
                     result.AddFloat4ColorParameter("neutral_gray");
                     break;
+                case Albedo.Two_Change_Color_Anim_Overlay:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("detail_map");
+                    result.AddSamplerParameter("change_color_map");
+                    result.AddFloat3ColorParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
+                    result.AddFloat3ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
+                    result.AddFloat4Parameter("primary_change_color_anim", RenderMethodExtern.object_change_color_primary_anim);
+                    result.AddFloat4Parameter("secondary_change_color_anim", RenderMethodExtern.object_change_color_secondary_anim);
+                    break;
+                case Albedo.Chameleon:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("detail_map");
+                    result.AddFloat4ColorParameter("chameleon_color0");
+                    result.AddFloat4ColorParameter("chameleon_color1");
+                    result.AddFloat4ColorParameter("chameleon_color2");
+                    result.AddFloat4ColorParameter("chameleon_color3");
+                    result.AddFloatParameter("chameleon_color_offset1");
+                    result.AddFloatParameter("chameleon_color_offset2");
+                    result.AddFloatParameter("chameleon_fresnel_power");
+                    break;
+                case Albedo.Two_Change_Color_Chameleon:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("detail_map");
+                    result.AddSamplerParameter("change_color_map");
+                    result.AddFloat3ColorParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
+                    result.AddFloat3ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
+                    result.AddFloat4ColorParameter("chameleon_color0");
+                    result.AddFloat4ColorParameter("chameleon_color1");
+                    result.AddFloat4ColorParameter("chameleon_color2");
+                    result.AddFloat4ColorParameter("chameleon_color3");
+                    result.AddFloatParameter("chameleon_color_offset1");
+                    result.AddFloatParameter("chameleon_color_offset2");
+                    result.AddFloatParameter("chameleon_fresnel_power");
+                    break;
+                case Albedo.Chameleon_Masked:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("detail_map");
+                    result.AddSamplerParameter("chameleon_mask_map");
+                    result.AddFloat4ColorParameter("chameleon_color0");
+                    result.AddFloat4ColorParameter("chameleon_color1");
+                    result.AddFloat4ColorParameter("chameleon_color2");
+                    result.AddFloat4ColorParameter("chameleon_color3");
+                    result.AddFloatParameter("chameleon_color_offset1");
+                    result.AddFloatParameter("chameleon_color_offset2");
+                    result.AddFloatParameter("chameleon_fresnel_power");
+                    break;
+                case Albedo.Color_Mask_Hard_Light:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("detail_map");
+                    result.AddSamplerParameter("color_mask_map");
+                    result.AddFloat4ColorParameter("albedo_color");
+                    break;
             }
 
             switch (bump_mapping)

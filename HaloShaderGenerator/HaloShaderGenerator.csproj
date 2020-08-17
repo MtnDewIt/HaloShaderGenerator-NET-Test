@@ -383,6 +383,10 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\terrain_lighting\terrain_lighting.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\helpers\explicit_input_output.hlsli" />
+    <EmbeddedResource Include="hlsl\pixl_shield_impact.hlsl" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>
