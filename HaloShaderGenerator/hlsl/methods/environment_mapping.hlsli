@@ -5,7 +5,6 @@
 #include "../helpers/math.hlsli"
 #include "../helpers/sh.hlsli"
 #include "../registers/global_parameters.hlsli"
-#include "../methods/blend_mode.hlsli"
 #include "../helpers/input_output.hlsli"
 
 uniform float3 env_tint_color;

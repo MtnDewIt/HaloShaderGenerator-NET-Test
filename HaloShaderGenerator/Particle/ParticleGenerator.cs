@@ -230,6 +230,11 @@ namespace HaloShaderGenerator.Particle
             return false;
         }
 
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
+        {
+            return false;
+        }
+
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
             return false;

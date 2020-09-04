@@ -86,6 +86,11 @@ namespace HaloShaderGenerator.Black
             return false;
         }
 
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
+        {
+            return false;
+        }
+
         public bool IsVertexFormatSupported(VertexType vertexType)
         {
             switch (vertexType)

@@ -403,6 +403,16 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\light_volume\entry_default.hlsli" />
+    <EmbeddedResource Include="hlsl\terrain\entry_per_pixel_lighting.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\terrain\entry_per_vertex_lighting.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\terrain\entry_prt.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\helpers\input_output_terrain.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -5,6 +5,7 @@ using HaloShaderGenerator.Black;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using HaloShaderGenerator.Generator;
 
 namespace HaloShaderGenerator
 {
@@ -15,9 +16,9 @@ namespace HaloShaderGenerator
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
         static readonly string TestShaderType = "terrain";
-        static readonly string TestStageType = "pixel"; //shared_vertex, shader_pixel, vertex or pixel
+        static readonly string TestStageType = "shared_vertex"; //shared_vertex, shader_pixel, vertex or pixel
 
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Dynamic_Light};
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Albedo};
 
         #region Shader
         static readonly List<VertexType> VertexOverrides = new List<VertexType> { VertexType.World, VertexType.Rigid };
@@ -112,6 +113,53 @@ namespace HaloShaderGenerator
 
         };
         #endregion
+
+        static void RunTerrainSharedVertexShaderUnitTest()
+        {
+            TerrainUnitTest shaderTests = new TerrainUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                shaderTests.TestAllSharedVertexShaders(VertexOverrides, StageOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : TerrainUnitTest.GetAllShaderStages();
+                var vertices = (VertexOverrides.Count > 0) ? VertexOverrides : TerrainUnitTest.GetAllVertexFormats();
+                foreach (var vertex in vertices)
+                {
+                    foreach (var stage in stages)
+                    {
+                        TestSharedVertexShader(vertex, stage);
+                    }
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllSharedVertexShaders(null, null);
+            }
+        }
+
+        static void RunTerrainSharedPixelShaderUnitTest()
+        {
+            TerrainUnitTest shaderTests = new TerrainUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                shaderTests.TestAllSharedPixelShaders(StageOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : TerrainUnitTest.GetAllShaderStages();
+                foreach (var stage in stages)
+                {
+                    TestSharedPixelShader(stage, -1, -1);
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllSharedPixelShaders(null);
+            }
+        }
+
 
         static void RunSharedVertexShaderUnitTest()
         {
@@ -349,12 +397,12 @@ namespace HaloShaderGenerator
                     switch (TestStageType)
                     {
                         case "shared_vertex":
-                            //RunTerrainSharedVertexShaderUnitTest(); 
+                            RunTerrainSharedVertexShaderUnitTest(); 
                             break;
                         case "pixel":
                             RunTerrainUnitTest(); break;
                         case "shared_pixel":
-                            //RunTerrainSharedPixelShaderUnitTest(); 
+                            RunTerrainSharedPixelShaderUnitTest(); 
                             break;
                     }
                     break;
@@ -449,8 +497,12 @@ namespace HaloShaderGenerator
 
         static void TestSharedVertexShader(VertexType vertexType, ShaderStage stage)
         {
-            var gen = new ShaderGenerator();
-            if(gen.IsEntryPointSupported(stage) && gen.IsVertexShaderShared(stage) && gen.IsVertexFormatSupported(vertexType))
+            IShaderGenerator gen = new ShaderGenerator();
+
+            if (TestShaderType == "terrain")
+                gen = new Terrain.TerrainGenerator();
+
+            if (gen.IsEntryPointSupported(stage) && gen.IsVertexShaderShared(stage) && gen.IsVertexFormatSupported(vertexType))
             {
                 var bytecode = gen.GenerateSharedVertexShader(vertexType, stage).Bytecode;
                 var disassembly = D3DCompiler.Disassemble(bytecode);
@@ -461,30 +513,45 @@ namespace HaloShaderGenerator
 
         static void TestSharedPixelShader(ShaderStage stage, int methodIndex, int optionIndex)
         {
-            var gen = new ShaderGenerator();
-            byte[] bytecode = null;
-            string disassembly = "";
-            if (methodIndex == -1 || optionIndex == -1)
+            IShaderGenerator gen = new ShaderGenerator();
+
+            if (TestShaderType == "terrain")
+                gen = new Terrain.TerrainGenerator();
+
+            byte[] bytecode;
+            string disassembly;
+
+            if (gen.IsSharedPixelShaderUsingMethods(stage))
             {
-                for(int i = 0; i < gen.GetMethodCount(); i++)
+                if (methodIndex == -1 || optionIndex == -1)
                 {
-                    if(gen.IsMethodSharedInEntryPoint(stage, i) && gen.IsPixelShaderShared(stage))
+                    for (int i = 0; i < gen.GetMethodCount(); i++)
                     {
-                        for(int j = 0; j < gen.GetMethodOptionCount(i); j++)
+                        if (gen.IsMethodSharedInEntryPoint(stage, i) && gen.IsPixelShaderShared(stage))
                         {
-                            bytecode = gen.GenerateSharedPixelShader(stage, i, j).Bytecode;
-                            disassembly = D3DCompiler.Disassemble(bytecode);
-                            WriteShaderFile($"generated_{stage.ToString().ToLower()}_{i}_{j}.glps", disassembly);
+                            for (int j = 0; j < gen.GetMethodOptionCount(i); j++)
+                            {
+                                bytecode = gen.GenerateSharedPixelShader(stage, i, j).Bytecode;
+                                disassembly = D3DCompiler.Disassemble(bytecode);
+                                WriteShaderFile($"generated_{stage.ToString().ToLower()}_{i}_{j}.glps", disassembly);
+                            }
                         }
                     }
+                }
+                else
+                {
+                    bytecode = gen.GenerateSharedPixelShader(stage, methodIndex, optionIndex).Bytecode;
+                    disassembly = D3DCompiler.Disassemble(bytecode);
+                    WriteShaderFile($"generated_{stage.ToString().ToLower()}_{methodIndex}_{optionIndex}.glps", disassembly);
                 }
             }
             else
             {
-                bytecode = gen.GenerateSharedPixelShader(stage, methodIndex, optionIndex).Bytecode;
+                bytecode = gen.GenerateSharedPixelShader(stage, -1, -1).Bytecode;
                 disassembly = D3DCompiler.Disassemble(bytecode);
-                WriteShaderFile($"generated_{stage.ToString().ToLower()}_{methodIndex}_{optionIndex}.glps", disassembly);
+                WriteShaderFile($"generated_{stage.ToString().ToLower()}.glps", disassembly);
             }
+            
         }
         #endregion
 

@@ -1,5 +1,6 @@
 ﻿#include "registers\vertex_shader.hlsli"
 #include "helpers\input_output.hlsli"
+#include "helpers\input_output_terrain.hlsli"
 #include "helpers\transform_math.hlsli"
 #include "helpers\math.hlsli"
 #include "helpers\atmosphere.hlsli"
@@ -8,14 +9,14 @@
 #include "helpers\sfx_distortion.hlsli"
 #include "helpers\vertex_shader_helper.hlsli"
 
-VS_OUTPUT_ALBEDO entry_albedo(input_vertex_format input)
+VS_OUTPUT_ALBEDO_TERRAIN entry_albedo(input_vertex_format input)
 {
-    VS_OUTPUT_ALBEDO output;
+	VS_OUTPUT_ALBEDO_TERRAIN output;
 	float4 world_position;
-	calc_vertex_transform(input, world_position, output.position, output.normal.xyz, output.tangent, output.binormal, output.texcoord);
+	calc_vertex_transform(input, world_position, output.position, output.normal.xyz, output.tangent, output.binormal, output.texcoord.xy);
 	calculate_z_squish(output.position);
-	output.camera_dir = Camera_Position - world_position.xyz;
 	output.normal.w = output.position.w;
+	output.texcoord.zw = 1;
 	return output;
 }
 

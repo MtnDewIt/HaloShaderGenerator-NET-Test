@@ -205,5 +205,10 @@ namespace HaloShaderGenerator.LightVolume
         {
             return new ShaderParameters();
         }
+
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

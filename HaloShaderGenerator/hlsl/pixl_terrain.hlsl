@@ -31,3 +31,26 @@ PS_OUTPUT_DEFAULT entry_dynamic_light_cinematic(VS_OUTPUT_TERRAIN_DYNAMIC_LIGHT 
 	return shader_entry_dynamic_light_cinematic(input);
 }
 #endif
+
+#if shaderstage == k_shaderstage_static_sh || shaderstage == k_shaderstage_static_prt_ambient || shaderstage == k_shaderstage_static_prt_linear || shaderstage == k_shaderstage_static_prt_quadratic
+#include "terrain/entry_prt.hlsli"
+PS_OUTPUT_DEFAULT entry_static_sh(VS_OUTPUT_STATIC_SH input) : COLOR
+{
+	return shader_entry_static_sh(input);
+}
+
+PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PRT input) : COLOR
+{
+	return shader_entry_static_prt(input);
+}
+
+PS_OUTPUT_DEFAULT entry_static_prt_linear(VS_OUTPUT_STATIC_PRT input) : COLOR
+{
+	return shader_entry_static_prt(input);
+}
+
+PS_OUTPUT_DEFAULT entry_static_prt_quadratic(VS_OUTPUT_STATIC_PRT input) : COLOR
+{
+	return shader_entry_static_prt(input);
+}
+#endif

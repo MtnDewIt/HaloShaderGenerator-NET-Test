@@ -224,5 +224,10 @@ namespace HaloShaderGenerator.Beam
         {
             return new ShaderParameters();
         }
+
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

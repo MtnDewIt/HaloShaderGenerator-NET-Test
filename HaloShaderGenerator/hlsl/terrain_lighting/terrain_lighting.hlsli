@@ -4,6 +4,9 @@
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\terrain_helper.hlsli"
 #include "..\methods\terrain_blending.hlsli"
+#include "..\material_models\lambert.hlsli"
+#include "..\helpers\sh.hlsli"
+#include "..\methods\environment_mapping.hlsli"
 
 uniform float diffuse_coefficient_m_0;
 uniform float specular_coefficient_m_0;
@@ -310,8 +313,29 @@ void calc_dynamic_lighting_terrain(SHADER_DYNAMIC_LIGHT_COMMON common_data, out 
 
 float3 calc_lighting_terrain(SHADER_COMMON common_data, out float4 unknown_output)
 {
+	float3 diffuse;
+	
+	float3 diffuse_accumulation = 0;
+	float3 specular_accumulation = 0;
+		
+	calc_material_lambert_diffuse_ps(common_data.surface_normal, common_data.world_position, 0, 0, diffuse_accumulation, specular_accumulation);
+		
+	diffuse = common_data.diffuse_reflectance + diffuse_accumulation;
+	
+	diffuse *= common_data.albedo.rgb;
+	
 
-	unknown_output = 0;
-	return 0;
+	ENVIRONMENT_MAPPING_COMMON env_mapping_common_data;
+	
+	env_mapping_common_data.reflect_dir = common_data.reflect_dir;
+	env_mapping_common_data.view_dir = common_data.view_dir;
+	env_mapping_common_data.env_area_specular = get_environment_contribution(common_data.sh_0);
+	env_mapping_common_data.specular_coefficient = 1.0;
+	env_mapping_common_data.area_specular = 0;
+	env_mapping_common_data.specular_exponent = 0.0;
+	envmap_type(env_mapping_common_data, diffuse, unknown_output);
+	
+
+	return diffuse;
 }
 #endif

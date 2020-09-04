@@ -133,6 +133,7 @@ namespace HaloShaderGenerator
             {
                 filename += $"_{methodIndex}_{optionIndex}";
             }
+
             vertexShaderPath = Path.Combine(vertexShaderPath, $"{filename}.shared_pixel_shader");
 
             return vertexShaderPath;
@@ -398,28 +399,48 @@ namespace HaloShaderGenerator
             {
                 if (ReferenceGenerator.IsEntryPointSupported(stage) && ReferenceGenerator.IsPixelShaderShared(stage))
                 {
-                    for (int i = 0; i < ReferenceGenerator.GetMethodCount(); i++)
+                    if (ReferenceGenerator.IsSharedPixelShaderUsingMethods(stage))
                     {
-                        for(int j = 0; j < ReferenceGenerator.GetMethodOptionCount(i); j++)
+                        for (int i = 0; i < ReferenceGenerator.GetMethodCount(); i++)
                         {
-                            if (ReferenceGenerator.IsMethodSharedInEntryPoint(stage, i))
+                            for (int j = 0; j < ReferenceGenerator.GetMethodOptionCount(i); j++)
                             {
-                                string filePath = GetTestSharedPixelShader(stage, i, j);
-                                var file = new FileInfo(filePath);
-
-                                if (file.Exists == false)
+                                if (ReferenceGenerator.IsMethodSharedInEntryPoint(stage, i))
                                 {
-                                    Console.WriteLine($"No reference shader for {stage}_{i}_{j} at {stage.ToString().ToLower()}");
-                                    success = false;
-                                    continue;
-                                }
-                                bool equal = CompareShaders(GenerateSharedPixelShader(stage, i,j), filePath, "ps_3_0", out bool usesD3DX);
-                                success &= equal;
-                                DisplaySharedPixelShaderTestResults(equal, i,j, stage, usesD3DX);
-                            }
-                        }
+                                    string filePath = GetTestSharedPixelShader(stage, i, j);
+                                    var file = new FileInfo(filePath);
 
+                                    if (file.Exists == false)
+                                    {
+                                        Console.WriteLine($"No reference shader for {stage}_{i}_{j} at {stage.ToString().ToLower()}");
+                                        success = false;
+                                        continue;
+                                    }
+                                    bool equal = CompareShaders(GenerateSharedPixelShader(stage, i, j), filePath, "ps_3_0", out bool usesD3DX);
+                                    success &= equal;
+                                    DisplaySharedPixelShaderTestResults(equal, i, j, stage, usesD3DX);
+                                }
+                            }
+
+                        }
                     }
+                    else
+                    {
+                        string filePath = GetTestSharedPixelShader(stage, -1, -1);
+                        var file = new FileInfo(filePath);
+
+                        if (file.Exists == false)
+                        {
+                            Console.WriteLine($"No reference shader for {stage} at {stage.ToString().ToLower()}");
+                            success = false;
+                            continue;
+                        }
+                        bool equal = CompareShaders(GenerateSharedPixelShader(stage, -1, -1), filePath, "ps_3_0", out bool usesD3DX);
+                        success &= equal;
+                        DisplaySharedPixelShaderTestResults(equal, -1, -1, stage, usesD3DX);
+                    }
+
+                    
                 }
             }
 

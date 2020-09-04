@@ -303,6 +303,11 @@ namespace HaloShaderGenerator.Shader
             return method_index == 2;
         }
 
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
+        {
+            return entryPoint == ShaderStage.Shadow_Generate;
+        }
+
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
             switch (entryPoint)

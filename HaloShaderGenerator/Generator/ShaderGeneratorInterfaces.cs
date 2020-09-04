@@ -77,6 +77,13 @@ namespace HaloShaderGenerator.Generator
         /// <returns></returns>
         bool IsVertexShaderShared(ShaderStage entryPoint);
 
+        /// <summary>
+        /// Returns true if shared pixel shader has multiple methods
+        /// </summary>
+        /// <param name="entryPoint"></param>
+        /// <returns></returns>
+        bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint);
+
         int GetMethodCount();
 
         int GetMethodOptionCount(int methodIndex);
