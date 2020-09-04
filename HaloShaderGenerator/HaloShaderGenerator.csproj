@@ -90,7 +90,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Beam\BeamGenerator.cs" />
+    <Compile Include="Beam\MethodOptions.cs" />
     <Compile Include="Black\ShaderBlackGenerator.cs" />
+    <Compile Include="Contrail\ContrailGenerator.cs" />
+    <Compile Include="Contrail\MethodOptions.cs" />
     <Compile Include="Cortana\CortanaShaderGenerator.cs" />
     <Compile Include="DirectX\D3D.cs" />
     <Compile Include="DirectX\D3DCompiler.cs" />
@@ -174,7 +178,6 @@
     <EmbeddedResource Include="hlsl\pixl_shader_cortana.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Beam\" />
     <Folder Include="hlsl\black\" />
   </ItemGroup>
   <ItemGroup>
@@ -386,6 +389,15 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\explicit_input_output.hlsli" />
     <EmbeddedResource Include="hlsl\pixl_shield_impact.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\beam\entry_default.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\contrail\entry_default.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\albedo_fx.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

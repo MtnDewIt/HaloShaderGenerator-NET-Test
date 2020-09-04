@@ -225,4 +225,12 @@ struct VS_OUTPUT_PARTICLE
     float4 normal : TEXCOORD2; // float3 normal, float palette_unknown ////// float2 binormal
 };
 
+struct VS_OUTPUT_FX
+{
+    float4 position : SV_Position;
+    float4 color : COLOR;
+    float4 color2 : COLOR1;
+    float4 texcoord : TEXCOORD;
+};
+
 #endif

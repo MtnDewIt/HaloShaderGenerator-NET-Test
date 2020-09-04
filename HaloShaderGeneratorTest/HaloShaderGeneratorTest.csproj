@@ -65,6 +65,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BeamUnitTest.cs" />
+    <Compile Include="ContrailUnitTest.cs" />
     <Compile Include="TerrainUnitTest.cs" />
     <Compile Include="ParticleUnitTest.cs" />
     <Compile Include="ShaderUnitTest.cs" />

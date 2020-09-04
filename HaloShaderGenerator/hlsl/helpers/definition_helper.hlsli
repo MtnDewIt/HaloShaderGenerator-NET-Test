@@ -175,6 +175,11 @@ This file contains a list of blank definitions to help with Intellisense
 #define black_point_arg 0
 #define fog_arg 0
 #define frame_blend_arg 0
+// fx
+#define contrail_albedo_arg 0
+#define contrail_blend_type_arg 0
+#define beam_albedo_arg 0
+#define beam_blend_type_arg 0
 
 #endif
 

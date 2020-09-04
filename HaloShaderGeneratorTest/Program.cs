@@ -75,6 +75,32 @@ namespace HaloShaderGenerator
         };
         #endregion
 
+        #region contrail
+
+        static readonly List<int> ContrailAlbedoOverrides = new List<int> { };
+        static readonly List<int> ContrailBlendModeOverrides = new List<int> { };
+        static readonly List<int> ContrailBlackPointOverrides = new List<int> { };
+        static readonly List<int> ContrailFogOverrides = new List<int> { };
+
+        static readonly List<List<int>> ContrailOverrides = new List<List<int>>
+        {
+
+        };
+        #endregion
+
+        #region beam
+
+        static readonly List<int> BeamAlbedoOverrides = new List<int> { };
+        static readonly List<int> BeamBlendModeOverrides = new List<int> { };
+        static readonly List<int> BeamBlackPointOverrides = new List<int> { };
+        static readonly List<int> BeamFogOverrides = new List<int> { };
+
+        static readonly List<List<int>> BeamOverrides = new List<List<int>>
+        {
+
+        };
+        #endregion
+
         static void RunSharedVertexShaderUnitTest()
         {
             ShaderUnitTest shaderTests = new ShaderUnitTest(ShaderReferencePath);
@@ -205,6 +231,60 @@ namespace HaloShaderGenerator
             }
         }
 
+        static void RunContrailUnitTest()
+        {
+            ContrailUnitTest shaderTests = new ContrailUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                var methodOverrides = new List<List<int>> { ContrailAlbedoOverrides, ContrailBlendModeOverrides, ContrailBlackPointOverrides, ContrailFogOverrides };
+
+                shaderTests.TestAllPixelShaders(ContrailOverrides, StageOverrides, methodOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : ContrailUnitTest.GetAllShaderStages();
+
+                foreach (var stage in stages)
+                {
+                    foreach (var methods in ContrailOverrides)
+                    {
+                        TestPixelShader(stage, methods);
+                    }
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
+            }
+        }
+
+        static void RunBeamUnitTest()
+        {
+            BeamUnitTest shaderTests = new BeamUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                var methodOverrides = new List<List<int>> { BeamAlbedoOverrides, BeamBlendModeOverrides, BeamBlackPointOverrides, BeamFogOverrides };
+
+                shaderTests.TestAllPixelShaders(BeamOverrides, StageOverrides, methodOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : BeamUnitTest.GetAllShaderStages();
+
+                foreach (var stage in stages)
+                {
+                    foreach (var methods in BeamOverrides)
+                    {
+                        TestPixelShader(stage, methods);
+                    }
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
+            }
+        }
+
         static int Main()
         {
             Console.WriteLine($"TESTING {TestShaderType.ToUpper()}");
@@ -223,6 +303,8 @@ namespace HaloShaderGenerator
                     }
                     break;
                 case "particle": RunParticleUnitTest(); break;
+                case "contrail": RunContrailUnitTest(); break;
+                case "beam": RunBeamUnitTest(); break;
                 case "terrain":
                     switch (TestStageType)
                     {
