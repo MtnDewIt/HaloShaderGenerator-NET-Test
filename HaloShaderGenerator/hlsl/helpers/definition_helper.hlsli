@@ -180,6 +180,8 @@ This file contains a list of blank definitions to help with Intellisense
 #define contrail_blend_type_arg 0
 #define beam_albedo_arg 0
 #define beam_blend_type_arg 0
+#define light_volume_albedo_arg 0
+#define light_volume_blend_type_arg 0
 
 #endif
 

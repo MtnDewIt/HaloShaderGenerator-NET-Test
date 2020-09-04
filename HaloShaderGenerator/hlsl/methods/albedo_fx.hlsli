@@ -43,4 +43,8 @@ float4 albedo_palettized_plus_alpha(float2 texcoord, float palettized_w)
 #define beam_albedo albedo_diffuse_only
 #endif
 
+#ifndef light_volume_albedo
+#define light_volume_albedo albedo_diffuse_only
+#endif
+
 #endif

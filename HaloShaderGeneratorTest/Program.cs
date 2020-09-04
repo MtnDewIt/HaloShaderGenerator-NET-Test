@@ -101,6 +101,18 @@ namespace HaloShaderGenerator
         };
         #endregion
 
+        #region light_volume
+
+        static readonly List<int> LightVolumeAlbedoOverrides = new List<int> { };
+        static readonly List<int> LightVolumeBlendModeOverrides = new List<int> { };
+        static readonly List<int> LightVolumeFogOverrides = new List<int> { };
+
+        static readonly List<List<int>> LightVolumeOverrides = new List<List<int>>
+        {
+
+        };
+        #endregion
+
         static void RunSharedVertexShaderUnitTest()
         {
             ShaderUnitTest shaderTests = new ShaderUnitTest(ShaderReferencePath);
@@ -285,6 +297,33 @@ namespace HaloShaderGenerator
             }
         }
 
+        static void RunLightVolumeUnitTest()
+        {
+            LightVolumeUnitTest shaderTests = new LightVolumeUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                var methodOverrides = new List<List<int>> { LightVolumeAlbedoOverrides, LightVolumeBlendModeOverrides, LightVolumeFogOverrides };
+
+                shaderTests.TestAllPixelShaders(LightVolumeOverrides, StageOverrides, methodOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : LightVolumeUnitTest.GetAllShaderStages();
+
+                foreach (var stage in stages)
+                {
+                    foreach (var methods in LightVolumeOverrides)
+                    {
+                        TestPixelShader(stage, methods);
+                    }
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
+            }
+        }
+
         static int Main()
         {
             Console.WriteLine($"TESTING {TestShaderType.ToUpper()}");
@@ -305,6 +344,7 @@ namespace HaloShaderGenerator
                 case "particle": RunParticleUnitTest(); break;
                 case "contrail": RunContrailUnitTest(); break;
                 case "beam": RunBeamUnitTest(); break;
+                case "light_volume": RunLightVolumeUnitTest(); break;
                 case "terrain":
                     switch (TestStageType)
                     {

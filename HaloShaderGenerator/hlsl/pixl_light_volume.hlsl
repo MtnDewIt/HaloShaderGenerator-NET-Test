@@ -1,4 +1,8 @@
-﻿float4 main() : COLOR
+﻿#define light_volume_template
+
+#include "light_volume/entry_default.hlsli"
+
+PS_OUTPUT_DEFAULT entry_default(VS_OUTPUT_FX input) : COLOR
 {
-	return float4(1, 2, 3, 4);
+    return light_volume_entry_default(input);
 }

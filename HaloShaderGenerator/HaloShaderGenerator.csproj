@@ -111,6 +111,8 @@
     <Compile Include="Globals\ShaderStage.cs" />
     <Compile Include="Globals\ShaderType.cs" />
     <Compile Include="Globals\VertexType.cs" />
+    <Compile Include="LightVolume\LightVolumeGenerator.cs" />
+    <Compile Include="LightVolume\MethodOptions.cs" />
     <Compile Include="Particle\MethodOptions.cs" />
     <Compile Include="Particle\ParticleGenerator.cs" />
     <Compile Include="Shader\MethodOptions.cs" />
@@ -398,6 +400,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\methods\albedo_fx.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\light_volume\entry_default.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
