@@ -85,7 +85,7 @@ namespace HaloShaderGenerator
 
         static readonly List<List<int>> ContrailOverrides = new List<List<int>>
         {
-
+            //new List<int> { 2, 10, 1, 0 },
         };
         #endregion
 
@@ -546,6 +546,24 @@ namespace HaloShaderGenerator
                 var material_3 = (Terrain.Material_No_Detail_Bump)methods[5];
 
                 var gen = new Terrain.TerrainGenerator(blend_type, env_map, material_0, material_1, material_2, material_3);
+                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
+                {
+                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
+                    var parameters = gen.GetPixelShaderParameters();
+
+                    var disassembly = D3DCompiler.Disassemble(bytecode);
+                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
+                    WriteShaderFile(filename, disassembly);
+                }
+            }
+            else if (TestShaderType == "contrail")
+            {
+                var albedo = (Contrail.Albedo)methods[0];
+                var blend_mode = (Contrail.Blend_Mode)methods[1];
+                var black_point = (Contrail.Black_Point)methods[2];
+                var fog = (Contrail.Fog)methods[3];
+
+                var gen = new Contrail.ContrailGenerator(albedo, blend_mode, black_point, fog);
                 if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
                 {
                     var bytecode = gen.GeneratePixelShader(stage).Bytecode;

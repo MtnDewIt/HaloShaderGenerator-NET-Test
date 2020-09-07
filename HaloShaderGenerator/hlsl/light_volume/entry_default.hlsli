@@ -20,7 +20,7 @@
 
 PS_OUTPUT_DEFAULT light_volume_entry_default(VS_OUTPUT_FX input)
 {
-    float4 color = light_volume_albedo(input.texcoord.xy, input.texcoord.z);
+    float4 color = light_volume_albedo(input.texcoord.xy, float2(0, 0), input.texcoord.z);
     
     if (light_volume_blend_type_arg == k_light_volume_blend_mode_multiply)
     {

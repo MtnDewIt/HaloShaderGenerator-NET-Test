@@ -66,9 +66,6 @@ namespace HaloShaderGenerator.Decal
 
             macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes));
             macros.Add(ShaderGeneratorBase.CreateMacro("DECAL_IS_SIMPLE", DecalIsSimple ? 1 : 0));
-            // This macro is so we can reuse the same albedo code for FX (decs, ltvl, beam, cntl)
-            // Decal always has the emblem samplers defined so we need this for sampler registers to line up
-            macros.Add(ShaderGeneratorBase.CreateMacro("_DECAL", 1));
 
             //
             // The following code properly names the macros (like in rmdf)

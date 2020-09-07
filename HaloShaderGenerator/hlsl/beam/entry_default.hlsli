@@ -9,6 +9,7 @@
 #define k_beam_albedo_diffuse_only 0
 #define k_beam_albedo_palettized 1
 #define k_beam_albedo_palettized_plus_alpha 2
+
 #define k_beam_blend_mode_opaque 0
 #define k_beam_blend_mode_additive 1
 #define k_beam_blend_mode_multiply 2
@@ -23,7 +24,7 @@
 
 PS_OUTPUT_DEFAULT beam_entry_default(VS_OUTPUT_FX input)
 {
-    float4 color = beam_albedo(input.texcoord.xy, input.texcoord.z);
+    float4 color = beam_albedo(input.texcoord.xy, float2(0, 0), input.texcoord.z);
     
     if (black_point_arg == k_black_point_on)
     {

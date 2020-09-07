@@ -113,6 +113,7 @@
     <Compile Include="Globals\ShaderStage.cs" />
     <Compile Include="Globals\ShaderType.cs" />
     <Compile Include="Globals\VertexType.cs" />
+    <EmbeddedResource Include="hlsl\methods\albedo_decal.hlsli" />
     <Compile Include="LightVolume\LightVolumeGenerator.cs" />
     <Compile Include="LightVolume\MethodOptions.cs" />
     <Compile Include="Particle\MethodOptions.cs" />

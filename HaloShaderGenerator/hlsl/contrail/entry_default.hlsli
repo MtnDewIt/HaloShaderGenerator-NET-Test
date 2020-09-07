@@ -23,7 +23,7 @@
 
 PS_OUTPUT_DEFAULT contrail_entry_default(VS_OUTPUT_FX input)
 {
-    float4 color = contrail_albedo(input.texcoord.xy, input.texcoord.z);
+    float4 color = contrail_albedo(input.texcoord.xy, float2(0, 0), input.texcoord.z);
     
     if (black_point_arg == k_black_point_on)
     {

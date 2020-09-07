@@ -5,8 +5,6 @@
 #include "decal\entry_default.hlsli"
 #include "helpers\decal_helper.hlsli"
 
-// TODO: setup *another* function for bumpmapping (code in decal_entry_default right now)
-
 #if shaderstage == k_shaderstage_default
 
 #if DECAL_IS_SIMPLE == 1

@@ -28,7 +28,7 @@
 #define k_decal_bump_mapping_standard 1
 #define k_decal_bump_mapping_standard_mask 2
 
-#include "..\methods\albedo_fx.hlsli"
+#include "..\methods\albedo_decal.hlsli"
 #include "..\methods\blend_mode_decal.hlsli"
 #include "..\methods\bump_mapping_decal.hlsli"
 #include "..\methods\tinting.hlsli"
