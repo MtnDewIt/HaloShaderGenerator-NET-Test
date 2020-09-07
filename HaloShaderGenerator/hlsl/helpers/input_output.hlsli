@@ -233,4 +233,26 @@ struct VS_OUTPUT_FX
     float4 texcoord : TEXCOORD;
 };
 
+struct VS_OUTPUT_DECAL
+{
+    float4 position : SV_Position;
+    float4 texcoord : TEXCOORD;
+    float4 texcoord1 : TEXCOORD1;
+    float4 tangent : TEXCOORD2;
+    float4 binormal : TEXCOORD3;
+    float4 normal : TEXCOORD4;
+};
+
+struct PS_OUTPUT_DECAL_SIMPLE
+{
+    float4 color;
+};
+
+struct PS_OUTPUT_DECAL
+{
+    float4 color_ldr;
+    float4 color_hdr;
+    float4 unknown;
+};
+
 #endif

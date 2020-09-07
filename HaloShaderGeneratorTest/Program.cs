@@ -114,6 +114,41 @@ namespace HaloShaderGenerator
         };
         #endregion
 
+        #region decal
+
+        static readonly List<int> DecalAlbedoOverrides = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+        static readonly List<int> DecalBlendModeOverrides = new List<int> { };
+        static readonly List<int> DecalRenderPassOverrides = new List<int> { };
+        static readonly List<int> DecalSpecularOverrides = new List<int> { };
+        static readonly List<int> DecalBumpMappingOverrides = new List<int> { };
+        static readonly List<int> DecalTintingOverrides = new List<int> { };
+
+        static readonly List<List<int>> DecalOverrides = new List<List<int>>
+        {
+            //new List<int> { 0, 1, 0, 0, 0, 0 },
+            //new List<int> { 0, 3, 0, 0, 0, 0 },
+            //new List<int> { 0, 2, 1, 0, 0, 0 },
+            //new List<int> { 0, 2, 0, 0, 0, 0 },
+            //new List<int> { 0, 8, 1, 0, 0, 0 },
+            //new List<int> { 0, 8, 1, 0, 0, 1 },
+            //new List<int> { 0, 1, 0, 1, 0, 0 },
+            //new List<int> { 0, 1, 1, 0, 0, 1 },
+            //new List<int> { 0, 1, 1, 0, 0, 2 },
+            //new List<int> { 0, 2, 0, 1, 0, 0 },
+            //new List<int> { 0, 10, 0, 0, 1, 0 },
+            //new List<int> { 0, 4, 0, 1, 0, 0 },
+            //new List<int> { 0, 2, 0, 0, 0, 3 },
+            //new List<int> { 0, 3, 0, 0, 1, 0 },
+            //new List<int> { 0, 3, 0, 0, 1, 1 },
+            //new List<int> { 2, 2, 0, 0, 0, 0 },
+            //new List<int> { 2, 10, 1, 1, 0, 3 },
+            //new List<int> { 2, 10, 1, 1, 1, 3 },
+            //new List<int> { 4, 3, 0, 0, 0, 0 },
+            //new List<int> { 5, 3, 0, 0, 0, 3 },
+            //new List<int> { 8, 10, 0, 1, 0, 2 },
+        };
+        #endregion
+
         static void RunTerrainSharedVertexShaderUnitTest()
         {
             TerrainUnitTest shaderTests = new TerrainUnitTest(ShaderReferencePath);
@@ -372,6 +407,33 @@ namespace HaloShaderGenerator
             }
         }
 
+        static void RunDecalUnitTest()
+        {
+            DecalUnitTest shaderTests = new DecalUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                var methodOverrides = new List<List<int>> { DecalAlbedoOverrides, DecalBlendModeOverrides, DecalRenderPassOverrides, DecalSpecularOverrides, DecalBumpMappingOverrides, DecalTintingOverrides };
+
+                shaderTests.TestAllPixelShaders(DecalOverrides, StageOverrides, methodOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : DecalUnitTest.GetAllShaderStages();
+
+                foreach (var stage in stages)
+                {
+                    foreach (var methods in DecalOverrides)
+                    {
+                        TestPixelShader(stage, methods);
+                    }
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
+            }
+        }
+
         static int Main()
         {
             Console.WriteLine($"TESTING {TestShaderType.ToUpper()}");
@@ -393,6 +455,7 @@ namespace HaloShaderGenerator
                 case "contrail": RunContrailUnitTest(); break;
                 case "beam": RunBeamUnitTest(); break;
                 case "light_volume": RunLightVolumeUnitTest(); break;
+                case "decal": RunDecalUnitTest(); break;
                 case "terrain":
                     switch (TestStageType)
                     {
@@ -483,6 +546,26 @@ namespace HaloShaderGenerator
                 var material_3 = (Terrain.Material_No_Detail_Bump)methods[5];
 
                 var gen = new Terrain.TerrainGenerator(blend_type, env_map, material_0, material_1, material_2, material_3);
+                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
+                {
+                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
+                    var parameters = gen.GetPixelShaderParameters();
+
+                    var disassembly = D3DCompiler.Disassemble(bytecode);
+                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
+                    WriteShaderFile(filename, disassembly);
+                }
+            }
+            else if (TestShaderType == "decal")
+            {
+                var albedo = (Decal.Albedo)methods[0];
+                var blend_mode = (Decal.Blend_Mode)methods[1];
+                var render_pass = (Decal.Render_Pass)methods[2];
+                var specular = (Decal.Specular)methods[3];
+                var bump_mapping = (Decal.Bump_Mapping)methods[4];
+                var tinting = (Decal.Tinting)methods[5];
+
+                var gen = new Decal.DecalGenerator(albedo, blend_mode, render_pass, specular, bump_mapping, tinting);
                 if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
                 {
                     var bytecode = gen.GeneratePixelShader(stage).Bytecode;

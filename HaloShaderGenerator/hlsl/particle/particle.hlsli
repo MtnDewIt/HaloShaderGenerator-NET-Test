@@ -59,7 +59,7 @@ float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
 
 float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
 {
-    // The fixes here still need more work - the pixel computation is wrong when resolution is different from window resolution
+    // TODO: fix range conversion for distortion_expensive
     
     float4 depth_sample = sample_depth_buffer_distortion(input.position.xy);
     

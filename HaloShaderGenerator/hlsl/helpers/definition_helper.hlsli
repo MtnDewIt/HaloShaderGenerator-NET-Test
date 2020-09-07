@@ -182,6 +182,12 @@ This file contains a list of blank definitions to help with Intellisense
 #define beam_blend_type_arg 0
 #define light_volume_albedo_arg 0
 #define light_volume_blend_type_arg 0
+#define decal_albedo_arg 0
+#define decal_blend_type_arg 0
+#define decal_render_pass_arg 0
+#define decal_specular_arg 0
+#define decal_bump_mapping_arg 0
+#define decal_tinting_arg 0
 
 #endif
 

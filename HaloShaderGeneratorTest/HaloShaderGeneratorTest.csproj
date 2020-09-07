@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="BeamUnitTest.cs" />
     <Compile Include="ContrailUnitTest.cs" />
+    <Compile Include="DecalUnitTest.cs" />
     <Compile Include="LightVolumeUnitTest.cs" />
     <Compile Include="TerrainUnitTest.cs" />
     <Compile Include="ParticleUnitTest.cs" />

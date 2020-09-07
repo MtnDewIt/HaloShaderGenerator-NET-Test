@@ -75,6 +75,7 @@ uniform float4 dynamic_environment_blend : register(c15);
 uniform float3 Camera_Position_PS : register(c16);
 uniform float simple_light_count : register(c17);
 uniform float4 simple_lights[40] : register(c18);
+uniform float fade : register(c32);
 uniform float4 p_render_debug_mode : register(c94);
 uniform float4 primary_change_color_old : register(c190);
 uniform float4 secondary_change_color_old : register(c191);

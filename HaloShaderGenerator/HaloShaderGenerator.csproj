@@ -96,6 +96,8 @@
     <Compile Include="Contrail\ContrailGenerator.cs" />
     <Compile Include="Contrail\MethodOptions.cs" />
     <Compile Include="Cortana\CortanaShaderGenerator.cs" />
+    <Compile Include="Decal\DecalGenerator.cs" />
+    <Compile Include="Decal\MethodOptions.cs" />
     <Compile Include="DirectX\D3D.cs" />
     <Compile Include="DirectX\D3DCompiler.cs" />
     <Compile Include="DirectX\Include.cs" />
@@ -413,6 +415,21 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\input_output_terrain.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\decal\entry_default.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\helpers\decal_helper.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\blend_mode_decal.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\tinting.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\bump_mapping_decal.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -11,7 +11,7 @@ PS_OUTPUT_DEFAULT entry_default(VS_OUTPUT_PARTICLE input) : COLOR
 {	
     return particle_entry_default_ldr_and_hdr(input);
 }
-#endif
+#endif // render_targets_arg == k_render_targets_ldr_and_hdr
 #if render_targets_arg == k_render_targets_ldr_only
 PS_OUTPUT_DEFAULT_LDR_ONLY entry_default(VS_OUTPUT_PARTICLE input) : COLOR
 {
