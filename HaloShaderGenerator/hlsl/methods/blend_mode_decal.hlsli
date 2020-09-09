@@ -41,21 +41,37 @@ float4 blend_mode_double_multiply(float4 input, float fade)
     return float4(color, alpha);
 }
 
-float4 blend_mode_pre_multiplied_alpha(float4 input, float fade)
+float4 blend_mode_maximum(float4 input, float fade)
 {
-    float alpha = input.a * fade;
-    return float4(input.rgb * alpha, alpha);
+    // TODO: verify
+    return input;
+}
+
+float4 blend_mode_multiply_add(float4 input, float fade)
+{
+    // TODO: verify
+    return input;
 }
 
 float4 blend_mode_add_src_times_srcalpha(float4 input, float fade)
 {
-    input.a *= fade;
-    return input;
+    return float4(input.rgb, input.a * fade);
 }
+
 float4 blend_mode_add_src_times_dstalpha(float4 input, float fade)
 {
-    input.a *= fade;
-    return input;
+    return float4(input.rgb, input.a * fade);
+}
+
+float4 blend_mode_inv_alpha_blend(float4 input, float fade)
+{
+    return float4(input.rgb, input.a * fade);
+}
+
+float4 blend_mode_pre_multiplied_alpha(float4 input, float fade)
+{
+    float alpha = input.a * fade;
+    return float4(input.rgb * alpha, alpha);
 }
 
 #ifndef decal_blend_mode

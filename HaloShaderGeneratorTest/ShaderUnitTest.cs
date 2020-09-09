@@ -58,6 +58,7 @@ namespace HaloShaderGenerator
     
     public abstract class GenericUnitTest
     {
+        private static bool IgnoreD3DX = false;
         private static string ReferencePath;
         private IShaderGenerator ReferenceGenerator;
         private static string ShaderType;
@@ -141,6 +142,9 @@ namespace HaloShaderGenerator
 
         public static void DisplayPixelShaderTestResults(bool success, List<int> testShader, ShaderStage stage, bool usesD3DX)
         {
+            if (IgnoreD3DX && usesD3DX)
+                return;
+
             if (!success)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -157,6 +161,9 @@ namespace HaloShaderGenerator
 
         public static void DisplayVertexShaderTestResults(bool success, VertexType vertex, ShaderStage stage, bool usesD3DX)
         {
+            if (IgnoreD3DX && usesD3DX)
+                return;
+
             if (!success)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -173,6 +180,9 @@ namespace HaloShaderGenerator
 
         public static void DisplaySharedPixelShaderTestResults(bool success, int methodIndex, int optionIndex, ShaderStage stage, bool usesD3DX)
         {
+            if (IgnoreD3DX && usesD3DX)
+                return;
+
             if (!success)
             {
                 Console.ForegroundColor = ConsoleColor.Red;

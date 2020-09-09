@@ -12,8 +12,8 @@
 #define k_decal_albedo_palettized_plus_alpha 2
 #define k_decal_albedo_diffuse_plus_alpha 3
 #define k_decal_albedo_emblem_change_color 4
-#define k_decal_albedo_change_color 5 
-#define k_decal_albedo_diffuse_plus_alpha_mask 6 
+#define k_decal_albedo_change_color 5
+#define k_decal_albedo_diffuse_plus_alpha_mask 6
 #define k_decal_albedo_palettized_plus_alpha_mask 7
 #define k_decal_albedo_vector_alpha 8
 #define k_decal_albedo_vector_alpha_drop_shadow 9

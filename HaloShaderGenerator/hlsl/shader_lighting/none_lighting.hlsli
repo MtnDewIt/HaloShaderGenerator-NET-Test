@@ -26,7 +26,7 @@ float3 calc_lighting_none_ps(SHADER_COMMON common_data, out float4 unknown_outpu
 	env_mapping_common_data.specular_exponent = 0.0;
 	
 	
-	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, color.rgb);
+	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, 0, 0, color.rgb);
 	
 	envmap_type(env_mapping_common_data, color, unknown_output);
 	

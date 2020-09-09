@@ -142,7 +142,7 @@ float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data, out float4 unk
 	envmap_type(env_mapping_common_data, env_color, unknown_output);
 
 	float3 self_illum = 0;
-	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, self_illum);
+	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, 0, 0, self_illum);
 	
 	if (self_illum_is_diffuse)
 	{

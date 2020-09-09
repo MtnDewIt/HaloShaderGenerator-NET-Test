@@ -43,7 +43,7 @@ float3 calc_lighting_foliage_ps(SHADER_COMMON common_data, out float4 unknown_ou
 	env_mapping_common_data.specular_exponent = 0.0;
 	
 	
-	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, diffuse.rgb);
+	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, 0, 0, diffuse.rgb);
 	
 	envmap_type(env_mapping_common_data, diffuse, unknown_output);
 	

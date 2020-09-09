@@ -18,16 +18,16 @@ namespace HaloShaderGenerator
         static readonly string TestShaderType = "terrain";
         static readonly string TestStageType = "shared_vertex"; //shared_vertex, shader_pixel, vertex or pixel
 
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {ShaderStage.Albedo};
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { };
 
         #region Shader
-        static readonly List<VertexType> VertexOverrides = new List<VertexType> { VertexType.World, VertexType.Rigid };
+        static readonly List<VertexType> VertexOverrides = new List<VertexType> { };
 
         static readonly List<int> ShaderAlbedoOverrides = new List<int> { };
         static readonly List<int> ShaderBumpOverrides = new List<int> { };
         static readonly List<int> ShaderAlphaOverrides = new List<int> { };
         static readonly List<int> ShaderSpecularOverrides = new List<int> { };
-        static readonly List<int> ShaderMaterialOverrides = new List<int> { 7 };
+        static readonly List<int> ShaderMaterialOverrides = new List<int> { };
         static readonly List<int> ShaderEnvOverrides = new List<int> { };
         static readonly List<int> ShaderSelfIllumOverrides = new List<int> { };
         static readonly List<int> ShaderBlendModeOverrides = new List<int> { };
@@ -36,8 +36,8 @@ namespace HaloShaderGenerator
 
         static readonly List<List<int>> ShaderOverrides = new List<List<int>>
         {
-            new List<int> { 0, 2, 0, 1, 7, 2, 0, 0, 0, 0, 0 },
-            new List<int> { 0, 2, 0, 1, 7, 0, 0, 0, 0, 1, 0 },
+            //new List<int> { 0, 2, 0, 1, 7, 2, 0, 0, 0, 0, 0 },
+            //new List<int> { 0, 2, 0, 1, 7, 0, 0, 0, 0, 1, 0 },
         };
         #endregion
 
@@ -74,6 +74,59 @@ namespace HaloShaderGenerator
             new List<int> { 0, 0, 0, 0, 0, 1},
             new List<int> { 0, 0, 1, 0, 2, 2},
         };
+        #endregion
+
+        #region halogram
+        static readonly List<int> HalogramAlbedoOverride = new List<int> {  };
+        static readonly List<int> HalogramSelfIllumOverride = new List<int> { };
+        static readonly List<int> HalogramBlendModeOverride = new List<int> { };
+        static readonly List<int> HalogramMiscOverride = new List<int> { };
+        static readonly List<int> HalogramWarpOverride = new List<int> { };
+        static readonly List<int> HalogramOverlayOverride = new List<int> { };
+        static readonly List<int> HalogramEdgeFadeOverride = new List<int> { };
+
+        static readonly List<List<int>> HalogramOverrides = new List<List<int>>
+        {
+            //new List<int> { 0, 9, 0, 1, 0, 2, 0},
+            //new List<int> { 0, 1, 0, 0, 0, 0, 1},
+            //new List<int> { 0, 1, 1, 0, 0, 0, 0},
+            //new List<int> { 0, 1, 1, 0, 0, 0, 1},
+            //new List<int> { 0, 1, 1, 1, 0, 0, 0},
+            //new List<int> { 2, 1, 1, 0, 0, 0, 0},
+            //new List<int> { 6, 1, 3, 0, 0, 0, 1},
+            //new List<int> { 0, 8, 1, 0, 1, 0, 0},
+            //new List<int> { 0, 11, 0, 1, 0, 2, 0},
+            //new List<int> { 0, 1, 1, 0, 0, 0, 1},
+            //new List<int> { 0, 3, 1, 0, 0, 0, 1},
+            //new List<int> { 0, 3, 1, 0, 0, 2, 1},
+            //new List<int> { 0, 4, 1, 0, 0, 3, 0},
+            //new List<int> { 0, 4, 1, 0, 0, 0, 0},
+            //new List<int> { 0, 5, 1, 0, 0, 1, 1},
+            //new List<int> { 0, 7, 1, 0, 0, 0, 0},
+            //new List<int> { 2, 5, 1, 0, 1, 2, 1},
+            //new List<int> { 0, 8, 1, 0, 0, 0, 0},
+            //new List<int> { 0, 8, 1, 0, 0, 1, 0},
+            //new List<int> { 0, 8, 1, 0, 0, 1, 1},
+            //new List<int> { 0, 8, 1, 0, 0, 3, 1},
+            //new List<int> { 0, 8, 1, 0, 0, 4, 1},
+            //new List<int> { 0, 8, 1, 0, 1, 0, 0},
+            //new List<int> { 0, 9, 0, 1, 0, 2, 0},
+            //new List<int> { 2, 9, 1, 1, 0, 2, 0},
+        };
+
+        static readonly List<List<int>> HalogramMS25 = new List<List<int>>
+        {
+            new List<int> { 0,5,1,1,0,0,0 },
+            new List<int> { 2,3,1,0,0,0,1 },
+            new List<int> { 0,1,0,0,0,0,0 },
+            new List<int> { 0,1,3,0,0,0,0 },
+            new List<int> { 0,5,3,0,0,0,0 },
+            new List<int> { 0,4,3,0,0,0,0 },
+            new List<int> { 0,5,1,0,0,0,1 },
+            new List<int> { 0,4,0,0,0,0,0 },
+            new List<int> { 9,5,3,0,0,0,0 },
+        };
+
         #endregion
 
         #region contrail
@@ -326,6 +379,33 @@ namespace HaloShaderGenerator
             }
         }
 
+        static void RunHalogramUnitTest()
+        {
+            HalogramUnitTest shaderTests = new HalogramUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                var methodOverrides = new List<List<int>> { HalogramAlbedoOverride, HalogramSelfIllumOverride, HalogramBlendModeOverride, HalogramMiscOverride, HalogramWarpOverride, HalogramOverlayOverride, HalogramEdgeFadeOverride};
+
+                shaderTests.TestAllPixelShaders(HalogramOverrides, StageOverrides, methodOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : HalogramUnitTest.GetAllShaderStages();
+
+                foreach (var stage in stages)
+                {
+                    foreach (var methods in HalogramOverrides)
+                    {
+                        TestPixelShader(stage, methods);
+                    }
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
+            }
+        }
+
         static void RunContrailUnitTest()
         {
             ContrailUnitTest shaderTests = new ContrailUnitTest(ShaderReferencePath);
@@ -469,6 +549,19 @@ namespace HaloShaderGenerator
                             break;
                     }
                     break;
+                case "halogram":
+                    switch (TestStageType)
+                    {
+                        //case "shared_vertex":
+                        //    RunTerrainSharedVertexShaderUnitTest();
+                        //    break;
+                        case "pixel":
+                            RunHalogramUnitTest(); break;
+                        //case "shared_pixel":
+                        //    RunTerrainSharedPixelShaderUnitTest();
+                        //    break;
+                    }
+                    break;
             }
 
             Console.ReadLine();
@@ -584,6 +677,27 @@ namespace HaloShaderGenerator
                 var tinting = (Decal.Tinting)methods[5];
 
                 var gen = new Decal.DecalGenerator(albedo, blend_mode, render_pass, specular, bump_mapping, tinting);
+                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
+                {
+                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
+                    var parameters = gen.GetPixelShaderParameters();
+
+                    var disassembly = D3DCompiler.Disassemble(bytecode);
+                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
+                    WriteShaderFile(filename, disassembly);
+                }
+            }
+            else if (TestShaderType == "halogram")
+            {
+                var albedo = (Halogram.Albedo)methods[0];
+                var self_illumination = (Halogram.Self_Illumination)methods[1];
+                var blend_mode = (Halogram.Blend_Mode)methods[2];
+                var misc = (Halogram.Misc)methods[3];
+                var warp = (Halogram.Warp)methods[4];
+                var overlay = (Halogram.Overlay)methods[5];
+                var edge_fade = (Halogram.Edge_Fade)methods[6];
+
+                var gen = new Halogram.HalogramGenerator(albedo, self_illumination, blend_mode, misc, warp, overlay, edge_fade);
                 if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
                 {
                     var bytecode = gen.GeneratePixelShader(stage).Bytecode;

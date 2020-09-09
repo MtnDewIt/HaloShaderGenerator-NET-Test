@@ -17,7 +17,10 @@ float4 sample_depth_buffer_distortion(float2 vPos)
         mul_val = 2.0f;
     
     float2 depth_texcoord = (0.5f + vPos.xy * mul_val) / texture_size.xy;
-    return tex2D(depth_buffer, depth_texcoord);
+    float4 depth_sample = tex2D(depth_buffer, depth_texcoord);
+    
+    return depth_sample;
+    //return depth_sample * depth_constants.y + depth_constants.x;
 }
 
 #endif

@@ -4,7 +4,12 @@
 #include "../helpers/math.hlsli"
 #include "../helpers/types.hlsli"
 #include "../helpers/color_processing.hlsli"
+
+#if shadertype == k_shadertype_halogram
+#include "albedo_halogram.hlsli"
+#else 
 #include "albedo.hlsli"
+#endif
 
 uniform float self_illum_intensity;
 uniform xform2d self_illum_map_xform;
@@ -35,9 +40,20 @@ uniform float meter_value;
 
 uniform float primary_change_color_blend;
 
+// multilayer_additive, ml_add_four_change_color, ml_add_five_change_color
+uniform float layer_depth;
+uniform float layer_contrast;
+uniform float texcoord_aspect_ratio;
+uniform float depth_darken;
+
+// global
+uniform int layers_of_4;
+
 void calc_self_illumination_none_ps(
 in float2 texcoord,
 in float3 albedo,
+in float view_tangent,
+in float view_binormal,
 inout float3 diffuse)
 {
 }
@@ -45,6 +61,8 @@ inout float3 diffuse)
 void calc_self_illumination_simple_ps(
 in float2 texcoord,
 in float3 albedo,
+in float view_tangent,
+in float view_binormal,
 inout float3 diffuse)
 {
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
@@ -59,6 +77,8 @@ inout float3 diffuse)
 void calc_self_illumination_three_channel_ps(
 in float2 texcoord,
 in float3 albedo,
+in float view_tangent,
+in float view_binormal,
 inout float3 diffuse)
 {
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
@@ -83,46 +103,45 @@ inout float3 diffuse)
 void calc_self_illumination_plasma_ps(
 in float2 texcoord,
 in float3 albedo,
+in float view_tangent,
+in float view_binormal,
 inout float3 diffuse)
 {
-	float2 alpha_map_texcoord = apply_xform2d(texcoord, alpha_mask_map_xform);
-	float2 noise_a_texcoord = apply_xform2d(texcoord, noise_map_a_xform);
-	float2 noise_b_texcoord = apply_xform2d(texcoord, noise_map_b_xform);
-    
-	float4 alpha_mask_map_sample = tex2D(alpha_mask_map, alpha_map_texcoord);
-	float4 noise_map_a_sample = tex2D(noise_map_a, noise_a_texcoord);
+    float2 alpha_map_texcoord = apply_xform2d(texcoord, alpha_mask_map_xform);
+    float4 alpha_mask_map_sample = tex2D(alpha_mask_map, alpha_map_texcoord);
+    float2 noise_a_texcoord = apply_xform2d(texcoord, noise_map_a_xform);
+    float2 noise_b_texcoord = apply_xform2d(texcoord, noise_map_b_xform);
+	
+    float4 noise_map_a_sample = tex2D(noise_map_a, noise_a_texcoord);
 	float4 noise_map_b_sample = tex2D(noise_map_b, noise_b_texcoord);
 
     float noise = 1.0 - abs(noise_map_a_sample.x - noise_map_b_sample.x);
-    float log_noise = log2(noise);
 	
-	float noise_medium = exp2(log_noise * thinness_medium);
-	float noise_sharp = exp2(log_noise * thinness_sharp);
-	float noise_wide = exp2(log_noise * thinness_wide);
-	
-	float noise_medium_to_sharp = noise_medium - noise_sharp;
-	float noise_wide_to_medium = noise_wide - noise_medium;
-	
+	float noise_medium = pow(noise, thinness_medium);
+	float noise_sharp =  pow(noise, thinness_sharp);
+    float noise_wide =   pow(noise, thinness_wide);
 	
     // These three noise components represent the full [0-1] range
+	
+    noise_wide -= noise_medium;
+    noise_medium -= noise_sharp;
 
-
-    float3 color = float3(0, 0, 0);
-	color += color_medium.rgb * color_medium.a * noise_medium_to_sharp;
-	color += color_sharp.rgb * color_sharp.a * noise_sharp;
-	color += color_wide.rgb * color_wide.a * noise_wide_to_medium;
-
+    float3 color = color_medium.rgb * color_medium.a * noise_medium;
+    color += color_sharp.rgb * color_sharp.a * noise_sharp;
+    color += color_wide.rgb * color_wide.a * noise_wide;
     color *= alpha_mask_map_sample.a;
+	
     color *= self_illum_intensity;
     color *= g_alt_exposure.x;
 
-    // not 100% sure about alpha yet
 	diffuse += color;
 }
 
 void calc_self_illumination_from_diffuse_ps(
 in float2 texcoord,
 in float3 albedo,
+in float view_tangent,
+in float view_binormal,
 inout float3 diffuse)
 {
 	float3 color = albedo.rgb;
@@ -135,6 +154,8 @@ inout float3 diffuse)
 void calc_self_illumination_detail_ps(
 in float2 texcoord,
 in float3 albedo,
+in float view_tangent,
+in float view_binormal,
 inout float3 diffuse)
 {
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
@@ -153,6 +174,8 @@ inout float3 diffuse)
 void calc_self_illumination_meter_ps(
 in float2 texcoord,
 in float3 albedo,
+in float view_tangent,
+in float view_binormal,
 inout float3 diffuse)
 {
     float2 meter_map_texcoord = apply_xform2d(texcoord, meter_map_xform);
@@ -177,8 +200,12 @@ inout float3 diffuse)
 void calc_self_illumination_times_diffuse_ps(
 in float2 texcoord,
 in float3 albedo,
+in float view_tangent,
+in float view_binormal,
 inout float3 diffuse)
 {
+	// TODO: fix compile
+	
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
 	float4 self_illum_map_sample = tex2D(self_illum_map, self_illum_map_texcoord);
 	float a = max(0, 10 * self_illum_map_sample.y - 9);
@@ -189,7 +216,7 @@ inout float3 diffuse)
 	
 
 	float3 result = 0;
-	result.rgb = color * interpolation;
+    result.rgb = interpolation * color;
 	result.rgb *= self_illum_intensity;
 	result.rgb *= self_illum_map_sample.rgb;
 	result.rgb *= g_alt_exposure.x;
@@ -200,6 +227,8 @@ inout float3 diffuse)
 void calc_self_illumination_simple_with_alpha_mask_ps(
 in float2 texcoord,
 in float3 albedo,
+in float view_tangent,
+in float view_binormal,
 inout float3 diffuse)
 {
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
@@ -214,6 +243,8 @@ inout float3 diffuse)
 void calc_self_illumination_simple_four_change_color_ps(
 in float2 texcoord,
 in float3 albedo,
+in float view_tangent,
+in float view_binormal,
 inout float3 diffuse)
 {
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
@@ -223,6 +254,125 @@ inout float3 diffuse)
 	self_illum_map_sample *= g_alt_exposure.x;
 
 	diffuse += self_illum_map_sample;
+}
+
+void calc_self_illumination_multilayer_additive_ps(
+in float2 texcoord,
+in float3 albedo,
+in float view_tangent,
+in float view_binormal,
+inout float3 diffuse)
+{
+    float3 final_color = float3(0.0f, 0.0f, 0.0f);
+	
+    if (shaderstage != k_shaderstage_static_per_vertex_color)
+    {
+        float2 aspected_xform = self_illum_map_xform.xy * float2(view_tangent, view_binormal) * float2(texcoord_aspect_ratio, 1.0f) * layer_depth;
+	
+        float layers_of_4_div = rcp(4.0f * layers_of_4);
+		
+        float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
+		
+        float layer_darkness = 1.0f;
+        for (int i = 0; i < layers_of_4; i++)
+        {
+            float4 sample_0 = tex2D(self_illum_map, self_illum_map_texcoord);
+		
+            sample_0.rgb = layer_darkness * sample_0.rgb + final_color;
+            self_illum_map_texcoord = aspected_xform * -layers_of_4_div + self_illum_map_texcoord;
+            layer_darkness = layer_darkness * depth_darken;
+		
+            float4 sample_1 = tex2D(self_illum_map, self_illum_map_texcoord);
+		
+            sample_0.rgb = layer_darkness * sample_1.rgb + sample_0.rgb;
+            self_illum_map_texcoord = aspected_xform * -layers_of_4_div + self_illum_map_texcoord;
+            layer_darkness = layer_darkness * depth_darken;
+		
+            float4 sample_2 = tex2D(self_illum_map, self_illum_map_texcoord);
+		
+            sample_0.rgb = layer_darkness * sample_2.rgb + sample_0.rgb;
+            self_illum_map_texcoord = aspected_xform * -layers_of_4_div + self_illum_map_texcoord;
+            layer_darkness = layer_darkness * depth_darken;
+		
+            float4 sample_3 = tex2D(self_illum_map, self_illum_map_texcoord);
+		
+            final_color = layer_darkness * sample_3.rgb + sample_0.rgb;
+            self_illum_map_texcoord = aspected_xform * -layers_of_4_div + self_illum_map_texcoord;
+            layer_darkness = layer_darkness * depth_darken;
+        }
+		
+        final_color *= layers_of_4_div;
+    }
+	else
+    {
+        float layer_darkness = 1.0f;
+        for (int i = 0; i < layers_of_4; i++)
+        {
+			// TODO: fix compile
+			
+            float layer_darkness_1 = layer_darkness * depth_darken;
+            float layer_darkness_2 = layer_darkness_1 * depth_darken;
+            float layer_darkness_3 = layer_darkness_2 * depth_darken;
+			
+            float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
+            float4 sample_0 = tex2D(self_illum_map, self_illum_map_texcoord);
+		
+            sample_0.rgb = layer_darkness * sample_0.rgb + final_color;
+            sample_0.rgb = layer_darkness_1 * sample_0.rgb + sample_0.rgb;
+            sample_0.rgb = layer_darkness_2 * sample_0.rgb + sample_0.rgb;
+            final_color = layer_darkness_3 * sample_0.rgb + sample_0.rgb;
+			
+            layer_darkness = layer_darkness_3 * depth_darken;
+        }
+		
+        final_color *= rcp(4.0f * layers_of_4);
+    }
+	
+    
+	
+    //final_color = exp2(log2(final_color) * layer_contrast);
+    final_color = pow(final_color, layer_contrast);
+
+    final_color *= self_illum_color.rgb;
+    final_color *= self_illum_intensity;
+    final_color *= g_alt_exposure.x;
+	
+    diffuse += final_color;
+}
+
+uniform float3 self_illum_heat_color;
+
+void calc_self_illumination_scope_blur_ps(
+in float2 texcoord,
+in float3 albedo,
+in float view_tangent,
+in float view_binormal,
+inout float3 diffuse)
+{
+    float4 scope_blur_bound_modifiers = float4(0.000867999974, 0.00156250002, -0.000867999974, -0.00156250002);
+
+    float2 scope_blur_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
+    float4 bound_texcoords = float4(scope_blur_texcoord, scope_blur_texcoord) + scope_blur_bound_modifiers;
+	
+    float4 sample_0 = tex2D(self_illum_map, bound_texcoords.xy);
+    float4 sample_1 = tex2D(self_illum_map, bound_texcoords.zy);
+    float4 sample_2 = tex2D(self_illum_map, bound_texcoords.zw);
+    float4 sample_3 = tex2D(self_illum_map, bound_texcoords.xw);
+	
+    float2 _color = sample_0.xy;
+    _color += sample_1.xy;
+    _color += sample_2.xy;
+    _color += sample_3.xy;
+	
+    _color *= 0.25f;
+    _color.y = (1.0f - _color.x) * _color.y;
+
+    float3 final_color = _color.y * self_illum_heat_color.rgb;
+    final_color = _color.x * self_illum_color.rgb + final_color;
+    final_color *= self_illum_intensity;
+    final_color *= g_alt_exposure.x;
+	
+    diffuse += final_color;
 }
 
 // fixups

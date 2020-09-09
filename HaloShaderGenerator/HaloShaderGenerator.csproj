@@ -114,6 +114,8 @@
     <Compile Include="Globals\ShaderType.cs" />
     <Compile Include="Globals\VertexType.cs" />
     <EmbeddedResource Include="hlsl\methods\albedo_decal.hlsli" />
+    <Compile Include="Halogram\HalogramGenerator.cs" />
+    <Compile Include="Halogram\MethodOptions.cs" />
     <Compile Include="LightVolume\LightVolumeGenerator.cs" />
     <Compile Include="LightVolume\MethodOptions.cs" />
     <Compile Include="Particle\MethodOptions.cs" />
@@ -431,6 +433,39 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\methods\bump_mapping_decal.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\halogram\entry_albedo.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\helpers\halogram_helper.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\albedo_halogram.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\warp.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\halogram\entry_static_per_pixel.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\overlay.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\edge_fade.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\halogram\entry_static_per_vertex.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\halogram\entry_static_per_vertex_color.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\halogram\entry_prt.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\halogram\entry_dynamic_light.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

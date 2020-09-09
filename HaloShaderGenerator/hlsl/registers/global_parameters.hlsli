@@ -8,11 +8,14 @@
 #define shadowmap_texture_size 512
 #define default_lightmap_size 1024
 
+#if shadertype == k_shadertype_shader
 #if misc_arg == k_misc_first_person_sometimes || misc_arg == k_misc_first_person_always || blend_type_arg == k_blend_mode_additive || blend_type_arg == k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply || blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha
 uniform bool actually_calc_albedo : register(b12);
 #else
 #define actually_calc_albedo false
 #endif
+#endif
+
 //
 // Macros for shader generation
 //
@@ -113,7 +116,6 @@ uniform sampler3D dominant_light_intensity_map;
 
 uniform bool k_is_lightmap_exist;
 uniform bool k_is_water_interaction;
-uniform int layers_of_4;
 
 uniform sampler2D scene_ldr_texture;
 
