@@ -411,6 +411,16 @@ namespace HaloShaderGenerator.Halogram
                     result.AddFloatParameter("self_illum_intensity");
                     result.AddFloat4Parameter("self_illum_heat_color");
                     break;
+                case Self_Illumination.Palettized_Plasma:
+                    result.AddSamplerParameter("noise_map_a");
+                    result.AddSamplerParameter("noise_map_b");
+                    result.AddSamplerWithoutXFormParameter("palette");
+                    result.AddSamplerParameter("alpha_mask_map");
+                    result.AddFloatParameter("alpha_modulation_factor");
+                    result.AddFloat4Parameter("self_illum_color");
+                    result.AddFloatParameter("self_illum_intensity");
+                    result.AddFloatParameter("v_coordinate");
+                    break;
             }
             switch (warp)
             {

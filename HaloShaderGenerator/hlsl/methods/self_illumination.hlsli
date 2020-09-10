@@ -45,9 +45,12 @@ uniform float layer_depth;
 uniform float layer_contrast;
 uniform float texcoord_aspect_ratio;
 uniform float depth_darken;
+uniform int layers_of_4; // global
 
-// global
-uniform int layers_of_4;
+uniform float3 self_illum_heat_color;
+uniform float alpha_modulation_factor;
+uniform sampler2D palette;
+uniform float v_coordinate;
 
 void calc_self_illumination_none_ps(
 in float2 texcoord,
@@ -309,8 +312,6 @@ inout float3 diffuse)
     diffuse += final_color;
 }
 
-uniform float3 self_illum_heat_color;
-
 void calc_self_illumination_scope_blur_ps(
 in float2 texcoord,
 in float3 albedo,
@@ -342,6 +343,37 @@ inout float3 diffuse)
     final_color *= g_alt_exposure.x;
 	
     diffuse += final_color;
+}
+
+void calc_self_illumination_palettized_plasma_ps(
+in float2 texcoord,
+in float3 albedo,
+in float view_tangent,
+in float view_binormal,
+inout float3 diffuse)
+{
+    float2 alpha_map_texcoord = apply_xform2d(texcoord, alpha_mask_map_xform);
+    float4 alpha_mask_map_sample = tex2D(alpha_mask_map, alpha_map_texcoord);
+    
+    float2 noise_a_texcoord = apply_xform2d(texcoord, noise_map_a_xform);
+    float4 noise_map_a_sample = tex2D(noise_map_a, noise_a_texcoord);
+    
+    float2 noise_b_texcoord = apply_xform2d(texcoord, noise_map_b_xform);
+    float4 noise_map_b_sample = tex2D(noise_map_b, noise_b_texcoord);
+    
+    // TODO: implement ODST code for this
+    float camera_depth_value = 1.0f;
+        
+    float u_coordinate = -alpha_mask_map_sample.w * camera_depth_value + 1.0f;
+    u_coordinate = saturate(u_coordinate * alpha_modulation_factor.x + abs(noise_map_a_sample.x - noise_map_b_sample.x));
+        
+    float3 color = tex2D(palette, float2(u_coordinate, v_coordinate)).rgb;
+	
+    color *= self_illum_color.rgb;
+    color *= self_illum_intensity;
+    color *= g_alt_exposure.x;
+    
+    diffuse += color;
 }
 
 // fixups
