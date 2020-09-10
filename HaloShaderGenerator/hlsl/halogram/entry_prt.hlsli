@@ -69,6 +69,8 @@ PS_OUTPUT_DEFAULT halogram_entry_static_sh(VS_OUTPUT_STATIC_SH input)
     
     normal = normalize(normal);
     
+    float view_normal = dot(camera_dir, normal);
+    
     float4 color = albedo;
     
     // TODO: find proper condition
@@ -79,7 +81,7 @@ PS_OUTPUT_DEFAULT halogram_entry_static_sh(VS_OUTPUT_STATIC_SH input)
     
     calc_overlay_ps(texcoord.xy, albedo.rgb, color.rgb);
     
-    float3 edge_fade_color = calc_edge_fade_ps(camera_dir, normal);
+    float3 edge_fade_color = calc_edge_fade_ps(view_normal, normal);
     color.rgb *= edge_fade_color;
 
     color.rgb = color.rgb * input.extinction_factor;
@@ -160,6 +162,8 @@ PS_OUTPUT_DEFAULT halogram_entry_static_prt(VS_OUTPUT_STATIC_PRT input)
     
     normal = normalize(normal);
     
+    float view_normal = dot(camera_dir, normal);
+    
     float4 color = albedo;
     
     // TODO: find proper condition
@@ -170,7 +174,7 @@ PS_OUTPUT_DEFAULT halogram_entry_static_prt(VS_OUTPUT_STATIC_PRT input)
     
     calc_overlay_ps(texcoord.xy, albedo.rgb, color.rgb);
     
-    float3 edge_fade_color = calc_edge_fade_ps(camera_dir, normal);
+    float3 edge_fade_color = calc_edge_fade_ps(view_normal, normal);
     color.rgb *= edge_fade_color;
 
     color.rgb = color.rgb * input.extinction_factor;

@@ -61,6 +61,8 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_CO
     
     normal = normalize(input.normal);
     
+    float view_normal = dot(camera_dir, normal);
+    
     float4 color = albedo;
     
     float3 self_illumination_color = float3(0, 0, 0);
@@ -71,7 +73,6 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_CO
     calc_material_lambert_diffuse_ps(normal, world_position, 0, 0, diffuse_accumulation, specular_accumulation);
 		
     float3 lambert_diffuse = input.vertex_color + diffuse_accumulation;
-    //lambert_diffuse += self_illumination_color;
     
     if (self_illumination_arg == k_self_illumination_from_diffuse)
     {
@@ -82,11 +83,6 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_CO
         color.rgb = lambert_diffuse * color.rgb;
         color.rgb += self_illumination_color;
     }
-    
-    //calc_overlay_ps(texcoord.xy, albedo.rgb, color.rgb);
-    
-    //float3 edge_fade_color = calc_edge_fade_ps(camera_dir, normal);
-    //color.rgb *= edge_fade_color;
 
     color.rgb = color.rgb * input.extinction_factor.rgb;
     

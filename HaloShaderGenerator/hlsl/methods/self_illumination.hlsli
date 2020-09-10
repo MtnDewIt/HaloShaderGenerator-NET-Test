@@ -204,24 +204,17 @@ in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
 {
-	// TODO: fix compile
-	
 	float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
 	float4 self_illum_map_sample = tex2D(self_illum_map, self_illum_map_texcoord);
-	float a = max(0, 10 * self_illum_map_sample.y - 9);
+    float a = max(0, 10 * self_illum_map_sample.y - 9);
 	
-	float3 interpolation = lerp(a, 1.0, albedo);
-	float3 color = primary_change_color_blend * primary_change_color + (1.0 - primary_change_color_blend) * self_illum_color.rgb;
+    float3 result = (a + albedo * (1.0f - a)) * ((primary_change_color_blend * primary_change_color) + (1.0 - primary_change_color_blend) * self_illum_color.rgb);
 	
-	
-
-	float3 result = 0;
-    result.rgb = interpolation * color;
 	result.rgb *= self_illum_intensity;
 	result.rgb *= self_illum_map_sample.rgb;
 	result.rgb *= g_alt_exposure.x;
 
-	diffuse += result;
+	diffuse = result;
 }
 
 void calc_self_illumination_simple_with_alpha_mask_ps(
@@ -265,74 +258,50 @@ inout float3 diffuse)
 {
     float3 final_color = float3(0.0f, 0.0f, 0.0f);
 	
-    if (shaderstage != k_shaderstage_static_per_vertex_color)
+    float2 aspected_xform = self_illum_map_xform.xy * float2(view_tangent, view_binormal) * float2(texcoord_aspect_ratio, 1.0f) * layer_depth;
+	
+    if (shaderstage == k_shaderstage_static_per_vertex_color)
+        aspected_xform = float2(0.0f, 0.0f);
+		
+    float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
+		
+    float layer_darkness = 1.0f;
+    for (int i = 0; i < layers_of_4; i++)
     {
-        float2 aspected_xform = self_illum_map_xform.xy * float2(view_tangent, view_binormal) * float2(texcoord_aspect_ratio, 1.0f) * layer_depth;
-	
-        float layers_of_4_div = rcp(4.0f * layers_of_4);
+        float4 sample_0 = tex2D(self_illum_map, self_illum_map_texcoord);
 		
-        float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
+        sample_0.rgb = layer_darkness * sample_0.rgb + final_color;
+        self_illum_map_texcoord = aspected_xform * -rcp(4.0f * layers_of_4) + self_illum_map_texcoord;
+        layer_darkness = layer_darkness * depth_darken;
 		
-        float layer_darkness = 1.0f;
-        for (int i = 0; i < layers_of_4; i++)
-        {
-            float4 sample_0 = tex2D(self_illum_map, self_illum_map_texcoord);
+        float4 sample_1 = tex2D(self_illum_map, self_illum_map_texcoord);
+        if (shaderstage == k_shaderstage_static_per_vertex_color)
+            sample_1.rgb = sample_0.rgb;
 		
-            sample_0.rgb = layer_darkness * sample_0.rgb + final_color;
-            self_illum_map_texcoord = aspected_xform * -layers_of_4_div + self_illum_map_texcoord;
-            layer_darkness = layer_darkness * depth_darken;
+        sample_0.rgb = layer_darkness * sample_1.rgb + sample_0.rgb;
+        self_illum_map_texcoord = aspected_xform * -rcp(4.0f * layers_of_4) + self_illum_map_texcoord;
+        layer_darkness = layer_darkness * depth_darken;
 		
-            float4 sample_1 = tex2D(self_illum_map, self_illum_map_texcoord);
+        float4 sample_2 = tex2D(self_illum_map, self_illum_map_texcoord);
+        if (shaderstage == k_shaderstage_static_per_vertex_color)
+            sample_2.rgb = sample_0.rgb;
 		
-            sample_0.rgb = layer_darkness * sample_1.rgb + sample_0.rgb;
-            self_illum_map_texcoord = aspected_xform * -layers_of_4_div + self_illum_map_texcoord;
-            layer_darkness = layer_darkness * depth_darken;
+        sample_0.rgb = layer_darkness * sample_2.rgb + sample_0.rgb;
+        self_illum_map_texcoord = aspected_xform * -rcp(4.0f * layers_of_4) + self_illum_map_texcoord;
+        layer_darkness = layer_darkness * depth_darken;
 		
-            float4 sample_2 = tex2D(self_illum_map, self_illum_map_texcoord);
+        float4 sample_3 = tex2D(self_illum_map, self_illum_map_texcoord);
+        if (shaderstage == k_shaderstage_static_per_vertex_color)
+            sample_3.rgb = sample_0.rgb;
 		
-            sample_0.rgb = layer_darkness * sample_2.rgb + sample_0.rgb;
-            self_illum_map_texcoord = aspected_xform * -layers_of_4_div + self_illum_map_texcoord;
-            layer_darkness = layer_darkness * depth_darken;
-		
-            float4 sample_3 = tex2D(self_illum_map, self_illum_map_texcoord);
-		
-            final_color = layer_darkness * sample_3.rgb + sample_0.rgb;
-            self_illum_map_texcoord = aspected_xform * -layers_of_4_div + self_illum_map_texcoord;
-            layer_darkness = layer_darkness * depth_darken;
-        }
-		
-        final_color *= layers_of_4_div;
+        final_color = layer_darkness * sample_3.rgb + sample_0.rgb;
+        self_illum_map_texcoord = aspected_xform * -rcp(4.0f * layers_of_4) + self_illum_map_texcoord;
+        layer_darkness = layer_darkness * depth_darken;
     }
-	else
-    {
-        float layer_darkness = 1.0f;
-        for (int i = 0; i < layers_of_4; i++)
-        {
-			// TODO: fix compile
-			
-            float layer_darkness_1 = layer_darkness * depth_darken;
-            float layer_darkness_2 = layer_darkness_1 * depth_darken;
-            float layer_darkness_3 = layer_darkness_2 * depth_darken;
-			
-            float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
-            float4 sample_0 = tex2D(self_illum_map, self_illum_map_texcoord);
 		
-            sample_0.rgb = layer_darkness * sample_0.rgb + final_color;
-            sample_0.rgb = layer_darkness_1 * sample_0.rgb + sample_0.rgb;
-            sample_0.rgb = layer_darkness_2 * sample_0.rgb + sample_0.rgb;
-            final_color = layer_darkness_3 * sample_0.rgb + sample_0.rgb;
-			
-            layer_darkness = layer_darkness_3 * depth_darken;
-        }
-		
-        final_color *= rcp(4.0f * layers_of_4);
-    }
-	
-    
-	
-    //final_color = exp2(log2(final_color) * layer_contrast);
+    final_color *= rcp(4.0f * layers_of_4);
     final_color = pow(final_color, layer_contrast);
-
+	
     final_color *= self_illum_color.rgb;
     final_color *= self_illum_intensity;
     final_color *= g_alt_exposure.x;
