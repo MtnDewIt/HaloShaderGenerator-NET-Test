@@ -268,9 +268,9 @@ namespace HaloShaderGenerator
             }
         }
 
-        public Dictionary<string, List<string>> GetRegisterComponents(string input)
+        public List<ShaderRegister> GetRegisters(string input)
         {
-            Dictionary<string, List<string>> result = new Dictionary<string, List<string>>();
+            List<ShaderRegister> result = new List<ShaderRegister>();
             bool found_registers = false;
             using (StringReader reader = new StringReader(input))
             {
@@ -296,10 +296,28 @@ namespace HaloShaderGenerator
 
                         var register_components = register_line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                        result[register_components[0]] = new List<string> {
-                            register_components[1],
-                            register_components[2]
-                        };
+                        ShaderRegister.RegisterType register_type = ShaderRegister.RegisterType.Vector;
+
+                        switch (register_components[1][0])
+                        {
+                            case 'b':
+                                register_type = ShaderRegister.RegisterType.Boolean;
+                                break;
+                            case 'i':
+                                register_type = ShaderRegister.RegisterType.Integer;
+                                break;
+                            case 'c':
+                                register_type = ShaderRegister.RegisterType.Vector;
+                                break;
+                            case 's':
+                                register_type = ShaderRegister.RegisterType.Sampler;
+                                break;
+                        }
+
+                        var register = Int32.Parse(register_components[1].Substring(1));
+                        var size = Int32.Parse(register_components[2]);
+
+                        result.Add(new ShaderRegister(register_components[0], register_type, register, size));
                     }
                 }
             }
@@ -349,15 +367,12 @@ namespace HaloShaderGenerator
             var result = D3DCompiler.Disassemble(bytecode);
             if (result == null) return;
 
-            var registers = GetRegisterComponents(result);
+            var registers = GetRegisters(result);
             var parameters = GetRegisterParameters(result);
 
             foreach (var parameters_kp in parameters)
             {
                 var name = parameters_kp.Key;
-                var register_entry = registers[name];
-                var register = Int32.Parse(register_entry[0].Substring(1));
-                var size = Int32.Parse(register_entry[1]);
                 var typename = parameters_kp.Value;
 
                 ShaderRegister.RegisterType register_type;
@@ -387,8 +402,27 @@ namespace HaloShaderGenerator
                     register_type = _register_type ?? ShaderRegister.RegisterType.Vector;
                 }
 
-                Registers.Add(new ShaderRegister(name, register_type, register, size));
+                foreach (var register in registers)
+                {
+                    if (register.Name == name && register.registerType == register_type)
+                    {
+                        // Integers have an associated Vector, find and add it
+                        if (register_type == ShaderRegister.RegisterType.Integer)
+                        {
+                            foreach (var register2 in registers)
+                            {
+                                if (register2.Name == name && register2.registerType == ShaderRegister.RegisterType.Vector)
+                                {
+                                    Registers.Add(register2);
+                                    break;
+                                }
+                            }
+                        }
 
+                        Registers.Add(register);
+                        break;
+                    }
+                }
             }
         }
     }

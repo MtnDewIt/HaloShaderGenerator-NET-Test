@@ -348,7 +348,7 @@ namespace HaloShaderGenerator.Globals
                 case HLSLType.Int2:
                 case HLSLType.Int3:
                 case HLSLType.Int4:
-                    return RegisterType.Boolean;
+                    return RegisterType.Integer;
 
                 default:
                     return RegisterType.Vector;

@@ -378,6 +378,7 @@ namespace HaloShaderGenerator.Halogram
                     result.AddFloatParameter("self_illum_intensity");
                     result.AddFloatParameter("layer_depth");
                     result.AddFloatParameter("layer_contrast");
+                    result.AddFloatParameter("layers_of_4");
                     result.AddIntegerParameter("layers_of_4");
                     result.AddFloatParameter("texcoord_aspect_ratio");
                     result.AddFloatParameter("depth_darken");
@@ -388,6 +389,7 @@ namespace HaloShaderGenerator.Halogram
                     result.AddFloatParameter("self_illum_intensity");
                     result.AddFloatParameter("layer_depth");
                     result.AddFloatParameter("layer_contrast");
+                    result.AddFloatParameter("layers_of_4");
                     result.AddIntegerParameter("layers_of_4");
                     result.AddFloatParameter("texcoord_aspect_ratio");
                     result.AddFloatParameter("depth_darken");
@@ -398,6 +400,7 @@ namespace HaloShaderGenerator.Halogram
                     result.AddFloatParameter("self_illum_intensity");
                     result.AddFloatParameter("layer_depth");
                     result.AddFloatParameter("layer_contrast");
+                    result.AddFloatParameter("layers_of_4");
                     result.AddIntegerParameter("layers_of_4");
                     result.AddFloatParameter("texcoord_aspect_ratio");
                     result.AddFloatParameter("depth_darken");
