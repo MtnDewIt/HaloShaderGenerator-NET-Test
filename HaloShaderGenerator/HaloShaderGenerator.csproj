@@ -116,6 +116,7 @@
     <EmbeddedResource Include="hlsl\methods\albedo_decal.hlsli" />
     <Compile Include="Halogram\HalogramGenerator.cs" />
     <Compile Include="Halogram\MethodOptions.cs" />
+    <EmbeddedResource Include="hlsl\pixl_sniper_scope.hlsl" />
     <Compile Include="LightVolume\LightVolumeGenerator.cs" />
     <Compile Include="LightVolume\MethodOptions.cs" />
     <Compile Include="Particle\MethodOptions.cs" />
@@ -466,6 +467,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\halogram\entry_dynamic_light.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\registers\explicit_post_processing.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
