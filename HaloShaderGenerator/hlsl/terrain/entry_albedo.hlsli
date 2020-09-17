@@ -104,9 +104,6 @@ PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
 	float4 blend = blend_type(texcoord);
     blend = normalize_additive_blend(blend);
 	
-    if (blend.w > 0)
-        albedo += albedo_3 * blend.w;
-	
     if (blend.x > 0)
         albedo += albedo_0 * blend.x;
 	
@@ -115,8 +112,12 @@ PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
 	
     if (blend.z > 0)
         albedo += albedo_2 * blend.z;
+	
+    if (blend.w > 0)
+        albedo += albedo_3 * blend.w;
 
-	albedo.rgb *= DETAIL_MULTIPLIER * global_albedo_tint;
+    float albedo_tint = DETAIL_MULTIPLIER * global_albedo_tint;
+    albedo.rgb = albedo_tint * albedo.rgb;
 	albedo.rgb = apply_debug_tint(albedo.rgb);
     albedo.rgb = rgb_to_srgb(albedo.rgb);
 	

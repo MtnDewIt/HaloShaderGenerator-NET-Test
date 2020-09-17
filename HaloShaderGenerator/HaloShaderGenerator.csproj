@@ -471,6 +471,10 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\registers\explicit_post_processing.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\registers\shadow_parameters.hlsli" />
+    <EmbeddedResource Include="hlsl\pixl_shadow_apply_bilinear.hlsl" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>
