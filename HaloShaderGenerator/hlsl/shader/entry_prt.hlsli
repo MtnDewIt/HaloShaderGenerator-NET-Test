@@ -18,6 +18,9 @@
 #include "..\methods\blend_mode.hlsli"
 #include "..\methods\misc.hlsli"
 #include "..\methods\alpha_test.hlsli"
+
+#include "entry_sfx_distort.hlsli"
+
 PS_OUTPUT_DEFAULT entry_static_sh_prt(
 float2 position,
 float2 texcoord,
@@ -41,10 +44,21 @@ float4 prt)
 		common_data.alpha = calc_alpha_test_ps(common_data.texcoord);
 
 		if (actually_calc_albedo)
-		{
-			common_data.surface_normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, common_data.texcoord);
-			common_data.albedo = calc_albedo_ps(common_data.texcoord, position, common_data.surface_normal, common_data.view_dir);
-		}
+        {
+            float2 calc_albedo_texcoord = common_data.texcoord;
+			
+            if (distortion_arg == k_distortion_on)
+            {
+                float2 distort_map_texcoord = apply_xform2d(calc_albedo_texcoord, distort_map_xform);
+                float4 distort_map_sample = tex2D(distort_map, distort_map_texcoord);
+        
+                float2 distortion = distort_map_sample.yw * 2.00787401f - 1.00787401f;
+                calc_albedo_texcoord += distortion * distort_scale;
+            }
+			
+            common_data.surface_normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, calc_albedo_texcoord);
+            common_data.albedo = calc_albedo_ps(calc_albedo_texcoord, position, common_data.surface_normal, common_data.view_dir);
+        }
 		else
 		{
 			position += 0.5;

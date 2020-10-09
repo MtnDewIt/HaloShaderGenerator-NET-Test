@@ -108,6 +108,8 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_misc_first_person_sometimes 1
 #define k_misc_first_person_always 2
 #define k_misc_first_person_never_with_rotating_bitmaps 3
+#define k_distortion_off 0
+#define k_distortion_on 1
 
 #define k_particle_albedo_diffuse_only 0
 #define k_particle_albedo_diffuse_plus_billboard_alpha 1
@@ -165,6 +167,7 @@ This file contains a list of blank definitions to help with Intellisense
 #define envmap_type_arg 0
 #define blend_type_arg 0
 #define misc_arg 0
+#define distortion_arg 0
 // Particle
 #define particle_albedo_arg 0
 #define particle_blend_type_arg 0

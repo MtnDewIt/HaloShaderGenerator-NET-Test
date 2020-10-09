@@ -12,6 +12,8 @@
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 
+#include "entry_sfx_distort.hlsli"
+
 void get_albedo_and_normal(
 bool calc_albedo,
 float2 fragcoord,
@@ -25,9 +27,20 @@ out float3 out_normal)
 {
 	if (calc_albedo)
 	{
-		out_normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, texcoord);
-		albedo = calc_albedo_ps(texcoord, fragcoord, out_normal, camera_dir);
-	}
+        float2 calc_albedo_texcoord = texcoord;
+		
+        if (shaderstage != k_shaderstage_albedo && distortion_arg == k_distortion_on)
+        {
+            float2 distort_map_texcoord = apply_xform2d(calc_albedo_texcoord, distort_map_xform);
+            float4 distort_map_sample = tex2D(distort_map, distort_map_texcoord);
+        
+            float2 distortion = distort_map_sample.yw * 2.00787401f - 1.00787401f;
+            calc_albedo_texcoord += distortion * distort_scale;
+        }
+		
+        out_normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, calc_albedo_texcoord);
+        albedo = calc_albedo_ps(calc_albedo_texcoord, fragcoord, out_normal, camera_dir);
+    }
 	else
 	{
 		fragcoord += 0.5;

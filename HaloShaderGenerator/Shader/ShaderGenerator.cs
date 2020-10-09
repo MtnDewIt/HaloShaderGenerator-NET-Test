@@ -78,7 +78,7 @@ namespace HaloShaderGenerator.Shader
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Blend_Mode>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Parallax>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Misc>());
-            //macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Distortion>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Distortion>());
 
             //
             // The following code properly names the macros (like in rmdf)
@@ -130,9 +130,7 @@ namespace HaloShaderGenerator.Shader
             macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type_arg", environment_mapping, "k_environment_mapping_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", blend_mode, "k_blend_mode_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("misc_arg", misc, "k_misc_"));
-            // add misc option macros here
-
-            //macros.Add(ShaderGeneratorBase.CreateMacro("distort_proc_ps", distortion, "distort_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("distortion_arg", distortion, "k_distortion_"));
             //macros.Add(ShaderGeneratorBase.CreateMacro("distort_proc_vs", "nocolor", "distort_", "_vs"));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_shader.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
@@ -722,10 +720,10 @@ namespace HaloShaderGenerator.Shader
                 case Distortion.On:
                     result.AddSamplerParameter("distort_map");
                     result.AddFloatParameter("distort_scale");
-                    result.AddBooleanParameter("soft_fresnel_enabled");
-                    result.AddFloatParameter("soft_fresnel_power");
-                    result.AddBooleanParameter("soft_z_enabled");
-                    result.AddFloatParameter("soft_z_range");
+                    //result.AddBooleanParameter("soft_fresnel_enabled");
+                    //result.AddFloatParameter("soft_fresnel_power");
+                    //result.AddBooleanParameter("soft_z_enabled");
+                    //result.AddFloatParameter("soft_z_range");
                     break;
             }
 
