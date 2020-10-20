@@ -299,6 +299,46 @@ float4 albedo_palettized_plasma(in float4 texcoord, in float2 alpha_map_texcoord
     return albedo;
 }
 
+// Halo Reach
+
+float4 albedo_palettized_2d(in float4 texcoord, in float2 alpha_map_texcoord, in float frame_blend, in float palette_v, in float color_alpha)
+{
+    float4 albedo = 0;
+    
+    if (frame_blend_arg == k_frame_blend_on)
+    {
+        float4 base_map_sample = tex2D(base_map, apply_xform2d(texcoord.xy, base_map_xform));
+        float4 base_map_sample2 = tex2D(base_map, apply_xform2d(texcoord.zw, base_map_xform));
+        
+        float4 base_map2_sample = tex2D(base_map2, apply_xform2d(texcoord.xy, base_map2_xform));
+        float4 base_map2_sample2 = tex2D(base_map2, apply_xform2d(texcoord.zw, base_map2_xform));
+    
+        float4 alpha_map_sample = tex2D(alpha_map, apply_xform2d(alpha_map_texcoord, alpha_map_xform));
+        
+        float2 palette_tex = abs(float2(base_map_sample.x - base_map2_sample.x, base_map_sample2.x - base_map2_sample2.x));
+        
+        float4 palette_sample_1 = tex2D(palette, float2(palette_tex.x, 0.0f));
+        palette_sample_1.a = alpha_map_sample.a;
+        float4 palette_sample_2 = tex2D(palette, float2(palette_tex.y, 0.0f));
+        palette_sample_2.a = alpha_map_sample.a;
+        
+        float4 interpolated = lerp(palette_sample_1, palette_sample_2, frame_blend);
+        
+        albedo += interpolated;
+    }
+    else
+    {
+        float4 base_map_sample = tex2D(base_map, apply_xform2d(texcoord.xy, base_map_xform));
+        float4 base_map2_sample = tex2D(base_map2, apply_xform2d(texcoord.xy, base_map2_xform));
+        
+        // the v-coord may be wrong, couldn't check the constant at the time of reversing the shader. palettes are generally 1 pixel in height so 0 should be fine.
+        albedo.rgb = tex2D(palette, float2(abs(base_map_sample.r - base_map2_sample.r), 0.0f)).rgb;
+        albedo.a = tex2D(alpha_map, apply_xform2d(alpha_map_texcoord, alpha_map_xform)).a;
+    }
+    
+    return albedo;
+}
+
 #ifndef particle_albedo
 #define particle_albedo albedo_diffuse_only
 #endif

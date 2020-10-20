@@ -23,9 +23,10 @@ namespace HaloShaderGenerator.Particle
         Palettized_Plus_Billboard_Alpha,
         Diffuse_Plus_Sprite_Alpha,
         Palettized_Plus_Sprite_Alpha,
-        Diffuse_Modulated, //odst
-        Palettized_Glow, // odst
-        Palettized_Plasma // odst
+        Diffuse_Modulated, // odst
+        Palettized_Glow, // odst (unsupported)
+        Palettized_Plasma, // odst
+        Palettized_2d // reach
     }
 
     public enum Blend_Mode
