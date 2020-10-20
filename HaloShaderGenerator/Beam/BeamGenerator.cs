@@ -202,6 +202,19 @@ namespace HaloShaderGenerator.Beam
                     result.AddSamplerWithoutXFormParameter("palette");
                     result.AddSamplerWithoutXFormParameter("alpha_map");
                     break;
+                case Albedo.Palettized_Plasma:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("base_map2");
+                    result.AddSamplerWithoutXFormParameter("palette");
+                    result.AddSamplerParameter("alpha_map");
+                    result.AddFloatParameter("alpha_modulation_factor");
+                    break;
+                case Albedo.Palettized_2d:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("base_map2");
+                    result.AddSamplerWithoutXFormParameter("palette");
+                    result.AddSamplerParameter("alpha_map");
+                    break;
             }
 
             return result;

@@ -183,6 +183,10 @@ namespace HaloShaderGenerator.LightVolume
                 case Albedo.Diffuse_Only:
                     result.AddSamplerWithoutXFormParameter("base_map");
                     break;
+                case Albedo.Circular:
+                    result.AddFloatParameter("center_offset");
+                    result.AddFloatParameter("falloff");
+                    break;
             }
 
             return result;

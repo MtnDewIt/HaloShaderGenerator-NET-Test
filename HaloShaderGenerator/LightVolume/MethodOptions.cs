@@ -10,7 +10,8 @@ namespace HaloShaderGenerator.LightVolume
 
     public enum Albedo
     {
-        Diffuse_Only
+        Diffuse_Only,
+        Circular
     }
 
     public enum Blend_Mode

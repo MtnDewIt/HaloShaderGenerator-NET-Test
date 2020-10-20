@@ -41,6 +41,7 @@ namespace HaloShaderGenerator.Halogram
         Ml_Add_Five_Change_Color,
         Scope_Blur,
         Palettized_Plasma,
+        Palettized_Plasma_Change_Color,
     }
 
     public enum Blend_Mode

@@ -6,6 +6,8 @@
 #include "../helpers/color_processing.hlsli"
 
 #define k_light_volume_albedo_diffuse_only 0
+#define k_light_volume_albedo_circular 1
+
 #define k_light_volume_blend_mode_opaque 0
 #define k_light_volume_blend_mode_additive 1
 #define k_light_volume_blend_mode_multiply 2
@@ -33,7 +35,7 @@ PS_OUTPUT_DEFAULT light_volume_entry_default(VS_OUTPUT_FX input)
         color *= input.color;
     }
     
-    if (light_volume_blend_type_arg != k_light_volume_blend_mode_multiply)
+    if (light_volume_blend_type_arg != k_light_volume_blend_mode_multiply && light_volume_albedo_arg != k_light_volume_albedo_circular)
     {
         color.rgb += input.color2.rgb;
     }

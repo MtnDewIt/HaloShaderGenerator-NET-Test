@@ -86,6 +86,11 @@ namespace HaloShaderGenerator.Halogram
                 // ml_add_four_change_color and ml_add_five_change_color use multilayer_additive ps macro
                 macros.Add(ShaderGeneratorBase.CreateMacro("calc_self_illumination_ps", Self_Illumination.Multilayer_Additive, "calc_self_illumination_", "_ps"));
             }
+            else if (self_illumination == Self_Illumination.Palettized_Plasma_Change_Color)
+            {
+                // Palettized_Plasma_Change_Color use Palettized_Plasma ps code
+                macros.Add(ShaderGeneratorBase.CreateMacro("calc_self_illumination_ps", Self_Illumination.Palettized_Plasma, "calc_self_illumination_", "_ps"));
+            }
             else
             {
                 macros.Add(ShaderGeneratorBase.CreateMacro("calc_self_illumination_ps", self_illumination, "calc_self_illumination_", "_ps"));
@@ -418,6 +423,16 @@ namespace HaloShaderGenerator.Halogram
                     result.AddSamplerParameter("alpha_mask_map");
                     result.AddFloatParameter("alpha_modulation_factor");
                     result.AddFloat4Parameter("self_illum_color");
+                    result.AddFloatParameter("self_illum_intensity");
+                    result.AddFloatParameter("v_coordinate");
+                    break;
+                case Self_Illumination.Palettized_Plasma_Change_Color:
+                    result.AddSamplerParameter("noise_map_a");
+                    result.AddSamplerParameter("noise_map_b");
+                    result.AddSamplerWithoutXFormParameter("palette");
+                    result.AddSamplerParameter("alpha_mask_map");
+                    result.AddFloatParameter("alpha_modulation_factor");
+                    result.AddFloat4Parameter("self_illum_color", RenderMethodExtern.object_change_color_primary);
                     result.AddFloatParameter("self_illum_intensity");
                     result.AddFloatParameter("v_coordinate");
                     break;

@@ -56,6 +56,8 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_self_illumination_ml_add_four_change_color 9
 #define k_self_illumination_ml_add_five_change_color 10
 #define k_self_illumination_scope_blur 11
+#define k_self_illumination_palettized_plasma 12
+#define k_self_illumination_palettized_plasma_change_color 13
 #define k_blend_mode_opaque 0
 #define k_blend_mode_additive 1
 #define k_blend_mode_multiply 2

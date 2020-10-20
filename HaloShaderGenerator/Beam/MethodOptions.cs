@@ -14,6 +14,8 @@ namespace HaloShaderGenerator.Beam
         Diffuse_Only,
         Palettized,
         Palettized_Plus_Alpha,
+        Palettized_Plasma,
+        Palettized_2d
     }
 
     public enum Blend_Mode

@@ -9,6 +9,8 @@
 #define k_beam_albedo_diffuse_only 0
 #define k_beam_albedo_palettized 1
 #define k_beam_albedo_palettized_plus_alpha 2
+#define k_beam_albedo_palettized_plasma 3
+#define k_beam_albedo_palettized_2d 4
 
 #define k_beam_blend_mode_opaque 0
 #define k_beam_blend_mode_additive 1
