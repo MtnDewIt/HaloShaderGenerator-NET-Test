@@ -301,7 +301,7 @@ float4 albedo_palettized_plasma(in float4 texcoord, in float2 alpha_map_texcoord
 
 // Halo Reach
 
-float4 albedo_palettized_2d(in float4 texcoord, in float2 alpha_map_texcoord, in float frame_blend, in float palette_v, in float color_alpha)
+float4 albedo_palettized_2d_plasma(in float4 texcoord, in float2 alpha_map_texcoord, in float frame_blend, in float palette_v, in float color_alpha)
 {
     float4 albedo = 0;
     

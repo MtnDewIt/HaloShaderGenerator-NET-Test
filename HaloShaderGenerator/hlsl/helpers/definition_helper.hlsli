@@ -120,7 +120,7 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_particle_albedo_diffuse_modulated 6
 #define k_particle_albedo_palettized_glow 7
 #define k_particle_albedo_palettized_plasma 8
-#define k_particle_albedo_palettized_2d 9
+#define k_particle_albedo_palettized_2d_plasma 9
 #define k_specialized_rendering_none 0
 #define k_specialized_rendering_distortion 1
 #define k_specialized_rendering_distortion_expensive 2

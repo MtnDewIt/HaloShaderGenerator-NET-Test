@@ -44,7 +44,7 @@ float4 albedo_palettized_plasma(float2 texcoord, float2 unknown_texcoord, float 
     return float4(tex2D(palette, float2(u_coord, v_coord)).rgb, alpha_map_sample.a);
 }
 
-float4 albedo_palettized_2d(float2 texcoord, float2 unknown_texcoord, float v_coord)
+float4 albedo_palettized_2d_plasma(float2 texcoord, float2 unknown_texcoord, float v_coord)
 {
     float4 base_map_sample = tex2D(base_map, apply_xform2d(texcoord, base_map_xform));
     float4 base_map2_sample = tex2D(base_map2, apply_xform2d(texcoord, base_map2_xform));
