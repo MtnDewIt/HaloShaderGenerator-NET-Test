@@ -99,47 +99,39 @@ void envmap_type_from_flat_texture(
 in ENVIRONMENT_MAPPING_COMMON env_mapping_common_data,
 inout float3 diffuse,
 out float4 unknown_output)
-{	
-    // everything here needs to be double checked this, the disassembly was a bit mangled with material lighting
-	
+{
     float3 reflect = env_mapping_common_data.reflect_dir * float3(1, -1, 1);
 	
-    float2 r0;
-    float2 r8;
-    
-    r8.x = dot(reflect, flat_envmap_matrix_x);
-    r8.y = dot(reflect, flat_envmap_matrix_y);
-    r0.y = dot(reflect, flat_envmap_matrix_z);
+    float3 env_reflect;
+    env_reflect.x = dot(reflect, flat_envmap_matrix_x);
+    env_reflect.y = dot(reflect, flat_envmap_matrix_y);
+    env_reflect.z = dot(reflect, flat_envmap_matrix_z);
 	
-    //r0.y += 0.2820948;
-	
-    r0.x = r8.x * r8.y + r8.y * r8.x; // + 3.141593;
-	
-    r0.y *= 1 / hemisphere_percentage;
-    r0.y = sqrt(abs(r0.y));
-	
-    r8 *= r0.y;
-    r0.x = rsqrt(abs(r0.x));
-	
-    float2 envmap_texcoord = r8 * r0.x; // + 0.2820948;
-    //envmap_texcoord *= 4.59479;
-    float3 flat_environment_map_sample = tex2D(flat_environment_map, envmap_texcoord).rgb;
+    float dot_xy = dot(env_reflect.xy, env_reflect.xy);
+    float curvature = (env_reflect.z + 1.0f) / hemisphere_percentage;
+    curvature = sqrt(abs(curvature));
+    env_reflect.xy *= curvature;
     
-    float3 envmap_color = flat_environment_map_sample.rgb;
+    float2 env_tex = env_reflect.xy / sqrt(dot_xy) + 1.0f;
+    env_tex *= 0.5f;
     
-    float bloom_alpha = dot(envmap_color.zxy, float3(0.5, 0.65, 1)); // ???
+    float3 flat_envmap_sample = tex2D(flat_environment_map, env_tex).rgb;
     
-    bloom_alpha = -env_bloom_override.a - -bloom_alpha; // ???
+    float3 flat_env_constants = float3(0.114f, 0.299f, 0.587f);
+    float flat_env_bloom_alpha = dot(flat_envmap_sample.bgr, flat_env_constants) - env_bloom_override.a;
+    flat_env_bloom_alpha = max(flat_env_bloom_alpha, 0);
     
-    bloom_alpha = max(bloom_alpha, 0); // 3.141593
+    float3 environment_color = flat_envmap_sample.rgb; 
+    environment_color *= env_mapping_common_data.specular_coefficient;
+    environment_color *= env_mapping_common_data.env_area_specular;
+    environment_color *= env_tint_color;
+    environment_color *= env_bloom_override.rgb;
+    environment_color *= flat_env_bloom_alpha; 
+    environment_color *= env_bloom_override_intensity;
+    diffuse += environment_color;
     
-    envmap_color *= (env_bloom_override.rgb * bloom_alpha) * env_bloom_override_intensity;
-	
     unknown_output.rgb = env_tint_color.rgb * env_mapping_common_data.specular_coefficient;
     unknown_output.a = env_mapping_common_data.specular_exponent;
-    
-    float3 environment_color = (envmap_color.rgb * env_mapping_common_data.specular_coefficient * env_mapping_common_data.env_area_specular) * env_tint_color;
-    diffuse += environment_color;
 }
 
 void envmap_type_custom_map(
