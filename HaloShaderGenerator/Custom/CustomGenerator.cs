@@ -216,7 +216,7 @@ namespace HaloShaderGenerator.Custom
             macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("vertextype", vertexType, "k_vertextype_"));
 
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(@"glvs_shader.hlsl", macros, $"entry_{entryPoint.ToString().ToLower()}", "vs_3_0");
+            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(@"glvs_custom.hlsl", macros, $"entry_{entryPoint.ToString().ToLower()}", "vs_3_0");
 
             return new ShaderGeneratorResult(shaderBytecode);
         }
