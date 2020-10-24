@@ -47,7 +47,12 @@ float3 calc_lighting_diffuse_only_ps(SHADER_COMMON common_data, out float4 unkno
 	unknown_output = 0.0f;
 #endif
 	
-	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, 0, 0, diffuse.rgb);
+    float3 n_view;
+    n_view.x = dot(common_data.n_view_dir, common_data.normal);
+    n_view.y = dot(common_data.n_view_dir, common_data.binormal);
+    n_view.z = dot(common_data.n_view_dir, common_data.tangent);
+	
+	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, n_view, 0, 0, diffuse.rgb);
 	
 	return diffuse;
 }

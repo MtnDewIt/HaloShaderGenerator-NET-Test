@@ -438,7 +438,36 @@ float4 calc_albedo_color_mask_hard_light_ps(float2 texcoord, float2 position, fl
 	return albedo;
 }
 
+// RMCS
 
+uniform sampler2D waterfall_base_mask;
+uniform float4 waterfall_base_mask_xform;
+uniform sampler2D waterfall_layer0;
+uniform float4 waterfall_layer0_xform;
+uniform sampler2D waterfall_layer1;
+uniform float4 waterfall_layer1_xform;
+uniform sampler2D waterfall_layer2;
+uniform float4 waterfall_layer2_xform;
+
+uniform float transparency_base_weight;
+uniform float transparency_bias;
+uniform float transparency_frothy_weight;
+
+float4 calc_albedo_waterfall_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
+{
+    float4 albedo;
+	
+    float4 base_mask = tex2D(waterfall_base_mask, apply_xform2d(texcoord, waterfall_base_mask_xform));
+    float4 layer0 = tex2D(waterfall_layer0, apply_xform2d(texcoord, waterfall_layer0_xform));
+    float4 layer1 = tex2D(waterfall_layer1, apply_xform2d(texcoord, waterfall_layer1_xform));
+    float4 layer2 = tex2D(waterfall_layer2, apply_xform2d(texcoord, waterfall_layer2_xform));
+	
+    albedo.rgb = layer0.rgb * layer1.rgb * layer2.rgb;
+	
+    albedo.a = (layer0.a + layer1.a + layer2.a) * transparency_frothy_weight + (base_mask.a * transparency_base_weight + transparency_bias);
+	
+    return albedo;
+}
 
 float4 calc_albedo_default_vs(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {

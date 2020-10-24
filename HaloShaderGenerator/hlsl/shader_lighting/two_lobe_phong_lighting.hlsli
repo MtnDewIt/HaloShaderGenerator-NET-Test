@@ -140,9 +140,14 @@ float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data, out float4 unk
 	
 	float3 env_color = 0;
 	envmap_type(env_mapping_common_data, env_color, unknown_output);
+	
+    float3 n_view;
+    n_view.x = dot(common_data.n_view_dir, common_data.normal);
+    n_view.y = dot(common_data.n_view_dir, common_data.binormal);
+    n_view.z = dot(common_data.n_view_dir, common_data.tangent);
 
 	float3 self_illum = 0;
-	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, 0, 0, self_illum);
+	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, n_view, 0, 0, self_illum);
 	
 	if (self_illum_is_diffuse)
 	{

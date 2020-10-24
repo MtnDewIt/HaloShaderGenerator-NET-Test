@@ -77,7 +77,7 @@ PS_OUTPUT_DEFAULT halogram_entry_static_sh(VS_OUTPUT_STATIC_SH input)
     if (albedo_arg == k_albedo_two_detail_overlay)
         color.rgb = 0;
     
-	calc_self_illumination_ps(texcoord.xy, albedo.rgb, view_tangent, view_binormal, color.rgb);
+	calc_self_illumination_ps(texcoord.xy, albedo.rgb, 0, view_tangent, view_binormal, color.rgb);
     
     calc_overlay_ps(texcoord.xy, albedo.rgb, color.rgb);
     
@@ -170,7 +170,7 @@ PS_OUTPUT_DEFAULT halogram_entry_static_prt(VS_OUTPUT_STATIC_PRT input)
     if (albedo_arg == k_albedo_two_detail_overlay)
         color.rgb = 0;
     
-	calc_self_illumination_ps(texcoord.xy, albedo.rgb, view_tangent, view_binormal, color.rgb);
+	calc_self_illumination_ps(texcoord.xy, albedo.rgb, 0, view_tangent, view_binormal, color.rgb);
     
     calc_overlay_ps(texcoord.xy, albedo.rgb, color.rgb);
     

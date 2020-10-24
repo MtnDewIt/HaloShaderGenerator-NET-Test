@@ -64,6 +64,7 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_bump_mapping_detail_plus_detail_masked 4
 #define k_alpha_test_none 0
 #define k_alpha_test_simple 1
+#define k_alpha_test_multiply_map 2
 #define k_specular_mask_no_specular_mask 0
 #define k_specular_mask_specular_mask_from_diffuse 1
 #define k_specular_mask_specular_mask_from_texture 2

@@ -18,7 +18,12 @@ float3 calc_lighting_no_material_ps(SHADER_COMMON common_data, inout float3 colo
 	env_mapping_common_data.specular_exponent = 0.0;
 	envmap_type(env_mapping_common_data, color, unknown_output);
 	
-	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, 0, 0, color.rgb);
+    float3 n_view;
+    n_view.x = dot(common_data.n_view_dir, common_data.normal);
+    n_view.y = dot(common_data.n_view_dir, common_data.binormal);
+    n_view.z = dot(common_data.n_view_dir, common_data.tangent);
+	
+	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, n_view, 0, 0, color.rgb);
 	
 	return color;
 }

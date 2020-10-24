@@ -55,6 +55,7 @@ uniform float v_coordinate;
 void calc_self_illumination_none_ps(
 in float2 texcoord,
 in float3 albedo,
+in float3 n_view,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -64,6 +65,7 @@ inout float3 diffuse)
 void calc_self_illumination_simple_ps(
 in float2 texcoord,
 in float3 albedo,
+in float3 n_view,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -80,6 +82,7 @@ inout float3 diffuse)
 void calc_self_illumination_three_channel_ps(
 in float2 texcoord,
 in float3 albedo,
+in float3 n_view,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -106,6 +109,7 @@ inout float3 diffuse)
 void calc_self_illumination_plasma_ps(
 in float2 texcoord,
 in float3 albedo,
+in float3 n_view,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -143,6 +147,7 @@ inout float3 diffuse)
 void calc_self_illumination_from_diffuse_ps(
 in float2 texcoord,
 in float3 albedo,
+in float3 n_view,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -157,6 +162,7 @@ inout float3 diffuse)
 void calc_self_illumination_detail_ps(
 in float2 texcoord,
 in float3 albedo,
+in float3 n_view,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -177,6 +183,7 @@ inout float3 diffuse)
 void calc_self_illumination_meter_ps(
 in float2 texcoord,
 in float3 albedo,
+in float3 n_view,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -203,6 +210,7 @@ inout float3 diffuse)
 void calc_self_illumination_times_diffuse_ps(
 in float2 texcoord,
 in float3 albedo,
+in float3 n_view,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -223,6 +231,7 @@ inout float3 diffuse)
 void calc_self_illumination_simple_with_alpha_mask_ps(
 in float2 texcoord,
 in float3 albedo,
+in float3 n_view,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -239,6 +248,7 @@ inout float3 diffuse)
 void calc_self_illumination_simple_four_change_color_ps(
 in float2 texcoord,
 in float3 albedo,
+in float3 n_view,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -255,6 +265,7 @@ inout float3 diffuse)
 void calc_self_illumination_multilayer_additive_ps(
 in float2 texcoord,
 in float3 albedo,
+in float3 n_view,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -315,6 +326,7 @@ inout float3 diffuse)
 void calc_self_illumination_scope_blur_ps(
 in float2 texcoord,
 in float3 albedo,
+in float3 n_view,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -348,6 +360,7 @@ inout float3 diffuse)
 void calc_self_illumination_palettized_plasma_ps(
 in float2 texcoord,
 in float3 albedo,
+in float3 n_view,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -375,6 +388,81 @@ inout float3 diffuse)
     
     diffuse += color;
 }
+
+uniform sampler2D ceiling;
+uniform float4 ceiling_xform;
+uniform float distance_fade_scale;
+uniform sampler2D opacity_map;
+uniform float4 opacity_map_xform;
+uniform sampler2D walls;
+uniform float4 walls_xform;
+uniform float4 transform_xform;
+uniform sampler2D floors;
+uniform float4 floors_xform;
+
+// this can be removed, i think step(src2, src1) is hlsl equivalent
+float2 sgt(in float2 src1, in float2 src2)
+{
+    return float2(src1.x > src2.x ? 1.0f : 0.0f, src1.y > src2.y ? 1.0f : 0.0f);
+}
+
+void calc_self_illumination_window_room_ps(
+in float2 texcoord,
+in float3 albedo,
+in float3 n_view,
+in float view_tangent,
+in float view_binormal,
+inout float3 diffuse)
+{
+    float dir_dot_normal = n_view.x;
+    float2 dir_tangent_binormal = float2(n_view.z, n_view.y);
+    
+    float2 xform = transform_xform.zw + 0.5f;
+    xform += texcoord * transform_xform.xy;
+    
+    float2 dir_var = sgt(-dir_tangent_binormal.xy, dir_tangent_binormal.xy) - sgt(dir_tangent_binormal.xy, -dir_tangent_binormal.xy);
+    dir_var = floor(dir_var * 0.5f + xform);
+    dir_var -= transform_xform.zw;
+    dir_var = dir_var / transform_xform.xy - texcoord;
+    dir_var /= -dir_tangent_binormal.xy;
+    
+    float min_t = min(dir_var.x, dir_var.y);
+    float2 transformed_tex = -dir_tangent_binormal.xy * min_t + texcoord;
+    float min_v_normal = -dir_dot_normal * min_t;
+    
+    
+    float3 self_illum_sample;
+    
+    //sgt(dir_var.y, dir_var.x)
+    if (dir_var.y <= dir_var.x) // belongs to ceiling or floor (top\bottom)
+    {
+        if (-dir_tangent_binormal.y > 0)
+        {
+            self_illum_sample = tex2D(floors, apply_xform2d(float2(transformed_tex.x, min_v_normal), floors_xform)).rgb;
+        }
+        else
+        {
+            self_illum_sample = tex2D(ceiling, apply_xform2d(float2(transformed_tex.x, min_v_normal), ceiling_xform)).rgb;
+        }
+    }
+    else // belongs to wall (left\right)
+    {
+        self_illum_sample = tex2D(walls, apply_xform2d(float2(min_v_normal, transformed_tex.y), walls_xform)).rgb;
+    }
+    
+    float3 opacity = tex2D(opacity_map, apply_xform2d(texcoord, opacity_map_xform)).rgb;
+    
+    float distance_fade = min_t * distance_fade_scale * -dir_dot_normal;
+    distance_fade = saturate(distance_fade + 1.0f);
+    
+    self_illum_sample *= self_illum_intensity;
+    self_illum_sample *= distance_fade;
+    self_illum_sample *= opacity;
+    self_illum_sample *= g_alt_exposure.x;
+    
+    diffuse += self_illum_sample;
+}
+
 
 // fixups
 #define calc_self_illumination_off_ps calc_self_illumination_none_ps

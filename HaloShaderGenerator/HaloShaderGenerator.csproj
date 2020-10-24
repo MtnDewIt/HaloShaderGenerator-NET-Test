@@ -129,6 +129,8 @@
     <Compile Include="Contrail\ContrailGenerator.cs" />
     <Compile Include="Contrail\MethodOptions.cs" />
     <Compile Include="Cortana\CortanaShaderGenerator.cs" />
+    <Compile Include="Custom\CustomGenerator.cs" />
+    <Compile Include="Custom\MethodOptions.cs" />
     <Compile Include="Decal\DecalGenerator.cs" />
     <Compile Include="Decal\MethodOptions.cs" />
     <Compile Include="DirectX\D3D.cs" />
@@ -507,6 +509,9 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\registers\shadow_parameters.hlsli" />
     <EmbeddedResource Include="hlsl\pixl_shadow_apply_bilinear.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\pixl_custom.hlsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

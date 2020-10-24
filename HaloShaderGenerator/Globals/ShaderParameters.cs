@@ -30,6 +30,11 @@ namespace HaloShaderGenerator.Globals
             Parameters.Add(new ShaderParameter(parameterName, parameterName + "_xform", HLSLType.Xform_2d, rmExtern));
         }
 
+        public void AddXFormParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName + "_xform", HLSLType.Float4, rmExtern));
+        }
+
         public void AddFloat4ColorParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
             Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, isColor: true));

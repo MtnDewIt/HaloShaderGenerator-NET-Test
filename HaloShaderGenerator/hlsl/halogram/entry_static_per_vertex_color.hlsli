@@ -66,7 +66,7 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_CO
     float4 color = albedo;
     
     float3 self_illumination_color = float3(0, 0, 0);
-	calc_self_illumination_ps(texcoord.xy, albedo.rgb, view_tangent, view_binormal, self_illumination_color);
+	calc_self_illumination_ps(texcoord.xy, albedo.rgb, 0, view_tangent, view_binormal, self_illumination_color);
 		
     float3 diffuse_accumulation = 0;
     float3 specular_accumulation = 0;

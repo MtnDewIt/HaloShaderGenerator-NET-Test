@@ -20,6 +20,19 @@ float calc_alpha_test_on_ps(float2 texcoord)
 	return alpha_test_map_sample.a;
 }
 
+// RMCS
+
+uniform sampler multiply_map;
+uniform xform2d multiply_map_xform;
+
+float calc_alpha_test_multiply_map_ps(float2 texcoord)
+{
+    float alpha_test = tex2D(alpha_test_map, apply_xform2d(texcoord, alpha_test_map_xform)).a;
+    alpha_test *= tex2D(multiply_map, apply_xform2d(texcoord, multiply_map_xform)).a;
+    clip(alpha_test - 0.5);
+    return alpha_test;
+}
+
 #ifndef calc_alpha_test_ps
 #define calc_alpha_test_ps calc_alpha_test_off_ps
 #endif
