@@ -5,11 +5,7 @@
 #include "../helpers/types.hlsli"
 #include "../helpers/color_processing.hlsli"
 
-#if shadertype == k_shadertype_halogram
-#include "albedo_halogram.hlsli"
-#else 
 #include "albedo.hlsli"
-#endif
 
 uniform float self_illum_intensity;
 uniform xform2d self_illum_map_xform;

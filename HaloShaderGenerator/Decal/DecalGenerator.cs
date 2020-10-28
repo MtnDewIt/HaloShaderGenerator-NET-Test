@@ -56,37 +56,47 @@ namespace HaloShaderGenerator.Decal
 
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Albedo>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Blend_Mode>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Albedo>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Blend_Mode>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Render_Pass>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Specular>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Bump_Mapping>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Tinting>());
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes));
-            macros.Add(ShaderGeneratorBase.CreateMacro("DECAL_IS_SIMPLE", DecalIsSimple ? 1 : 0));
+            //
+            // Convert to shared enum
+            //
+
+            var sAlbedo = Enum.Parse(typeof(Shared.Albedo), albedo.ToString());
+            var sBlendMode = Enum.Parse(typeof(Shared.Blend_Mode), blend_mode.ToString());
 
             //
             // The following code properly names the macros (like in rmdf)
             //
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("decal_albedo", albedo, "albedo_"));
+            // TODO fix
+            //macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", sBlendMode, "blend_type_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("decal_blend_mode", blend_mode, "blend_mode_"));
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", sAlbedo, "calc_albedo_", "_ps"));
             macros.Add(ShaderGeneratorBase.CreateMacro("decal_render_pass", render_pass, "render_pass_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("decal_specular", specular, "specular_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("decal_bump_mapping", bump_mapping, "bump_mapping_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("decal_tinting", tinting, "tinting_"));
 
             macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", entryPoint, "shadertype_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Decal, "k_shadertype_"));
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("decal_albedo_arg", albedo, "k_decal_albedo_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("decal_blend_type_arg", blend_mode, "k_decal_blend_mode_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("albedo_arg", sAlbedo, "k_albedo_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", sBlendMode, "k_blend_mode_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("decal_render_pass_arg", render_pass, "k_decal_render_pass_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("decal_specular_arg", specular, "k_decal_specular_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("decal_bump_mapping_arg", bump_mapping, "k_decal_bump_mapping_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("decal_tinting_arg", tinting, "k_decal_tinting_"));
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes));
+            macros.Add(ShaderGeneratorBase.CreateMacro("DECAL_IS_SIMPLE", DecalIsSimple ? 1 : 0));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_decal.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
 

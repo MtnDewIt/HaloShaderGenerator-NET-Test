@@ -54,8 +54,8 @@ namespace HaloShaderGenerator.Shader
 
     public enum Alpha_Test
     {
-        Off,
-        On
+        None,
+        Simple
     }
 
     public enum Specular_Mask
@@ -136,7 +136,7 @@ namespace HaloShaderGenerator.Shader
         On
     }
 
-    public enum Soft_fade
+    public enum Soft_Fade
     {
         Off,
         On

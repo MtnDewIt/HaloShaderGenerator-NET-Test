@@ -67,49 +67,59 @@ namespace HaloShaderGenerator.Particle
 
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Albedo>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Blend_Mode>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Albedo>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Blend_Mode>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Specialized_Rendering>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Lighting>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Render_Targets>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Depth_Fade>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Black_Point>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Fog>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Depth_Fade>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Black_Point>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Fog>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Frame_Blend>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Self_Illumination>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Self_Illumination>());
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes));
+            //
+            // Convert to shared enum
+            //
+
+            var sAlbedo = Enum.Parse(typeof(Shared.Albedo), albedo.ToString());
+            var sBlendMode = Enum.Parse(typeof(Shared.Blend_Mode), blend_mode.ToString());
+            var sSelfIllumination = Enum.Parse(typeof(Shared.Self_Illumination), self_illumination.ToString());
+            var sDepthFade = Enum.Parse(typeof(Shared.Depth_Fade), depth_fade.ToString());
+            var sBlackPoint = Enum.Parse(typeof(Shared.Black_Point), black_point.ToString());
+            var sFog = Enum.Parse(typeof(Shared.Fog), fog.ToString());
 
             //
             // The following code properly names the macros (like in rmdf)
             //
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("particle_albedo", albedo, "albedo_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("particle_blend_mode", blend_mode, "blend_mode_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", sAlbedo, "calc_albedo_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", sBlendMode, "blend_type_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("particle_specialized_rendering", specialized_rendering, "specialized_rendering_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("particle_lighting", lighting, "lighting_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("particle_render_targets", render_targets, "render_targets_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("particle_depth_fade", depth_fade, "depth_fade_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("particle_black_point", black_point, "black_point_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("particle_fog", fog, "fog_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("particle_frame_blend", frame_blend, "frame_blend_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("particle_self_illumination", self_illumination, "self_illumination_"));
+            //macros.Add(ShaderGeneratorBase.CreateMacro("calc_depth_fade", sDepthFade, "calc_depth_fade_"));
+            //macros.Add(ShaderGeneratorBase.CreateMacro("calc_black_point", sBlackPoint, "calc_black_point_"));
+            //macros.Add(ShaderGeneratorBase.CreateMacro("calc_fog", sFog, "calc_fog_"));
+            //macros.Add(ShaderGeneratorBase.CreateMacro("calc_frame_blend", frame_blend, "calc_frame_blend_"));
+            //macros.Add(ShaderGeneratorBase.CreateMacro("calc_self_illumination_ps", sSelfIllumination, "calc_self_illumination_"));
 
             macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", entryPoint, "shadertype_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Particle, "k_shadertype_"));
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("particle_albedo_arg", albedo, "k_particle_albedo_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("particle_blend_type_arg", blend_mode, "k_particle_blend_mode_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("albedo_arg", sAlbedo, "k_albedo_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", sBlendMode, "k_blend_mode_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("specialized_rendering_arg", specialized_rendering, "k_specialized_rendering_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("lighting_arg", lighting, "k_lighting_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("render_targets_arg", render_targets, "k_render_targets_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("depth_fade_arg", depth_fade, "k_depth_fade_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("black_point_arg", black_point, "k_black_point_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("fog_arg", fog, "k_fog_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("depth_fade_arg", sDepthFade, "k_depth_fade_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("black_point_arg", sBlackPoint, "k_black_point_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("fog_arg", sFog, "k_fog_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("frame_blend_arg", frame_blend, "k_frame_blend_"));
-            //macros.Add(ShaderGeneratorBase.CreateMacro("self_illumination_arg", self_illumination, "k_self_illumination_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("self_illumination_arg", sSelfIllumination, "k_self_illumination_"));
 
+            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_particle.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
 

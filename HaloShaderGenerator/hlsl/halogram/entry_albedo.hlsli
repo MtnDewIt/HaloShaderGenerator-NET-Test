@@ -3,7 +3,7 @@
 
 #include "..\helpers\halogram_helper.hlsli"
 #include "..\helpers\input_output.hlsli"
-#include "..\methods\albedo_halogram.hlsli"
+#include "..\methods\albedo.hlsli"
 #include "..\methods\warp.hlsli"
 
 PS_OUTPUT_ALBEDO halogram_entry_albedo(VS_OUTPUT_ALBEDO input)

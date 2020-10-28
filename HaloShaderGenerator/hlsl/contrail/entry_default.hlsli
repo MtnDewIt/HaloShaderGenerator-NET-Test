@@ -6,31 +6,16 @@
 #include "../helpers/color_processing.hlsli"
 #include "../methods/black_point.hlsli"
 
-#define k_contrail_albedo_diffuse_only 0
-#define k_contrail_albedo_palettized 1
-#define k_contrail_albedo_palettized_plus_alpha 2
-#define k_contrail_blend_mode_opaque 0
-#define k_contrail_blend_mode_additive 1
-#define k_contrail_blend_mode_multiply 2
-#define k_contrail_blend_mode_alpha_blend 3
-#define k_contrail_blend_mode_double_multiply 4
-#define k_contrail_blend_mode_maximum 5
-#define k_contrail_blend_mode_multiply_add 6
-#define k_contrail_blend_mode_add_src_times_dstalpha 7
-#define k_contrail_blend_mode_add_src_times_srcalpha 8
-#define k_contrail_blend_mode_inv_alpha_blend 9
-#define k_contrail_blend_mode_pre_multiplied_alpha 10
-
 PS_OUTPUT_DEFAULT contrail_entry_default(VS_OUTPUT_FX input)
 {
-    float4 color = contrail_albedo(input.texcoord.xy, float2(0, 0), input.texcoord.z);
+    float4 color = calc_albedo_ps(float4(input.texcoord.xy, 0, 0), float2(0, 0), input.texcoord.z, 0.0f, 1.0f);
     
     if (black_point_arg == k_black_point_on)
     {
         black_point_on(color.a, input.color2.w);
     }
     
-    if (contrail_blend_type_arg == k_contrail_blend_mode_multiply)
+    if (blend_type_arg == k_blend_mode_multiply)
     {
         color *= input.color;
         color.rgb -= 1.0f;
@@ -41,17 +26,17 @@ PS_OUTPUT_DEFAULT contrail_entry_default(VS_OUTPUT_FX input)
         color *= input.color;
     }
     
-    if (contrail_blend_type_arg != k_contrail_blend_mode_multiply)
+    if (blend_type_arg != k_blend_mode_multiply)
     {
         color.rgb += input.color2.rgb;
     }
     
-    if (contrail_blend_type_arg == k_contrail_blend_mode_pre_multiplied_alpha)
+    if (blend_type_arg == k_blend_mode_pre_multiplied_alpha)
         color.rgb *= color.a;
     
     PS_OUTPUT_DEFAULT output;
 
-    if (contrail_blend_type_arg == k_contrail_blend_mode_multiply)
+    if (blend_type_arg == k_blend_mode_multiply)
     {
         output.low_frequency = color * g_exposure.w;
         output.high_frequency = color * g_exposure.z;

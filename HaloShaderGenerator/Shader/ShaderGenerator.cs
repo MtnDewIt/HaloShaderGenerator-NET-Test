@@ -2,6 +2,7 @@
 using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
+using System;
 
 namespace HaloShaderGenerator.Shader
 {
@@ -67,38 +68,43 @@ namespace HaloShaderGenerator.Shader
 
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Albedo>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Albedo>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Bump_Mapping>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Alpha_Test>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Alpha_Test>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Specular_Mask>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Material_Model>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Environment_Mapping>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Self_Illumination>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Blend_Mode>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Material_Model>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Environment_Mapping>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Self_Illumination>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Blend_Mode>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Parallax>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Misc>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Distortion>());
 
             //
+            // Convert to shared enum
+            //
+
+            var sAlbedo = Enum.Parse(typeof(Shared.Albedo), albedo.ToString());
+            var sAlphaTest = Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
+            var sMaterialModel = Enum.Parse(typeof(Shared.Material_Model), material_model.ToString());
+            var sEnvironmentMapping = Enum.Parse(typeof(Shared.Environment_Mapping), environment_mapping.ToString());
+            var sSelfIllumination = Enum.Parse(typeof(Shared.Self_Illumination), self_illumination.ToString());
+            var sBlendMode = Enum.Parse(typeof(Shared.Blend_Mode), blend_mode.ToString());
+
+            //
             // The following code properly names the macros (like in rmdf)
             //
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", albedo, "calc_albedo_", "_ps"));
-
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", sAlbedo, "calc_albedo_", "_ps"));
             if (albedo == Albedo.Constant_Color)
-            {
-                macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", albedo, "calc_albedo_", "_vs"));
-            }
+                macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", sAlbedo, "calc_albedo_", "_vs"));
 
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_bumpmap_ps", bump_mapping, "calc_bumpmap_", "_ps"));
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_bumpmap_vs", bump_mapping, "calc_bumpmap_", "_vs"));
-
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", alpha_test, "calc_alpha_test_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", sAlphaTest, "calc_alpha_test_", "_ps"));
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_specular_mask_ps", specular_mask, "calc_", "_ps"));
-
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_self_illumination_ps", self_illumination, "calc_self_illumination_", "_ps"));
-
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_self_illumination_ps", sSelfIllumination, "calc_self_illumination_", "_ps"));
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_parallax_ps", parallax, "calc_parallax_", "_ps"));
 
             switch (parallax)
@@ -111,27 +117,25 @@ namespace HaloShaderGenerator.Shader
                     break;
             }
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("material_type", material_model, "material_type_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_material_analytic_specular", sMaterialModel, "calc_material_analytic_specular_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_material_area_specular", sMaterialModel, "calc_material_area_specular_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_lighting_ps", sMaterialModel, "calc_lighting_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_dynamic_lighting_ps", sMaterialModel, "calc_dynamic_lighting_", "_ps"));
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_material_analytic_specular", material_model, "calc_material_analytic_specular_", "_ps"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_material_area_specular", material_model, "calc_material_area_specular_", "_ps"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_lighting_ps", material_model, "calc_lighting_", "_ps"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_dynamic_lighting_ps", material_model, "calc_dynamic_lighting_", "_ps"));
-
-            macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", environment_mapping, "envmap_type_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", blend_mode, "blend_type_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("material_type", sMaterialModel, "material_type_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", sEnvironmentMapping, "envmap_type_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", sBlendMode, "blend_type_"));
 
             macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", entryPoint, "shadertype_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Shader, "k_shadertype_"));
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("albedo_arg", albedo, "k_albedo_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("self_illumination_arg", self_illumination, "k_self_illumination_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_arg", material_model, "k_material_model_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type_arg", environment_mapping, "k_environment_mapping_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", blend_mode, "k_blend_mode_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("albedo_arg", sAlbedo, "k_albedo_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("material_type_arg", sMaterialModel, "k_material_model_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type_arg", sEnvironmentMapping, "k_environment_mapping_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("self_illumination_arg", sSelfIllumination, "k_self_illumination_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", sBlendMode, "k_blend_mode_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("misc_arg", misc, "k_misc_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("distortion_arg", distortion, "k_distortion_"));
-            //macros.Add(ShaderGeneratorBase.CreateMacro("distort_proc_vs", "nocolor", "distort_", "_vs"));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_shader.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
 
@@ -471,9 +475,9 @@ namespace HaloShaderGenerator.Shader
 
             switch (alpha_test)
             {
-                case Alpha_Test.Off:
+                case Alpha_Test.None:
                     break;
-                case Alpha_Test.On:
+                case Alpha_Test.Simple:
                     result.AddSamplerParameter("alpha_test_map");
                     break;
             }

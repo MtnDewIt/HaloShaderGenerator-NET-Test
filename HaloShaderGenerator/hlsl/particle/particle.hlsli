@@ -7,11 +7,11 @@
 
 uniform float distortion_scale;
 
-#include "..\methods\albedo_particle.hlsli"
+#include "..\methods\albedo_fx.hlsli"
 #include "..\methods\black_point.hlsli"
 #include "..\methods\fog.hlsli"
 
-#include "..\helpers\particle_helper.hlsli"
+//#include "..\helpers\particle_helper.hlsli"
 #include "..\helpers\particle_depth.hlsli"
 #include "..\helpers\apply_hlsl_fixes.hlsli"
 
@@ -21,11 +21,11 @@ float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
     float palette_v_coord = input.parameters3.w;
     float frame_blend_interpolator = input.parameters2.x;
     float black_point = input.parameters2.y;
-    float2 alpha_map_texcoord = input.parameters2.zw;
+    float2 billboard_texcoord = input.parameters2.zw;
     float3 add_color = input.parameters.rgb;
     float input_depth = input.parameters.w;
     
-    float4 color = particle_albedo(input.texcoord, alpha_map_texcoord, frame_blend_interpolator, palette_v_coord, input.color.a);
+    float4 color = calc_albedo_ps(input.texcoord, billboard_texcoord, palette_v_coord, frame_blend_interpolator, input.color.a);
     
     if (depth_fade_arg == k_depth_fade_on)
     {
@@ -38,7 +38,7 @@ float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
         black_point_on(color.a, black_point);
     }
     
-    if (particle_blend_type_arg == k_particle_blend_mode_multiply)
+    if (blend_type_arg == k_blend_mode_multiply)
     {
         color *= input.color;
         color.rgb -= 1.0f;
@@ -54,11 +54,11 @@ float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
         per_pixel_ravi_order_3(normal, color);
     }
     
-    if (particle_blend_type_arg != k_particle_blend_mode_multiply)
+    if (blend_type_arg != k_blend_mode_multiply)
     {
         color.rgb += add_color;
         
-        if (particle_blend_type_arg == k_particle_blend_mode_pre_multiplied_alpha)
+        if (blend_type_arg == k_blend_mode_pre_multiplied_alpha)
             color.rgb *= color.a;
     }
     
@@ -73,7 +73,7 @@ float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
     float palette_v_coord = input.parameters3.w;
     float frame_blend_interpolator = input.parameters2.x;
     float black_point = input.parameters2.y;
-    float2 alpha_map_texcoord = input.parameters2.zw;
+    float2 billboard_texcoord = input.parameters2.zw;
     float2 tangent = input.parameters.xy;
     float input_depth = input.parameters.w;
     
@@ -81,7 +81,7 @@ float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
     
     float4 depth_sample = sample_depth_buffer_distortion(input.position.xy);
     
-    float2 distortion_diffuse = particle_albedo(input.texcoord, alpha_map_texcoord, frame_blend_interpolator, palette_v_coord, input.color.a).xy;
+    float2 distortion_diffuse = calc_albedo_ps(input.texcoord, billboard_texcoord, palette_v_coord, frame_blend_interpolator, input.color.a).xy;
     
     if (specialized_rendering_arg == k_specialized_rendering_distortion || !APPLY_HLSL_FIXES && specialized_rendering_arg == k_specialized_rendering_distortion_expensive)
         distortion_diffuse = distortion_diffuse * 2.00787401 - 1.00787401; // range conversion

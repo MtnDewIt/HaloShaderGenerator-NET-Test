@@ -159,6 +159,7 @@
     <Compile Include="Shader\MethodOptions.cs" />
     <Compile Include="Shader\ShaderGenerator.cs" />
     <Compile Include="Generator\ShaderGeneratorBase.cs" />
+    <Compile Include="Shared\MethodOptions.cs" />
     <Compile Include="Terrain\MethodOptions.cs" />
     <Compile Include="Terrain\TerrainGenerator.cs" />
   </ItemGroup>

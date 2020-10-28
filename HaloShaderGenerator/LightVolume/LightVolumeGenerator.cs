@@ -45,28 +45,35 @@ namespace HaloShaderGenerator.LightVolume
 
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Albedo>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Blend_Mode>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Fog>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Albedo>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Blend_Mode>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Fog>());
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes));
+            //
+            // Convert to shared enum
+            //
+
+            var sAlbedo = Enum.Parse(typeof(Shared.Albedo), albedo.ToString());
+            var sBlendMode = Enum.Parse(typeof(Shared.Blend_Mode), blend_mode.ToString());
+            var sFog = Enum.Parse(typeof(Shared.Fog), fog.ToString());
 
             //
             // The following code properly names the macros (like in rmdf)
             //
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("light_volume_albedo", albedo, "albedo_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("light_volume_blend_mode", blend_mode, "blend_mode_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("light_volume_fog", fog, "fog_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", sAlbedo, "calc_albedo_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", sBlendMode, "blend_type_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("light_volume_fog", sFog, "fog_"));
 
             macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", entryPoint, "shadertype_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Light_Volume, "k_shadertype_"));
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("light_volume_albedo_arg", albedo, "k_light_volume_albedo_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("light_volume_blend_type_arg", blend_mode, "k_light_volume_blend_mode_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("fog_arg", fog, "k_fog_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("albedo_arg", sAlbedo, "k_albedo_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", sBlendMode, "k_blend_mode_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("fog_arg", sFog, "k_fog_"));
 
+            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_light_volume.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
 

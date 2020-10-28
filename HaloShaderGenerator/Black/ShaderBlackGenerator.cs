@@ -15,7 +15,7 @@ namespace HaloShaderGenerator.Black
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_shader_black.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
 

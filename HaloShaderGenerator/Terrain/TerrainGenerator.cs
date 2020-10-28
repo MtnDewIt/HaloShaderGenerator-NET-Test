@@ -2,6 +2,7 @@
 using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
+using System;
 
 namespace HaloShaderGenerator.Terrain
 {
@@ -10,7 +11,7 @@ namespace HaloShaderGenerator.Terrain
         private bool TemplateGenerationValid;
 
         Blending blending;
-        Environment_Mapping environment_map;
+        Environment_Mapping environment_mapping;
         Material material_0;
         Material material_1;
         Material material_2;
@@ -24,21 +25,10 @@ namespace HaloShaderGenerator.Terrain
         /// <summary>
         /// Generator instantiation for method specific shaders.
         /// </summary>
-        /// <param name="albedo"></param>
-        /// <param name="bump_mapping"></param>
-        /// <param name="alpha_test"></param>
-        /// <param name="specular_mask"></param>
-        /// <param name="material_model"></param>
-        /// <param name="environment_mapping"></param>
-        /// <param name="self_illumination"></param>
-        /// <param name="blend_mode"></param>
-        /// <param name="parallax"></param>
-        /// <param name="misc"></param>
-        /// <param name="distortion"></param>
-        public TerrainGenerator(Blending blending, Environment_Mapping environment_map, Material material_0, Material material_1, Material material_2, Material_No_Detail_Bump material_3)
+        public TerrainGenerator(Blending blending, Environment_Mapping environment_mapping, Material material_0, Material material_1, Material material_2, Material_No_Detail_Bump material_3)
         {
             this.blending = blending;
-            this.environment_map = environment_map;
+            this.environment_mapping = environment_mapping;
             this.material_0 = material_0;
             this.material_1 = material_1;
             this.material_2 = material_2;
@@ -57,10 +47,16 @@ namespace HaloShaderGenerator.Terrain
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
             macros.Add(new D3D.SHADER_MACRO { Name = "_TERRAIN_HELPER_HLSLI", Definition = "1" });
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Blending>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Environment_Mapping>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Environment_Mapping>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Material>());
+
+            //
+            // Convert to shared enum
+            //
+
+            var sEnvironmentMapping = Enum.Parse(typeof(Shared.Environment_Mapping), environment_mapping.ToString());
 
             //
             // The following code properly names the macros (like in rmdf)
@@ -69,15 +65,13 @@ namespace HaloShaderGenerator.Terrain
             Material material_3_translated = material_3 == Material_No_Detail_Bump.Off ? Material.Off : material_3 == Material_No_Detail_Bump.Diffuse_Only ? Material.Diffuse_Only : Material.Diffuse_Plus_Specular;
 
             macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", blending));
-
-            macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", environment_map, "envmap_type_"));
-
+            macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", sEnvironmentMapping, "envmap_type_"));
 
             macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", entryPoint, "shadertype_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Terrain, "k_shadertype_"));
 
             macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", blending, "k_blend_type_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("env_map_arg", environment_map, "k_envmap_type_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type_arg", sEnvironmentMapping, "k_environment_mapping_"));
 
             macros.Add(ShaderGeneratorBase.CreateMacro("material_type_0_arg", material_0, "k_material_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("material_type_1_arg", material_1, "k_material_"));
@@ -154,7 +148,7 @@ namespace HaloShaderGenerator.Terrain
                 case TerrainMethods.Blending:
                     return (int)blending;
                 case TerrainMethods.Environment_Map:
-                    return (int)environment_map;
+                    return (int)environment_mapping;
                 case TerrainMethods.Material_0:
                     return (int)material_0;
                 case TerrainMethods.Material_1:
@@ -255,7 +249,7 @@ namespace HaloShaderGenerator.Terrain
                     break;
             }
 
-            switch (environment_map)
+            switch (environment_mapping)
             {
                 case Environment_Mapping.None:
                     break;

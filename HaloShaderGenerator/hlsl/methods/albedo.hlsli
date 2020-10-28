@@ -11,6 +11,12 @@ uniform float4 albedo_color2;
 uniform float4 albedo_color3;
 uniform sampler base_map;
 uniform xform2d base_map_xform;
+
+#if shadertype == k_shadertype_halogram
+// TODO: find out why this occurs
+uniform sampler _reserved : register(s1);
+#endif
+
 uniform sampler detail_map;
 uniform xform2d detail_map_xform;
 uniform float4 debug_tint;
@@ -166,15 +172,10 @@ float4 calc_albedo_three_detail_blend_ps(float2 texcoord, float2 position, float
 
 float4 calc_albedo_two_detail_overlay_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
-    float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
-    float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
-    float2 detail_map2_texcoord = apply_xform2d(texcoord, detail_map2_xform);
-    float2 detail_map_overlay_texcoord = apply_xform2d(texcoord, detail_map_overlay_xform);
-
-    float4 base_map_sample = tex2D(base_map, base_map_texcoord);
-    float4 detail_map_sample = tex2D(detail_map, detail_map_texcoord);
-    float4 detail_map2_sample = tex2D(detail_map2, detail_map2_texcoord);
-    float4 detail_map_overlay_sample = tex2D(detail_map_overlay, detail_map_overlay_texcoord);
+    float4 base_map_sample = tex2D(base_map, apply_xform2d(texcoord, base_map_xform));
+    float4 detail_map_sample = tex2D(detail_map, apply_xform2d(texcoord, detail_map_xform));
+    float4 detail_map2_sample = tex2D(detail_map2, apply_xform2d(texcoord, detail_map2_xform));
+    float4 detail_map_overlay_sample = tex2D(detail_map_overlay, apply_xform2d(texcoord, detail_map_overlay_xform));
 
     float4 detail_blend = lerp(detail_map_sample, detail_map2_sample, base_map_sample.w);
 

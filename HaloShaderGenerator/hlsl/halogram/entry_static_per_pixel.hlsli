@@ -4,7 +4,7 @@
 #include "..\helpers\halogram_helper.hlsli"
 
 #include "..\helpers\input_output.hlsli"
-#include "..\methods\albedo_halogram.hlsli"
+#include "..\methods\albedo.hlsli"
 #include "..\methods\warp.hlsli"
 #include "..\methods\self_illumination.hlsli"
 

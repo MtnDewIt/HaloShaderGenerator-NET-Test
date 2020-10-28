@@ -317,11 +317,11 @@ float4 calc_albedo_default_vs(float2 texcoord, float2 position, float3 surface_n
     return 0;
 }
 
-#ifndef calc_albedo_ps
-#define calc_albedo_ps calc_albedo_default_ps
-#endif
-#ifndef calc_albedo_vs
-#define calc_albedo_vs calc_albedo_default_vs
-#endif
+//#ifndef calc_albedo_ps
+//#define calc_albedo_ps calc_albedo_default_ps
+//#endif
+//#ifndef calc_albedo_vs
+//#define calc_albedo_vs calc_albedo_default_vs
+//#endif
 
 #endif

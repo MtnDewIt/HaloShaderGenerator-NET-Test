@@ -14,7 +14,7 @@ PS_OUTPUT_DEFAULT particle_entry_default_ldr_and_hdr(VS_OUTPUT_PARTICLE input)
     {
         float4 color = particle_entry_default_main(input);
         
-        if (particle_blend_type_arg == k_particle_blend_mode_multiply)
+        if (blend_type_arg == k_blend_mode_multiply)
         {
             output.low_frequency = color * g_exposure.w;
             output.high_frequency = color * g_exposure.z;
@@ -47,7 +47,7 @@ PS_OUTPUT_DEFAULT_LDR_ONLY particle_entry_default_ldr_only(VS_OUTPUT_PARTICLE in
     {
         color = particle_entry_default_main(input);
         
-        if (particle_blend_type_arg == k_particle_blend_mode_multiply)
+        if (blend_type_arg == k_blend_mode_multiply)
         {
             output.low_frequency = color * g_exposure.w;
         }
