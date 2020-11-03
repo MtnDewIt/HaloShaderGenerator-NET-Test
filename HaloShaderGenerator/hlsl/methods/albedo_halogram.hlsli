@@ -13,9 +13,6 @@ uniform float4 albedo_color3;
 uniform sampler base_map;
 uniform xform2d base_map_xform;
 
-// TODO: fix
-uniform sampler _reserved : register(s1);
-
 uniform sampler detail_map;
 uniform xform2d detail_map_xform;
 uniform float4 debug_tint;

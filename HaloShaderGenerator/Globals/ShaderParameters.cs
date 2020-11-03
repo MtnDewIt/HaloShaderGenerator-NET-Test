@@ -30,19 +30,19 @@ namespace HaloShaderGenerator.Globals
             Parameters.Add(new ShaderParameter(parameterName, parameterName + "_xform", HLSLType.Xform_2d, rmExtern));
         }
 
-        public void AddXFormParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        public void AddXFormOnlyParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName + "_xform", HLSLType.Float4, rmExtern));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName + "_xform", HLSLType.Xform_2d, rmExtern, ShaderParameterFlags.IsXFormOnly));
         }
 
         public void AddFloat4ColorParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, isColor: true));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, ShaderParameterFlags.IsColor));
         }
 
         public void AddFloat3ColorParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern, isColor: true));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern, ShaderParameterFlags.IsColor));
         }
 
         public void AddFloat4Parameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
@@ -86,51 +86,51 @@ namespace HaloShaderGenerator.Globals
 
         public void AddFloat4ColorVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, isColor: true, isVertexShader: true));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, (ShaderParameterFlags.IsVertexShader | ShaderParameterFlags.IsColor)));
         }
 
         public void AddFloat3ColorVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern, isColor: true, isVertexShader: true));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern, (ShaderParameterFlags.IsVertexShader | ShaderParameterFlags.IsColor)));
         }
 
         public void AddFloat4VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, isVertexShader: true));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, ShaderParameterFlags.IsVertexShader));
         }
         public void AddPrefixedFloat4VertexParameter(string parameterName, string prefix, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, prefix + parameterName, HLSLType.Float4, rmExtern, isVertexShader: true));
+            Parameters.Add(new ShaderParameter(parameterName, prefix + parameterName, HLSLType.Float4, rmExtern, ShaderParameterFlags.IsVertexShader));
         }
 
         public void AddFloat3VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern, isVertexShader: true));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern, ShaderParameterFlags.IsVertexShader));
         }
 
         public void AddFloat2VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float2, rmExtern, isVertexShader: true));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float2, rmExtern, ShaderParameterFlags.IsVertexShader));
         }
 
         public void AddFloatVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float, rmExtern, isVertexShader: true));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float, rmExtern, ShaderParameterFlags.IsVertexShader));
         }
 
         public void AddBooleanVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Bool, rmExtern, isVertexShader: true));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Bool, rmExtern, ShaderParameterFlags.IsVertexShader));
         }
 
         public void AddInteger4VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Int4, rmExtern, isVertexShader: true));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Int4, rmExtern, ShaderParameterFlags.IsVertexShader));
         }
 
         public void AddIntegerVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Int, rmExtern, isVertexShader: true));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Int, rmExtern, ShaderParameterFlags.IsVertexShader));
         }
 
         //
@@ -142,7 +142,7 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach(var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == false)
+                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern == RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
@@ -153,7 +153,7 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Boolean && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == false)
+                if (parameter.RegisterType == RegisterType.Boolean && parameter.RenderMethodExtern == RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
@@ -164,7 +164,7 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == false)
+                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern == RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
@@ -175,7 +175,7 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == false)
+                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern == RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
@@ -186,7 +186,7 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.IsVertexShader == false)
+                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern != RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
@@ -197,7 +197,7 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.IsVertexShader == false)
+                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern != RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
@@ -208,7 +208,7 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.IsVertexShader == false)
+                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern != RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
@@ -223,7 +223,7 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == true)
+                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
@@ -234,7 +234,7 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Boolean && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == true)
+                if (parameter.RegisterType == RegisterType.Boolean && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
@@ -245,7 +245,7 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == true)
+                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
@@ -256,7 +256,7 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.IsVertexShader == true)
+                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
@@ -267,7 +267,7 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.IsVertexShader == true)
+                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
@@ -278,7 +278,7 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.IsVertexShader == true)
+                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
@@ -289,13 +289,20 @@ namespace HaloShaderGenerator.Globals
             var result = new List<ShaderParameter>();
             foreach (var parameter in Parameters)
             {
-                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.IsVertexShader == true)
+                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
             }
             return result;
         }
     }
 
+    public enum ShaderParameterFlags
+    {
+        None = 0,
+        IsVertexShader = 1 << 0,
+        IsColor = 1 << 1,
+        IsXFormOnly = 1 << 2,
+    }
 
     public class ShaderParameter
     {
@@ -305,20 +312,21 @@ namespace HaloShaderGenerator.Globals
         public RegisterType RegisterType;
         public HLSLType CodeType;
         public RenderMethodExtern RenderMethodExtern;
-        public bool IsVertexShader = false;
-        public bool IsColor = false;
+        //public bool IsVertexShader = false;
+        //public bool IsColor = false;
+        //public bool IsXForm = false;
+        public ShaderParameterFlags Flags = ShaderParameterFlags.None;
 
         // TODO: add default values
 
-        public ShaderParameter(string parameterName, string registerName, HLSLType type, RenderMethodExtern renderMethodExtern = RenderMethodExtern.none, bool isColor=false, bool isVertexShader=false)
+        public ShaderParameter(string parameterName, string registerName, HLSLType type, RenderMethodExtern renderMethodExtern = RenderMethodExtern.none, ShaderParameterFlags flags = ShaderParameterFlags.None)
         {
             ParameterName = parameterName;
             RegisterName = registerName;
             CodeType = type;
             RegisterType = GetRegisterType(type);
             RenderMethodExtern = renderMethodExtern;
-            IsVertexShader = isVertexShader;
-            IsColor = isColor;
+            Flags = flags;
         }
 
         public string GenerateHLSLCode()

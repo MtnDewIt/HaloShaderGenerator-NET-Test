@@ -254,4 +254,21 @@ struct PS_OUTPUT_DECAL
     float4 unknown;
 };
 
+struct VS_OUTPUT_WATER
+{
+    float4 position : SV_Position;
+    float4 unknown_0 : TEXCOORD;
+    float4 unknown_1 : TEXCOORD1;
+    float4 unknown_2 : TEXCOORD2;
+    float4 unknown_3 : TEXCOORD3;
+    float4 unknown_4 : TEXCOORD4;
+    float4 unknown_5 : TEXCOORD5;
+    float4 unknown_6 : TEXCOORD6;
+    float4 unknown_7 : TEXCOORD7;
+    float4 unknown_8 : TEXCOORD8;
+    float4 unknown_9 : TEXCOORD9;
+    float4 unknown_10 : TEXCOORD10;
+    float4 unknown_11 : TEXCOORD11;
+};
+
 #endif

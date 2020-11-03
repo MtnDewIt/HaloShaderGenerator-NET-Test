@@ -95,6 +95,10 @@ namespace HaloShaderGenerator.Generator
         ShaderParameters GetVertexShaderParameters();
 
         ShaderParameters GetGlobalParameters();
+
+        ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName);
+
+        Array GetMethodNames();
     }
 
 }

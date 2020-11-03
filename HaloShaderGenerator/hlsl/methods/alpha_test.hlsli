@@ -34,7 +34,7 @@ float calc_alpha_test_multiply_map_ps(float2 texcoord)
 }
 
 #ifndef calc_alpha_test_ps
-#define calc_alpha_test_ps calc_alpha_test_off_ps
+#define calc_alpha_test_ps calc_alpha_test_none_ps
 #endif
 
 #endif

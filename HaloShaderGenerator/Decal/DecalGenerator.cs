@@ -334,5 +334,18 @@ namespace HaloShaderGenerator.Decal
         {
             throw new NotImplementedException();
         }
+
+        public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
+        {
+            ShaderParameters result = new ShaderParameters();
+            rmopName = "";
+            optionName = "";
+            return result;
+        }
+
+        public Array GetMethodNames()
+        {
+            return Enum.GetValues(typeof(DecalMethods));
+        }
     }
 }

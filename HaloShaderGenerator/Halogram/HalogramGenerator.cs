@@ -509,5 +509,18 @@ namespace HaloShaderGenerator.Halogram
             result.AddSamplerWithoutXFormParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
             return result;
         }
+
+        public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
+        {
+            ShaderParameters result = new ShaderParameters();
+            rmopName = "";
+            optionName = "";
+            return result;
+        }
+
+        public Array GetMethodNames()
+        {
+            return Enum.GetValues(typeof(HalogramMethods));
+        }
     }
 }

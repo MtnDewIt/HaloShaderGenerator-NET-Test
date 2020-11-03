@@ -2,6 +2,7 @@
 using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
+using System;
 
 namespace HaloShaderGenerator.Black
 {
@@ -133,6 +134,19 @@ namespace HaloShaderGenerator.Black
             result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
             result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.texture_dominant_light_intensity_map);
             return result;
+        }
+
+        public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
+        {
+            ShaderParameters result = new ShaderParameters();
+            rmopName = "";
+            optionName = "";
+            return result;
+        }
+
+        public Array GetMethodNames()
+        {
+            return null;
         }
     }
 }

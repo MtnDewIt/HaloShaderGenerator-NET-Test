@@ -136,12 +136,12 @@ namespace HaloShaderGenerator.Custom
             if (!IsEntryPointSupported(entryPoint) || !IsPixelShaderShared(entryPoint))
                 return null;
 
-            Alpha_Test alphaTestOption;
+            Shared.Alpha_Test alphaTestOption;
 
             switch ((CustomMethods)methodIndex)
             {
                 case CustomMethods.Alpha_Test:
-                    alphaTestOption = (Alpha_Test)optionIndex;
+                    alphaTestOption = (Shared.Alpha_Test)optionIndex;
                     break;
                 default:
                     return null;
@@ -152,20 +152,9 @@ namespace HaloShaderGenerator.Custom
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Alpha_Test>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Alpha_Test>());
 
-            string alphaTestName = "Off";
-            switch (alphaTestOption)
-            {
-                case Alpha_Test.Simple:
-                    alphaTestName = "On";
-                    break;
-                case Alpha_Test.Multiply_Map:
-                    alphaTestName = "Multiply_Map";
-                    break;
-            }
-
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", alphaTestName, "calc_alpha_test_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", alphaTestOption, "calc_alpha_test_", "_ps"));
 
             // reuse rmsh glps
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"glps_shader.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
@@ -220,11 +209,11 @@ namespace HaloShaderGenerator.Custom
                 case CustomMethods.Specular_Mask:
                     return 3;
                 case CustomMethods.Material_Model:
-                    return 4;
+                    return 4; //5
                 case CustomMethods.Environment_Mapping:
-                    return 4;
+                    return 4; //5
                 case CustomMethods.Self_Illumination:
-                    return 8;
+                    return 9;
                 case CustomMethods.Blend_Mode:
                     return 5;
                 case CustomMethods.Parallax:
@@ -534,7 +523,7 @@ namespace HaloShaderGenerator.Custom
                     result.AddSamplerParameter("ceiling");
                     result.AddSamplerParameter("floors");
                     result.AddSamplerParameter("walls");
-                    result.AddXFormParameter("transform");
+                    result.AddXFormOnlyParameter("transform");
                     result.AddFloatParameter("distance_fade_scale");
                     result.AddFloatParameter("self_illum_intensity");
                     break;
@@ -575,6 +564,324 @@ namespace HaloShaderGenerator.Custom
             result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
             result.AddSamplerWithoutXFormParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
             return result;
+        }
+
+        public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
+        {
+            ShaderParameters result = new ShaderParameters();
+            rmopName = null;
+            optionName = null;
+
+            if (methodName == "albedo")
+            {
+                optionName = ((Albedo)option).ToString();
+                switch ((Albedo)option)
+                {
+                    case Albedo.Default:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddFloat4Parameter("albedo_color");
+                        rmopName = @"shaders\shader_options\albedo_default";
+                        break;
+                    case Albedo.Detail_Blend:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddSamplerParameter("detail_map2");
+                        rmopName = @"shaders\shader_options\albedo_detail_blend";
+                        break;
+                    case Albedo.Constant_Color:
+                        result.AddFloat4Parameter("albedo_color");
+                        rmopName = @"shaders\shader_options\albedo_constant";
+                        break;
+                    case Albedo.Two_Change_Color:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddSamplerParameter("change_color_map");
+                        result.AddFloat4Parameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
+                        result.AddFloat4Parameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
+                        rmopName = @"shaders\shader_options\albedo_two_change_color";
+                        break;
+                    case Albedo.Four_Change_Color:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddSamplerParameter("change_color_map");
+                        result.AddFloat4Parameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
+                        result.AddFloat4Parameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
+                        result.AddFloat4Parameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary);
+                        result.AddFloat4Parameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary);
+                        rmopName = @"shaders\shader_options\albedo_four_change_color";
+                        break;
+                    case Albedo.Three_Detail_Blend:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddSamplerParameter("detail_map2");
+                        result.AddSamplerParameter("detail_map3");
+                        rmopName = @"shaders\shader_options\albedo_three_detail_blend";
+                        break;
+                    case Albedo.Two_Detail_Overlay:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddSamplerParameter("detail_map2");
+                        result.AddSamplerParameter("detail_map_overlay");
+                        rmopName = @"shaders\shader_options\albedo_two_detail_overlay";
+                        break;
+                    case Albedo.Two_Detail:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddSamplerParameter("detail_map2");
+                        rmopName = @"shaders\shader_options\albedo_two_detail";
+                        break;
+                    case Albedo.Color_Mask:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddSamplerParameter("color_mask_map");
+                        result.AddFloat4Parameter("albedo_color");
+                        result.AddFloat4Parameter("albedo_color2");
+                        result.AddFloat4Parameter("albedo_color3");
+                        result.AddFloat4Parameter("neutral_gray");
+                        rmopName = @"shaders\shader_options\albedo_color_mask";
+                        break;
+                    case Albedo.Two_Detail_Black_Point:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddSamplerParameter("detail_map2");
+                        rmopName = @"shaders\shader_options\albedo_two_detail_black_point";
+                        break;
+                    case Albedo.Waterfall:
+                        result.AddSamplerParameter("waterfall_base_mask");
+                        result.AddSamplerParameter("waterfall_layer0");
+                        result.AddSamplerParameter("waterfall_layer1");
+                        result.AddSamplerParameter("waterfall_layer2");
+                        result.AddFloatParameter("transparency_frothy_weight");
+                        result.AddFloatParameter("transparency_base_weight");
+                        result.AddFloatParameter("transparency_bias");
+                        rmopName = @"shaders\custom_options\albedo_waterfall";
+                        break;
+                }
+            }
+            if (methodName == "bump_mapping")
+            {
+                optionName = ((Bump_Mapping)option).ToString();
+                switch ((Bump_Mapping)option)
+                {
+                    case Bump_Mapping.Off:
+                        rmopName = @"shaders\shader_options\bump_off";
+                        break;
+                    case Bump_Mapping.Standard:
+                        result.AddSamplerParameter("bump_map");
+                        rmopName = @"shaders\shader_options\bump_default";
+                        break;
+                    case Bump_Mapping.Detail:
+                        result.AddSamplerParameter("bump_map");
+                        result.AddSamplerParameter("bump_detail_map");
+                        result.AddFloatParameter("bump_detail_coefficient");
+                        rmopName = @"shaders\shader_options\bump_detail";
+                        break;
+                }
+            }
+            if (methodName == "alpha_test")
+            {
+                optionName = ((Alpha_Test)option).ToString();
+                switch ((Alpha_Test)option)
+                {
+                    case Alpha_Test.None:
+                        rmopName = @"shaders\shader_options\alpha_test_off";
+                        break;
+                    case Alpha_Test.Simple:
+                        result.AddSamplerParameter("alpha_test_map");
+                        rmopName = @"shaders\shader_options\alpha_test_on";
+                        break;
+                    case Alpha_Test.Multiply_Map:
+                        result.AddSamplerParameter("alpha_test_map");
+                        result.AddSamplerParameter("multiply_map");
+                        rmopName = @"shaders\custom_options\alpha_test_multiply_map";
+                        break;
+                }
+            }
+            if (methodName == "specular_mask")
+            {
+                optionName = ((Specular_Mask)option).ToString();
+                switch ((Specular_Mask)option)
+                {
+                    case Specular_Mask.Specular_Mask_From_Texture:
+                        result.AddSamplerParameter("specular_mask_texture");
+                        rmopName = @"shaders\shader_options\specular_mask_from_texture";
+                        break;
+                }
+            }
+            if (methodName == "material_model")
+            {
+                optionName = ((Material_Model)option).ToString();
+                switch ((Material_Model)option)
+                {
+                    case Material_Model.Two_Lobe_Phong:
+                        result.AddFloatParameter("diffuse_coefficient");
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddFloatParameter("normal_specular_power");
+                        result.AddFloat4Parameter("normal_specular_tint");
+                        result.AddFloatParameter("glancing_specular_power");
+                        result.AddFloat4Parameter("glancing_specular_tint");
+                        result.AddFloatParameter("fresnel_curve_steepness");
+                        result.AddFloatParameter("area_specular_contribution");
+                        result.AddFloatParameter("analytical_specular_contribution");
+                        result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddBooleanParameter("order3_area_specular");
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("albedo_specular_tint_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
+                        rmopName = @"shaders\shader_options\material_two_lobe_phong_option";
+                        break;
+                    //case Material_Model.Custom_Specular:
+                    //    result.AddFloatParameter("diffuse_coefficient");
+                    //    result.AddFloatParameter("specular_coefficient");
+                    //    result.AddFloatParameter("environment_map_specular_contribution");
+                    //    result.AddSamplerWithoutXFormParameter("specular_lobe");
+                    //    result.AddSamplerWithoutXFormParameter("glancing_falloff");
+                    //    result.AddSamplerWithoutXFormParameter("material_map");
+                    //    rmopName = @"shaders\custom_options\material_custom_specular";
+                    //    break;
+                }
+            }
+            if (methodName == "environment_mapping")
+            {
+                optionName = ((Environment_Mapping)option).ToString();
+                switch ((Environment_Mapping)option)
+                {
+                    case Environment_Mapping.Per_Pixel:
+                        result.AddSamplerWithoutXFormParameter("environment_map");
+                        result.AddFloat4Parameter("env_tint_color");
+                        result.AddFloatParameter("env_roughness_scale");
+                        rmopName = @"shaders\shader_options\env_map_per_pixel";
+                        break;
+                    case Environment_Mapping.Dynamic:
+                        result.AddFloat4Parameter("env_tint_color");
+                        result.AddSamplerWithoutXFormParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
+                        result.AddSamplerWithoutXFormParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
+                        result.AddFloatParameter("env_roughness_scale");
+                        rmopName = @"shaders\shader_options\env_map_dynamic";
+                        break;
+                    case Environment_Mapping.From_Flat_Texture:
+                        result.AddSamplerWithoutXFormParameter("flat_environment_map");
+                        result.AddFloat4Parameter("env_tint_color");
+                        result.AddFloat4Parameter("flat_envmap_matrix_x", RenderMethodExtern.flat_envmap_matrix_x);
+                        result.AddFloat4Parameter("flat_envmap_matrix_y", RenderMethodExtern.flat_envmap_matrix_y);
+                        result.AddFloat4Parameter("flat_envmap_matrix_z", RenderMethodExtern.flat_envmap_matrix_z);
+                        result.AddFloatParameter("hemisphere_percentage");
+                        result.AddFloat4Parameter("env_bloom_override");
+                        result.AddFloatParameter("env_bloom_override_intensity");
+                        rmopName = @"shaders\shader_options\env_map_from_flat_texture";
+                        break;
+                    //case Environment_Mapping.Per_Pixel_Mip:
+                    //    result.AddSamplerWithoutXFormParameter("environment_map");
+                    //    result.AddFloat4Parameter("env_tint_color");
+                    //    rmopName = @"shaders\shader_options\env_map_per_pixel";
+                    //    break;
+                }
+            }
+            if (methodName == "self_illumination")
+            {
+                optionName = ((Self_Illumination)option).ToString();
+                switch ((Self_Illumination)option)
+                {
+                    case Self_Illumination.Simple:
+                        result.AddSamplerParameter("self_illum_map");
+                        result.AddFloat4Parameter("self_illum_color");
+                        result.AddFloatParameter("self_illum_intensity");
+                        rmopName = @"shaders\shader_options\illum_simple";
+                        break;
+                    case Self_Illumination._3_Channel_Self_Illum:
+                        result.AddSamplerParameter("self_illum_map");
+                        result.AddFloat4Parameter("channel_a");
+                        result.AddFloat4Parameter("channel_b");
+                        result.AddFloat4Parameter("channel_c");
+                        result.AddFloatParameter("self_illum_intensity");
+                        rmopName = @"shaders\shader_options\illum_3_channel";
+                        break;
+                    case Self_Illumination.Plasma:
+                        result.AddSamplerParameter("noise_map_a");
+                        result.AddSamplerParameter("noise_map_b");
+                        result.AddFloat4Parameter("color_medium");
+                        result.AddFloat4Parameter("color_wide");
+                        result.AddFloat4Parameter("color_sharp");
+                        result.AddFloatParameter("self_illum_intensity");
+                        result.AddSamplerParameter("alpha_mask_map");
+                        result.AddFloatParameter("thinness_medium");
+                        result.AddFloatParameter("thinness_wide");
+                        result.AddFloatParameter("thinness_sharp");
+                        rmopName = @"shaders\shader_options\illum_plasma";
+                        break;
+                    case Self_Illumination.From_Diffuse:
+                        result.AddFloat4Parameter("self_illum_color");
+                        result.AddFloatParameter("self_illum_intensity");
+                        rmopName = @"shaders\shader_options\illum_from_diffuse";
+                        break;
+                    case Self_Illumination.Illum_Detail:
+                        result.AddSamplerParameter("self_illum_map");
+                        result.AddSamplerParameter("self_illum_detail_map");
+                        result.AddFloat4Parameter("self_illum_color");
+                        result.AddFloatParameter("self_illum_intensity");
+                        rmopName = @"shaders\shader_options\illum_detail";
+                        break;
+                    case Self_Illumination.Meter:
+                        result.AddSamplerParameter("meter_map");
+                        result.AddFloat4Parameter("meter_color_off");
+                        result.AddFloat4Parameter("meter_color_on");
+                        result.AddFloatParameter("meter_value");
+                        rmopName = @"shaders\shader_options\illum_meter";
+                        break;
+                    case Self_Illumination.Self_Illum_Times_Diffuse:
+                        result.AddSamplerParameter("self_illum_map");
+                        result.AddFloat4Parameter("self_illum_color");
+                        result.AddFloatParameter("self_illum_intensity");
+                        result.AddFloatParameter("primary_change_color_blend");
+                        rmopName = @"shaders\shader_options\illum_times_diffuse";
+                        break;
+                    case Self_Illumination.Window_Room:
+                        result.AddSamplerParameter("opacity_map");
+                        result.AddSamplerParameter("ceiling");
+                        result.AddSamplerParameter("floors");
+                        result.AddSamplerParameter("walls");
+                        result.AddXFormOnlyParameter("transform");
+                        result.AddFloatParameter("distance_fade_scale");
+                        result.AddFloatParameter("self_illum_intensity");
+                        rmopName = @"shaders\custom_options\window_room_map";
+                        break;
+                }
+            }
+            if (methodName == "blend_mode")
+            {
+                optionName = ((Blend_Mode)option).ToString();
+            }
+            if (methodName == "parallax")
+            {
+                optionName = ((Parallax)option).ToString();
+                switch ((Parallax)option)
+                {
+                    case Parallax.Simple:
+                    case Parallax.Interpolated:
+                        result.AddSamplerParameter("height_map");
+                        result.AddFloatParameter("height_scale");
+                        rmopName = @"shaders\shader_options\parallax_simple";
+                        break;
+                    case Parallax.Simple_Detail:
+                        result.AddSamplerParameter("height_map");
+                        result.AddFloatParameter("height_scale");
+                        result.AddSamplerParameter("height_scale_map");
+                        rmopName = @"shaders\shader_options\parallax_detail";
+                        break;
+                }
+            }
+            if (methodName == "misc")
+            {
+                optionName = ((Misc)option).ToString();
+            }
+
+            return result;
+        }
+
+        public Array GetMethodNames()
+        {
+            return Enum.GetValues(typeof(CustomMethods));
         }
     }
 }
