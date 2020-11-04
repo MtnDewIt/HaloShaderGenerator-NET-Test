@@ -15,15 +15,15 @@ namespace HaloShaderGenerator
 
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
-        static readonly string TestShaderType = "terrain";
-        static readonly string TestStageType = "shared_vertex"; //shared_vertex, shader_pixel, vertex or pixel
+        static readonly string TestShaderType = "screen";
+        static readonly string TestStageType = "pixel"; //shared_vertex, shader_pixel, vertex or pixel
 
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { };
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { ShaderStage.Default };
 
         #region Shader
         static readonly List<VertexType> VertexOverrides = new List<VertexType> { };
 
-        static readonly List<int> ShaderAlbedoOverrides = new List<int> { };
+        static readonly List<int> ShaderAlbedoOverrides = new List<int> {  };
         static readonly List<int> ShaderBumpOverrides = new List<int> { };
         static readonly List<int> ShaderAlphaOverrides = new List<int> { };
         static readonly List<int> ShaderSpecularOverrides = new List<int> { };
@@ -38,6 +38,7 @@ namespace HaloShaderGenerator
         {
             //new List<int> { 0, 2, 0, 1, 7, 2, 0, 0, 0, 0, 0 },
             //new List<int> { 0, 2, 0, 1, 7, 0, 0, 0, 0, 1, 0 },
+            //new List<int> { 0, 1, 1, 0, 1, 0, 0, 3, 0, 0, 0 },
         };
         #endregion
 
@@ -61,7 +62,7 @@ namespace HaloShaderGenerator
         #endregion
 
         #region terrain
-        static readonly List<int> TerrainBlendingOverride = new List<int> { };
+        static readonly List<int> TerrainBlendingOverride = new List<int> { 0 };
         static readonly List<int> TerrainEnvMapOverride = new List<int> { };
         static readonly List<int> TerrainMaterial0Override = new List<int> { };
         static readonly List<int> TerrainMaterial1Override = new List<int> { };
@@ -73,12 +74,14 @@ namespace HaloShaderGenerator
             new List<int> { 0, 0, 0, 0, 0, 0},
             new List<int> { 0, 0, 0, 0, 0, 1},
             new List<int> { 0, 0, 1, 0, 2, 2},
+            new List<int> { 0, 0, 2, 0, 0, 2},
+            new List<int> { 0, 0, 0, 0, 0, 2},
         };
         #endregion
 
         #region halogram
         static readonly List<int> HalogramAlbedoOverride = new List<int> {  };
-        static readonly List<int> HalogramSelfIllumOverride = new List<int> { };
+        static readonly List<int> HalogramSelfIllumOverride = new List<int> {  };
         static readonly List<int> HalogramBlendModeOverride = new List<int> { };
         static readonly List<int> HalogramMiscOverride = new List<int> { };
         static readonly List<int> HalogramWarpOverride = new List<int> { };
@@ -87,6 +90,7 @@ namespace HaloShaderGenerator
 
         static readonly List<List<int>> HalogramOverrides = new List<List<int>>
         {
+            //new List<int> { 6, 1, 3, 0, 0, 0, 1},
             //new List<int> { 0, 9, 0, 1, 0, 2, 0},
             //new List<int> { 0, 1, 0, 0, 0, 0, 1},
             //new List<int> { 0, 1, 1, 0, 0, 0, 0},
@@ -199,6 +203,21 @@ namespace HaloShaderGenerator
             //new List<int> { 4, 3, 0, 0, 0, 0 },
             //new List<int> { 5, 3, 0, 0, 0, 3 },
             //new List<int> { 8, 10, 0, 1, 0, 2 },
+        };
+        #endregion
+
+        #region screen
+
+        static readonly List<int> ScreenWarpOverrides = new List<int> { };
+        static readonly List<int> ScreenBaseOverrides = new List<int> { };
+        static readonly List<int> ScreenOverlayAOverrides = new List<int> { };
+        static readonly List<int> ScreenOverlayBOverrides = new List<int> { };
+        static readonly List<int> ScreenBlendModeOverrides = new List<int> { };
+
+        static readonly List<List<int>> ScreenOverrides = new List<List<int>>
+        {
+            new List<int> { 2, 0, 4, 1, 0 },
+            new List<int> { 2, 1, 2, 0, 0 },
         };
         #endregion
 
@@ -514,6 +533,33 @@ namespace HaloShaderGenerator
             }
         }
 
+        static void RunScreenUnitTest()
+        {
+            ScreenUnitTest shaderTests = new ScreenUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                var methodOverrides = new List<List<int>> { ScreenWarpOverrides, ScreenBaseOverrides, ScreenOverlayAOverrides, ScreenOverlayBOverrides, ScreenBlendModeOverrides };
+
+                shaderTests.TestAllPixelShaders(ScreenOverrides, StageOverrides, methodOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : ScreenUnitTest.GetAllShaderStages();
+
+                foreach (var stage in stages)
+                {
+                    foreach (var methods in ScreenOverrides)
+                    {
+                        TestPixelShader(stage, methods);
+                    }
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
+            }
+        }
+
         static int Main()
         {
             Console.WriteLine($"TESTING {TestShaderType.ToUpper()}");
@@ -536,6 +582,7 @@ namespace HaloShaderGenerator
                 case "beam": RunBeamUnitTest(); break;
                 case "light_volume": RunLightVolumeUnitTest(); break;
                 case "decal": RunDecalUnitTest(); break;
+                case "screen": RunScreenUnitTest(); break;
                 case "terrain":
                     switch (TestStageType)
                     {
@@ -698,6 +745,25 @@ namespace HaloShaderGenerator
                 var edge_fade = (Halogram.Edge_Fade)methods[6];
 
                 var gen = new Halogram.HalogramGenerator(albedo, self_illumination, blend_mode, misc, warp, overlay, edge_fade);
+                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
+                {
+                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
+                    var parameters = gen.GetPixelShaderParameters();
+
+                    var disassembly = D3DCompiler.Disassemble(bytecode);
+                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
+                    WriteShaderFile(filename, disassembly);
+                }
+            }
+            else if (TestShaderType == "screen")
+            {
+                var warp = (Screen.Warp)methods[0];
+                var _base = (Screen.Base)methods[1];
+                var overlay_a = (Screen.Overlay_A)methods[2];
+                var overlay_b = (Screen.Overlay_B)methods[3];
+                var blend_mode = (Screen.Blend_Mode)methods[4];
+
+                var gen = new Screen.ScreenGenerator(warp, _base, overlay_a, overlay_b, blend_mode);
                 if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
                 {
                     var bytecode = gen.GeneratePixelShader(stage).Bytecode;

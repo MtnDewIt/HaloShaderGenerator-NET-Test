@@ -271,4 +271,10 @@ struct VS_OUTPUT_WATER
     float4 unknown_11 : TEXCOORD11;
 };
 
+struct VS_OUTPUT_SCREEN
+{
+    float4 position : SV_Position;
+    float4 texcoord : TEXCOORD;
+};
+
 #endif

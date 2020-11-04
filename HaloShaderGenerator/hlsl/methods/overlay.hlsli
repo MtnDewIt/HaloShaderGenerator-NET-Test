@@ -30,7 +30,6 @@ inout float3 diffuse)
     
     float3 overlay_color = overlay_sample.rgb;
     overlay_color *= overlay_tint.rgb * overlay_intensity;
-    //overlay_color *= overlay_intensity;
 
     diffuse += overlay_color;
 }
@@ -94,6 +93,68 @@ inout float3 diffuse)
 
 #ifndef calc_overlay_ps
 #define calc_overlay_ps calc_overlay_none_ps
+#endif
+
+// SCREEN
+
+uniform float4 tint_color;
+uniform float4 add_color;
+uniform sampler2D detail_map_a;
+uniform float4 detail_map_a_xform;
+uniform sampler2D detail_mask_a;
+uniform float4 detail_mask_a_xform;
+uniform float detail_fade_a;
+uniform float detail_multiplier_a;
+
+float4 overlay_none(float2 texcoord, float4 base)
+{
+    return base;
+}
+
+float4 overlay_tint_add_color(float2 texcoord, float4 base)
+{
+    return base * tint_color + add_color;
+}
+
+float4 overlay_detail_screen_space(float2 texcoord, float4 base)
+{
+    float4 detail = tex2D(detail_map_a, apply_xform2d(texcoord, detail_map_a_xform));
+    detail.rgb *= detail_multiplier_a;
+    
+    detail -= 1.0f;
+    detail = detail_fade_a * detail;
+    detail += 1.0f;
+    
+    return base * detail;
+}
+
+float4 overlay_detail_pixel_space(float2 texcoord, float4 base)
+{
+    // TODO
+    return base;
+}
+
+float4 overlay_detail_masked_screen_space(float2 texcoord, float4 base)
+{
+    float4 detail = tex2D(detail_map_a, apply_xform2d(texcoord, detail_map_a_xform));
+    detail.rgb *= detail_multiplier_a;
+    
+    float detail_mask = tex2D(detail_mask_a, apply_xform2d(texcoord, detail_mask_a_xform)).a;
+    detail_mask = saturate(detail_mask * detail_fade_a);
+    
+    detail -= 1.0f;
+    detail = detail_mask * detail;
+    detail += 1.0f;
+    
+    return base * detail;
+}
+
+#ifndef overlay_type_a
+#define overlay_type_a overlay_none
+#endif
+
+#ifndef overlay_type_b
+#define overlay_type_b overlay_none
 #endif
 
 #endif

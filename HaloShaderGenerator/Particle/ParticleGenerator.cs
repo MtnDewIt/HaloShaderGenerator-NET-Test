@@ -30,16 +30,6 @@ namespace HaloShaderGenerator.Particle
         /// <summary>
         /// Generator instantiation for method specific shaders.
         /// </summary>
-        /// <param name="albedo"></param>
-        /// <param name="blend_mode"></param>
-        /// <param name="specialized_rendering"></param>
-        /// <param name="lighting"></param>
-        /// <param name="render_targets"></param>
-        /// <param name="depth_fade"></param>
-        /// <param name="black_point"></param>
-        /// <param name="fog"></param>
-        /// <param name="frame_blend"></param>
-        /// <param name="self_illumination"></param>
         public ParticleGenerator(Albedo albedo, Blend_Mode blend_mode, Specialized_Rendering specialized_rendering, Lighting lighting, Render_Targets render_targets,
             Depth_Fade depth_fade, Black_Point black_point, Fog fog, Frame_Blend frame_blend, Self_Illumination self_illumination, bool applyFixes = false)
         {

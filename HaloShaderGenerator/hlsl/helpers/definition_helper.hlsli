@@ -172,21 +172,18 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_fog_on 1
 #define k_frame_blend_off 0
 #define k_frame_blend_on 1
-
-// Methods
-
-//NOTE: these are defined in the methods hlsl with a default
-//#define calc_albedo_ps(texcoord)
-//#define calc_bumpmap_ps()
-//#define calc_bumpmap_vs()
-//#define calc_alpha_test_ps()
-//#define calc_specular_mask_ps()
-//#define calc_self_illumination_ps()
-//#define calc_parallax_ps()
-//#define calc_parallax_vs()
-//#define material_type()
-//#define envmap_type()
-//#define blend_type()
+#define k_warp_none 0
+#define k_warp_pixel_space 1
+#define k_warp_screen_space 2
+#define k_base_single_screen_space 0
+#define k_base_single_pixel_space 1
+#define k_overlay_a_none 0
+#define k_overlay_a_tint_add_color 1
+#define k_overlay_a_detail_screen_space 2
+#define k_overlay_a_detail_pixel_space 3
+#define k_overlay_a_detail_masked_screen_space 4
+#define k_overlay_b_none 0
+#define k_overlay_b_tint_add_color 1
 
 // Generics
 #define shaderstage 0
@@ -201,9 +198,6 @@ This file contains a list of blank definitions to help with Intellisense
 #define blend_type_arg 0
 #define misc_arg 0
 #define distortion_arg 0
-// Particle
-//#define particle_albedo_arg 0
-//#define particle_blend_type_arg 0
 #define specialized_rendering_arg 0
 #define render_targets_arg 0
 #define lighting_arg 0
@@ -211,19 +205,14 @@ This file contains a list of blank definitions to help with Intellisense
 #define black_point_arg 0
 #define fog_arg 0
 #define frame_blend_arg 0
-// fx
-//#define contrail_albedo_arg 0
-//#define contrail_blend_type_arg 0
-//#define beam_albedo_arg 0
-//#define beam_blend_type_arg 0
-//#define light_volume_albedo_arg 0
-//#define light_volume_blend_type_arg 0
-//#define decal_albedo_arg 0
-//#define decal_blend_type_arg 0
 #define decal_render_pass_arg 0
 #define decal_specular_arg 0
 #define decal_bump_mapping_arg 0
 #define decal_tinting_arg 0
+#define warp_arg 0
+#define base_arg 0
+#define overlay_a_arg 0
+#define overlay_b_arg 0
 
 #endif
 

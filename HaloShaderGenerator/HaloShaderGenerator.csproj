@@ -156,6 +156,8 @@
     <Compile Include="LightVolume\MethodOptions.cs" />
     <Compile Include="Particle\MethodOptions.cs" />
     <Compile Include="Particle\ParticleGenerator.cs" />
+    <Compile Include="Screen\MethodOptions.cs" />
+    <Compile Include="Screen\ScreenGenerator.cs" />
     <Compile Include="Shader\MethodOptions.cs" />
     <Compile Include="Shader\ShaderGenerator.cs" />
     <Compile Include="Generator\ShaderGeneratorBase.cs" />
@@ -516,6 +518,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\glvs_custom.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\screen\entry_default.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\base.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

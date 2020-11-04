@@ -9,6 +9,7 @@ uniform sampler warp_map;
 uniform float4 warp_map_xform;
 uniform float warp_amount_x;
 uniform float warp_amount_y;
+uniform float warp_amount;
 
 float2 calc_warp_none(float2 texcoord, float3 camera_dir, float3 tangent, float3 binormal, float3 normal)
 {
@@ -34,8 +35,31 @@ float2 calc_warp_parallax_simple(float2 texcoord, float3 camera_dir, float3 tang
     return texcoord;
 }
 
+float2 calc_screen_warp_none(float2 texcoord)
+{
+    return texcoord;
+}
+
+float2 calc_screen_warp_pixel_space(float2 texcoord)
+{
+    // TODO
+    return texcoord;
+}
+
+float2 calc_screen_warp_screen_space(float2 texcoord)
+{
+    float2 warp_tex = tex2D(warp_map, apply_xform2d(texcoord, warp_map_xform)).xy;
+    warp_tex *= warp_amount;
+    //warp_tex += texcoord;
+    return warp_tex;
+}
+
 #ifndef calc_warp
 #define calc_warp calc_warp_none
+#endif
+
+#ifndef calc_screen_warp
+#define calc_screen_warp calc_screen_warp_none
 #endif
 
 #endif
