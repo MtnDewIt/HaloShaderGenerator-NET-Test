@@ -125,6 +125,7 @@
   <ItemGroup>
     <Compile Include="Beam\BeamGenerator.cs" />
     <Compile Include="Beam\MethodOptions.cs" />
+    <Compile Include="Black\MethodOptions.cs" />
     <Compile Include="Black\ShaderBlackGenerator.cs" />
     <Compile Include="Contrail\ContrailGenerator.cs" />
     <Compile Include="Contrail\MethodOptions.cs" />

@@ -36,6 +36,19 @@ namespace HaloShaderGenerator.Terrain
             TemplateGenerationValid = true;
         }
 
+        public TerrainGenerator(byte[] options, bool applyFixes = false)
+        {
+            this.blending = (Blending)options[0];
+            this.environment_mapping = (Environment_Mapping)options[1];
+            this.material_0 = (Material)options[2];
+            this.material_1 = (Material)options[3];
+            this.material_2 = (Material)options[4];
+            this.material_3 = (Material_No_Detail_Bump)options[5];
+
+            //ApplyFixes = applyFixes;
+            TemplateGenerationValid = true;
+        }
+
 
         public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
         {

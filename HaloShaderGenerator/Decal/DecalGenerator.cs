@@ -27,12 +27,6 @@ namespace HaloShaderGenerator.Decal
         /// <summary>
         /// Generator instantiation for method specific shaders.
         /// </summary>
-        /// <param name="albedo"></param>
-        /// <param name="blend_mode"></param>
-        /// <param name="render_pass"></param>
-        /// <param name="specular"></param>
-        /// <param name="bump_mapping"></param>
-        /// <param name="tinting"></param>
         public DecalGenerator(Albedo albedo, Blend_Mode blend_mode, Render_Pass render_pass, Specular specular, Bump_Mapping bump_mapping, Tinting tinting, bool applyFixes = false)
         {
             this.albedo = albedo;
@@ -41,6 +35,20 @@ namespace HaloShaderGenerator.Decal
             this.specular = specular;
             this.bump_mapping = bump_mapping;
             this.tinting = tinting;
+
+            ApplyFixes = applyFixes;
+            DecalIsSimple = this.render_pass == Render_Pass.Pre_Lighting && this.bump_mapping == Bump_Mapping.Leave;
+            TemplateGenerationValid = true;
+        }
+
+        public DecalGenerator(byte[] options, bool applyFixes = false)
+        {
+            this.albedo = (Albedo)options[0];
+            this.blend_mode = (Blend_Mode)options[1];
+            this.render_pass = (Render_Pass)options[2];
+            this.specular = (Specular)options[3];
+            this.bump_mapping = (Bump_Mapping)options[4];
+            this.tinting = (Tinting)options[5];
 
             ApplyFixes = applyFixes;
             DecalIsSimple = this.render_pass == Render_Pass.Pre_Lighting && this.bump_mapping == Bump_Mapping.Leave;

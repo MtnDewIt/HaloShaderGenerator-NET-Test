@@ -24,16 +24,23 @@ namespace HaloShaderGenerator.Contrail
         /// <summary>
         /// Generator instantiation for method specific shaders.
         /// </summary>
-        /// <param name="albedo"></param>
-        /// <param name="blend_mode"></param>
-        /// <param name="black_point"></param>
-        /// <param name="fog"></param>
         public ContrailGenerator(Albedo albedo, Blend_Mode blend_mode, Black_Point black_point, Fog fog, bool applyFixes = false)
         {
             this.albedo = albedo;
             this.blend_mode = blend_mode;
             this.black_point = black_point;
             this.fog = fog;
+
+            ApplyFixes = applyFixes;
+            TemplateGenerationValid = true;
+        }
+
+        public ContrailGenerator(byte[] options, bool applyFixes = false)
+        {
+            this.albedo = (Albedo)options[0];
+            this.blend_mode = (Blend_Mode)options[1];
+            this.black_point = (Black_Point)options[2];
+            this.fog = (Fog)options[3];
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;

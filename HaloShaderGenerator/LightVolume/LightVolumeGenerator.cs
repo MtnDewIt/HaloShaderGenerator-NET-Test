@@ -23,14 +23,21 @@ namespace HaloShaderGenerator.LightVolume
         /// <summary>
         /// Generator instantiation for method specific shaders.
         /// </summary>
-        /// <param name="albedo"></param>
-        /// <param name="blend_mode"></param>
-        /// <param name="fog"></param>
         public LightVolumeGenerator(Albedo albedo, Blend_Mode blend_mode, Fog fog, bool applyFixes = false)
         {
             this.albedo = albedo;
             this.blend_mode = blend_mode;
             this.fog = fog;
+
+            ApplyFixes = applyFixes;
+            TemplateGenerationValid = true;
+        }
+
+        public LightVolumeGenerator(byte[] options, bool applyFixes = false)
+        {
+            this.albedo = (Albedo)options[0];
+            this.blend_mode = (Blend_Mode)options[1];
+            this.fog = (Fog)options[2];
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;

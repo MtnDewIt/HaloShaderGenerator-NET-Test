@@ -30,17 +30,6 @@ namespace HaloShaderGenerator.Shader
         /// <summary>
         /// Generator instantiation for method specific shaders.
         /// </summary>
-        /// <param name="albedo"></param>
-        /// <param name="bump_mapping"></param>
-        /// <param name="alpha_test"></param>
-        /// <param name="specular_mask"></param>
-        /// <param name="material_model"></param>
-        /// <param name="environment_mapping"></param>
-        /// <param name="self_illumination"></param>
-        /// <param name="blend_mode"></param>
-        /// <param name="parallax"></param>
-        /// <param name="misc"></param>
-        /// <param name="distortion"></param>
         public ShaderGenerator(Albedo albedo, Bump_Mapping bump_mapping, Alpha_Test alpha_test, Specular_Mask specular_mask, Material_Model material_model,
             Environment_Mapping environment_mapping, Self_Illumination self_illumination, Blend_Mode blend_mode, Parallax parallax, Misc misc, Distortion distortion)
         {
@@ -55,6 +44,24 @@ namespace HaloShaderGenerator.Shader
             this.parallax = parallax;
             this.misc = misc;
             this.distortion = distortion;
+            TemplateGenerationValid = true;
+        }
+
+        public ShaderGenerator(byte[] options, bool applyFixes = false)
+        {
+            this.albedo = (Albedo)options[0];
+            this.bump_mapping = (Bump_Mapping)options[1];
+            this.alpha_test = (Alpha_Test)options[2];
+            this.specular_mask = (Specular_Mask)options[3];
+            this.material_model = (Material_Model)options[4];
+            this.environment_mapping = (Environment_Mapping)options[5];
+            this.self_illumination = (Self_Illumination)options[6];
+            this.blend_mode = (Blend_Mode)options[7];
+            this.parallax = (Parallax)options[8];
+            this.misc = (Misc)options[9];
+            this.distortion = (Distortion)options[10];
+
+            //ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
         }
 

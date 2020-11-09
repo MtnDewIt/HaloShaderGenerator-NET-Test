@@ -45,6 +45,23 @@ namespace HaloShaderGenerator.Custom
             TemplateGenerationValid = true;
         }
 
+        public CustomGenerator(byte[] options, bool applyFixes = false)
+        {
+            this.albedo = (Albedo)options[0];
+            this.bump_mapping = (Bump_Mapping)options[1];
+            this.alpha_test = (Alpha_Test)options[2];
+            this.specular_mask = (Specular_Mask)options[3];
+            this.material_model = (Material_Model)options[4];
+            this.environment_mapping = (Environment_Mapping)options[5];
+            this.self_illumination = (Self_Illumination)options[6];
+            this.blend_mode = (Blend_Mode)options[7];
+            this.parallax = (Parallax)options[8];
+            this.misc = (Misc)options[9];
+
+            //ApplyFixes = applyFixes;
+            TemplateGenerationValid = true;
+        }
+
         public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
         {
             if (!TemplateGenerationValid)

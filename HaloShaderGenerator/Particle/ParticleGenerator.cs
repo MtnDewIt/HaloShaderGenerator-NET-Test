@@ -48,6 +48,23 @@ namespace HaloShaderGenerator.Particle
             TemplateGenerationValid = true;
         }
 
+        public ParticleGenerator(byte[] options, bool applyFixes = false)
+        {
+            this.albedo = (Albedo)options[0];
+            this.blend_mode = (Blend_Mode)options[1];
+            this.specialized_rendering = (Specialized_Rendering)options[2];
+            this.lighting = (Lighting)options[3];
+            this.render_targets = (Render_Targets)options[4];
+            this.depth_fade = (Depth_Fade)options[5];
+            this.black_point = (Black_Point)options[6];
+            this.fog = (Fog)options[7];
+            this.frame_blend = (Frame_Blend)options[8];
+            this.self_illumination = (Self_Illumination)options[9];
+
+            ApplyFixes = applyFixes;
+            TemplateGenerationValid = true;
+        }
+
         public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
         {
             if (!TemplateGenerationValid)

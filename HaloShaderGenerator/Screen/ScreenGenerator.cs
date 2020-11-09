@@ -37,6 +37,18 @@ namespace HaloShaderGenerator.Screen
             TemplateGenerationValid = true;
         }
 
+        public ScreenGenerator(byte[] options, bool applyFixes = false)
+        {
+            this.warp = (Warp)options[0];
+            this._base = (Base)options[1];
+            this.overlay_a = (Overlay_A)options[2];
+            this.overlay_b = (Overlay_B)options[3];
+            this.blend_mode = (Blend_Mode)options[4];
+
+            ApplyFixes = applyFixes;
+            TemplateGenerationValid = true;
+        }
+
         public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
         {
             if (!TemplateGenerationValid)

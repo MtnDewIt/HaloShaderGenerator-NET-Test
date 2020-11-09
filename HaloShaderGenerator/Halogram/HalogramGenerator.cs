@@ -27,13 +27,6 @@ namespace HaloShaderGenerator.Halogram
         /// <summary>
         /// Generator instantiation for method specific shaders.
         /// </summary>
-        /// <param name="albedo"></param>
-        /// <param name="self_illumination"></param>
-        /// <param name="blend_mode"></param>
-        /// <param name="misc"></param>
-        /// <param name="warp"></param>
-        /// <param name="overlay"></param>
-        /// <param name="edge_fade"></param>
         public HalogramGenerator(Albedo albedo, Self_Illumination self_illumination, Blend_Mode blend_mode, Misc misc, Warp warp, Overlay overlay, Edge_Fade edge_fade, bool applyFixes = false)
         {
             this.albedo = albedo;
@@ -43,6 +36,20 @@ namespace HaloShaderGenerator.Halogram
             this.warp = warp;
             this.overlay = overlay;
             this.edge_fade = edge_fade;
+
+            ApplyFixes = applyFixes;
+            TemplateGenerationValid = true;
+        }
+
+        public HalogramGenerator(byte[] options, bool applyFixes = false)
+        {
+            this.albedo = (Albedo)options[0];
+            this.self_illumination = (Self_Illumination)options[1];
+            this.blend_mode = (Blend_Mode)options[2];
+            this.misc = (Misc)options[3];
+            this.warp = (Warp)options[4];
+            this.overlay = (Overlay)options[5];
+            this.edge_fade = (Edge_Fade)options[6];
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
