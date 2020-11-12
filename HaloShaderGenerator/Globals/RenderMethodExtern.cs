@@ -59,5 +59,7 @@ namespace HaloShaderGenerator.Globals
         tree_animation_timer,
         emblem_player_shoulder_texture,
         emblem_clan_chest_texture,
+        global_depth_constants,
+        global_camera_forward
     }
 }
