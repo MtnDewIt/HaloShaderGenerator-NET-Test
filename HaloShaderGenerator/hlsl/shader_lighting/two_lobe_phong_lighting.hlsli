@@ -147,7 +147,7 @@ float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data, out float4 unk
     n_view.z = dot(common_data.n_view_dir, common_data.tangent);
 
 	float3 self_illum = 0;
-	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, n_view, 0, 0, self_illum);
+	calc_self_illumination_ps(0, common_data.texcoord.xy, common_data.albedo.rgb, n_view, 0, 0, 0, 0, self_illum);
 	
 	if (self_illum_is_diffuse)
 	{

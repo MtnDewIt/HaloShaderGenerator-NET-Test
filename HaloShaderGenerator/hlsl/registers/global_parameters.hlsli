@@ -98,11 +98,10 @@ uniform xform2d p_dynamic_light_gel_xform : register(c5);
 
 
 uniform sampler2D albedo_texture;
-
-// particle only
 uniform sampler2D depth_buffer;
 uniform float3 screen_constants;
-//
+uniform float3 global_depth_constants; // extern
+uniform float3 global_camera_forward; // extern
 
 #if envmap_type_arg != k_environment_mapping_dynamic
 #define environment_map_register : register(s1)

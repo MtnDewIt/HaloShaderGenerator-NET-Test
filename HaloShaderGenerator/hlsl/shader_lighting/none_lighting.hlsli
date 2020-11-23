@@ -30,7 +30,7 @@ float3 calc_lighting_none_ps(SHADER_COMMON common_data, out float4 unknown_outpu
     n_view.y = dot(common_data.n_view_dir, common_data.binormal);
     n_view.z = dot(common_data.n_view_dir, common_data.tangent);
 	
-	calc_self_illumination_ps(common_data.texcoord.xy, common_data.albedo.rgb, n_view, 0, 0, color.rgb);
+	calc_self_illumination_ps(0, common_data.texcoord.xy, common_data.albedo.rgb, n_view, 0, 0, 0, 0, color.rgb);
 	
 	envmap_type(env_mapping_common_data, color, unknown_output);
 	

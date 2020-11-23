@@ -77,7 +77,7 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
     if (albedo_arg == k_albedo_two_detail_overlay)
         color.rgb = 0;
     
-	calc_self_illumination_ps(texcoord.xy, albedo.rgb, 0, view_tangent, view_binormal, color.rgb);
+	calc_self_illumination_ps(input.position.xy, texcoord.xy, albedo.rgb, 0, input.camera_dir.xyz, view_normal, view_tangent, view_binormal, color.rgb);
     
     calc_overlay_ps(texcoord.xy, albedo.rgb, color.rgb);
     

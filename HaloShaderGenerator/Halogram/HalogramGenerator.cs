@@ -435,9 +435,13 @@ namespace HaloShaderGenerator.Halogram
                     result.AddSamplerWithoutXFormParameter("palette");
                     result.AddSamplerParameter("alpha_mask_map");
                     result.AddFloatParameter("alpha_modulation_factor");
+                    result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z);
+                    result.AddFloatParameter("depth_fade_range");
                     result.AddFloat4Parameter("self_illum_color");
                     result.AddFloatParameter("self_illum_intensity");
                     result.AddFloatParameter("v_coordinate");
+                    result.AddFloat3Parameter("global_depth_constants", RenderMethodExtern.global_depth_constants);
+                    result.AddFloat3Parameter("global_camera_forward", RenderMethodExtern.global_camera_forward);
                     break;
                 case Self_Illumination.Palettized_Plasma_Change_Color:
                     result.AddSamplerParameter("noise_map_a");
@@ -445,9 +449,13 @@ namespace HaloShaderGenerator.Halogram
                     result.AddSamplerWithoutXFormParameter("palette");
                     result.AddSamplerParameter("alpha_mask_map");
                     result.AddFloatParameter("alpha_modulation_factor");
+                    result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z);
+                    result.AddFloatParameter("depth_fade_range");
                     result.AddFloat4Parameter("self_illum_color", RenderMethodExtern.object_change_color_primary);
                     result.AddFloatParameter("self_illum_intensity");
                     result.AddFloatParameter("v_coordinate");
+                    result.AddFloat3Parameter("global_depth_constants", RenderMethodExtern.global_depth_constants);
+                    result.AddFloat3Parameter("global_camera_forward", RenderMethodExtern.global_camera_forward);
                     break;
             }
             switch (warp)

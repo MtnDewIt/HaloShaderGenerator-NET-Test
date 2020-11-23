@@ -47,11 +47,15 @@ uniform float3 self_illum_heat_color;
 uniform float alpha_modulation_factor;
 uniform sampler2D palette;
 uniform float v_coordinate;
+uniform float depth_fade_range;
 
 void calc_self_illumination_none_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -59,9 +63,12 @@ inout float3 diffuse)
 }
 
 void calc_self_illumination_simple_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -76,9 +83,12 @@ inout float3 diffuse)
 }
 
 void calc_self_illumination_three_channel_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -103,9 +113,12 @@ inout float3 diffuse)
 }
 
 void calc_self_illumination_plasma_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -141,9 +154,12 @@ inout float3 diffuse)
 }
 
 void calc_self_illumination_from_diffuse_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -156,9 +172,12 @@ inout float3 diffuse)
 }
 
 void calc_self_illumination_detail_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -177,9 +196,12 @@ inout float3 diffuse)
 }
 
 void calc_self_illumination_meter_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -204,9 +226,12 @@ inout float3 diffuse)
 }
 
 void calc_self_illumination_times_diffuse_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -225,9 +250,12 @@ inout float3 diffuse)
 }
 
 void calc_self_illumination_simple_with_alpha_mask_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -242,9 +270,12 @@ inout float3 diffuse)
 }
 
 void calc_self_illumination_simple_four_change_color_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -259,9 +290,12 @@ inout float3 diffuse)
 }
 
 void calc_self_illumination_multilayer_additive_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -320,9 +354,12 @@ inout float3 diffuse)
 }
 
 void calc_self_illumination_scope_blur_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
@@ -354,27 +391,28 @@ inout float3 diffuse)
 }
 
 void calc_self_illumination_palettized_plasma_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
 {
-    float2 alpha_map_texcoord = apply_xform2d(texcoord, alpha_mask_map_xform);
-    float4 alpha_mask_map_sample = tex2D(alpha_mask_map, alpha_map_texcoord);
+    float alpha_mask = tex2D(alpha_mask_map, apply_xform2d(texcoord, alpha_mask_map_xform)).a;
+    float noise_a = tex2D(noise_map_a, apply_xform2d(texcoord, noise_map_a_xform)).r;
+    float noise_b = tex2D(noise_map_b, apply_xform2d(texcoord, noise_map_b_xform)).r;
+    float plasma_noise = abs(noise_a - noise_b);
     
-    float2 noise_a_texcoord = apply_xform2d(texcoord, noise_map_a_xform);
-    float4 noise_map_a_sample = tex2D(noise_map_a, noise_a_texcoord);
+    float depth = tex2D(depth_buffer, (position.xy + 0.5f) / texture_size.xy).r; // * global_depth_constants.y + global_depth_constants.z;
+    depth = -abs(dot(camera_dir, global_camera_forward)) + depth; // + rcp(depth);
     
-    float2 noise_b_texcoord = apply_xform2d(texcoord, noise_map_b_xform);
-    float4 noise_map_b_sample = tex2D(noise_map_b, noise_b_texcoord);
-    
-    // TODO: implement ODST code for this
-    float camera_depth_value = 1.0f;
+    float plasma_depth_modulation = -saturate((n_camera_dir / depth_fade_range) * depth);
         
-    float u_coordinate = -alpha_mask_map_sample.w * camera_depth_value + 1.0f;
-    u_coordinate = saturate(u_coordinate * alpha_modulation_factor.x + abs(noise_map_a_sample.x - noise_map_b_sample.x));
+    float u_coordinate = alpha_mask * plasma_depth_modulation + 1.0f;
+    u_coordinate = saturate(u_coordinate * alpha_modulation_factor.x + plasma_noise);
         
     float3 color = tex2D(palette, float2(u_coordinate, v_coordinate)).rgb;
 	
@@ -403,9 +441,12 @@ float2 sgt(in float2 src1, in float2 src2)
 }
 
 void calc_self_illumination_window_room_ps(
+in float2 position,
 in float2 texcoord,
 in float3 albedo,
 in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
 in float view_tangent,
 in float view_binormal,
 inout float3 diffuse)
