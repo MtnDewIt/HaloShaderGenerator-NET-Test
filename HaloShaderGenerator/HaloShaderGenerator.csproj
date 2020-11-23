@@ -526,6 +526,9 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\methods\base.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\glvs_halogram.hlsl" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>
