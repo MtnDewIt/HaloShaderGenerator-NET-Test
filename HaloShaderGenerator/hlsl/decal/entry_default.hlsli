@@ -22,35 +22,6 @@
 #include "..\helpers\definition_helper.hlsli"
 #include "..\registers\global_parameters.hlsli"
 
-void decal_apply_fade(inout float4 color)
-{ 
-    // todo: figure out exactly what conditions are here
-    
-    bool blend_is_multiply = blend_type_arg == k_blend_mode_pre_multiplied_alpha || blend_type_arg == k_blend_mode_multiply;
-    
-    if (decal_render_pass_arg == k_decal_render_pass_post_lighting && !blend_is_multiply)
-    {
-        color.rgb *= g_alt_exposure.y;
-    }
-    
-    if (blend_type_arg == k_blend_mode_additive)
-    {
-        color.rgb *= fade;
-    }
-    if (blend_type_arg == k_blend_mode_pre_multiplied_alpha)
-    {
-        color.rgb *= fade;
-        if (decal_render_pass_arg == k_decal_render_pass_post_lighting)
-            color.rgb *= color.a;
-    }
-    
-    // this seems weird
-    if ((blend_type_arg == k_blend_mode_multiply || blend_type_arg == k_blend_mode_additive) && decal_specular_arg == k_decal_specular_modulate)
-    {
-        color.a *= fade;
-    }
-}
-
 float4 decal_entry_default_calculate_color(VS_OUTPUT_DECAL input)
 {
     float4 color = calc_albedo_ps(float4(input.texcoord.zw, 0, 0), input.texcoord.xy, 0.0f, 0.0f, 1.0f);
@@ -64,11 +35,21 @@ float4 decal_entry_default_calculate_color(VS_OUTPUT_DECAL input)
     
     color = decal_blend_mode(color, fade);
     
+    // H3 doesn't have this, leaving out for now.
+    //if (blend_type_arg == k_blend_mode_pre_multiplied_alpha)
+    //{
+    //    color.rgb *= fade;
+    //}
+    
+    // applies to blend_mode that DON'T fade the alpha
+    if (decal_specular_arg == k_decal_specular_modulate && (blend_type_arg == k_blend_mode_multiply || blend_type_arg == k_blend_mode_additive))
+        color.a *= fade;
+    
     // apply tint
     if (decal_tinting_arg != k_decal_tinting_fully_modulated)
         decal_tinting(color);
     
-    decal_apply_fade(color);
+    //decal_apply_fade(color);
     
     return color;
 }
@@ -101,6 +82,7 @@ PS_OUTPUT_DECAL decal_entry_default(VS_OUTPUT_DECAL input)
         }
         else
         {
+            color.rgb *= g_alt_exposure.y;
             output.color_ldr = export_low_frequency(color);
             output.color_hdr = export_high_frequency(color);
         }

@@ -240,6 +240,7 @@ namespace HaloShaderGenerator.Halogram
                 case ShaderStage.Dynamic_Light:
                 case ShaderStage.Dynamic_Light_Cinematic:
                 case ShaderStage.Static_Sh:
+                case ShaderStage.Shadow_Generate:
                     return true;
             }
 
