@@ -254,12 +254,18 @@ namespace HaloShaderGenerator.Halogram
 
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
-            return false;
+            return entryPoint == ShaderStage.Shadow_Generate;
         }
 
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
-            return false;
+            switch (entryPoint)
+            {
+                case ShaderStage.Shadow_Generate:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public bool IsVertexFormatSupported(VertexType vertexType)
