@@ -24,18 +24,18 @@ float3 decompress_vertex_position(float3 position)
 
 void calculate_z_squish(inout float4 screen_position)
 {
-	screen_position.z = v_squish_params.w * ((v_squish_params.x * screen_position.w - v_squish_params.y) * v_squish_params.z - screen_position.z) + screen_position.z;
+	//screen_position.z = v_squish_params.w * ((v_squish_params.x * screen_position.w - v_squish_params.y) * v_squish_params.z - screen_position.z) + screen_position.z;
 }
 
 void calculate_z_squish_2(inout float4 screen_position)
 {
-	calculate_z_squish(screen_position);
-	float offset;
-	if (v_mesh_squished)
-		offset = 0.000005;
-	else
-		offset = 0.00002;
-	screen_position.z = screen_position.z - offset;
+	//calculate_z_squish(screen_position);
+	//float offset;
+	//if (v_mesh_squished)
+	//	offset = 0.000005;
+	//else
+	//	offset = 0.00002;
+	//screen_position.z = screen_position.z - offset;
 }
 
 float4 calculate_screenspace_position(float4 vertex_position)

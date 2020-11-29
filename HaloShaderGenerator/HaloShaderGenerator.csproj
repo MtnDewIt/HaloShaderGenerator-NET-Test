@@ -521,6 +521,9 @@
     <EmbeddedResource Include="hlsl\glvs_custom.hlsl" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="hlsl\water\entry_static_per_pixel.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="hlsl\screen\entry_default.hlsli" />
   </ItemGroup>
   <ItemGroup>
@@ -528,6 +531,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\glvs_halogram.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\foliage\entry_albedo.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\glvs_decal.hlsl" />
