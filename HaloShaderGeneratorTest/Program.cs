@@ -15,10 +15,10 @@ namespace HaloShaderGenerator
 
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
-        static readonly string TestShaderType = "screen";
+        static readonly string TestShaderType = "terrain";
         static readonly string TestStageType = "pixel"; //shared_vertex, shader_pixel, vertex or pixel
 
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { ShaderStage.Default };
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { ShaderStage.Static_Per_Pixel, ShaderStage.Static_Per_Vertex, ShaderStage.Static_Sh };
 
         #region Shader
         static readonly List<VertexType> VertexOverrides = new List<VertexType> { };
@@ -62,7 +62,7 @@ namespace HaloShaderGenerator
         #endregion
 
         #region terrain
-        static readonly List<int> TerrainBlendingOverride = new List<int> { 0 };
+        static readonly List<int> TerrainBlendingOverride = new List<int> { };
         static readonly List<int> TerrainEnvMapOverride = new List<int> { };
         static readonly List<int> TerrainMaterial0Override = new List<int> { };
         static readonly List<int> TerrainMaterial1Override = new List<int> { };
@@ -173,7 +173,7 @@ namespace HaloShaderGenerator
 
         #region decal
 
-        static readonly List<int> DecalAlbedoOverrides = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+        static readonly List<int> DecalAlbedoOverrides = new List<int> { };
         static readonly List<int> DecalBlendModeOverrides = new List<int> { };
         static readonly List<int> DecalRenderPassOverrides = new List<int> { };
         static readonly List<int> DecalSpecularOverrides = new List<int> { };
@@ -264,6 +264,31 @@ namespace HaloShaderGenerator
             if (UnitTest)
             {
                 shaderTests.TestAllSharedPixelShaders(null);
+            }
+        }
+
+        static void RunHalogramSharedVertexShaderUnitTest()
+        {
+            HalogramUnitTest shaderTests = new HalogramUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                shaderTests.TestAllSharedVertexShaders(VertexOverrides, StageOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : HalogramUnitTest.GetAllShaderStages();
+                var vertices = (VertexOverrides.Count > 0) ? VertexOverrides : HalogramUnitTest.GetAllVertexFormats();
+                foreach (var vertex in vertices)
+                {
+                    foreach (var stage in stages)
+                    {
+                        TestSharedVertexShader(vertex, stage);
+                    }
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllSharedVertexShaders(null, null);
             }
         }
 
@@ -599,14 +624,11 @@ namespace HaloShaderGenerator
                 case "halogram":
                     switch (TestStageType)
                     {
-                        //case "shared_vertex":
-                        //    RunTerrainSharedVertexShaderUnitTest();
-                        //    break;
+                        case "shared_vertex":
+                            RunHalogramSharedVertexShaderUnitTest();
+                            break;
                         case "pixel":
                             RunHalogramUnitTest(); break;
-                        //case "shared_pixel":
-                        //    RunTerrainSharedPixelShaderUnitTest();
-                        //    break;
                     }
                     break;
             }

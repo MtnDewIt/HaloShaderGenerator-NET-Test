@@ -1,20 +1,15 @@
-﻿#ifndef _SHADER_TEMPLATE_PER_PIXEL_LIGHTING_HLSLI
-#define _SHADER_TEMPLATE_PER_PIXEL_LIGHTING_HLSLI
+﻿#ifndef _TERRAIN_TEMPLATE_PER_PIXEL_LIGHTING_HLSLI
+#define _TERRAIN_TEMPLATE_PER_PIXEL_LIGHTING_HLSLI
 
-#include "..\methods\albedo.hlsli"
-#include "..\methods\parallax.hlsli"
-#include "..\methods\bump_mapping.hlsli"
-#include "..\methods\specular_mask.hlsli"
 #include "..\helpers\lightmaps.hlsli"
-#include "..\methods\self_illumination.hlsli"
-#include "..\methods\material_model.hlsli"
-#include "..\methods\blend_mode.hlsli"
-#include "..\methods\misc.hlsli"
+
+#include "..\helpers\terrain_helper.hlsli"
+#include "..\terrain_lighting\terrain_lighting.hlsli"
+
 #include "..\registers\global_parameters.hlsli"
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
-#include "..\methods\alpha_test.hlsli"
 
 PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 {
@@ -27,31 +22,21 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 		common_data.fragcoord = input.position.xy;
 		common_data.tangent = input.tangent;
 		common_data.binormal = input.binormal;
-		common_data.normal = input.normal;
-		common_data.texcoord = calc_parallax_ps(input.texcoord.xy, common_data.n_view_dir, input.tangent, input.binormal, input.normal);
-		common_data.alpha = calc_alpha_test_ps(common_data.texcoord);
-
-		if (actually_calc_albedo)
-		{
-			common_data.surface_normal = calc_bumpmap_ps(common_data.tangent, common_data.binormal, common_data.normal.xyz, common_data.texcoord);
-			common_data.albedo = calc_albedo_ps(common_data.texcoord, common_data.fragcoord, common_data.surface_normal, common_data.view_dir);
-		}
-		else
-		{
-			float2 position = input.position.xy;
-			position += 0.5;
-			float2 inv_texture_size = (1.0 / texture_size);
-			float2 texcoord = position * inv_texture_size;
-			float4 normal_texture_sample = tex2D(normal_texture, texcoord);
-			common_data.surface_normal = normal_import(normal_texture_sample.xyz);
-			float4 albedo_texture_sample = tex2D(albedo_texture, texcoord);
-			common_data.albedo = albedo_texture_sample;
-		}
+        common_data.normal = input.normal;
+        common_data.texcoord = input.texcoord.xy;
+        common_data.alpha = 1.0f;
 		
-		common_data.surface_normal = normalize(common_data.surface_normal);
-				
-		common_data.specular_mask = 1.0;
-		calc_specular_mask_ps(common_data.albedo, common_data.texcoord, common_data.specular_mask);
+        float2 position = input.position.xy + 0.5;
+        float2 inv_texture_size = (1.0 / texture_size);
+        float2 texcoord = position * inv_texture_size;
+        float4 normal_texture_sample = tex2D(normal_texture, texcoord);
+        common_data.surface_normal = normal_import(normal_texture_sample.xyz);
+        float4 albedo_texture_sample = tex2D(albedo_texture, texcoord);
+        common_data.albedo = albedo_texture_sample;
+		
+        //common_data.surface_normal = normalize(common_data.surface_normal);
+		
+        common_data.specular_mask = 1.0;
 		
 		float v_dot_n = dot(common_data.n_view_dir, common_data.surface_normal);
 		common_data.half_dir = v_dot_n * common_data.surface_normal - common_data.n_view_dir;
@@ -59,59 +44,36 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 		
 		common_data.diffuse_reflectance = lightmap_diffuse_reflectance(common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, common_data.dominant_light_direction, common_data.dominant_light_intensity, common_data.sh_0_no_dominant_light, common_data.sh_312_no_dominant_light);
 
-		common_data.world_position = Camera_Position_PS - common_data.view_dir;
+        common_data.world_position = Camera_Position_PS - common_data.view_dir;
 
-		common_data.precomputed_radiance_transfer = 1.0;
-		common_data.per_vertex_color = 0.0f;
-		common_data.no_dynamic_lights = no_dynamic_lights;
+        common_data.precomputed_radiance_transfer = 1.0;
+        common_data.per_vertex_color = 0.0f;
+        common_data.no_dynamic_lights = false;
 		
-		if (!calc_atmosphere_no_material && !calc_material)
-		{
-			common_data.sky_radiance = 0.0;
-			common_data.extinction_factor = 1.0;
-		}
-		else
-		{
-			common_data.sky_radiance = input.sky_radiance;
-			common_data.extinction_factor = input.extinction_factor;
-		}
-		
-	}
+        common_data.sky_radiance = input.sky_radiance;
+        common_data.extinction_factor = input.extinction_factor;
+    }
+
+    float4 color;
+    float4 unknown_color;
 	
-	float4 color;
-	float4 unknown_color = 0;
-	if (calc_material)
-	{
-		color.rgb = calc_lighting_ps(common_data, unknown_color);
-	}
-	else
-	{
-		color.rgb = common_data.albedo.rgb;
-		calc_lighting_no_material_ps(common_data, color.rgb, unknown_color);
-	}
+    color.rgb = calc_lighting_terrain(common_data, unknown_color);
+    color.a = 1.0f;
 
-	color.rgb = color.rgb * common_data.extinction_factor;
-		
-	color.a = blend_type_calculate_alpha_blending(common_data.albedo, common_data.alpha);
+    color.rgb *= common_data.extinction_factor;
+    color.rgb += common_data.sky_radiance.rgb;
 	
-	if (blend_type_arg != k_blend_mode_additive)
-	{
-		color.rgb += common_data.sky_radiance.rgb;
-	}
+    color.rgb = color.rgb * g_exposure.x;
+    color.rgb = max(color.rgb, 0);
+    PS_OUTPUT_DEFAULT output;
+    output.low_frequency = export_low_frequency(color);
+    output.high_frequency = export_high_frequency(color);
 
-	if (blend_type_arg == k_blend_mode_double_multiply)
-		color.rgb *= 2;
-
-	color.rgb = expose_color(color.rgb);
+    if (calc_env_output)
+        output.unknown = unknown_color;
+    else
+        output.unknown = 0.0f;
 	
-	if (blend_type_arg == k_blend_mode_pre_multiplied_alpha)
-		color.rgb *= color.a;
-
-	PS_OUTPUT_DEFAULT output = export_color(color);
-	if (calc_env_output)
-	{
-		output.unknown = unknown_color;
-	}
-	return output;
+    return output;
 }
 #endif

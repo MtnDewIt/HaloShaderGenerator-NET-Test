@@ -70,4 +70,41 @@ float shadows_percentage_closer_filtering_custom_4x4(float2 shadowmap_texcoord, 
 	return shadow_coefficient;
 }
 
+float terrain_shadows_percentage_closer_filtering_custom_4x4(float2 shadowmap_texcoord, float shadowmap_size, float depth_scale, float depth_offset)
+{
+    float shadow_coefficient = 0;
+    float scale = 1.0 / depth_scale;
+    float shadowmap_size_inv_1 = 1.0 / (2.0 * shadowmap_size);
+	
+    float2 texcoord_pix = shadowmap_texcoord.x * shadowmap_size + 0.5;
+    float2 right_bound = frac(texcoord_pix);
+    right_bound = texcoord_pix - right_bound;
+    right_bound = texcoord_pix - right_bound;
+    float2 left_bound = 1.0 - right_bound;
+	
+    shadow_coefficient += left_bound.x * left_bound.y * sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(-3, -3), depth_offset, scale);
+    shadow_coefficient += left_bound.y * sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(-1, -3), depth_offset, scale);
+    shadow_coefficient += left_bound.y * sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(1, -3), depth_offset, scale);
+    shadow_coefficient += right_bound.x * left_bound.y * sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(3, -3), depth_offset, scale);
+	
+    shadow_coefficient += left_bound.x * sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(-3, -1), depth_offset, scale);
+    shadow_coefficient += sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(-1, -1), depth_offset, scale);
+    shadow_coefficient += sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(1, -1), depth_offset, scale);
+    shadow_coefficient += right_bound.x * sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(3, -1), depth_offset, scale);
+	
+    shadow_coefficient += left_bound.x * sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(-3, 1), depth_offset, scale);
+    shadow_coefficient += sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(-1, 1), depth_offset, scale);
+    shadow_coefficient += sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(1, 1), depth_offset, scale);
+    shadow_coefficient += right_bound.x * sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(3, 1), depth_offset, scale);
+	
+    shadow_coefficient += left_bound.x * right_bound.y * sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(-3, 3), depth_offset, scale);
+    shadow_coefficient += right_bound.y * sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(-1, 3), depth_offset, scale);
+    shadow_coefficient += right_bound.y * sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(1, 3), depth_offset, scale);
+    shadow_coefficient += right_bound.x * right_bound.y * sample_shadowmap(shadowmap_texcoord, shadowmap_size_inv_1 * float2(3, 3), depth_offset, scale);
+
+    shadow_coefficient /= 9.0;
+	
+    return shadow_coefficient;
+}
+
 #endif

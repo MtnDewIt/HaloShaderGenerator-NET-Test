@@ -9,7 +9,7 @@ uniform sampler blend_map;
 uniform xform2d blend_map_xform;
 
 uniform float global_albedo_tint;
-uniform float dynamic_material;
+uniform float4 dynamic_material;
 uniform float transition_sharpness;
 uniform float transition_threshold;
 
@@ -72,7 +72,17 @@ float4 morph(float2 texcoord)
 
 float4 dynamic_morph(float2 texcoord)
 {
-	return 0;
+    float2 blend_map_texcoord = apply_xform2d(texcoord, blend_map_xform);
+    float4 blend = tex2D(blend_map, blend_map_texcoord);
+	
+    float4 result;
+	
+    result.xyz = -blend.xyz + dynamic_material.xyz;
+    result.w = saturate(transition_sharpness * (-transition_threshold - -blend.w));
+    result.xyz = (result.xyz * result.w + blend.xyz);
+    result.w *= dynamic_material.w;
+	
+    return result;
 }
 
 

@@ -255,7 +255,7 @@ namespace HaloShaderGenerator.Terrain
             result.AddFloatParameter("global_albedo_tint");
             switch (blending)
             {
-                case Blending.Dynamic_Morph:;
+                case Blending.Dynamic_Morph:
                     result.AddFloatParameter("dynamic_material");
                     result.AddFloatParameter("transition_sharpness");
                     result.AddFloatParameter("transition_threshold");
@@ -269,6 +269,12 @@ namespace HaloShaderGenerator.Terrain
                 case Environment_Mapping.Per_Pixel:
                     result.AddSamplerWithoutXFormParameter("environment_map");
                     result.AddFloat3ColorParameter("env_tint_color");
+                    result.AddFloatParameter("env_roughness_scale");
+                    break;
+                case Environment_Mapping.Dynamic:
+                    result.AddFloat3ColorParameter("env_tint_color");
+                    result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
+                    result.AddSamplerParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
                     result.AddFloatParameter("env_roughness_scale");
                     break;
             }

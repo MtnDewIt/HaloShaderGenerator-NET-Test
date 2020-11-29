@@ -92,25 +92,20 @@ bool is_cinematic)
 
 	float threshold = dot(light_intensity, light_intensity);
 	threshold = 0.0000001 - threshold;
-	color.rgb = threshold < 0 ? color.rgb : 0;
-
 	
 	float shadow_coefficient;
 	if (is_cinematic)
-		shadow_coefficient = shadows_percentage_closer_filtering_custom_4x4(shadowmap_texcoord_depth_adjusted, shadowmap_texture_size, depth_scale, depth_offset);
+		shadow_coefficient = terrain_shadows_percentage_closer_filtering_custom_4x4(shadowmap_texcoord_depth_adjusted, shadowmap_texture_size, depth_scale, depth_offset);
 	else
 		shadow_coefficient = shadows_percentage_closer_filtering_3x3(shadowmap_texcoord_depth_adjusted, shadowmap_texture_size, depth_scale, depth_offset);
 	
-	
-	float4 result;
-
-	result.a = 1.0f;
 	color *= shadow_coefficient;
 	color *= extinction_factor;
 	
+    float4 result;
+    result.a = 1.0f;
 	result.rgb = expose_color(color.rgb);
-	
-	
+    result.rgb = threshold < 0 ? result.rgb : 0;
 	
 	return export_color(result);
 }

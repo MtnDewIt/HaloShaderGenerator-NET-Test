@@ -107,8 +107,13 @@ PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
         albedo += albedo_3 * blend.w;
 
     float albedo_tint = DETAIL_MULTIPLIER * global_albedo_tint;
-    albedo.rgb = albedo_tint * albedo.rgb;
-	albedo.rgb = apply_debug_tint(albedo.rgb);
+    
+    // compile order was wrong...
+    //albedo.rgb = apply_debug_tint(albedo.rgb);
+    float3 tint = debug_tint.a * (debug_tint.rgb - albedo.rgb * albedo_tint);
+    albedo.rgb *= albedo_tint;
+    albedo.rgb += tint;
+    
     albedo.rgb = rgb_to_srgb(albedo.rgb);
     
     PS_OUTPUT_ALBEDO output;

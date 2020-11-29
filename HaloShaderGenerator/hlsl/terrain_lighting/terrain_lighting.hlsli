@@ -277,8 +277,8 @@ void calc_dynamic_lighting_terrain(SHADER_DYNAMIC_LIGHT_COMMON common_data, out 
 	
 	
 	float specular_exponent = get_specular_power(blend);
-	float specular_power = pow(l_dot_r, specular_exponent);
-	specular_power *= specular_power * blend_normalized + 1.0f;
+    float specular_power = pow(l_dot_r, specular_exponent * blend_normalized);
+    specular_power *= specular_exponent * blend_normalized + 1.0f;
 	specular_power *= INV_2PI;
 	
 	float3 specular;
@@ -313,6 +313,26 @@ void calc_dynamic_lighting_terrain(SHADER_DYNAMIC_LIGHT_COMMON common_data, out 
 
 float3 calc_lighting_terrain(SHADER_COMMON common_data, out float4 unknown_output)
 {
+    float v_dot_n = dot(common_data.surface_normal, common_data.view_dir);
+	
+    float l_dot_n = dot(common_data.light_direction, common_data.surface_normal);
+    float l_dot_r = dot(common_data.light_direction, common_data.reflect_dir);
+    l_dot_r = max(l_dot_r, 0);
+	
+	
+    float4 blend = blend_type(common_data.texcoord);
+    blend = normalize_additive_blend(blend);
+	
+    float blend_sum = blend.x + blend.y + blend.z + blend.w;
+    float blend_normalized = blend_sum < 0 ? 1000 : 1 / (blend_sum + 0.001);
+	
+	
+    float specular_exponent = get_specular_power(blend);
+    float specular_power = pow(l_dot_r, specular_exponent * blend_normalized);
+    specular_power *= specular_exponent * blend_normalized + 1.0f;
+    specular_power *= INV_2PI;
+	
+	
 	float3 diffuse;
 	
 	float3 diffuse_accumulation = 0;

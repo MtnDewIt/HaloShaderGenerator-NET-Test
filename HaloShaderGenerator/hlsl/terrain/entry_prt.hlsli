@@ -38,7 +38,7 @@ float4 prt)
 		float4 albedo_texture_sample = tex2D(albedo_texture, texcoord);
 		common_data.albedo = albedo_texture_sample;
 		
-		common_data.surface_normal = normalize(common_data.surface_normal);
+		//common_data.surface_normal = normalize(common_data.surface_normal);
 		
 		common_data.specular_mask = 1.0;
 		

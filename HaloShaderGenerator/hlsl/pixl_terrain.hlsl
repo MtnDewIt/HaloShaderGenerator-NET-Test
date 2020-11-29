@@ -11,6 +11,22 @@ PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
 }
 #endif
 
+#if shaderstage == k_shaderstage_static_per_pixel
+#include "terrain/entry_per_pixel_lighting.hlsli"
+PS_OUTPUT_DEFAULT entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input) : COLOR
+{	
+	return shader_entry_static_per_pixel(input);
+}
+#endif
+
+#if shaderstage == k_shaderstage_static_per_vertex
+#include "terrain/entry_per_vertex_lighting.hlsli"
+PS_OUTPUT_DEFAULT entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input) : COLOR
+{	
+	return shader_entry_static_per_vertex(input);
+}
+#endif
+
 #if shaderstage == k_shaderstage_lightmap_debug_mode
 #include "terrain/entry_lightmap_debug.hlsli"
 PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input) : COLOR
