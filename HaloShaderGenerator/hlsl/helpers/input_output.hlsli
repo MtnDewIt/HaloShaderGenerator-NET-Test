@@ -236,10 +236,17 @@ struct VS_OUTPUT_DECAL
 {
     float4 position : SV_Position;
     float4 texcoord : TEXCOORD;
-    float4 texcoord1 : TEXCOORD1;
-    float4 tangent : TEXCOORD2;
-    float4 binormal : TEXCOORD3;
-    float4 normal : TEXCOORD4;
+    float depth : TEXCOORD1;
+    float3 tangent : TEXCOORD2;
+    float3 binormal : TEXCOORD3;
+    float3 normal : TEXCOORD4;
+};
+
+struct VS_OUTPUT_DECAL_FLAT
+{
+    float4 position : SV_Position;
+    float4 texcoord : TEXCOORD;
+    float depth : TEXCOORD1;
 };
 
 struct PS_OUTPUT_DECAL_SIMPLE

@@ -96,7 +96,7 @@ PS_OUTPUT_DECAL decal_entry_default(VS_OUTPUT_DECAL input)
         output.color_ldr = color;
         output.color_hdr.rgb = bump_mapping;
         output.color_hdr.a = color.a;
-        output.unknown = input.texcoord1.x;
+        output.unknown = input.depth;
     }
     else
     {

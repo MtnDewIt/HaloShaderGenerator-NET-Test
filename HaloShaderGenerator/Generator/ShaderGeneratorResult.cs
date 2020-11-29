@@ -15,7 +15,7 @@ namespace HaloShaderGenerator
         {
             public ShaderRegister(string name, RegisterType type, int register, int size)
             {
-                Name = name.ToLower();
+                Name = name;
                 registerType = type;
                 Size = size;
                 Register = register;

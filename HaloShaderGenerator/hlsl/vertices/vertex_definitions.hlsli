@@ -37,6 +37,26 @@ struct RIGID_VERTEX
 	float4 binormal : BINORMAL;
 };
 
+struct FLATWORLD_VERTEX
+{
+    float4 position : POSITION;
+    float4 texcoord : TEXCOORD;
+};
+
+struct FLATSKINNED_VERTEX
+{
+    float4 position : POSITION;
+    float4 texcoord : TEXCOORD;
+    float4 node_indices : BLENDINDICES;
+    float4 node_weights : BLENDWEIGHT;
+};
+
+struct FLATRIGID_VERTEX
+{
+    float4 position : POSITION;
+    float4 texcoord : TEXCOORD;
+};
+
 // Per vertex lighting data, sh coefficients
 struct STATIC_PER_VERTEX_DATA
 {
