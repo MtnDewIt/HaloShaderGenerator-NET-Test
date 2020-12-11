@@ -7,8 +7,8 @@
 
 uniform bool pixel_kill_enabled : register(b2);
 uniform float4 sprite : register(c228);
-uniform float u_tiles;
-uniform float v_tiles;
+uniform float u_tiles : register(c229);
+uniform float v_tiles : register(c230);
 
 #if vertextype == k_vertextype_world || vertextype == k_vertextype_rigid || vertextype == k_vertextype_skinned
 VS_OUTPUT_DECAL 
