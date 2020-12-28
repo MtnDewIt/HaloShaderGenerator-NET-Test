@@ -209,36 +209,6 @@ VS_OUTPUT_DYNAMIC_LIGHT entry_dynamic_light_cinematic(input_vertex_format input)
 	return entry_dynamic_light(input);
 }
 
-VS_OUTPUT_ACTIVE_CAMO entry_active_camo(input_vertex_format input)
-{
-	VS_OUTPUT_ACTIVE_CAMO output;
-	float4 world_position;
-	float3 normal, tangent, binormal, camera_dir;
-	
-	float3 unknown_pos = input.position.xyz - 0.5;
-	unknown_pos.xy *= Position_Compression_Scale.xy;
-	
-	output.camo_param.x = dot(input.normal.xyz, Camera_Left);
-	output.camo_param.y = dot(input.normal.xyz, Camera_Up);
-	output.camo_param.z = atan2(unknown_pos.x, unknown_pos.y);
-	output.camo_param.w = acos(unknown_pos.z) * (Position_Compression_Scale.z / length(Position_Compression_Scale.xy));
-
-	calc_vertex_transform(input, world_position, output.position, normal, tangent, binormal, output.texcoord.xy);
-	
-	if (vertextype == k_vertextype_skinned)
-		calculate_z_squish_2(output.position);
-	else
-		calculate_z_squish(output.position);
-	
-	camera_dir = world_position.xyz - Camera_Position;
-	output.position.z -= 0.00002;
-	// there may be a sign issue in camera_dir, doesn't compile exactly the same
-	output.texcoord.w = length(camera_dir);
-	output.texcoord.z = 0;
-	
-	return output;
-}
-
 VS_OUTPUT_LIGHTMAP_DEBUG_MODE entry_lightmap_debug_mode(input_vertex_format input, float2 lightmap_texcoord : TEXCOORD1)
 {
 	VS_OUTPUT_LIGHTMAP_DEBUG_MODE output;

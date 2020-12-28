@@ -227,10 +227,11 @@ VS_OUTPUT_ACTIVE_CAMO entry_active_camo(input_vertex_format input)
 	if (vertextype == k_vertextype_skinned)
 		calculate_z_squish_2(output.position);
 	else
-		calculate_z_squish(output.position);
+        calculate_z_squish(output.position);
+	
+	//output.position.z -= 0.00002;
 	
 	camera_dir = world_position.xyz - Camera_Position;
-	output.position.z -= 0.00002;
 	// there may be a sign issue in camera_dir, doesn't compile exactly the same
 	output.texcoord.w = length(camera_dir);
 	output.texcoord.z = 0;
