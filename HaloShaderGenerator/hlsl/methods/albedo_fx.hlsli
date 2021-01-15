@@ -28,7 +28,7 @@ uniform float alpha_modulation_factor;
 uniform float center_offset;
 uniform float falloff;
 
-float4 calc_albedo_diffuse_only_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_diffuse_only_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     if (frame_blend_arg == k_frame_blend_on)
     {
@@ -44,7 +44,7 @@ float4 calc_albedo_diffuse_only_ps(float4 texcoord, float2 billboard_tex, float 
     return tex2D(base_map, texcoord.xy);
 }
 
-float4 calc_albedo_diffuse_plus_billboard_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_diffuse_plus_billboard_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     if (frame_blend_arg == k_frame_blend_on)
     {
@@ -65,7 +65,7 @@ float4 calc_albedo_diffuse_plus_billboard_alpha_ps(float4 texcoord, float2 billb
     return float4(albedo, alpha);
 }
 
-float4 calc_albedo_palettized_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_palettized_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     if (frame_blend_arg == k_frame_blend_on)
     {
@@ -88,7 +88,7 @@ float4 calc_albedo_palettized_ps(float4 texcoord, float2 billboard_tex, float v_
     return tex2D(palette, float2(u_coord, v_coord));
 }
 
-float4 calc_albedo_palettized_plus_billboard_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_palettized_plus_billboard_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     if (frame_blend_arg == k_frame_blend_on)
     {
@@ -113,7 +113,7 @@ float4 calc_albedo_palettized_plus_billboard_alpha_ps(float4 texcoord, float2 bi
     }
 }
 
-float4 calc_albedo_palettized_plus_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_palettized_plus_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     if (frame_blend_arg == k_frame_blend_on)
     {
@@ -145,12 +145,12 @@ float4 calc_albedo_palettized_plus_alpha_ps(float4 texcoord, float2 billboard_te
     return float4(palette_sample, alpha);
 }
 
-float4 calc_albedo_palettized_plus_sprite_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_palettized_plus_sprite_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
-    return calc_albedo_palettized_plus_alpha_ps(texcoord, billboard_tex, v_coord, frame_blend, color_alpha);
+    return calc_albedo_palettized_plus_alpha_ps(texcoord, billboard_tex, v_coord, frame_blend, color_alpha, depth_fade_val);
 }
 
-float4 calc_albedo_diffuse_plus_sprite_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_diffuse_plus_sprite_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     if (frame_blend_arg == k_frame_blend_on)
     {
@@ -178,9 +178,9 @@ float4 calc_albedo_diffuse_plus_sprite_alpha_ps(float4 texcoord, float2 billboar
     }
 }
 
-float4 calc_albedo_diffuse_plus_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_diffuse_plus_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
-    return calc_albedo_diffuse_plus_sprite_alpha_ps(texcoord, billboard_tex, v_coord, frame_blend, color_alpha);
+    return calc_albedo_diffuse_plus_sprite_alpha_ps(texcoord, billboard_tex, v_coord, frame_blend, color_alpha, depth_fade_val);
 }
 
 // prevent register confliction with decal
@@ -188,7 +188,7 @@ float4 calc_albedo_diffuse_plus_alpha_ps(float4 texcoord, float2 billboard_tex, 
 uniform float4 tint_color;
 uniform float modulation_factor;
 
-float4 calc_albedo_diffuse_modulated_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_diffuse_modulated_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     if (frame_blend_arg == k_frame_blend_on)
     {
@@ -223,7 +223,7 @@ float4 calc_albedo_diffuse_modulated_ps(float4 texcoord, float2 billboard_tex, f
 }
 #endif
 
-float4 calc_albedo_palettized_plasma_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_palettized_plasma_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     if (shadertype == k_shadertype_beam)
     {
@@ -269,15 +269,17 @@ float4 calc_albedo_palettized_plasma_ps(float4 texcoord, float2 billboard_tex, f
     }
 }
 
-float4 calc_albedo_palettized_2d_plasma_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_palettized_2d_plasma_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
+    float depth_fade = color_alpha;
+    
     if (shadertype == k_shadertype_beam)
     {
         float4 base_map_sample = tex2D(base_map, apply_xform2d(texcoord.xy, base_map_xform));
         float4 base_map2_sample = tex2D(base_map2, apply_xform2d(texcoord.xy, base_map2_xform));
         float alpha = tex2D(alpha_map, texcoord.xy).a;
         
-        float2 palette_tex = float2(abs(base_map_sample.r - base_map2_sample.r), v_coord);
+        float2 palette_tex = float2(abs(base_map_sample.r - base_map2_sample.r), depth_fade_val);
         return float4(tex2D(palette, palette_tex).rgb, alpha);
     }
     else
@@ -292,9 +294,9 @@ float4 calc_albedo_palettized_2d_plasma_ps(float4 texcoord, float2 billboard_tex
         
             float2 palette_u = abs(float2(base_map_sample.r - base_map2_sample.r, base_map_sample2.r - base_map2_sample2.r));
         
-            float4 palette_sample_1 = tex2D(palette, float2(palette_u.x, 1.0f));
+            float4 palette_sample_1 = tex2D(palette, float2(palette_u.x, depth_fade_val));
             palette_sample_1.a = alpha;
-            float4 palette_sample_2 = tex2D(palette, float2(palette_u.y, 1.0f));
+            float4 palette_sample_2 = tex2D(palette, float2(palette_u.y, depth_fade_val));
             palette_sample_2.a = alpha;
         
             return lerp(palette_sample_1, palette_sample_2, frame_blend);
@@ -305,13 +307,13 @@ float4 calc_albedo_palettized_2d_plasma_ps(float4 texcoord, float2 billboard_tex
             float4 base_map2_sample = tex2D(base_map2, apply_xform2d(texcoord.xy, base_map2_xform));
             float alpha = tex2D(alpha_map, billboard_tex).a;
         
-            float2 palette_tex = float2(abs(base_map_sample.r - base_map2_sample.r), 1.0f);
+            float2 palette_tex = float2(abs(base_map_sample.r - base_map2_sample.r), depth_fade_val);
             return float4(tex2D(palette, palette_tex).rgb, alpha);
         }
     }
 }
 
-float4 calc_albedo_circular_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_circular_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     // TODO: figure out what this is, using texcoord for now
     float2 unknown_var = texcoord.xy;
@@ -324,14 +326,14 @@ float4 calc_albedo_circular_ps(float4 texcoord, float2 billboard_tex, float v_co
     return float4(result, result, result, 1.0f);
 }
 
-float4 calc_albedo_diffuse_plus_alpha_mask_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_diffuse_plus_alpha_mask_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     float3 albedo = tex2D(base_map, texcoord.xy).rgb;
     float alpha_mask = tex2D(alpha_map, billboard_tex).a;
     return float4(albedo, alpha_mask);
 }
 
-float4 calc_albedo_palettized_plus_alpha_mask_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_palettized_plus_alpha_mask_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     float u_coord = tex2D(base_map, texcoord.xy).r;
     float3 albedo = tex2D(palette, float2(u_coord, v_coord)).rgb;
@@ -353,12 +355,12 @@ uniform float3 tertiary_change_color;
 uniform float antialias_tweak;
 uniform float vector_sharpness;
 
-float4 calc_albedo_emblem_change_color_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_emblem_change_color_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     return tex2D(tex0_sampler, texcoord.xy);
 }
 
-float4 calc_albedo_change_color_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_change_color_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     float4 albedo = tex2D(change_color_map, texcoord.xy);
     
@@ -371,7 +373,7 @@ float4 calc_albedo_change_color_ps(float4 texcoord, float2 billboard_tex, float 
     return float4(final_color, albedo.a);
 }
 
-float4 calc_albedo_vector_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha)
+float4 calc_albedo_vector_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     float3 albedo = tex2D(base_map, apply_xform2d(texcoord.xy, base_map_xform)).rgb;
 

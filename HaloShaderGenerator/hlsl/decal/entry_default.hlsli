@@ -24,7 +24,7 @@
 
 float4 decal_entry_default_calculate_color(VS_OUTPUT_DECAL input)
 {
-    float4 color = calc_albedo_ps(float4(input.texcoord.zw, 0, 0), input.texcoord.xy, 0.0f, 0.0f, 1.0f);
+    float4 color = calc_albedo_ps(float4(input.texcoord.zw, 0, 0), input.texcoord.xy, 0.0f, 0.0f, 1.0f, 1.0f);
     
     // apply fully modulated tint
     if (decal_tinting_arg == k_decal_tinting_fully_modulated)

@@ -7,7 +7,7 @@
 
 PS_OUTPUT_DEFAULT light_volume_entry_default(VS_OUTPUT_FX input)
 {
-    float4 color = calc_albedo_ps(float4(input.texcoord.xy, 0, 0), float2(0, 0), input.texcoord.z, 0.0f, 1.0f);
+    float4 color = calc_albedo_ps(float4(input.texcoord.xy, 0, 0), float2(0, 0), input.texcoord.z, 0.0f, 1.0f, 1.0f);
     
     if (blend_type_arg == k_blend_mode_multiply)
     {

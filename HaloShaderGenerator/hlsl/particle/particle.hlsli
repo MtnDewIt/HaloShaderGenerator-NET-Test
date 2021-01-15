@@ -25,12 +25,19 @@ float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
     float3 add_color = input.parameters.rgb;
     float input_depth = input.parameters.w;
     
-    float4 color = calc_albedo_ps(input.texcoord, billboard_texcoord, palette_v_coord, frame_blend_interpolator, input.color.a);
+    float depth_fade = 1.0f;
+    if (albedo_arg == k_albedo_palettized_2d_plasma && depth_fade_arg == k_depth_fade_on)
+    {
+        depth_fade = depth_fade_on(sample_depth_buffer(input.position.xy).r, input_depth);
+    }
+    
+    float4 color = calc_albedo_ps(input.texcoord, billboard_texcoord, palette_v_coord, frame_blend_interpolator, input.color.a, depth_fade);
     
     if (depth_fade_arg == k_depth_fade_on)
     {
-        float4 depth_sample = sample_depth_buffer(input.position.xy);
-        color.a *= depth_fade_on(depth_sample.x, input_depth);
+        if (albedo_arg != k_albedo_palettized_2d_plasma) // This is here so we can have 1-1 compile :)
+            depth_fade = depth_fade_on(sample_depth_buffer(input.position.xy).r, input_depth);
+        color.a *= depth_fade;
     }
     
     if (black_point_arg == k_black_point_on)
@@ -81,18 +88,18 @@ float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
     
     float4 depth_sample = sample_depth_buffer_distortion(input.position.xy);
     
-    float2 distortion_diffuse = calc_albedo_ps(input.texcoord, billboard_texcoord, palette_v_coord, frame_blend_interpolator, input.color.a).xy;
-    
-    if (specialized_rendering_arg == k_specialized_rendering_distortion || !APPLY_HLSL_FIXES && specialized_rendering_arg == k_specialized_rendering_distortion_expensive)
-        distortion_diffuse = distortion_diffuse * 2.00787401 - 1.00787401; // range conversion
-    
-    distortion_diffuse.y = -distortion_diffuse.y;
-    
     float depth_fade = 1.0f;
     if (depth_fade_arg == k_depth_fade_on)
     {
         depth_fade = depth_fade_on(depth_sample.x, input_depth);
     }
+    
+    float2 distortion_diffuse = calc_albedo_ps(input.texcoord, billboard_texcoord, palette_v_coord, frame_blend_interpolator, input.color.a, depth_fade).xy;
+    
+    if (specialized_rendering_arg == k_specialized_rendering_distortion || !APPLY_HLSL_FIXES && specialized_rendering_arg == k_specialized_rendering_distortion_expensive)
+        distortion_diffuse = distortion_diffuse * 2.00787401 - 1.00787401; // range conversion
+    
+    distortion_diffuse.y = -distortion_diffuse.y;
     
     float2 screen_depth = (distortion_diffuse * screen_constants.z * input.color.a);
     screen_depth *= depth_fade;
