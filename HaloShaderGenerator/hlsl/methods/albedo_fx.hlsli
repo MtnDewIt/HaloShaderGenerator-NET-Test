@@ -315,14 +315,10 @@ float4 calc_albedo_palettized_2d_plasma_ps(float4 texcoord, float2 billboard_tex
 
 float4 calc_albedo_circular_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
-    // TODO: figure out what this is, using texcoord for now
-    float2 unknown_var = texcoord.xy;
-    
-    unknown_var = unknown_var * 2.0f - 1.0f;
-    float result = dot(unknown_var, unknown_var);
-    result = saturate(result * center_offset + center_offset);
+    float2 tex = texcoord.xy;
+    tex = tex * 2.0f - 1.0f;
+    float result = saturate(center_offset - dot(tex, tex) * center_offset);
     result = pow(result, falloff);
-    
     return float4(result, result, result, 1.0f);
 }
 

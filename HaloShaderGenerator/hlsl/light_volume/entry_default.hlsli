@@ -1,5 +1,5 @@
-﻿#ifndef _CONTRAIL_HLSLI
-#define _CONTRAIL_HLSLI
+﻿#ifndef _LIGHT_VOLUME_HLSLI
+#define _LIGHT_VOLUME_HLSLI
 
 #include "../methods/albedo_fx.hlsli"
 #include "../helpers/definition_helper.hlsli"
