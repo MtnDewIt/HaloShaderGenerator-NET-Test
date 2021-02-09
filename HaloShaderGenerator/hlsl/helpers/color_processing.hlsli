@@ -16,6 +16,39 @@ float3 srgb_to_rgb(float3 color)
 	return color <= 0.04045 ? 0.07739938 * color : color1;
 }
 
+float3 rec709_to_rgb(float3 color)
+{
+    return color < 0.081f ? color / 4.5f : pow((color + 0.099f) / 1.099f, 2.2f);
+}
+
+float3 rgb_to_rec709(float3 color)
+{
+    return color < 0.018f ? color * 4.5f : 1.099f * pow(color, 1.0f / 2.2f) - 0.099f;
+} 
+
+// Compiler doesn't like this but yeh
+// Not sure if this conversion is 100% correct
+//float3 rgb_to_xenon_hdtv(float3 color)
+//{
+//    if (color < 0.0625f)
+//        return color * 4.0f;
+//    if (color < 0.125f)
+//        return (color - 0.0625f) * 2.0f + 0.25f;
+//    if (color < 0.5f)
+//        return color - 0.125f + 0.375f;
+//    return (color - 0.5f) * 0.5f + 0.75f;
+//}
+//float3 xenon_hdtv_to_rgb(float3 color)
+//{
+//    if (color < 0.25f)
+//        return color / 4.0f;
+//    if (color < 0.375f)
+//        return (color - 0.25f) / 2.0f + 0.0625f;
+//    if (color < 0.75f)
+//        return (color - 0.375f) + 0.125f;
+//    return (color - 0.75f) * 2.0f + 0.5f;
+//}
+
 float3 expose_color(float3 input)
 {
 	if (color_export_multiply_alpha && !is_dynamic_light)

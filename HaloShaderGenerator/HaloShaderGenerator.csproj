@@ -560,7 +560,22 @@
     <EmbeddedResource Include="hlsl\explicit\pixl_blur_11_vertical.hlsl" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="hlsl\explicit\pixl_final_composite_dof.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\explicit\helpers\final_composite_helper.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="hlsl\explicit\pixl_debug2d.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\explicit\pixl_final_composite.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\explicit\pixl_final_composite_zoom.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\explicit\pixl_final_composite_debug.hlsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
