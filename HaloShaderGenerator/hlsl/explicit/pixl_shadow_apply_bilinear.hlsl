@@ -1,11 +1,11 @@
 ﻿#ifndef _PIXL_SHADOW_APPLY_BILINEAR_HLSLI
 #define _PIXL_SHADOW_APPLY_BILINEAR_HLSLI
 
-#include "registers\shadow_parameters.hlsli"
-#include "registers\global_parameters.hlsli"
-#include "helpers\explicit_input_output.hlsli"
-#include "helpers\input_output.hlsli"
-#include "helpers\color_processing.hlsli"
+#include "..\registers\shadow_parameters.hlsli"
+#include "..\registers\global_parameters.hlsli"
+#include "..\helpers\explicit_input_output.hlsli"
+#include "..\helpers\input_output.hlsli"
+#include "..\helpers\color_processing.hlsli"
 
 #define SHADOW_SIZE 512
 #define INV_SHADOW_SIZE 1.0f / SHADOW_SIZE

@@ -1,9 +1,9 @@
 ﻿#ifndef _PIXL_SNIPER_SCOPE_HLSLI
 #define _PIXL_SNIPER_SCOPE_HLSLI
 
-#include "helpers\explicit_input_output.hlsli"
-#include "registers\explicit_post_processing.hlsli"
-#include "registers\global_parameters.hlsli"
+#include "..\helpers\explicit_input_output.hlsli"
+#include "..\registers\explicit_post_processing.hlsli"
+#include "..\registers\global_parameters.hlsli"
 
 #define _STENCIL_ENABLE 0
 

@@ -1,7 +1,7 @@
 ﻿#ifndef _PIXL_SHIELD_IMPACT_HLSLI
 #define _PIXL_SHIELD_IMPACT_HLSLI
 
-#include "helpers\explicit_input_output.hlsli"
+#include "..\helpers\explicit_input_output.hlsli"
 
 uniform float4 impact0_color : register(c100);
 uniform float4 plasma_offsets : register(c102);
@@ -17,8 +17,8 @@ uniform sampler2D shield_impact_noise_texture1;
 uniform sampler2D shield_impact_noise_texture2;
 uniform sampler2D shield_impact_depth_texture;
 
-#include "registers\global_parameters.hlsli"
-#include "helpers\color_processing.hlsli"
+#include "..\registers\global_parameters.hlsli"
+#include "..\helpers\color_processing.hlsli"
 
 PS_OUTPUT_DEFAULT main(VS_OUTPUT_SHIELD_IMPACT input) : COLOR
 {

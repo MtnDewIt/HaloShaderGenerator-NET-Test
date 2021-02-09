@@ -1,5 +1,5 @@
-﻿#include "registers/chud_vtsh_shader.hlsli"
-#include "helpers/chud_input_output.hlsli"
+﻿#include "../registers/chud_vtsh_shader.hlsli"
+#include "../helpers/chud_input_output.hlsli"
 
 VS_OUTPUT_CORTANA_COMPOSITE main()
 {

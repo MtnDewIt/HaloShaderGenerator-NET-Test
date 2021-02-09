@@ -1,6 +1,6 @@
-﻿#include "registers/chud_pixl_shader.hlsli"
-#include "helpers/chud_input_output.hlsli"
-#include "helpers/color_processing.hlsli"
+﻿#include "../registers/chud_pixl_shader.hlsli"
+#include "../helpers/chud_input_output.hlsli"
+#include "../helpers/color_processing.hlsli"
 
 // Compiles almost perfectly, one small issue with constants
 float4 main(VS_OUTPUT_CORTANA_COMPOSITE input) : COLOR
