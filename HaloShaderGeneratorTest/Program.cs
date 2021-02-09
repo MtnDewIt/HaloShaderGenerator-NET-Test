@@ -246,6 +246,31 @@ namespace HaloShaderGenerator
             }
         }
 
+        static void RunDecalSharedVertexShaderUnitTest()
+        {
+            DecalUnitTest shaderTests = new DecalUnitTest(ShaderReferencePath);
+
+            if (TestSpecificShader)
+            {
+                shaderTests.TestAllSharedVertexShaders(VertexOverrides, StageOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : DecalUnitTest.GetAllShaderStages();
+                var vertices = (VertexOverrides.Count > 0) ? VertexOverrides : DecalUnitTest.GetAllVertexFormats();
+                foreach (var vertex in vertices)
+                {
+                    foreach (var stage in stages)
+                    {
+                        TestSharedVertexShader(vertex, stage);
+                    }
+                }
+            }
+
+            if (UnitTest)
+            {
+                shaderTests.TestAllSharedVertexShaders(null, null);
+            }
+        }
+
         static void RunTerrainSharedPixelShaderUnitTest()
         {
             TerrainUnitTest shaderTests = new TerrainUnitTest(ShaderReferencePath);
@@ -606,7 +631,17 @@ namespace HaloShaderGenerator
                 case "contrail": RunContrailUnitTest(); break;
                 case "beam": RunBeamUnitTest(); break;
                 case "light_volume": RunLightVolumeUnitTest(); break;
-                case "decal": RunDecalUnitTest(); break;
+                case "decal": ;
+                    switch (TestStageType)
+                    {
+                        case "shared_vertex":
+                            RunDecalSharedVertexShaderUnitTest();
+                            break;
+                        case "pixel":
+                            RunDecalUnitTest(); 
+                            break;
+                    }
+                    break;
                 case "screen": RunScreenUnitTest(); break;
                 case "terrain":
                     switch (TestStageType)

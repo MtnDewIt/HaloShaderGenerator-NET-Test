@@ -386,8 +386,74 @@ namespace HaloShaderGenerator.Particle
         public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
         {
             ShaderParameters result = new ShaderParameters();
-            rmopName = "";
-            optionName = "";
+            rmopName = null;
+            optionName = null;
+
+            if (methodName == "albedo")
+            {
+                optionName = ((Albedo)option).ToString();
+                switch ((Albedo)option)
+                {
+                    case Albedo.Diffuse_Only:
+                        result.AddSamplerParameter("base_map");
+                        rmopName = @"shaders\particle_options\albedo_diffuse_only";
+                        break;
+                    case Albedo.Diffuse_Plus_Billboard_Alpha:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("alpha_map");
+                        rmopName = @"shaders\particle_options\albedo_diffuse_plus_billboard_alpha";
+                        break;
+                    case Albedo.Palettized:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerWithoutXFormParameter("palette");
+                        rmopName = @"shaders\particle_options\albedo_palettized";
+                        break;
+                    case Albedo.Palettized_Plus_Billboard_Alpha:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddSamplerParameter("alpha_map");
+                        rmopName = @"shaders\particle_options\albedo_palettized_plus_billboard_alpha";
+                        break;
+                    case Albedo.Diffuse_Plus_Sprite_Alpha:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("alpha_map");
+                        rmopName = @"shaders\particle_options\albedo_diffuse_plus_sprite_alpha";
+                        break;
+                    case Albedo.Palettized_Plus_Sprite_Alpha:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddSamplerParameter("alpha_map");
+                        rmopName = @"shaders\particle_options\albedo_palettized_plus_sprite_alpha";
+                        break;
+                    case Albedo.Diffuse_Modulated:
+                        result.AddSamplerParameter("base_map");
+                        result.AddFloat4Parameter("tint_color");
+                        result.AddFloatParameter("modulation_factor");
+                        rmopName = @"shaders\particle_options\albedo_diffuse_modulated";
+                        break;
+                    case Albedo.Palettized_Glow:
+                        result.AddSamplerParameter("base_map");
+                        result.AddFloat4Parameter("tint_color");
+                        rmopName = @"shaders\particle_options\albedo_palettized_glow";
+                        break;
+                    case Albedo.Palettized_Plasma:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("base_map2");
+                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddSamplerParameter("alpha_map");
+                        result.AddFloatParameter("alpha_modulation_factor");
+                        rmopName = @"shaders\particle_options\albedo_palettized_plasma";
+                        break;
+                    case Albedo.Palettized_2d_Plasma:
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("base_map2");
+                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddSamplerParameter("alpha_map");
+                        rmopName = @"shaders\particle_options\albedo_palettized_plasma";
+                        break;
+                }
+            }
+
             return result;
         }
 

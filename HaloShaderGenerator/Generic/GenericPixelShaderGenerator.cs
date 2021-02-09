@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
-using HaloShaderGenerator.Globals;
 
 namespace HaloShaderGenerator.Shader
 {
@@ -10,12 +8,10 @@ namespace HaloShaderGenerator.Shader
     {
         public static byte[] GeneratePixelShader(string name)
         {
-            string template = $"pixl_{name}.hlsl";
+            string template = $"explicit\\pixl_{name}.hlsl";
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-
-
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(template, macros, "main", "ps_3_0");
             return shaderBytecode;

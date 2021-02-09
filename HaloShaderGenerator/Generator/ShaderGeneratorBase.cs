@@ -82,11 +82,13 @@ namespace HaloShaderGenerator.Generator
                         throw new Exception($"Macro {macros.ElementAt(i).Name} is defined multiple times");
                     }
                 }
-            }    
+            }
 
-            IncludeManager include = new IncludeManager();
+            string fileName = template.Split('\\').Last();
 
-            string shader_source = include.ReadResource(template);
+            IncludeManager include = new IncludeManager(template.Replace(fileName, ""));
+
+            string shader_source = include.ReadResource(fileName);
 
             D3DCompiler.D3DCOMPILE flags = 0;
 #if DEBUG
