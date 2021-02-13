@@ -16,11 +16,14 @@ uniform float4 unknown_c4 : register(c4);
 uniform float4 bloom_sampler_xform : register(c5);
 uniform float4 cg_blend_factor : register(c6);
 uniform float4 depth_constants : register(c7);
+uniform float gamma_power : register(c8);
 uniform float4x3 p_postprocess_hue_saturation_matrix : register(c218);
 uniform float4 p_postprocess_contrast : register(c222);
 
 #define HALO_ONLINE_COLOR_GRADING 1
 #define GAMMA_FIX 1
+
+#pragma warning( disable : 3571 34)
 
 float get_dof_factor(float2 texcoord)
 {
@@ -77,6 +80,6 @@ void correct_gamma(inout float3 color)
 {
     if (GAMMA_FIX == 1)
     {
-        color.rgb = pow(sqrt(color.rgb), 2.4f);
+        color.rgb = pow(sqrt(color.rgb), gamma_power);
     }
 }
