@@ -68,8 +68,8 @@ float3 calc_lighting_organism_ps(SHADER_COMMON common_data, out float4 unknown_o
 	float4 specular_map_sample = tex2D(specular_map, common_data.texcoord);
 	float c_specular_power = specular_map_sample.a * specular_power;
 	
-	float specular_coefficient = pow(l_dot_r, c_specular_power);
-	specular_coefficient *= (1.0f - c_specular_power) * 0.159154564; // 1 / 2PI
+	float specular_coefficient = pow(abs(l_dot_r), c_specular_power);
+	specular_coefficient *= (1.0f + c_specular_power) * 0.159154564; // 1 / 2PI
 	
 	calc_material_analytic_specular_organism_ps(specular_coefficient, common_data.dominant_light_intensity, analytic_specular);
 	calc_material_area_specular_organism_ps(common_data.reflect_dir, common_data.sh_312, area_specular);
