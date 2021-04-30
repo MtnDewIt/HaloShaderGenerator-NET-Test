@@ -164,6 +164,16 @@ struct VS_OUTPUT_STATIC_SH
 	float3 sky_radiance : COLOR1;
 };
 
+struct VS_OUTPUT_ZONLY // doesnt look like this but ehh good enough
+{
+    float4 position : SV_Position;
+    float2 texcoord : TEXCOORD;
+    float4 normal_and_w : TEXCOORD1;
+    float3 binormal : TEXCOORD2;
+    float3 tangent : TEXCOORD3;
+    float3 camera_dir : TEXCOORD4;
+};
+
 struct PS_OUTPUT_SHADOW_GENERATE
 {
 	float4 unknown;

@@ -17,7 +17,8 @@ namespace HaloShaderGenerator.Shared
         Foliage,
         Glass,
         Cortana,
-        Screen
+        Screen,
+        ZOnly
     }
 
     public enum Albedo

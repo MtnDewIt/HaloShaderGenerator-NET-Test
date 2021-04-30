@@ -43,6 +43,7 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_shadertype_glass 12
 #define k_shadertype_cortana 13
 #define k_shadertype_screen 14
+#define k_shadertype_zonly 15
 
 // Global Method Enums
 

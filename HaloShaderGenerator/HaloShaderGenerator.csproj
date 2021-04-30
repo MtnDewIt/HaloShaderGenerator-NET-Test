@@ -149,6 +149,8 @@
     <Compile Include="Globals\ShaderStage.cs" />
     <Compile Include="Globals\ShaderType.cs" />
     <Compile Include="Globals\VertexType.cs" />
+    <Compile Include="ZOnly\MethodOptions.cs" />
+    <Compile Include="ZOnly\ZOnlyGenerator.cs" />
     <EmbeddedResource Include="hlsl\methods\albedo_decal.hlsli" />
     <Compile Include="Halogram\HalogramGenerator.cs" />
     <Compile Include="Halogram\MethodOptions.cs" />
@@ -576,6 +578,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\explicit\pixl_final_composite_debug.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\glvs_zonly.hlsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

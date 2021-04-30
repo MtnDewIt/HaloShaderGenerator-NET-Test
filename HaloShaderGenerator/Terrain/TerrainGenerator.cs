@@ -151,6 +151,7 @@ namespace HaloShaderGenerator.Terrain
 
         public int GetMethodOptionCount(int methodIndex)
         {
+            //TODO
             return 2;
         }
 
