@@ -14,6 +14,7 @@
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 #include "..\material_models\lambert.hlsli"
+#include "..\helpers\apply_hlsl_fixes.hlsli"
 
 void get_material_parameters_2(
 in float2 texcoord,
@@ -35,7 +36,9 @@ out float c_environment_map_specular_contribution)
 		parameters.y = material_texture_sample.y;
 		parameters.z = material_texture_sample.z;
 		parameters.w = material_texture_sample.w;
-		parameters *= float4(specular_coefficient, albedo_blend, environment_map_specular_contribution, roughness);
+		
+        //if (APPLY_HLSL_FIXES == 0) // HO only
+			parameters *= float4(specular_coefficient, albedo_blend, environment_map_specular_contribution, roughness);
 	}
 	else
 	{

@@ -4,6 +4,8 @@
 #include "../helpers/types.hlsli"
 #include "../helpers/definition_helper.hlsli"
 
+#define x360_fudge_constant 0.015625f
+#define pc_fudge_constant 0.0312509537f
 #define aspect_ratio float2(16, 9)
 #define shadowmap_texture_size 512
 #define default_lightmap_size 1024
@@ -98,7 +100,10 @@ uniform xform2d p_dynamic_light_gel_xform : register(c5);
 
 
 uniform sampler2D albedo_texture;
+#ifndef DEPTH_BUFFER_DEFINED
 uniform sampler2D depth_buffer;
+#define DEPTH_BUFFER_DEFINED 1
+#endif
 uniform float3 screen_constants;
 uniform float3 global_depth_constants; // extern
 uniform float3 global_camera_forward; // extern

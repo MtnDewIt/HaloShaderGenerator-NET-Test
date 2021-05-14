@@ -86,7 +86,7 @@ namespace HaloShaderGenerator.Screen
 
             macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", sBlendMode, "k_blend_mode_"));
 
-            //macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes));
+            //macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes ? 1 : 0));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_screen.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
 

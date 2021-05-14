@@ -12,8 +12,16 @@ uniform float distortion_scale;
 #include "..\methods\fog.hlsli"
 
 //#include "..\helpers\particle_helper.hlsli"
-#include "..\helpers\particle_depth.hlsli"
 #include "..\helpers\apply_hlsl_fixes.hlsli"
+
+float2 get_x360_z_buffer_coord(in float2 pos, bool distortion = false)
+{
+#if APPLY_HLSL_FIXES == 0
+    if (distortion)
+        return (pos * 2.0f + 0.5f) / texture_size.xy;
+#endif
+    return (pos + 0.5f) / texture_size.xy;
+}
 
 float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
 {
@@ -28,7 +36,8 @@ float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
     float depth_fade = 1.0f;
     if (albedo_arg == k_albedo_palettized_2d_plasma && depth_fade_arg == k_depth_fade_on)
     {
-        depth_fade = depth_fade_on(sample_depth_buffer(input.position.xy).r, input_depth);
+        float2 frag_coord = get_x360_z_buffer_coord(input.position.xy);
+        depth_fade = calc_depth_fade(frag_coord, input_depth, true);
     }
     
     float4 color = calc_albedo_ps(input.texcoord, billboard_texcoord, palette_v_coord, frame_blend_interpolator, input.color.a, depth_fade);
@@ -36,7 +45,10 @@ float4 particle_entry_default_main(VS_OUTPUT_PARTICLE input)
     if (depth_fade_arg == k_depth_fade_on)
     {
         if (albedo_arg != k_albedo_palettized_2d_plasma) // This is here so we can have 1-1 compile :)
-            depth_fade = depth_fade_on(sample_depth_buffer(input.position.xy).r, input_depth);
+        {
+            float2 frag_coord = get_x360_z_buffer_coord(input.position.xy);
+            depth_fade = calc_depth_fade(frag_coord, input_depth, true);
+        }
         color.a *= depth_fade;
     }
     
@@ -83,16 +95,11 @@ float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
     float2 billboard_texcoord = input.parameters2.zw;
     float2 tangent = input.parameters.xy;
     float input_depth = input.parameters.w;
+    float2 frag_pos = get_x360_z_buffer_coord(input.position.xy, true);
     
-    // TODO: fix distortion_expensive
+    // TODO: fix distortion_expensive?
     
-    float4 depth_sample = sample_depth_buffer_distortion(input.position.xy);
-    
-    float depth_fade = 1.0f;
-    if (depth_fade_arg == k_depth_fade_on)
-    {
-        depth_fade = depth_fade_on(depth_sample.x, input_depth);
-    }
+    float depth_fade = calc_depth_fade(frag_pos, input_depth, true);
     
     float2 distortion_diffuse = calc_albedo_ps(input.texcoord, billboard_texcoord, palette_v_coord, frame_blend_interpolator, input.color.a, depth_fade).xy;
     
@@ -110,26 +117,19 @@ float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
     float2 distort_val = distortion_scale.x * pixel_change.xy;
     clip(depth_val == 0 ? -1 : 1);
     
+    float fudge = 1.0f;
+    if (!APPLY_HLSL_FIXES)
+        fudge = pc_fudge_constant;
+    
     if (DISTORTION_EXPENSIVE)
     {
-        float2 expensive_frag_pos;
-        if (!APPLY_HLSL_FIXES)
-            expensive_frag_pos = distort_val * 0.000488296151 + input.position.xy;
-        else
-            expensive_frag_pos = distort_val * 0.015625f + input.position.xy;
-
-        float depth_sample_expensive = sample_depth_buffer_distortion(expensive_frag_pos).x;
-        float depth_fade_exp = calc_depth_fade(depth_sample_expensive, input_depth);
-    
+        float2 expensive_frag_pos = get_x360_z_buffer_coord(distort_val * (fudge / 64.0f) + input.position.xy);
+        float depth_fade_exp = calc_depth_fade(expensive_frag_pos, input_depth, false);
         clip(-depth_fade_exp < 0 ? 1 : -1);
     }
     
     distort_val *= screen_constants.xy;
-    
-    if (!APPLY_HLSL_FIXES)
-        distort_val *= 0.0312509537f;
-    else
-        distort_val *= 0.015625f;
+    distort_val *= !APPLY_HLSL_FIXES ? pc_fudge_constant : x360_fudge_constant;
     
     return float4(distort_val, 0, 0);
 }

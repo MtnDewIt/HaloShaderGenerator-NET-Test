@@ -122,7 +122,7 @@ namespace HaloShaderGenerator.Halogram
             macros.Add(ShaderGeneratorBase.CreateMacro("overlay_arg", overlay, "k_overlay_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("edge_fade_arg", edge_fade, "k_edge_fade_"));
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes));
+            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes ? 1 : 0));
             macros.Add(ShaderGeneratorBase.CreateMacro("_HALOGRAM", 1));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_halogram.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");

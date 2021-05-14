@@ -409,9 +409,9 @@ inout float3 diffuse)
     float depth = tex2D(depth_buffer, (position.xy + 0.5f) / texture_size.xy).r; // * global_depth_constants.y + global_depth_constants.z;
     depth = -abs(dot(camera_dir, global_camera_forward)) + depth; // + rcp(depth);
     
-    float plasma_depth_modulation = -saturate((n_camera_dir / depth_fade_range) * depth);
+    float plasma_depth_modulation = saturate((n_camera_dir / depth_fade_range) * depth);
         
-    float u_coordinate = alpha_mask * plasma_depth_modulation + 1.0f;
+    float u_coordinate = alpha_mask * -plasma_depth_modulation + 1.0f;
     u_coordinate = saturate(u_coordinate * alpha_modulation_factor.x + plasma_noise);
         
     float3 color = tex2D(palette, float2(u_coordinate, v_coordinate)).rgb;

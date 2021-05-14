@@ -103,7 +103,7 @@ namespace HaloShaderGenerator.Decal
             macros.Add(ShaderGeneratorBase.CreateMacro("decal_bump_mapping_arg", bump_mapping, "k_decal_bump_mapping_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("decal_tinting_arg", tinting, "k_decal_tinting_"));
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes));
+            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes ? 1 : 0));
             macros.Add(ShaderGeneratorBase.CreateMacro("DECAL_IS_SIMPLE", DecalIsSimple ? 1 : 0));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_decal.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");

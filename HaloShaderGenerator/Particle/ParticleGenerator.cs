@@ -126,7 +126,7 @@ namespace HaloShaderGenerator.Particle
             macros.Add(ShaderGeneratorBase.CreateMacro("frame_blend_arg", frame_blend, "k_frame_blend_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("self_illumination_arg", sSelfIllumination, "k_self_illumination_"));
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes));
+            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes ? 1 : 0));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_particle.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
 

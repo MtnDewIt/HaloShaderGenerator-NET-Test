@@ -59,6 +59,11 @@ namespace HaloShaderGenerator
         {
             //new List<int> { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 },
         };
+
+        static readonly List<List<int>> ParticleMS26 = new List<List<int>>
+        {
+            new List<int> { 3, 3, 0, 1, 0, 1, 0, 1, 0, 1 },
+        };
         #endregion
 
         #region terrain
@@ -910,7 +915,7 @@ namespace HaloShaderGenerator
         static void TestPixelShader(string name)
         {
             var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(name);
-            var str = D3DCompiler.Disassemble(bytecode);
+            var str = D3DCompiler.Disassemble(bytecode.Bytecode);
             using (FileStream test = new FileInfo($"generated_{name}.pixl").Create())
             using (StreamWriter writer = new StreamWriter(test))
             {

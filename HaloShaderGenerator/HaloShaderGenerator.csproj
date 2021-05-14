@@ -394,9 +394,6 @@
     <EmbeddedResource Include="hlsl\methods\albedo_particle.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\helpers\particle_depth.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="hlsl\vertices\vertex_definitions.hlsli" />
   </ItemGroup>
   <ItemGroup>

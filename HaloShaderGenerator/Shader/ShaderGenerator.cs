@@ -9,6 +9,7 @@ namespace HaloShaderGenerator.Shader
     public class ShaderGenerator : IShaderGenerator
     {
         private bool TemplateGenerationValid;
+        private bool ApplyFixes;
 
         Albedo albedo;
         Bump_Mapping bump_mapping;
@@ -31,7 +32,8 @@ namespace HaloShaderGenerator.Shader
         /// Generator instantiation for method specific shaders.
         /// </summary>
         public ShaderGenerator(Albedo albedo, Bump_Mapping bump_mapping, Alpha_Test alpha_test, Specular_Mask specular_mask, Material_Model material_model,
-            Environment_Mapping environment_mapping, Self_Illumination self_illumination, Blend_Mode blend_mode, Parallax parallax, Misc misc, Distortion distortion)
+            Environment_Mapping environment_mapping, Self_Illumination self_illumination, Blend_Mode blend_mode, Parallax parallax, Misc misc, 
+            Distortion distortion, bool applyFixes = false)
         {
             this.albedo = albedo;
             this.bump_mapping = bump_mapping;
@@ -61,7 +63,7 @@ namespace HaloShaderGenerator.Shader
             this.misc = (Misc)options[9];
             this.distortion = (Distortion)options[10];
 
-            //ApplyFixes = applyFixes;
+            ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
         }
 
@@ -87,6 +89,8 @@ namespace HaloShaderGenerator.Shader
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Parallax>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Misc>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Distortion>());
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes ? 1 : 0));
 
             //
             // Convert to shared enum
