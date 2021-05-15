@@ -9,13 +9,14 @@ namespace HaloShaderGenerator.ZOnly
     public class ZOnlyGenerator : IShaderGenerator
     {
         private bool TemplateGenerationValid;
+        private bool ApplyFixes;
 
         Test test;
 
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
         /// </summary>
-        public ZOnlyGenerator() { TemplateGenerationValid = false; }
+        public ZOnlyGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
 
         /// <summary>
         /// Generator instantiation for method specific shaders.

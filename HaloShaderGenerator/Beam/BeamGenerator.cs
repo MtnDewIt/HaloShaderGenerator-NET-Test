@@ -19,7 +19,7 @@ namespace HaloShaderGenerator.Beam
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
         /// </summary>
-        public BeamGenerator() { TemplateGenerationValid = false; }
+        public BeamGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
 
         /// <summary>
         /// Generator instantiation for method specific shaders.

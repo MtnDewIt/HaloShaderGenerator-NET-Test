@@ -9,6 +9,7 @@ namespace HaloShaderGenerator.Terrain
     public class TerrainGenerator : IShaderGenerator
     {
         private bool TemplateGenerationValid;
+        private bool ApplyFixes;
 
         Blending blending;
         Environment_Mapping environment_mapping;
@@ -20,7 +21,7 @@ namespace HaloShaderGenerator.Terrain
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
         /// </summary>
-        public TerrainGenerator() { TemplateGenerationValid = false; }
+        public TerrainGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
 
         /// <summary>
         /// Generator instantiation for method specific shaders.

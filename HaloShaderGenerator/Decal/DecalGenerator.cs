@@ -22,7 +22,7 @@ namespace HaloShaderGenerator.Decal
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
         /// </summary>
-        public DecalGenerator() { TemplateGenerationValid = false; }
+        public DecalGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
 
         /// <summary>
         /// Generator instantiation for method specific shaders.

@@ -25,7 +25,7 @@ namespace HaloShaderGenerator.Particle
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
         /// </summary>
-        public ParticleGenerator() { TemplateGenerationValid = false; }
+        public ParticleGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
 
         /// <summary>
         /// Generator instantiation for method specific shaders.

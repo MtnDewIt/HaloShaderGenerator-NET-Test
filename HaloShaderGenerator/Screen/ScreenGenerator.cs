@@ -20,7 +20,7 @@ namespace HaloShaderGenerator.Screen
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
         /// </summary>
-        public ScreenGenerator() { TemplateGenerationValid = false; }
+        public ScreenGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
 
         /// <summary>
         /// Generator instantiation for method specific shaders.

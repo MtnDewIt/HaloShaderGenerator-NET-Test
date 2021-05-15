@@ -9,6 +9,7 @@ namespace HaloShaderGenerator.Custom
     public class CustomGenerator : IShaderGenerator
     {
         private bool TemplateGenerationValid;
+        private bool ApplyFixes;
 
         Albedo albedo;
         Bump_Mapping bump_mapping;
@@ -24,7 +25,7 @@ namespace HaloShaderGenerator.Custom
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
         /// </summary>
-        public CustomGenerator() { TemplateGenerationValid = false; }
+        public CustomGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
 
         /// <summary>
         /// Generator instantiation for method specific shaders.

@@ -22,7 +22,7 @@ namespace HaloShaderGenerator.Halogram
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
         /// </summary>
-        public HalogramGenerator() { TemplateGenerationValid = false; }
+        public HalogramGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
 
         /// <summary>
         /// Generator instantiation for method specific shaders.
