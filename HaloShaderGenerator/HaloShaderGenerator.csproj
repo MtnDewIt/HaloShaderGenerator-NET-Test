@@ -579,6 +579,9 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\glvs_zonly.hlsl" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\glps_halogram.hlsl" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>

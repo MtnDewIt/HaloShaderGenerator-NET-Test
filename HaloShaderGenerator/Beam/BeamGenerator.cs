@@ -182,6 +182,11 @@ namespace HaloShaderGenerator.Beam
             return false;
         }
 
+        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
+        {
+            return false;
+        }
+
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
             return false;

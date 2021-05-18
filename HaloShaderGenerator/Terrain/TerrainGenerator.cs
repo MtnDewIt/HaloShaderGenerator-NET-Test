@@ -218,6 +218,11 @@ namespace HaloShaderGenerator.Terrain
             return false;
         }
 
+        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
+        {
+            return entryPoint == ShaderStage.Shadow_Generate;
+        }
+
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
             switch (entryPoint)

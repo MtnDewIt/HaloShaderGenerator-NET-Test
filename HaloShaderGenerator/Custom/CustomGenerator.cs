@@ -311,6 +311,11 @@ namespace HaloShaderGenerator.Custom
             return entryPoint == ShaderStage.Shadow_Generate;
         }
 
+        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
+        {
+            return false;
+        }
+
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
             switch (entryPoint)

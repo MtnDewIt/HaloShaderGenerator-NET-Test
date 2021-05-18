@@ -254,6 +254,11 @@ namespace HaloShaderGenerator.Halogram
 
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
+            return false;
+        }
+
+        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
+        {
             return entryPoint == ShaderStage.Shadow_Generate;
         }
 

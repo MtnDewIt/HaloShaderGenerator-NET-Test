@@ -84,6 +84,13 @@ namespace HaloShaderGenerator.Generator
         /// <returns></returns>
         bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint);
 
+        /// <summary>
+        /// Returns true if the entry point has a shared pixel shader independent of methods\options
+        /// </summary>
+        /// <param name="entryPoint"></param>
+        /// <returns></returns>
+        bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint);
+
         int GetMethodCount();
 
         int GetMethodOptionCount(int methodIndex);
