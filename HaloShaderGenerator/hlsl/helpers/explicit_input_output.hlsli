@@ -14,5 +14,10 @@ struct VS_OUTPUT_SHIELD_IMPACT
     float4 v1 : TEXCOORD2;
 };
 
+struct VS_OUTPUT_SCREEN
+{
+    float4 position : SV_Position;
+    float4 texcoord : TEXCOORD;
+};
 
 #endif
