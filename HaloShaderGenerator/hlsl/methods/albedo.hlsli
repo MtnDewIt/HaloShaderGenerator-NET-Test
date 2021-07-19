@@ -470,6 +470,16 @@ float4 calc_albedo_waterfall_ps(float2 texcoord, float2 position, float3 surface
     return albedo;
 }
 
+float4 calc_albedo_four_change_color_applying_to_specular(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
+{
+    return calc_albedo_four_change_color_ps(texcoord, position, surface_normal, camera_dir);
+}
+
+float4 calc_albedo_simple(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
+{
+    return tex2D(base_map, apply_xform2d(texcoord, base_map_xform)) * albedo_color;
+}
+
 float4 calc_albedo_default_vs(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
 	return 0;

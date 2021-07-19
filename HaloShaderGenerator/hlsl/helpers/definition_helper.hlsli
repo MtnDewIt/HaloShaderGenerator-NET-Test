@@ -85,6 +85,8 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_albedo_palettized_plus_alpha_mask 35
 #define k_albedo_vector_alpha 36
 #define k_albedo_vector_alpha_drop_shadow 37
+#define k_albedo_four_change_color_applying_to_specular 38
+#define k_albedo_simple 39
 #define k_bump_mapping_off 0
 #define k_bump_mapping_standard 1
 #define k_bump_mapping_detail 2

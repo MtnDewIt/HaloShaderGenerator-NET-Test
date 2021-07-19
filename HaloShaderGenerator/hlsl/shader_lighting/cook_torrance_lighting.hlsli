@@ -16,6 +16,13 @@
 #include "..\material_models\lambert.hlsli"
 #include "..\helpers\apply_hlsl_fixes.hlsli"
 
+float3 get_specular_tint()
+{
+    if (albedo_arg == k_albedo_four_change_color_applying_to_specular)
+        return quaternary_change_color;
+    return specular_tint;
+}
+
 void get_material_parameters_2(
 in float2 texcoord,
 out float c_specular_coefficient,
@@ -71,8 +78,10 @@ void calc_dynamic_lighting_cook_torrance_ps(SHADER_DYNAMIC_LIGHT_COMMON common_d
 	
 	// lambertian diffuse
 	color = common_data.light_intensity * v_dot_n * common_data.albedo.rgb * c_diffuse_coefficient;
+	
+    float3 spec_tint = get_specular_tint();
 
-	specular_contribution *= specular_tint;
+    specular_contribution *= spec_tint;
 
 	[flatten]
 	if (dot(specular_contribution, specular_contribution) > 0.0001)
@@ -129,11 +138,17 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 	float3 env_area_specular = 0;
 	calc_material_area_specular_cook_torrance_ps(common_data.n_view_dir, common_data.surface_normal, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, c_roughness, fresnel_power, rim_fresnel_power, rim_fresnel_coefficient, fresnel_f0, fresnel_env_f0, r_dot_l_area_specular, area_specular, rim_area_specular, env_area_specular);
 	env_area_specular = use_fresnel_color_environment ? env_area_specular : area_specular;
-	float3 c_specular_tint = specular_tint;
 	
+    float3 spec_tint = get_specular_tint();
+	
+    float3 c_specular_tint = spec_tint;
 	if (use_albedo_blend_with_specular_tint)
-		c_specular_tint = specular_tint * (1.0 - c_albedo_blend) + c_albedo_blend * common_data.albedo.rgb;
+        c_specular_tint = spec_tint * (1.0 - c_albedo_blend) + c_albedo_blend * common_data.albedo.rgb;
 	
+    if (albedo_arg == k_albedo_four_change_color_applying_to_specular)
+    {
+        c_specular_tint = tertiary_change_color.rgb - c_specular_tint;
+    }
 	
 	env_area_specular *= common_data.precomputed_radiance_transfer.z;
 	env_area_specular = env_area_specular * c_specular_tint;

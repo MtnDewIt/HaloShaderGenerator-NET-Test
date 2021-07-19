@@ -61,6 +61,8 @@ namespace HaloShaderGenerator.Shared
         Palettized_Plus_Alpha_Mask,
         Vector_Alpha,
         Vector_Alpha_Drop_Shadow,
+        Four_Change_Color_Applying_To_Specular,
+        Simple,
     }
 
     public enum Alpha_Test
