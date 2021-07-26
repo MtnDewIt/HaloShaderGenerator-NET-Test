@@ -589,6 +589,13 @@
     <EmbeddedResource Include="hlsl\explicit\pixl_displacement.hlsl" />
     <EmbeddedResource Include="hlsl\explicit\registers\displacement_motion_blur_registers.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\chud\helpers\chud_global_parameters.hlsli" />
+    <EmbeddedResource Include="hlsl\chud\helpers\chud_input_output.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="hlsl\chud\helpers\chud_helper.hlsli" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>
