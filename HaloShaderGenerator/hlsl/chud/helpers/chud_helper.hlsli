@@ -13,4 +13,10 @@ void export_chud_alpha(inout float alpha)
     }
 }
 
+// interpolate between two colors (0 color1, 1.0 color2)
+float3 apply_color_selector(float3 color1, float3 color2, float scalar)
+{
+    return color1 * (1.0f - scalar) + color2 * scalar;
+}
+
 #endif

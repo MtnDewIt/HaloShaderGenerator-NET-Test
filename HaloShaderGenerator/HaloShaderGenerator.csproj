@@ -594,6 +594,9 @@
     <EmbeddedResource Include="hlsl\chud\helpers\chud_input_output.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="hlsl\chud\pixl_chud_simple.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="hlsl\chud\helpers\chud_helper.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
