@@ -54,6 +54,16 @@ namespace HaloShaderGenerator
             var bytecode = gen.GenerateSharedVertexShader(vertex, stage).Bytecode;
             return D3DCompiler.Disassemble(bytecode);
         }
+
+        public override string GenerateExplicitPixelShader(ShaderTypes.ExplicitShader explicitShader)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override string GenerateExplicitVertexShader(ShaderTypes.ExplicitShader explicitShader)
+        {
+            throw new System.NotImplementedException();
+        }
     }
     
     public abstract class GenericUnitTest
@@ -68,22 +78,6 @@ namespace HaloShaderGenerator
             ReferencePath = referencePath;
             ReferenceGenerator = referenceGenerator;
             ShaderType = shaderType;
-        }
-
-        public static List<ShaderStage> GetAllShaderStages()
-        {
-            var stages = new List<ShaderStage>();
-            foreach (var stage in Enum.GetValues(typeof(ShaderStage)))
-                stages.Add((ShaderStage)stage);
-            return stages;
-        }
-
-        public static List<VertexType> GetAllVertexFormats()
-        {
-            var vertices = new List<VertexType>();
-            foreach (var vertex in Enum.GetValues(typeof(VertexType)))
-                vertices.Add((VertexType)vertex);
-            return vertices;
         }
 
         public static string BuildShaderName(List<int> methods)
@@ -140,7 +134,7 @@ namespace HaloShaderGenerator
             return vertexShaderPath;
         }
 
-        public static void DisplayPixelShaderTestResults(bool success, List<int> testShader, ShaderStage stage, bool usesD3DX)
+        public static void DisplayPixelShaderTestResults(bool success, string shaderName, ShaderStage stage, bool usesD3DX)
         {
             if (IgnoreD3DX && usesD3DX)
                 return;
@@ -148,13 +142,13 @@ namespace HaloShaderGenerator
             if (!success)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Generated shader for {BuildShaderName(testShader)} at {stage.ToString().ToLower()} is not identical to reference." + (usesD3DX ? " USES D3DX." : ""));
+                Console.WriteLine($"Generated shader for {shaderName} at {stage.ToString().ToLower()} is not identical to reference." + (usesD3DX ? " USES D3DX." : ""));
                 Console.ResetColor();
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"Generated shader for {BuildShaderName(testShader)} at {stage.ToString().ToLower()} is identical to reference.");
+                Console.WriteLine($"Generated shader for {shaderName} at {stage.ToString().ToLower()} is identical to reference.");
                 Console.ResetColor();
             }
         }
@@ -333,6 +327,100 @@ namespace HaloShaderGenerator
         }
 
 
+        public List<ShaderStage> GetAllShaderStages()
+        {
+            var stages = new List<ShaderStage>();
+            foreach (var stage in Enum.GetValues(typeof(ShaderStage)))
+                stages.Add((ShaderStage)stage);
+            return stages;
+        }
+
+        public List<VertexType> GetAllVertexFormats()
+        {
+            var vertices = new List<VertexType>();
+            foreach (var vertex in Enum.GetValues(typeof(VertexType)))
+                vertices.Add((VertexType)vertex);
+            return vertices;
+        }
+
+        public string TestExplicitPixelShader(ShaderTypes.ExplicitShader explicitShader)
+        {
+            bool success = true;
+
+            string filePath = Path.Combine(Path.Combine(ReferencePath, explicitShader.ToString()), "0_default.pixel_shader"); // TODO
+            var file = new FileInfo(filePath);
+
+            if (file.Exists == false)
+            {
+                Console.WriteLine($"No reference shader for {explicitShader}");
+                success = false;
+                return null;
+            }
+
+            var disassembly = GenerateExplicitPixelShader(explicitShader);
+            bool equal = CompareShaders(disassembly, filePath, "ps_3_0", out bool usesD3DX);
+            success &= equal;
+            DisplayPixelShaderTestResults(equal, explicitShader.ToString(), ShaderStage.Default, usesD3DX);
+
+            return disassembly;
+        }
+
+        public bool TestAllExplicitPixelShaders()
+        {
+            bool success = true;
+
+            foreach (ShaderTypes.ExplicitShader explicitShader in Enum.GetValues(typeof(ShaderTypes.ExplicitShader)))
+            {
+                success &= TestExplicitPixelShader(explicitShader) != null;
+            }
+
+            if (success)
+                Console.WriteLine("All unit tests passed sucessfully!");
+            else
+                Console.WriteLine("Failed unit tests. See above for more details.");
+
+            return success;
+        }
+
+        public string TestExplicitVertexShader(ShaderTypes.ExplicitShader explicitShader)
+        {
+            bool success = true;
+
+            string filePath = Path.Combine(Path.Combine(ReferencePath, explicitShader.ToString()), "world\\0_default.vertex_shader"); // TODO
+            var file = new FileInfo(filePath);
+
+            if (file.Exists == false)
+            {
+                Console.WriteLine($"No reference shader for {explicitShader}");
+                success = false;
+                return null;
+            }
+
+            var disassembly = GenerateExplicitVertexShader(explicitShader);
+            bool equal = CompareShaders(disassembly, filePath, "vs_3_0", out bool usesD3DX);
+            success &= equal;
+            DisplayPixelShaderTestResults(equal, explicitShader.ToString(), ShaderStage.Default, usesD3DX);
+
+            return success ? disassembly : null;
+        }
+
+        public bool TestAllExplicitVertexShaders()
+        {
+            bool success = true;
+
+            foreach (ShaderTypes.ExplicitShader explicitShader in Enum.GetValues(typeof(ShaderTypes.ExplicitShader)))
+            {
+                success &= TestExplicitVertexShader(explicitShader) != null;
+            }
+
+            if (success)
+                Console.WriteLine("All unit tests passed sucessfully!");
+            else
+                Console.WriteLine("Failed unit tests. See above for more details.");
+
+            return success;
+        }
+
         public bool TestAllPixelShaders(List<List<int>> shaderOverrides, List<ShaderStage> stageOverrides, List<List<int>> methodOverrides)
         {
             bool success = true;
@@ -382,7 +470,7 @@ namespace HaloShaderGenerator
                         }
                         bool equal = CompareShaders(GeneratePixelShader(stage, testShader), filePath, "ps_3_0",  out bool usesD3DX);
                         success &= equal;
-                        DisplayPixelShaderTestResults(equal, testShader, stage, usesD3DX);
+                        DisplayPixelShaderTestResults(equal, BuildShaderName(testShader), stage, usesD3DX);
                     }
                 }
             }
@@ -520,5 +608,9 @@ namespace HaloShaderGenerator
         public abstract string GenerateVertexShader(VertexType vertex, ShaderStage stage);
 
         public abstract string GenerateSharedVertexShader(VertexType vertex, ShaderStage stage);
+
+        public abstract string GenerateExplicitPixelShader(ShaderTypes.ExplicitShader explicitShader);
+
+        public abstract string GenerateExplicitVertexShader(ShaderTypes.ExplicitShader explicitShader);
     }
 }

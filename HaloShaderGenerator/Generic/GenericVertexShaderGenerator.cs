@@ -6,15 +6,16 @@ namespace HaloShaderGenerator.Shader
 {
     public class GenericVertexShaderGenerator
     {
-        public static byte[] GenerateVertexShader(string name)
+        public static ShaderGeneratorResult GenerateVertexShader(string name, bool chud = false)
         {
-            string template = $"explicit\\vtsh_{name}.hlsl";
+            string template = $"{(chud ? "chud" : "explicit")}\\vtsh_{name}.hlsl";
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
+            macros.Add(new D3D.SHADER_MACRO { Name = "VERTEX_SHADER", Definition = "1" });
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(template, macros, "main", "vs_3_0");
-            return shaderBytecode;
+            return new ShaderGeneratorResult(shaderBytecode);
         }
     }
 }

@@ -6,19 +6,31 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using HaloShaderGenerator.Generator;
+using System.Linq;
 
 namespace HaloShaderGenerator
 {
     class Application
     {
-        static readonly string ShaderReferencePath = @"D:\Halo\Repositories\TagTool\TagTool\bin\x64\Debug\Shaders";
+        static readonly ShaderTypes.ShaderSubtype TestStageType = ShaderTypes.ShaderSubtype.Pixel; //shared_vertex, shared_pixel, vertex or pixel
 
+        static readonly bool ExplicitTest = true;
+        static readonly string ExplicitReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\explicit";
+        static readonly bool ExplicitTestSingle = true;
+        static readonly ShaderTypes.ExplicitShader ExplicitShader = ShaderTypes.ExplicitShader.debug2d;
+
+        static readonly bool ChudTest = false;
+        static readonly string ChudReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\chud";
+        static readonly bool ChudTestSingle = true;
+        static readonly ShaderTypes.ChudShader ChudShader = ShaderTypes.ChudShader.simple;
+
+        static readonly bool TemplateTest = true;
+        static readonly string ShaderReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\Shaders";
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
-        static readonly string TestShaderType = "terrain";
-        static readonly string TestStageType = "pixel"; //shared_vertex, shader_pixel, vertex or pixel
+        static readonly ShaderType TestShaderType = ShaderType.Particle;
 
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { ShaderStage.Static_Per_Pixel, ShaderStage.Static_Per_Vertex, ShaderStage.Static_Sh };
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { ShaderStage.Default };
 
         #region Shader
         static readonly List<VertexType> VertexOverrides = new List<VertexType> { };
@@ -40,6 +52,9 @@ namespace HaloShaderGenerator
             //new List<int> { 0, 2, 0, 1, 7, 0, 0, 0, 0, 1, 0 },
             //new List<int> { 0, 1, 1, 0, 1, 0, 0, 3, 0, 0, 0 },
         };
+
+        static readonly List<List<int>> ShaderMethodOverrides = new List<List<int>> { ShaderAlbedoOverrides, ShaderBumpOverrides, ShaderAlphaOverrides, ShaderSpecularOverrides, ShaderMaterialOverrides,
+                ShaderEnvOverrides, ShaderSelfIllumOverrides, ShaderBlendModeOverrides, ShaderParallaxOverrides, ShaderMiscOverrides, new List<int>() };
         #endregion
 
         #region particle
@@ -64,6 +79,9 @@ namespace HaloShaderGenerator
         {
             new List<int> { 3, 3, 0, 1, 0, 1, 0, 1, 0, 1 },
         };
+
+        static readonly List<List<int>> ParticleMethodOverrides = new List<List<int>> { ParticleAlbedoOverrides, ParticleBlendModeOverrides, ParticleSpecializedRenderingOverrides, ParticleLightingOverrides,
+                    ParticleRenderTargetsOverrides, ParticleDepthFadeOverrides, ParticleBlackPointOverrides, ParticleFogOverrides, ParticleFrameBlendOverrides, ParticleSelfIlluminationOverrides };
         #endregion
 
         #region terrain
@@ -82,6 +100,9 @@ namespace HaloShaderGenerator
             new List<int> { 0, 0, 2, 0, 0, 2},
             new List<int> { 0, 0, 0, 0, 0, 2},
         };
+
+        static readonly List<List<int>> TerrainMethodOverrides = new List<List<int>> { TerrainBlendingOverride, TerrainEnvMapOverride, TerrainMaterial0Override, TerrainMaterial1Override,
+                    TerrainMaterial2Override, TerrainMaterial3Override};
         #endregion
 
         #region halogram
@@ -136,6 +157,9 @@ namespace HaloShaderGenerator
             new List<int> { 9,5,3,0,0,0,0 },
         };
 
+        static readonly List<List<int>> HalogramMethodOverrides = new List<List<int>> { HalogramAlbedoOverride, HalogramSelfIllumOverride, 
+            HalogramBlendModeOverride, HalogramMiscOverride, HalogramWarpOverride, HalogramOverlayOverride, HalogramEdgeFadeOverride };
+
         #endregion
 
         #region contrail
@@ -149,6 +173,10 @@ namespace HaloShaderGenerator
         {
             //new List<int> { 2, 10, 1, 0 },
         };
+
+        static readonly List<List<int>> ContrailMethodOverrides = new List<List<int>> { ContrailAlbedoOverrides, 
+            ContrailBlendModeOverrides, ContrailBlackPointOverrides, ContrailFogOverrides };
+
         #endregion
 
         #region beam
@@ -162,6 +190,9 @@ namespace HaloShaderGenerator
         {
 
         };
+
+        static readonly List<List<int>> BeamMethodOverrides = new List<List<int>> { BeamAlbedoOverrides, 
+            BeamBlendModeOverrides, BeamBlackPointOverrides, BeamFogOverrides };
         #endregion
 
         #region light_volume
@@ -174,6 +205,9 @@ namespace HaloShaderGenerator
         {
 
         };
+
+        static readonly List<List<int>> LightVolumeMethodOverrides = new List<List<int>> { LightVolumeAlbedoOverrides, 
+            LightVolumeBlendModeOverrides, LightVolumeFogOverrides };
         #endregion
 
         #region decal
@@ -209,6 +243,9 @@ namespace HaloShaderGenerator
             //new List<int> { 5, 3, 0, 0, 0, 3 },
             //new List<int> { 8, 10, 0, 1, 0, 2 },
         };
+
+        static readonly List<List<int>> DecalMethodOverrides = new List<List<int>> { DecalAlbedoOverrides, DecalBlendModeOverrides, 
+            DecalRenderPassOverrides, DecalSpecularOverrides, DecalBumpMappingOverrides, DecalTintingOverrides };
         #endregion
 
         #region screen
@@ -224,454 +261,193 @@ namespace HaloShaderGenerator
             new List<int> { 2, 0, 4, 1, 0 },
             new List<int> { 2, 1, 2, 0, 0 },
         };
+        
+        static readonly List<List<int>> ScreenMethodOverrides = new List<List<int>> { ScreenWarpOverrides, ScreenBaseOverrides, ScreenOverlayAOverrides, ScreenOverlayBOverrides, ScreenBlendModeOverrides };
         #endregion
 
-        static void RunTerrainSharedVertexShaderUnitTest()
+        static GenericUnitTest GetUnitTest(ShaderType shaderType)
         {
-            TerrainUnitTest shaderTests = new TerrainUnitTest(ShaderReferencePath);
+            switch (shaderType)
+            {
+                case ShaderType.Shader:         return new ShaderUnitTest(ShaderReferencePath);
+                case ShaderType.Beam:           return new BeamUnitTest(ShaderReferencePath);
+                case ShaderType.Contrail:       return new ContrailUnitTest(ShaderReferencePath);
+                case ShaderType.Decal:          return new DecalUnitTest(ShaderReferencePath);
+                case ShaderType.Halogram:       return new HalogramUnitTest(ShaderReferencePath);
+                case ShaderType.LightVolume:    return new LightVolumeUnitTest(ShaderReferencePath);
+                case ShaderType.Particle:       return new ParticleUnitTest(ShaderReferencePath);
+                case ShaderType.Terrain:        return new TerrainUnitTest(ShaderReferencePath);
+                //case ShaderType.Water:          return new WaterUnitTest(ShaderReferencePath);
+                case ShaderType.Screen:         return new ScreenUnitTest(ShaderReferencePath);
+                //case ShaderType.Foliage:        return new FoliageUnitTest(ShaderReferencePath);
+            }
 
+            throw new Exception($"No unit test for \"shaderType\" found.");
+        }
+
+        static List<List<int>> GetMethodOverrides(ShaderType shaderType)
+        {
+            switch (shaderType)
+            {
+                case ShaderType.Shader:         return ShaderMethodOverrides;
+                case ShaderType.Beam:           return BeamMethodOverrides;
+                case ShaderType.Contrail:       return ContrailMethodOverrides;
+                case ShaderType.Decal:          return DecalMethodOverrides;
+                case ShaderType.Halogram:       return HalogramMethodOverrides;
+                case ShaderType.LightVolume:    return LightVolumeMethodOverrides;
+                case ShaderType.Particle:       return ParticleMethodOverrides;
+                case ShaderType.Terrain:        return TerrainMethodOverrides;
+                //case ShaderType.Water:          return WaterMethodOverrides;
+                case ShaderType.Screen:         return ScreenMethodOverrides;
+                //case ShaderType.Foliage:        return FoliageMethodOverrides;
+            }
+
+            throw new Exception($"No method overrides for \"shaderType\" found.");
+        }
+
+        static List<List<int>> GetOverrides(ShaderType shaderType)
+        {
+            switch (shaderType)
+            {
+                case ShaderType.Shader:         return ShaderOverrides;
+                case ShaderType.Beam:           return BeamOverrides;
+                case ShaderType.Contrail:       return ContrailOverrides;
+                case ShaderType.Decal:          return DecalOverrides;
+                case ShaderType.Halogram:       return HalogramOverrides;
+                case ShaderType.LightVolume:    return LightVolumeOverrides;
+                case ShaderType.Particle:       return ParticleOverrides;
+                case ShaderType.Terrain:        return TerrainOverrides;
+                //case ShaderType.Water:          return WaterOverrides;
+                case ShaderType.Screen:         return ScreenOverrides;
+                //case ShaderType.Foliage:        return FoliageOverrides;
+            }
+
+            throw new Exception($"No overrides for \"shaderType\" found.");
+        }
+
+        static void RunPixelUnitTest(GenericUnitTest unitTest, ShaderType shaderType)
+        {
             if (TestSpecificShader)
             {
-                shaderTests.TestAllSharedVertexShaders(VertexOverrides, StageOverrides);
+                var methodOverrides = GetMethodOverrides(shaderType);
+                var overrides = GetOverrides(shaderType);
 
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : TerrainUnitTest.GetAllShaderStages();
-                var vertices = (VertexOverrides.Count > 0) ? VertexOverrides : TerrainUnitTest.GetAllVertexFormats();
+                unitTest.TestAllPixelShaders(overrides, StageOverrides, methodOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : unitTest.GetAllShaderStages();
+
+                foreach (var stage in stages)
+                {
+                    foreach (var methods in overrides)
+                    {
+                        TestPixelShader(shaderType, stage, methods);
+                    }
+                }
+            }
+
+            if (UnitTest)
+            {
+                unitTest.TestAllPixelShaders(ShaderTests, null, null);
+            }
+        }
+
+        static void RunSharedPixelUnitTest(GenericUnitTest unitTest, ShaderType shaderType)
+        {
+            if (TestSpecificShader)
+            {
+                unitTest.TestAllSharedPixelShaders(StageOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : unitTest.GetAllShaderStages();
+                foreach (var stage in stages)
+                {
+                    TestSharedPixelShader(shaderType, stage, -1, -1);
+                }
+            }
+
+            if (UnitTest)
+            {
+                unitTest.TestAllSharedPixelShaders(null);
+            }
+        }
+
+        static void RunSharedVertexUnitTest(GenericUnitTest unitTest, ShaderType shaderType)
+        {
+            if (TestSpecificShader)
+            {
+                unitTest.TestAllSharedVertexShaders(VertexOverrides, StageOverrides);
+
+                var stages = (StageOverrides.Count > 0) ? StageOverrides : unitTest.GetAllShaderStages();
+                var vertices = (VertexOverrides.Count > 0) ? VertexOverrides : unitTest.GetAllVertexFormats();
                 foreach (var vertex in vertices)
                 {
                     foreach (var stage in stages)
                     {
-                        TestSharedVertexShader(vertex, stage);
+                        TestSharedVertexShader(shaderType, vertex, stage);
                     }
                 }
             }
 
             if (UnitTest)
             {
-                shaderTests.TestAllSharedVertexShaders(null, null);
+                unitTest.TestAllSharedVertexShaders(null, null);
             }
         }
 
-        static void RunDecalSharedVertexShaderUnitTest()
+        static void RunUnitTest(ShaderType shaderType, ShaderTypes.ShaderSubtype shaderSubtype)
         {
-            DecalUnitTest shaderTests = new DecalUnitTest(ShaderReferencePath);
+            Console.WriteLine($"TESTING {shaderType.ToString().ToUpper()}");
 
-            if (TestSpecificShader)
+            var unitTest = GetUnitTest(shaderType);
+
+            switch (shaderSubtype)
             {
-                shaderTests.TestAllSharedVertexShaders(VertexOverrides, StageOverrides);
-
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : DecalUnitTest.GetAllShaderStages();
-                var vertices = (VertexOverrides.Count > 0) ? VertexOverrides : DecalUnitTest.GetAllVertexFormats();
-                foreach (var vertex in vertices)
-                {
-                    foreach (var stage in stages)
-                    {
-                        TestSharedVertexShader(vertex, stage);
-                    }
-                }
-            }
-
-            if (UnitTest)
-            {
-                shaderTests.TestAllSharedVertexShaders(null, null);
+                case ShaderTypes.ShaderSubtype.Pixel:
+                    RunPixelUnitTest(unitTest, shaderType);
+                    break;
+                case ShaderTypes.ShaderSubtype.SharedPixel:
+                    RunSharedPixelUnitTest(unitTest, shaderType);
+                    break;
+                case ShaderTypes.ShaderSubtype.SharedVertex:
+                    RunSharedVertexUnitTest(unitTest, shaderType);
+                    break;
             }
         }
 
-        static void RunTerrainSharedPixelShaderUnitTest()
+        static void RunExplicitUnitTest()
         {
-            TerrainUnitTest shaderTests = new TerrainUnitTest(ShaderReferencePath);
+            Console.WriteLine($"TESTING EXPLICIT");
+            bool pixl = TestStageType == ShaderTypes.ShaderSubtype.Pixel;
 
-            if (TestSpecificShader)
+            var unitTest = new ExplicitUnitTest(ExplicitReferencePath);
+
+            if (ExplicitTestSingle)
             {
-                shaderTests.TestAllSharedPixelShaders(StageOverrides);
+                string disassembly = "";
+                if (TestStageType == ShaderTypes.ShaderSubtype.Pixel)
+                    disassembly = unitTest.TestExplicitPixelShader(ExplicitShader);
+                else if (TestStageType == ShaderTypes.ShaderSubtype.Vertex)
+                    disassembly = unitTest.TestExplicitVertexShader(ExplicitShader);
 
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : TerrainUnitTest.GetAllShaderStages();
-                foreach (var stage in stages)
-                {
-                    TestSharedPixelShader(stage, -1, -1);
-                }
+                string filename = $"generated_{ExplicitShader}.{(pixl ? "pixel_shader" : "vertex_shader")}";
+                WriteShaderFile(filename, disassembly);
             }
-
-            if (UnitTest)
+            else
             {
-                shaderTests.TestAllSharedPixelShaders(null);
-            }
-        }
-
-        static void RunHalogramSharedVertexShaderUnitTest()
-        {
-            HalogramUnitTest shaderTests = new HalogramUnitTest(ShaderReferencePath);
-
-            if (TestSpecificShader)
-            {
-                shaderTests.TestAllSharedVertexShaders(VertexOverrides, StageOverrides);
-
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : HalogramUnitTest.GetAllShaderStages();
-                var vertices = (VertexOverrides.Count > 0) ? VertexOverrides : HalogramUnitTest.GetAllVertexFormats();
-                foreach (var vertex in vertices)
-                {
-                    foreach (var stage in stages)
-                    {
-                        TestSharedVertexShader(vertex, stage);
-                    }
-                }
-            }
-
-            if (UnitTest)
-            {
-                shaderTests.TestAllSharedVertexShaders(null, null);
-            }
-        }
-
-
-        static void RunSharedVertexShaderUnitTest()
-        {
-            ShaderUnitTest shaderTests = new ShaderUnitTest(ShaderReferencePath);
-
-            if (TestSpecificShader)
-            {
-                shaderTests.TestAllSharedVertexShaders(VertexOverrides, StageOverrides);
-
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : ShaderUnitTest.GetAllShaderStages();
-                var vertices = (VertexOverrides.Count > 0) ? VertexOverrides : ShaderUnitTest.GetAllVertexFormats();
-                foreach (var vertex in vertices)
-                {
-                    foreach (var stage in stages)
-                    {
-                        TestSharedVertexShader(vertex, stage);
-                    }
-                }
-            }
-
-            if (UnitTest)
-            {
-                shaderTests.TestAllSharedVertexShaders(null, null);
-            }
-        }
-
-        static void RunSharedPixelShaderUnitTest()
-        {
-            ShaderUnitTest shaderTests = new ShaderUnitTest(ShaderReferencePath);
-
-            if (TestSpecificShader)
-            {
-                shaderTests.TestAllSharedPixelShaders(StageOverrides);
-
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : ShaderUnitTest.GetAllShaderStages();
-                foreach (var stage in stages)
-                {
-                    TestSharedPixelShader(stage, -1, -1);
-                }
-            }
-
-            if (UnitTest)
-            {
-                shaderTests.TestAllSharedPixelShaders(null);
-            }
-        }
-
-        static void RunShaderUnitTest()
-        {
-            ShaderUnitTest shaderTests = new ShaderUnitTest(ShaderReferencePath);
-
-            if (TestSpecificShader)
-            {
-                var methodOverrides = new List<List<int>> { ShaderAlbedoOverrides, ShaderBumpOverrides, ShaderAlphaOverrides, ShaderSpecularOverrides, ShaderMaterialOverrides,
-                ShaderEnvOverrides, ShaderSelfIllumOverrides, ShaderBlendModeOverrides, ShaderParallaxOverrides, ShaderMiscOverrides, new List<int>() };
-
-                shaderTests.TestAllPixelShaders(ShaderOverrides, StageOverrides, methodOverrides);
-
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : ShaderUnitTest.GetAllShaderStages();
-
-                foreach (var stage in stages)
-                {
-                    foreach (var methods in ShaderOverrides)
-                    {
-                        TestPixelShader(stage, methods);
-                    }
-                }
-            }
-
-            if (UnitTest)
-            {
-                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
-            }
-        }
-
-        static void RunParticleUnitTest()
-        {
-            ParticleUnitTest shaderTests = new ParticleUnitTest(ShaderReferencePath);
-
-            if (TestSpecificShader)
-            {
-                var methodOverrides = new List<List<int>> { ParticleAlbedoOverrides, ParticleBlendModeOverrides, ParticleSpecializedRenderingOverrides, ParticleLightingOverrides,
-                    ParticleRenderTargetsOverrides, ParticleDepthFadeOverrides, ParticleBlackPointOverrides, ParticleFogOverrides, ParticleFrameBlendOverrides, ParticleSelfIlluminationOverrides };
-
-                shaderTests.TestAllPixelShaders(ParticleOverrides, StageOverrides, methodOverrides);
-
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : ParticleUnitTest.GetAllShaderStages();
-
-                foreach (var stage in stages)
-                {
-                    foreach (var methods in ParticleOverrides)
-                    {
-                        TestPixelShader(stage, methods);
-                    }
-                }
-            }
-
-            if (UnitTest)
-            {
-                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
-            }
-        }
-
-        static void RunTerrainUnitTest()
-        {
-            TerrainUnitTest shaderTests = new TerrainUnitTest(ShaderReferencePath);
-
-            if (TestSpecificShader)
-            {
-                var methodOverrides = new List<List<int>> { TerrainBlendingOverride, TerrainEnvMapOverride, TerrainMaterial0Override, TerrainMaterial1Override,
-                    TerrainMaterial2Override, TerrainMaterial3Override};
-
-                shaderTests.TestAllPixelShaders(TerrainOverrides, StageOverrides, methodOverrides);
-
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : TerrainUnitTest.GetAllShaderStages();
-
-                foreach (var stage in stages)
-                {
-                    foreach (var methods in TerrainOverrides)
-                    {
-                        TestPixelShader(stage, methods);
-                    }
-                }
-            }
-
-            if (UnitTest)
-            {
-                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
-            }
-        }
-
-        static void RunHalogramUnitTest()
-        {
-            HalogramUnitTest shaderTests = new HalogramUnitTest(ShaderReferencePath);
-
-            if (TestSpecificShader)
-            {
-                var methodOverrides = new List<List<int>> { HalogramAlbedoOverride, HalogramSelfIllumOverride, HalogramBlendModeOverride, HalogramMiscOverride, HalogramWarpOverride, HalogramOverlayOverride, HalogramEdgeFadeOverride};
-
-                shaderTests.TestAllPixelShaders(HalogramOverrides, StageOverrides, methodOverrides);
-
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : HalogramUnitTest.GetAllShaderStages();
-
-                foreach (var stage in stages)
-                {
-                    foreach (var methods in HalogramOverrides)
-                    {
-                        TestPixelShader(stage, methods);
-                    }
-                }
-            }
-
-            if (UnitTest)
-            {
-                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
-            }
-        }
-
-        static void RunContrailUnitTest()
-        {
-            ContrailUnitTest shaderTests = new ContrailUnitTest(ShaderReferencePath);
-
-            if (TestSpecificShader)
-            {
-                var methodOverrides = new List<List<int>> { ContrailAlbedoOverrides, ContrailBlendModeOverrides, ContrailBlackPointOverrides, ContrailFogOverrides };
-
-                shaderTests.TestAllPixelShaders(ContrailOverrides, StageOverrides, methodOverrides);
-
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : ContrailUnitTest.GetAllShaderStages();
-
-                foreach (var stage in stages)
-                {
-                    foreach (var methods in ContrailOverrides)
-                    {
-                        TestPixelShader(stage, methods);
-                    }
-                }
-            }
-
-            if (UnitTest)
-            {
-                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
-            }
-        }
-
-        static void RunBeamUnitTest()
-        {
-            BeamUnitTest shaderTests = new BeamUnitTest(ShaderReferencePath);
-
-            if (TestSpecificShader)
-            {
-                var methodOverrides = new List<List<int>> { BeamAlbedoOverrides, BeamBlendModeOverrides, BeamBlackPointOverrides, BeamFogOverrides };
-
-                shaderTests.TestAllPixelShaders(BeamOverrides, StageOverrides, methodOverrides);
-
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : BeamUnitTest.GetAllShaderStages();
-
-                foreach (var stage in stages)
-                {
-                    foreach (var methods in BeamOverrides)
-                    {
-                        TestPixelShader(stage, methods);
-                    }
-                }
-            }
-
-            if (UnitTest)
-            {
-                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
-            }
-        }
-
-        static void RunLightVolumeUnitTest()
-        {
-            LightVolumeUnitTest shaderTests = new LightVolumeUnitTest(ShaderReferencePath);
-
-            if (TestSpecificShader)
-            {
-                var methodOverrides = new List<List<int>> { LightVolumeAlbedoOverrides, LightVolumeBlendModeOverrides, LightVolumeFogOverrides };
-
-                shaderTests.TestAllPixelShaders(LightVolumeOverrides, StageOverrides, methodOverrides);
-
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : LightVolumeUnitTest.GetAllShaderStages();
-
-                foreach (var stage in stages)
-                {
-                    foreach (var methods in LightVolumeOverrides)
-                    {
-                        TestPixelShader(stage, methods);
-                    }
-                }
-            }
-
-            if (UnitTest)
-            {
-                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
-            }
-        }
-
-        static void RunDecalUnitTest()
-        {
-            DecalUnitTest shaderTests = new DecalUnitTest(ShaderReferencePath);
-
-            if (TestSpecificShader)
-            {
-                var methodOverrides = new List<List<int>> { DecalAlbedoOverrides, DecalBlendModeOverrides, DecalRenderPassOverrides, DecalSpecularOverrides, DecalBumpMappingOverrides, DecalTintingOverrides };
-
-                shaderTests.TestAllPixelShaders(DecalOverrides, StageOverrides, methodOverrides);
-
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : DecalUnitTest.GetAllShaderStages();
-
-                foreach (var stage in stages)
-                {
-                    foreach (var methods in DecalOverrides)
-                    {
-                        TestPixelShader(stage, methods);
-                    }
-                }
-            }
-
-            if (UnitTest)
-            {
-                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
-            }
-        }
-
-        static void RunScreenUnitTest()
-        {
-            ScreenUnitTest shaderTests = new ScreenUnitTest(ShaderReferencePath);
-
-            if (TestSpecificShader)
-            {
-                var methodOverrides = new List<List<int>> { ScreenWarpOverrides, ScreenBaseOverrides, ScreenOverlayAOverrides, ScreenOverlayBOverrides, ScreenBlendModeOverrides };
-
-                shaderTests.TestAllPixelShaders(ScreenOverrides, StageOverrides, methodOverrides);
-
-                var stages = (StageOverrides.Count > 0) ? StageOverrides : ScreenUnitTest.GetAllShaderStages();
-
-                foreach (var stage in stages)
-                {
-                    foreach (var methods in ScreenOverrides)
-                    {
-                        TestPixelShader(stage, methods);
-                    }
-                }
-            }
-
-            if (UnitTest)
-            {
-                shaderTests.TestAllPixelShaders(ShaderTests, null, null);
+                if (TestStageType == ShaderTypes.ShaderSubtype.Pixel)
+                    unitTest.TestAllExplicitPixelShaders();
+                else if (TestStageType == ShaderTypes.ShaderSubtype.Vertex)
+                    unitTest.TestAllExplicitVertexShaders();
             }
         }
 
         static int Main()
         {
-            Console.WriteLine($"TESTING {TestShaderType.ToUpper()}");
-
-            switch (TestShaderType)
-            {
-                case "shader":
-                    switch (TestStageType)
-                    {
-                        case "shared_vertex":
-                            RunSharedVertexShaderUnitTest(); break;
-                        case "pixel":
-                            RunShaderUnitTest(); break;
-                        case "shared_pixel":
-                            RunSharedPixelShaderUnitTest(); break;
-                    }
-                    break;
-                case "particle": RunParticleUnitTest(); break;
-                case "contrail": RunContrailUnitTest(); break;
-                case "beam": RunBeamUnitTest(); break;
-                case "light_volume": RunLightVolumeUnitTest(); break;
-                case "decal": ;
-                    switch (TestStageType)
-                    {
-                        case "shared_vertex":
-                            RunDecalSharedVertexShaderUnitTest();
-                            break;
-                        case "pixel":
-                            RunDecalUnitTest(); 
-                            break;
-                    }
-                    break;
-                case "screen": RunScreenUnitTest(); break;
-                case "terrain":
-                    switch (TestStageType)
-                    {
-                        case "shared_vertex":
-                            RunTerrainSharedVertexShaderUnitTest(); 
-                            break;
-                        case "pixel":
-                            RunTerrainUnitTest(); break;
-                        case "shared_pixel":
-                            RunTerrainSharedPixelShaderUnitTest(); 
-                            break;
-                    }
-                    break;
-                case "halogram":
-                    switch (TestStageType)
-                    {
-                        case "shared_vertex":
-                            RunHalogramSharedVertexShaderUnitTest();
-                            break;
-                        case "pixel":
-                            RunHalogramUnitTest(); break;
-                    }
-                    break;
-            }
+            if (ExplicitTest)
+                RunExplicitUnitTest();
+            //if (ChudTest)
+            //    RunChudUnitTest();
+            if (TemplateTest)
+                RunUnitTest(TestShaderType, TestStageType);
 
             Console.ReadLine();
             return 0;
@@ -687,194 +463,102 @@ namespace HaloShaderGenerator
         }
 
         #region test methods shader
-        static void TestPixelShader(ShaderStage stage, List<int> methods)
+        static IShaderGenerator GetTemplateShaderGenerator(ShaderType shaderType, List<int> methods)
         {
-            if (TestShaderType == "shader")
+            byte[] bMethods = methods.ToArray().Select(i => (byte)i).ToArray();
+
+            switch (shaderType)
             {
-                var albedo = (Albedo)methods[0]; 
-                var bump_mapping = (Bump_Mapping)methods[1]; 
-                var alpha_test = (Alpha_Test)methods[2]; 
-                var specular_mask = (Specular_Mask)methods[3]; 
-                var material_model = (Material_Model)methods[4];
-                var environment_mapping = (Environment_Mapping)methods[5]; 
-                var self_illumination = (Self_Illumination)methods[6]; 
-                var blend_mode = (Blend_Mode)methods[7]; 
-                var parallax = (Parallax)methods[8]; 
-                var misc = (Misc)methods[9];
-                var distortion = (Distortion)methods[10];
-
-                var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion);
-                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
-                {
-                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
-                    var parameters = gen.GetPixelShaderParameters();
-
-                    var disassembly = D3DCompiler.Disassemble(bytecode);
-                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
-                    WriteShaderFile(filename, disassembly);
-                }
+                case ShaderType.Shader:         return new Shader.ShaderGenerator(bMethods);
+                case ShaderType.Beam:           return new Beam.BeamGenerator(bMethods);
+                case ShaderType.Contrail:       return new Contrail.ContrailGenerator(bMethods);
+                case ShaderType.Decal:          return new Decal.DecalGenerator(bMethods);
+                case ShaderType.Halogram:       return new Halogram.HalogramGenerator(bMethods);
+                case ShaderType.LightVolume:    return new LightVolume.LightVolumeGenerator(bMethods);
+                case ShaderType.Particle:       return new Particle.ParticleGenerator(bMethods);
+                case ShaderType.Terrain:        return new Terrain.TerrainGenerator(bMethods);
+                //case ShaderType.Cortana:        return new Cortana.CortanaGenerator(bMethods);
+                //case ShaderType.Water:          return new Water.WaterGenerator(bMethods);
+                case ShaderType.Black:          return new Black.ShaderBlackGenerator();
+                case ShaderType.Screen:         return new Screen.ScreenGenerator(bMethods);
+                case ShaderType.Custom:         return new Custom.CustomGenerator(bMethods);
+                //case ShaderType.Foliage:        return new Foliage.FoliageGenerator(bMethods);
+                case ShaderType.ZOnly:          return new ZOnly.ZOnlyGenerator(bMethods);
             }
-            else if (TestShaderType == "particle")
+
+            throw new Exception($"No generator for \"shaderType\" found.");
+        }
+
+        static IShaderGenerator GetShaderGenerator(ShaderType shaderType)
+        {
+            switch (shaderType)
             {
-                var albedo = (Particle.Albedo)methods[0];
-                var blend_mode = (Particle.Blend_Mode)methods[1];
-                var specialized_rendering = (Particle.Specialized_Rendering)methods[2];
-                var lighting = (Particle.Lighting)methods[3];
-                var render_targets = (Particle.Render_Targets)methods[4];
-                var depth_fade = (Particle.Depth_Fade)methods[5];
-                var black_point = (Particle.Black_Point)methods[6];
-                var fog = (Particle.Fog)methods[7];
-                var frame_blend = (Particle.Frame_Blend)methods[8];
-                var self_illumination = (Particle.Self_Illumination)methods[9];
-
-                var gen = new Particle.ParticleGenerator(albedo, blend_mode, specialized_rendering, lighting, render_targets, depth_fade, black_point, fog, frame_blend, self_illumination);
-                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
-                {
-                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
-                    var parameters = gen.GetPixelShaderParameters();
-
-                    var disassembly = D3DCompiler.Disassemble(bytecode);
-                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
-                    WriteShaderFile(filename, disassembly);
-                }
+                case ShaderType.Shader:         return new Shader.ShaderGenerator();
+                case ShaderType.Beam:           return new Beam.BeamGenerator();
+                case ShaderType.Contrail:       return new Contrail.ContrailGenerator();
+                case ShaderType.Decal:          return new Decal.DecalGenerator();
+                case ShaderType.Halogram:       return new Halogram.HalogramGenerator();
+                case ShaderType.LightVolume:    return new LightVolume.LightVolumeGenerator();
+                case ShaderType.Particle:       return new Particle.ParticleGenerator();
+                case ShaderType.Terrain:        return new Terrain.TerrainGenerator();
+                //case ShaderType.Cortana:        return new Cortana.CortanaGenerator();
+                //case ShaderType.Water:          return new Water.WaterGenerator();
+                case ShaderType.Black:          return new Black.ShaderBlackGenerator();
+                case ShaderType.Screen:         return new Screen.ScreenGenerator();
+                case ShaderType.Custom:         return new Custom.CustomGenerator();
+                //case ShaderType.Foliage:        return new Foliage.FoliageGenerator();
+                case ShaderType.ZOnly:          return new ZOnly.ZOnlyGenerator();
             }
-            else if(TestShaderType == "terrain")
+
+            throw new Exception($"No generator for \"shaderType\" found.");
+        }
+
+        static void TestPixelShader(ShaderType shaderType, ShaderStage stage, List<int> methods)
+        {
+            IShaderGenerator generator = GetTemplateShaderGenerator(shaderType, methods);
+
+            if (generator.IsEntryPointSupported(stage) && !generator.IsPixelShaderShared(stage))
             {
-                var blend_type = (Terrain.Blending)methods[0];
-                var env_map = (Terrain.Environment_Mapping)methods[1];
-                var material_0 = (Terrain.Material)methods[2];
-                var material_1 = (Terrain.Material)methods[3];
-                var material_2 = (Terrain.Material)methods[4];
-                var material_3 = (Terrain.Material_No_Detail_Bump)methods[5];
+                var bytecode = generator.GeneratePixelShader(stage).Bytecode;
+                var parameters = generator.GetPixelShaderParameters();
 
-                var gen = new Terrain.TerrainGenerator(blend_type, env_map, material_0, material_1, material_2, material_3);
-                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
-                {
-                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
-                    var parameters = gen.GetPixelShaderParameters();
-
-                    var disassembly = D3DCompiler.Disassemble(bytecode);
-                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
-                    WriteShaderFile(filename, disassembly);
-                }
-            }
-            else if (TestShaderType == "contrail")
-            {
-                var albedo = (Contrail.Albedo)methods[0];
-                var blend_mode = (Contrail.Blend_Mode)methods[1];
-                var black_point = (Contrail.Black_Point)methods[2];
-                var fog = (Contrail.Fog)methods[3];
-
-                var gen = new Contrail.ContrailGenerator(albedo, blend_mode, black_point, fog);
-                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
-                {
-                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
-                    var parameters = gen.GetPixelShaderParameters();
-
-                    var disassembly = D3DCompiler.Disassemble(bytecode);
-                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
-                    WriteShaderFile(filename, disassembly);
-                }
-            }
-            else if (TestShaderType == "decal")
-            {
-                var albedo = (Decal.Albedo)methods[0];
-                var blend_mode = (Decal.Blend_Mode)methods[1];
-                var render_pass = (Decal.Render_Pass)methods[2];
-                var specular = (Decal.Specular)methods[3];
-                var bump_mapping = (Decal.Bump_Mapping)methods[4];
-                var tinting = (Decal.Tinting)methods[5];
-
-                var gen = new Decal.DecalGenerator(albedo, blend_mode, render_pass, specular, bump_mapping, tinting);
-                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
-                {
-                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
-                    var parameters = gen.GetPixelShaderParameters();
-
-                    var disassembly = D3DCompiler.Disassemble(bytecode);
-                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
-                    WriteShaderFile(filename, disassembly);
-                }
-            }
-            else if (TestShaderType == "halogram")
-            {
-                var albedo = (Halogram.Albedo)methods[0];
-                var self_illumination = (Halogram.Self_Illumination)methods[1];
-                var blend_mode = (Halogram.Blend_Mode)methods[2];
-                var misc = (Halogram.Misc)methods[3];
-                var warp = (Halogram.Warp)methods[4];
-                var overlay = (Halogram.Overlay)methods[5];
-                var edge_fade = (Halogram.Edge_Fade)methods[6];
-
-                var gen = new Halogram.HalogramGenerator(albedo, self_illumination, blend_mode, misc, warp, overlay, edge_fade);
-                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
-                {
-                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
-                    var parameters = gen.GetPixelShaderParameters();
-
-                    var disassembly = D3DCompiler.Disassemble(bytecode);
-                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
-                    WriteShaderFile(filename, disassembly);
-                }
-            }
-            else if (TestShaderType == "screen")
-            {
-                var warp = (Screen.Warp)methods[0];
-                var _base = (Screen.Base)methods[1];
-                var overlay_a = (Screen.Overlay_A)methods[2];
-                var overlay_b = (Screen.Overlay_B)methods[3];
-                var blend_mode = (Screen.Blend_Mode)methods[4];
-
-                var gen = new Screen.ScreenGenerator(warp, _base, overlay_a, overlay_b, blend_mode);
-                if (gen.IsEntryPointSupported(stage) && !gen.IsPixelShaderShared(stage))
-                {
-                    var bytecode = gen.GeneratePixelShader(stage).Bytecode;
-                    var parameters = gen.GetPixelShaderParameters();
-
-                    var disassembly = D3DCompiler.Disassemble(bytecode);
-                    string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
-                    WriteShaderFile(filename, disassembly);
-                }
+                var disassembly = D3DCompiler.Disassemble(bytecode);
+                string filename = $"generated_{stage.ToString().ToLower()}_{string.Join("_", methods)}.pixl";
+                WriteShaderFile(filename, disassembly);
             }
         }
 
-        static void TestSharedVertexShader(VertexType vertexType, ShaderStage stage)
+        static void TestSharedVertexShader(ShaderType shaderType, VertexType vertexType, ShaderStage stage)
         {
-            IShaderGenerator gen = new ShaderGenerator();
+            IShaderGenerator generator = GetShaderGenerator(shaderType);
 
-            if (TestShaderType == "terrain")
-                gen = new Terrain.TerrainGenerator();
-
-            if (gen.IsEntryPointSupported(stage) && gen.IsVertexShaderShared(stage) && gen.IsVertexFormatSupported(vertexType))
+            if (generator.IsEntryPointSupported(stage) && generator.IsVertexShaderShared(stage) && generator.IsVertexFormatSupported(vertexType))
             {
-                var bytecode = gen.GenerateSharedVertexShader(vertexType, stage).Bytecode;
+                var bytecode = generator.GenerateSharedVertexShader(vertexType, stage).Bytecode;
                 var disassembly = D3DCompiler.Disassemble(bytecode);
                 WriteShaderFile($"generated_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}.glvs", disassembly);
             }
            
         }
 
-        static void TestSharedPixelShader(ShaderStage stage, int methodIndex, int optionIndex)
+        static void TestSharedPixelShader(ShaderType shaderType, ShaderStage stage, int methodIndex, int optionIndex)
         {
-            IShaderGenerator gen = new ShaderGenerator();
-
-            if (TestShaderType == "terrain")
-                gen = new Terrain.TerrainGenerator();
+            IShaderGenerator generator = GetShaderGenerator(shaderType);
 
             byte[] bytecode;
             string disassembly;
 
-            if (gen.IsSharedPixelShaderUsingMethods(stage))
+            if (generator.IsSharedPixelShaderUsingMethods(stage))
             {
                 if (methodIndex == -1 || optionIndex == -1)
                 {
-                    for (int i = 0; i < gen.GetMethodCount(); i++)
+                    for (int i = 0; i < generator.GetMethodCount(); i++)
                     {
-                        if (gen.IsMethodSharedInEntryPoint(stage, i) && gen.IsPixelShaderShared(stage))
+                        if (generator.IsMethodSharedInEntryPoint(stage, i) && generator.IsPixelShaderShared(stage))
                         {
-                            for (int j = 0; j < gen.GetMethodOptionCount(i); j++)
+                            for (int j = 0; j < generator.GetMethodOptionCount(i); j++)
                             {
-                                bytecode = gen.GenerateSharedPixelShader(stage, i, j).Bytecode;
+                                bytecode = generator.GenerateSharedPixelShader(stage, i, j).Bytecode;
                                 disassembly = D3DCompiler.Disassemble(bytecode);
                                 WriteShaderFile($"generated_{stage.ToString().ToLower()}_{i}_{j}.glps", disassembly);
                             }
@@ -883,14 +567,14 @@ namespace HaloShaderGenerator
                 }
                 else
                 {
-                    bytecode = gen.GenerateSharedPixelShader(stage, methodIndex, optionIndex).Bytecode;
+                    bytecode = generator.GenerateSharedPixelShader(stage, methodIndex, optionIndex).Bytecode;
                     disassembly = D3DCompiler.Disassemble(bytecode);
                     WriteShaderFile($"generated_{stage.ToString().ToLower()}_{methodIndex}_{optionIndex}.glps", disassembly);
                 }
             }
             else
             {
-                bytecode = gen.GenerateSharedPixelShader(stage, -1, -1).Bytecode;
+                bytecode = generator.GenerateSharedPixelShader(stage, -1, -1).Bytecode;
                 disassembly = D3DCompiler.Disassemble(bytecode);
                 WriteShaderFile($"generated_{stage.ToString().ToLower()}.glps", disassembly);
             }
@@ -901,7 +585,7 @@ namespace HaloShaderGenerator
         #region test methods independent shaders
         static void TestVertexShader(string name)
         {
-            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(name);
+            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(name).Bytecode;
             var str = D3DCompiler.Disassemble(bytecode);
             using (FileStream test = new FileInfo($"generated_{name}.vtsh").Create())
             using (StreamWriter writer = new StreamWriter(test))

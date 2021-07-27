@@ -44,5 +44,15 @@ namespace HaloShaderGenerator
             var bytecode = gen.GenerateSharedVertexShader(vertex, stage).Bytecode;
             return D3DCompiler.Disassemble(bytecode);
         }
+
+        public override string GenerateExplicitPixelShader(ShaderTypes.ExplicitShader explicitShader)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override string GenerateExplicitVertexShader(ShaderTypes.ExplicitShader explicitShader)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
