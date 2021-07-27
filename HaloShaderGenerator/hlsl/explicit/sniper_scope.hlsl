@@ -11,7 +11,7 @@
 uniform sampler2D stencil_sampler : register(s1);
 #endif
 
-float4 main(VS_OUTPUT_DEFAULT input) : COLOR
+float4 ps_default(VS_OUTPUT_DEFAULT input) : COLOR
 {
     float2 texcoord;
     

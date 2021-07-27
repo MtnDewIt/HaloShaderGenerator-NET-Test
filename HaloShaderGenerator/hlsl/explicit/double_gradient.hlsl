@@ -13,7 +13,7 @@ float3 tex2D_offset(float2 texcoord, float2 offset)
 }
 
 // vertex output is s_screen_vertex but doesn't really matter
-float4 main(in float2 texcoord : TEXCOORD) : COLOR
+float4 ps_default(in float2 texcoord : TEXCOORD) : COLOR
 {    
 #if ODST_SHADER == 1
     

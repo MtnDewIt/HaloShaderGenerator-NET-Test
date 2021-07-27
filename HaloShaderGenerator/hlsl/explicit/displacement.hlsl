@@ -6,7 +6,7 @@
 #define ODST_SHADER 0
 #endif
 
-float4 main(VS_OUTPUT_SCREEN input) : COLOR
+float4 ps_default(VS_OUTPUT_SCREEN input) : COLOR
 {
     float distort_constant = ODST_SHADER == 1 ? 0.5000076f : 0.501960814f;
     

@@ -45,12 +45,12 @@ namespace HaloShaderGenerator
             return D3DCompiler.Disassemble(bytecode);
         }
 
-        public override string GenerateExplicitPixelShader(ShaderTypes.ExplicitShader explicitShader)
+        public override string GenerateExplicitPixelShader(ExplicitShader explicitShader, ShaderStage stage)
         {
             throw new System.NotImplementedException();
         }
 
-        public override string GenerateExplicitVertexShader(ShaderTypes.ExplicitShader explicitShader)
+        public override string GenerateExplicitVertexShader(ExplicitShader explicitShader, ShaderStage stage)
         {
             throw new System.NotImplementedException();
         }

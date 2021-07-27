@@ -12,25 +12,27 @@ namespace HaloShaderGenerator
 {
     class Application
     {
-        static readonly ShaderTypes.ShaderSubtype TestStageType = ShaderTypes.ShaderSubtype.Pixel; //shared_vertex, shared_pixel, vertex or pixel
+        static readonly ShaderSubtype TestStageType = ShaderSubtype.Pixel; //shared_vertex, shared_pixel, vertex or pixel
 
         static readonly bool ExplicitTest = true;
         static readonly string ExplicitReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\explicit";
         static readonly bool ExplicitTestSingle = true;
-        static readonly ShaderTypes.ExplicitShader ExplicitShader = ShaderTypes.ExplicitShader.debug2d;
+        static public readonly ExplicitShader ExplicitShader = ExplicitShader.pixel_copy;
 
         static readonly bool ChudTest = false;
         static readonly string ChudReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\chud";
         static readonly bool ChudTestSingle = true;
-        static readonly ShaderTypes.ChudShader ChudShader = ShaderTypes.ChudShader.simple;
+        static public readonly ChudShader ChudShader = ChudShader.simple;
 
-        static readonly bool TemplateTest = true;
+        static readonly bool TemplateTest = false;
         static readonly string ShaderReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\Shaders";
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
-        static readonly ShaderType TestShaderType = ShaderType.Particle;
+        static readonly ShaderType TestShaderType = ShaderType.Shader;
 
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { ShaderStage.Default };
+        static public readonly bool OutputAll = true;
+
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { ShaderStage.Albedo };
 
         #region Shader
         static readonly List<VertexType> VertexOverrides = new List<VertexType> { };
@@ -393,7 +395,7 @@ namespace HaloShaderGenerator
             }
         }
 
-        static void RunUnitTest(ShaderType shaderType, ShaderTypes.ShaderSubtype shaderSubtype)
+        static void RunUnitTest(ShaderType shaderType, ShaderSubtype shaderSubtype)
         {
             Console.WriteLine($"TESTING {shaderType.ToString().ToUpper()}");
 
@@ -401,13 +403,13 @@ namespace HaloShaderGenerator
 
             switch (shaderSubtype)
             {
-                case ShaderTypes.ShaderSubtype.Pixel:
+                case ShaderSubtype.Pixel:
                     RunPixelUnitTest(unitTest, shaderType);
                     break;
-                case ShaderTypes.ShaderSubtype.SharedPixel:
+                case ShaderSubtype.SharedPixel:
                     RunSharedPixelUnitTest(unitTest, shaderType);
                     break;
-                case ShaderTypes.ShaderSubtype.SharedVertex:
+                case ShaderSubtype.SharedVertex:
                     RunSharedVertexUnitTest(unitTest, shaderType);
                     break;
             }
@@ -416,26 +418,22 @@ namespace HaloShaderGenerator
         static void RunExplicitUnitTest()
         {
             Console.WriteLine($"TESTING EXPLICIT");
-            bool pixl = TestStageType == ShaderTypes.ShaderSubtype.Pixel;
+            bool pixl = TestStageType == ShaderSubtype.Pixel;
 
             var unitTest = new ExplicitUnitTest(ExplicitReferencePath);
 
             if (ExplicitTestSingle)
             {
-                string disassembly = "";
-                if (TestStageType == ShaderTypes.ShaderSubtype.Pixel)
-                    disassembly = unitTest.TestExplicitPixelShader(ExplicitShader);
-                else if (TestStageType == ShaderTypes.ShaderSubtype.Vertex)
-                    disassembly = unitTest.TestExplicitVertexShader(ExplicitShader);
-
-                string filename = $"generated_{ExplicitShader}.{(pixl ? "pixel_shader" : "vertex_shader")}";
-                WriteShaderFile(filename, disassembly);
+                if (TestStageType == ShaderSubtype.Pixel)
+                    unitTest.TestExplicitPixelShader(ExplicitShader);
+                else if (TestStageType == ShaderSubtype.Vertex)
+                    unitTest.TestExplicitVertexShader(ExplicitShader);
             }
             else
             {
-                if (TestStageType == ShaderTypes.ShaderSubtype.Pixel)
+                if (TestStageType == ShaderSubtype.Pixel)
                     unitTest.TestAllExplicitPixelShaders();
-                else if (TestStageType == ShaderTypes.ShaderSubtype.Vertex)
+                else if (TestStageType == ShaderSubtype.Vertex)
                     unitTest.TestAllExplicitVertexShaders();
             }
         }
@@ -453,9 +451,12 @@ namespace HaloShaderGenerator
             return 0;
         }
 
-        static void WriteShaderFile(string name, string disassembly)
+        static public void WriteShaderFile(string name, string disassembly)
         {
-            using (FileStream test = new FileInfo(name).Create())
+            var file = new FileInfo("disassembly\\" + name);
+            file.Directory.Create();
+
+            using (FileStream test = file.Create())
             using (StreamWriter writer = new StreamWriter(test))
             {
                 writer.WriteLine(disassembly);
@@ -558,25 +559,37 @@ namespace HaloShaderGenerator
                         {
                             for (int j = 0; j < generator.GetMethodOptionCount(i); j++)
                             {
-                                bytecode = generator.GenerateSharedPixelShader(stage, i, j).Bytecode;
-                                disassembly = D3DCompiler.Disassemble(bytecode);
-                                WriteShaderFile($"generated_{stage.ToString().ToLower()}_{i}_{j}.glps", disassembly);
+                                var result = generator.GenerateSharedPixelShader(stage, i, j);
+                                if (result != null)
+                                {
+                                    bytecode = generator.GenerateSharedPixelShader(stage, i, j).Bytecode;
+                                    disassembly = D3DCompiler.Disassemble(bytecode);
+                                    WriteShaderFile($"generated_{stage.ToString().ToLower()}_{i}_{j}.glps", disassembly);
+                                }
                             }
                         }
                     }
                 }
                 else
                 {
-                    bytecode = generator.GenerateSharedPixelShader(stage, methodIndex, optionIndex).Bytecode;
-                    disassembly = D3DCompiler.Disassemble(bytecode);
-                    WriteShaderFile($"generated_{stage.ToString().ToLower()}_{methodIndex}_{optionIndex}.glps", disassembly);
+                    var result = generator.GenerateSharedPixelShader(stage, -1, -1);
+                    if (result != null)
+                    {
+                        bytecode = result.Bytecode;
+                        disassembly = D3DCompiler.Disassemble(bytecode);
+                        WriteShaderFile($"generated_{stage.ToString().ToLower()}_{methodIndex}_{optionIndex}.glps", disassembly);
+                    }
                 }
             }
             else
             {
-                bytecode = generator.GenerateSharedPixelShader(stage, -1, -1).Bytecode;
-                disassembly = D3DCompiler.Disassemble(bytecode);
-                WriteShaderFile($"generated_{stage.ToString().ToLower()}.glps", disassembly);
+                var result = generator.GenerateSharedPixelShader(stage, -1, -1);
+                if (result != null)
+                {
+                    bytecode = result.Bytecode;
+                    disassembly = D3DCompiler.Disassemble(bytecode);
+                    WriteShaderFile($"generated_{stage.ToString().ToLower()}.glps", disassembly);
+                }
             }
             
         }
@@ -585,7 +598,7 @@ namespace HaloShaderGenerator
         #region test methods independent shaders
         static void TestVertexShader(string name)
         {
-            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(name).Bytecode;
+            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(name, ShaderStage.Default).Bytecode;
             var str = D3DCompiler.Disassemble(bytecode);
             using (FileStream test = new FileInfo($"generated_{name}.vtsh").Create())
             using (StreamWriter writer = new StreamWriter(test))
@@ -598,7 +611,7 @@ namespace HaloShaderGenerator
 
         static void TestPixelShader(string name)
         {
-            var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(name);
+            var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(name, ShaderStage.Default);
             var str = D3DCompiler.Disassemble(bytecode.Bytecode);
             using (FileStream test = new FileInfo($"generated_{name}.pixl").Create())
             using (StreamWriter writer = new StreamWriter(test))

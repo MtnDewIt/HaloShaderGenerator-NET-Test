@@ -1,9 +1,10 @@
-﻿#include "../registers/chud_pixl_shader.hlsli"
+﻿#ifdef PIXEL_SHADER
+#include "../registers/chud_pixl_shader.hlsli"
 #include "../helpers/chud_input_output.hlsli"
 #include "../helpers/color_processing.hlsli"
 
 // Compiles almost perfectly, one small issue with constants
-float4 main(VS_OUTPUT_CORTANA_COMPOSITE input) : COLOR
+float4 ps_default(VS_OUTPUT_CORTANA_COMPOSITE input) : COLOR
 {
 	float4 color_mix;
 	
@@ -67,3 +68,15 @@ float4 main(VS_OUTPUT_CORTANA_COMPOSITE input) : COLOR
 	
 	return color_mix * color_mix_scale + color_result;
 }
+
+#else // VERTEX_SHADER
+#include "../registers/chud_vtsh_shader.hlsli"
+#include "../helpers/chud_input_output.hlsli"
+
+VS_OUTPUT_CORTANA_COMPOSITE vs_default()
+{
+    VS_OUTPUT_CORTANA_COMPOSITE output;
+    output.position = dot(float4(1, 2, 3, 4), chud_basis_0);
+    return output;
+}
+#endif

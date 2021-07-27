@@ -20,7 +20,7 @@ uniform sampler2D shield_impact_depth_texture;
 #include "..\registers\global_parameters.hlsli"
 #include "..\helpers\color_processing.hlsli"
 
-PS_OUTPUT_DEFAULT main(VS_OUTPUT_SHIELD_IMPACT input) : COLOR
+PS_OUTPUT_DEFAULT ps_default(VS_OUTPUT_SHIELD_IMPACT input) : COLOR
 {
     float2 pixel_pos = 0.5f + input.position.xy;
     float2 inv_texture_size = rcp(texture_size.xy);

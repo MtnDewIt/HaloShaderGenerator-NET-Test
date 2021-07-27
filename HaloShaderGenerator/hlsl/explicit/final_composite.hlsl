@@ -1,7 +1,7 @@
 ﻿
 #include "helpers\final_composite_helper.hlsli"
 
-float4 main(in float2 texcoord : TEXCOORD) : COLOR
+float4 ps_default(in float2 texcoord : TEXCOORD) : COLOR
 {
     float3 surface_color = tex2D(surface_sampler, texcoord).rgb;
     float3 bloom_color = tex2D(bloom_sampler, texcoord * bloom_sampler_xform.xy + bloom_sampler_xform.zw).rgb;

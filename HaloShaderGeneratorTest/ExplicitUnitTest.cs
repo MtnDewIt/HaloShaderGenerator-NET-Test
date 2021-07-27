@@ -29,15 +29,15 @@ namespace HaloShaderGenerator
             throw new System.NotImplementedException();
         }
 
-        public override string GenerateExplicitPixelShader(ShaderTypes.ExplicitShader explicitShader)
+        public override string GenerateExplicitPixelShader(ExplicitShader explicitShader, ShaderStage entry)
         {
-            var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(explicitShader.ToString(), false).Bytecode;
+            var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(explicitShader.ToString(), entry, false).Bytecode;
             return D3DCompiler.Disassemble(bytecode);
         }
 
-        public override string GenerateExplicitVertexShader(ShaderTypes.ExplicitShader explicitShader)
+        public override string GenerateExplicitVertexShader(ExplicitShader explicitShader, ShaderStage entry)
         {
-            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(explicitShader.ToString(), false).Bytecode;
+            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(explicitShader.ToString(), entry, false).Bytecode;
             return D3DCompiler.Disassemble(bytecode);
         }
     }

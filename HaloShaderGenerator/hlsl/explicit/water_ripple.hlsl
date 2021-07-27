@@ -27,7 +27,7 @@ struct RIPPLE_OUTPUT
 };
 
 #if WATER_RIPPLE_SHADER == k_water_ripple_update
-float4 main() : COLOR
+float4 ps_default() : COLOR
 {
     return float4(0, 1, 2, 3);
 }
@@ -36,7 +36,7 @@ float4 main() : COLOR
 
 uniform sampler2D tex_ripple_pattern : register(s0);
 
-float4 main(RIPPLE_OUTPUT input) : COLOR
+float4 ps_albedo(RIPPLE_OUTPUT input) : COLOR
 {
     float4 ripple_pattern = tex2D(tex_ripple_pattern, input.texcoord.xy);
     
@@ -83,7 +83,7 @@ float4 main(RIPPLE_OUTPUT input) : COLOR
 
 uniform sampler2D tex_ripple_buffer_height : register(s1);
 
-float4 main(float2 texcoord : TEXCOORD) : COLOR
+float4 ps_dynamic_light(float2 texcoord : TEXCOORD) : COLOR
 {
     float2 height = tex2D(tex_ripple_buffer_height, texcoord).r;
     float height_upper_x = tex2D(tex_ripple_buffer_height, texcoord + float2(0.00124999997, 0)).r;
@@ -114,7 +114,7 @@ uniform float3 k_ps_underwater_fog_color : register(c221);
 uniform sampler2D tex_ldr_buffer : register(s0);
 uniform sampler2D tex_depth_buffer : register(s1);
 
-PS_OUTPUT_DEFAULT main(in float4 position : POSITION, in float4 texcoord : TEXCOORD) : COLOR
+PS_OUTPUT_DEFAULT ps_shadow_apply(in float4 position : POSITION, in float4 texcoord : TEXCOORD) : COLOR
 {
     float4 modulated_tex;
     modulated_tex.xy = texcoord.xy / texcoord.w;
@@ -157,7 +157,7 @@ PS_OUTPUT_DEFAULT main(in float4 position : POSITION, in float4 texcoord : TEXCO
 #endif
 
 #if WATER_RIPPLE_SHADER == k_water_ripple_add
-float4 main() : COLOR
+float4 ps_active_camo() : COLOR
 {
     return float4(0, 1, 2, 3);
 }

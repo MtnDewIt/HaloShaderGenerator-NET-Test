@@ -52,7 +52,7 @@ float4 main_odst(VS_OUTPUT_SCREEN input) : COLOR
 
 }
 
-float4 main(VS_OUTPUT_SCREEN input) : COLOR
+float4 ps_default(VS_OUTPUT_SCREEN input) : COLOR
 {    
     float2 scene_tex = (input.position.xy + 0.5f) * screen_constants.xy;
     

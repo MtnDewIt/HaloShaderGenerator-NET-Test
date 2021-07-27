@@ -17,7 +17,7 @@ float4 blur_sample_vertical(float2 texcoord, float2 offset, int index)
 //    return tex2D(target_sampler, texcoord + offset * float2(kernel[index].x, 0.5)) * kernel[index].y;
 //}
 
-float4 main(in float2 texcoord : TEXCOORD) : COLOR
+float4 ps_default(in float2 texcoord : TEXCOORD) : COLOR
 {
     float4 color = 0;
     

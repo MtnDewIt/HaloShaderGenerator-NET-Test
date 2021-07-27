@@ -140,6 +140,7 @@
     <Compile Include="Generator\ShaderGeneratorInterfaces.cs" />
     <Compile Include="Generator\ShaderGeneratorResult.cs" />
     <Compile Include="Generic\GenericPixelShaderGenerator.cs" />
+    <Compile Include="Generic\GenericShaderStage.cs" />
     <Compile Include="Generic\GenericVertexShaderGenerator.cs" />
     <Compile Include="Globals\RenderMethodExtern.cs" />
     <Compile Include="Globals\HLSLType.cs" />
@@ -154,7 +155,7 @@
     <EmbeddedResource Include="hlsl\methods\albedo_decal.hlsli" />
     <Compile Include="Halogram\HalogramGenerator.cs" />
     <Compile Include="Halogram\MethodOptions.cs" />
-    <EmbeddedResource Include="hlsl\explicit\pixl_sniper_scope.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\sniper_scope.hlsl" />
     <Compile Include="LightVolume\LightVolumeGenerator.cs" />
     <Compile Include="LightVolume\MethodOptions.cs" />
     <Compile Include="Particle\MethodOptions.cs" />
@@ -257,10 +258,7 @@
     <EmbeddedResource Include="hlsl\helpers\shadows.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_chud_cortana_composite.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\vtsh_chud_cortana_composite.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\chud_cortana_composite.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\registers\chud_vtsh_shader.hlsli" />
@@ -434,7 +432,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\explicit_input_output.hlsli" />
-    <EmbeddedResource Include="hlsl\explicit\pixl_shield_impact.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\shield_impact.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\beam\entry_default.hlsli" />
@@ -511,7 +509,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\registers\shadow_parameters.hlsli" />
-    <EmbeddedResource Include="hlsl\explicit\pixl_shadow_apply_bilinear.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\shadow_apply_bilinear.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\pixl_custom.hlsl" />
@@ -538,43 +536,43 @@
     <EmbeddedResource Include="hlsl\glvs_decal.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_water_ripple.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\water_ripple.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_double_gradient.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\double_gradient.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\explicit\pixl_vision_mode.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_pixel_copy.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\pixel_copy.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_downsample_4x4_block.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\downsample_4x4_block.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_blur_11_horizontal.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\blur_11_horizontal.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_blur_11_vertical.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\blur_11_vertical.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_final_composite_dof.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\final_composite_dof.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\explicit\helpers\final_composite_helper.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_debug2d.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\debug2d.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_final_composite.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\final_composite.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_final_composite_zoom.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\final_composite_zoom.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_final_composite_debug.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\final_composite_debug.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\glvs_zonly.hlsl" />
@@ -583,10 +581,13 @@
     <EmbeddedResource Include="hlsl\glps_halogram.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_displacement_motion_blur.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\displacement_motion_blur.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\explicit\pixl_displacement.hlsl" />
+    <EmbeddedResource Include="hlsl\explicit\hud_camera_nightvision.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\explicit\displacement.hlsl" />
     <EmbeddedResource Include="hlsl\explicit\registers\displacement_motion_blur_registers.hlsli" />
   </ItemGroup>
   <ItemGroup>

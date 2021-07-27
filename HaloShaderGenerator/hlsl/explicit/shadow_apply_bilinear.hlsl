@@ -27,7 +27,7 @@ float2 offset_shadow_texcoord(float2 texcoord, float offsetx, float offsety)
     return texcoord + offsets;
 }
 
-PS_OUTPUT_DEFAULT main(VS_OUTPUT_DEFAULT input) : COLOR
+PS_OUTPUT_DEFAULT ps_default(VS_OUTPUT_DEFAULT input) : COLOR
 {
     float2 buffer_uv = apply_xform2d(input.position.xy, p_lighting_constant_6);
     float4 zbuffer_sample = tex2D(zbuffer, buffer_uv);
