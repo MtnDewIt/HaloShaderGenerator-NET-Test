@@ -40,5 +40,17 @@ namespace HaloShaderGenerator
             var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(explicitShader.ToString(), entry, false).Bytecode;
             return D3DCompiler.Disassemble(bytecode);
         }
+
+        public override string GenerateChudPixelShader(ChudShader chudShader, ShaderStage entry)
+        {
+            var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(chudShader.ToString(), entry, true).Bytecode;
+            return D3DCompiler.Disassemble(bytecode);
+        }
+
+        public override string GenerateChudVertexShader(ChudShader chudShader, ShaderStage entry)
+        {
+            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(chudShader.ToString(), entry, true).Bytecode;
+            return D3DCompiler.Disassemble(bytecode);
+        }
     }
 }

@@ -54,5 +54,15 @@ namespace HaloShaderGenerator
         {
             throw new System.NotImplementedException();
         }
+
+        public override string GenerateChudPixelShader(ChudShader chudShader, ShaderStage entry)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override string GenerateChudVertexShader(ChudShader chudShader, ShaderStage entry)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -64,6 +64,16 @@ namespace HaloShaderGenerator
         {
             throw new System.NotImplementedException();
         }
+
+        public override string GenerateChudPixelShader(ChudShader chudShader, ShaderStage entry)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override string GenerateChudVertexShader(ChudShader chudShader, ShaderStage entry)
+        {
+            throw new System.NotImplementedException();
+        }
     }
     
     public abstract class GenericUnitTest
@@ -364,11 +374,44 @@ namespace HaloShaderGenerator
                 var disassembly = GenerateExplicitPixelShader(explicitShader, entry);
                 bool equal = CompareShaders(disassembly, filePath, "ps_3_0", out bool usesD3DX);
                 success &= equal;
-                DisplayPixelShaderTestResults(equal, explicitShader.ToString(), ShaderStage.Default, usesD3DX);
+                DisplayPixelShaderTestResults(equal, explicitShader.ToString(), entry, usesD3DX);
 
                 if (!equal)
                 {
                     string filename = $"generated_{Application.ExplicitShader}_{entry}.pixel_shader";
+                    Application.WriteShaderFile(filename, disassembly);
+                }
+            }
+
+            return success;
+        }
+
+        public bool TestChudPixelShader(ChudShader chudShader)
+        {
+            bool success = true;
+
+            var entries = Generic.GenericShaderStage.GetChudEntryPoints(chudShader);
+
+            foreach (var entry in entries)
+            {
+                string filePath = Path.Combine(Path.Combine(ReferencePath, chudShader.ToString()), $"0_{entry}.pixel_shader");
+                var file = new FileInfo(filePath);
+
+                if (file.Exists == false)
+                {
+                    Console.WriteLine($"No reference shader for {chudShader}");
+                    success = false;
+                    continue;
+                }
+
+                var disassembly = GenerateChudPixelShader(chudShader, entry);
+                bool equal = CompareShaders(disassembly, filePath, "ps_3_0", out bool usesD3DX);
+                success &= equal;
+                DisplayPixelShaderTestResults(equal, chudShader.ToString(), entry, usesD3DX);
+
+                if (!equal)
+                {
+                    string filename = $"generated_{Application.ChudShader}_{entry}.pixel_shader";
                     Application.WriteShaderFile(filename, disassembly);
                 }
             }
@@ -382,7 +425,24 @@ namespace HaloShaderGenerator
 
             foreach (ExplicitShader explicitShader in Enum.GetValues(typeof(ExplicitShader)))
             {
-                success &= TestExplicitPixelShader(explicitShader) != null;
+                success &= TestExplicitPixelShader(explicitShader);
+            }
+
+            if (success)
+                Console.WriteLine("All unit tests passed sucessfully!");
+            else
+                Console.WriteLine("Failed unit tests. See above for more details.");
+
+            return success;
+        }
+
+        public bool TestAllChudPixelShaders()
+        {
+            bool success = true;
+
+            foreach (ChudShader chudShader in Enum.GetValues(typeof(ChudShader)))
+            {
+                success &= TestChudPixelShader(chudShader);
             }
 
             if (success)
@@ -414,11 +474,44 @@ namespace HaloShaderGenerator
                 var disassembly = GenerateExplicitVertexShader(explicitShader, entry);
                 bool equal = CompareShaders(disassembly, filePath, "vs_3_0", out bool usesD3DX);
                 success &= equal;
-                DisplayPixelShaderTestResults(equal, explicitShader.ToString(), ShaderStage.Default, usesD3DX);
+                DisplayPixelShaderTestResults(equal, explicitShader.ToString(), entry, usesD3DX);
 
                 if (!equal)
                 {
                     string filename = $"generated_{Application.ExplicitShader}_{entry}.vertex_shader";
+                    Application.WriteShaderFile(filename, disassembly);
+                }
+            }
+
+            return success;
+        }
+
+        public bool TestChudVertexShader(ChudShader chudShader)
+        {
+            bool success = true;
+
+            var entries = Generic.GenericShaderStage.GetChudEntryPoints(chudShader);
+
+            foreach (var entry in entries)
+            {
+                string filePath = Path.Combine(Path.Combine(ReferencePath, chudShader.ToString()), $"world\\0_{entry}.vertex_shader");
+                var file = new FileInfo(filePath);
+
+                if (file.Exists == false)
+                {
+                    Console.WriteLine($"No reference shader for {chudShader}");
+                    success = false;
+                    continue;
+                }
+
+                var disassembly = GenerateChudVertexShader(chudShader, entry);
+                bool equal = CompareShaders(disassembly, filePath, "vs_3_0", out bool usesD3DX);
+                success &= equal;
+                DisplayPixelShaderTestResults(equal, chudShader.ToString(), entry, usesD3DX);
+
+                if (!equal)
+                {
+                    string filename = $"generated_{Application.ChudShader}_{entry}.vertex_shader";
                     Application.WriteShaderFile(filename, disassembly);
                 }
             }
@@ -432,7 +525,24 @@ namespace HaloShaderGenerator
 
             foreach (ExplicitShader explicitShader in Enum.GetValues(typeof(ExplicitShader)))
             {
-                success &= TestExplicitVertexShader(explicitShader) != null;
+                success &= TestExplicitVertexShader(explicitShader);
+            }
+
+            if (success)
+                Console.WriteLine("All unit tests passed sucessfully!");
+            else
+                Console.WriteLine("Failed unit tests. See above for more details.");
+
+            return success;
+        }
+
+        public bool TestAllChudVertexShaders()
+        {
+            bool success = true;
+
+            foreach (ChudShader chudShader in Enum.GetValues(typeof(ChudShader)))
+            {
+                success &= TestChudVertexShader(chudShader);
             }
 
             if (success)
@@ -642,5 +752,9 @@ namespace HaloShaderGenerator
         public abstract string GenerateExplicitPixelShader(ExplicitShader explicitShader, ShaderStage entry);
 
         public abstract string GenerateExplicitVertexShader(ExplicitShader explicitShader, ShaderStage entry);
+
+        public abstract string GenerateChudPixelShader(ChudShader chudShader, ShaderStage entry);
+
+        public abstract string GenerateChudVertexShader(ChudShader chudShader, ShaderStage entry);
     }
 }

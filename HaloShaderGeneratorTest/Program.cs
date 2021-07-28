@@ -14,15 +14,15 @@ namespace HaloShaderGenerator
     {
         static readonly ShaderSubtype TestStageType = ShaderSubtype.Pixel; //shared_vertex, shared_pixel, vertex or pixel
 
-        static readonly bool ExplicitTest = true;
+        static readonly bool ExplicitTest = false;
         static readonly string ExplicitReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\explicit";
         static readonly bool ExplicitTestSingle = true;
         static public readonly ExplicitShader ExplicitShader = ExplicitShader.pixel_copy;
 
-        static readonly bool ChudTest = false;
+        static readonly bool ChudTest = true;
         static readonly string ChudReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\chud";
         static readonly bool ChudTestSingle = true;
-        static public readonly ChudShader ChudShader = ChudShader.simple;
+        static public readonly ChudShader ChudShader = ChudShader.chud_simple;
 
         static readonly bool TemplateTest = false;
         static readonly string ShaderReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\Shaders";
@@ -418,7 +418,6 @@ namespace HaloShaderGenerator
         static void RunExplicitUnitTest()
         {
             Console.WriteLine($"TESTING EXPLICIT");
-            bool pixl = TestStageType == ShaderSubtype.Pixel;
 
             var unitTest = new ExplicitUnitTest(ExplicitReferencePath);
 
@@ -438,12 +437,34 @@ namespace HaloShaderGenerator
             }
         }
 
+        static void RunChudUnitTest()
+        {
+            Console.WriteLine($"TESTING CHUD");
+
+            var unitTest = new ExplicitUnitTest(ChudReferencePath);
+
+            if (ChudTestSingle)
+            {
+                if (TestStageType == ShaderSubtype.Pixel)
+                    unitTest.TestChudPixelShader(ChudShader);
+                else if (TestStageType == ShaderSubtype.Vertex)
+                    unitTest.TestChudVertexShader(ChudShader);
+            }
+            else
+            {
+                if (TestStageType == ShaderSubtype.Pixel)
+                    unitTest.TestAllChudPixelShaders();
+                else if (TestStageType == ShaderSubtype.Vertex)
+                    unitTest.TestAllChudVertexShaders();
+            }
+        }
+
         static int Main()
         {
             if (ExplicitTest)
                 RunExplicitUnitTest();
-            //if (ChudTest)
-            //    RunChudUnitTest();
+            if (ChudTest)
+                RunChudUnitTest();
             if (TemplateTest)
                 RunUnitTest(TestShaderType, TestStageType);
 

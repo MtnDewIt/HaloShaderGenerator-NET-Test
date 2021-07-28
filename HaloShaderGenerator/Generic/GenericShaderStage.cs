@@ -23,7 +23,7 @@ namespace HaloShaderGenerator.Generic
         {
             switch (explicitShader)
             {
-                case ChudShader.turbulence:
+                case ChudShader.chud_turbulence:
                     return new List<ShaderStage> { ShaderStage.Default, ShaderStage.Albedo, ShaderStage.Dynamic_Light };
                 default:
                     return new List<ShaderStage> { ShaderStage.Default };
