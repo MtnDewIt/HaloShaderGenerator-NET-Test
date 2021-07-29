@@ -7,6 +7,8 @@ uniform bool chud_cortana_pixel : register(b7);
 uniform bool chud_comp_colorize_enabled : register(b8);
 
 uniform float4 g_exposure : register(c0);
+uniform float4 pixel_size : register(c1); // added
+uniform float4 basemap_pixel_size : register(c2); // added
 uniform float4 chud_color_output_A : register(c24);
 uniform float4 chud_color_output_B : register(c25);
 uniform float4 chud_color_output_C : register(c26);

@@ -9,8 +9,8 @@ uniform sampler2D depth_sampler : register(s6);
 uniform sampler2D blur_sampler : register(s7);
 
 uniform float4 g_exposure : register(c0);
-//uniform float4 unknown_c1;
-//uniform float4 unknown_c2;
+uniform float4 pixel_size : register(c1);
+uniform float4 scale : register(c2);
 uniform float4 tone_curve_constants : register(c3);
 uniform float4 unknown_c4 : register(c4);
 uniform float4 bloom_sampler_xform : register(c5);

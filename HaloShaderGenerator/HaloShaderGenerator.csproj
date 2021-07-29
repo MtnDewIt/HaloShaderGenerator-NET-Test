@@ -600,6 +600,9 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\chud\helpers\chud_helper.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\chud\chud_text_simple.hlsl" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>
