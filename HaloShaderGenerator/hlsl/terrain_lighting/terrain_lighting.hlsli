@@ -256,10 +256,25 @@ float get_diffuse_coefficient(float4 blend)
 	return diffuse_coefficient;
 }
 
+void blend_specular_parameters(in float4 blend, out float specular_power, out float fresnel_steepness)
+{
+    specular_power = 0.001;
+    specular_power += blend.x * get_specular_power(0);
+    specular_power += blend.y * get_specular_power(1);
+    specular_power += blend.z * get_specular_power(2);
+    specular_power += blend.w * get_specular_power(3);
+	
+    fresnel_steepness = 0.005;
+    fresnel_steepness += blend.x * get_fresnel_curve_steepness(0);
+    fresnel_steepness += blend.y * get_fresnel_curve_steepness(1);
+    fresnel_steepness += blend.z * get_fresnel_curve_steepness(2);
+    fresnel_steepness += blend.w * get_fresnel_curve_steepness(3);
+}
 
 void calc_dynamic_lighting_terrain(SHADER_DYNAMIC_LIGHT_COMMON common_data, out float3 color)
 {
-	float v_dot_n = dot(common_data.surface_normal, common_data.view_dir);
+    float v_dot_n = dot(common_data.surface_normal, common_data.view_dir);
+    float sn_dot_n = dot(common_data.view_dir, common_data.surface_normal);
 	
 	float3 reflect_dir = (v_dot_n * common_data.surface_normal - common_data.view_dir) * 2 + common_data.view_dir;
 	reflect_dir = normalize(reflect_dir);
@@ -268,42 +283,41 @@ void calc_dynamic_lighting_terrain(SHADER_DYNAMIC_LIGHT_COMMON common_data, out 
 	float l_dot_r = dot(common_data.light_direction, reflect_dir);
 	l_dot_r = max(l_dot_r, 0);
 	
-	
 	float4 blend = blend_type(common_data.texcoord);
 	blend = normalize_additive_blend(blend);
 	
-	float blend_sum = blend.x + blend.y + blend.z + blend.w;
+    float blend_sum = blend_sum_active_materials(blend);
 	float blend_normalized = blend_sum < 0 ? 1000 : 1 / (blend_sum + 0.001);
 	
+    float specular_exponent;
+    float fresnel_curve_steepness;
+    blend_specular_parameters(blend, specular_exponent, fresnel_curve_steepness);
 	
-	float specular_exponent = get_specular_power(blend);
     float specular_power = pow(l_dot_r, specular_exponent * blend_normalized);
     specular_power *= specular_exponent * blend_normalized + 1.0f;
-	specular_power *= INV_2PI;
+    specular_power *= INV_2PI;
 	
-	float3 specular;
-	float3 diffuse;
+    fresnel_curve_steepness *= blend_normalized;
 	
-	if (v_dot_n > 0 && l_dot_n > 0)
-		specular = specular_power * common_data.light_intensity;
-	else
-		specular = 0;
+    float3 specular_tint = get_specular_tint(blend, common_data.albedo.rgb);
 	
-	float3 specular_tint = get_specular_tint(blend, common_data.albedo.rgb);
-	
-	float sn_dot_n = dot(common_data.view_dir, common_data.surface_normal);
-	float fresnel_base = 1 - saturate(sn_dot_n);
-	float fresnel_curve_steepness = get_fresnel_curve_steepness(blend);
-	fresnel_curve_steepness *= blend_normalized;
-	
+    float fresnel_base = 1.0f - saturate(sn_dot_n);
 	float fresnel = pow(fresnel_base, fresnel_curve_steepness);
-	float3 fresnel_color = lerp(specular_tint, 1, fresnel);
-	fresnel_color = common_data.albedo.a * fresnel_color;
+	float3 fresnel_color = lerp(specular_tint, 1.0f, fresnel);
+    fresnel_color = common_data.albedo.a * fresnel_color;
+	
+    float3 specular;
+    float3 diffuse;
+	
+    if (v_dot_n > 0 && l_dot_n > 0)
+        specular = specular_power * common_data.light_intensity;
+    else
+        specular = 0;
 	
 	specular *= fresnel_color;
 	specular *= get_analytical_specular_contribution(blend);
 	
-	diffuse = common_data.light_intensity * l_dot_n;
+    diffuse = common_data.light_intensity * l_dot_n;
 	diffuse *= common_data.albedo.rgb;
 	diffuse *= get_diffuse_coefficient(blend);
 	
@@ -313,24 +327,24 @@ void calc_dynamic_lighting_terrain(SHADER_DYNAMIC_LIGHT_COMMON common_data, out 
 
 float3 calc_lighting_terrain(SHADER_COMMON common_data, out float4 unknown_output)
 {
-    float v_dot_n = dot(common_data.surface_normal, common_data.view_dir);
-	
-    float l_dot_n = dot(common_data.light_direction, common_data.surface_normal);
-    float l_dot_r = dot(common_data.light_direction, common_data.reflect_dir);
-    l_dot_r = max(l_dot_r, 0);
-	
-	
-    float4 blend = blend_type(common_data.texcoord);
-    blend = normalize_additive_blend(blend);
-	
-    float blend_sum = blend.x + blend.y + blend.z + blend.w;
-    float blend_normalized = blend_sum < 0 ? 1000 : 1 / (blend_sum + 0.001);
-	
-	
-    float specular_exponent = get_specular_power(blend);
-    float specular_power = pow(l_dot_r, specular_exponent * blend_normalized);
-    specular_power *= specular_exponent * blend_normalized + 1.0f;
-    specular_power *= INV_2PI;
+    //float v_dot_n = dot(common_data.surface_normal, common_data.view_dir);
+	//
+    //float l_dot_n = dot(common_data.light_direction, common_data.surface_normal);
+    //float l_dot_r = dot(common_data.light_direction, common_data.reflect_dir);
+    //l_dot_r = max(l_dot_r, 0);
+	//
+	//
+    //float4 blend = blend_type(common_data.texcoord);
+    //blend = normalize_additive_blend(blend);
+	//
+    //float blend_sum = blend.x + blend.y + blend.z + blend.w;
+    //float blend_normalized = blend_sum < 0 ? 1000 : 1 / (blend_sum + 0.001);
+	//
+	//
+    //float specular_exponent = get_specular_power(blend);
+    //float specular_power = pow(l_dot_r, specular_exponent * blend_normalized);
+    //specular_power *= specular_exponent * blend_normalized + 1.0f;
+    //specular_power *= INV_2PI;
 	
 	
 	float3 diffuse;

@@ -47,6 +47,22 @@ uniform xform2d bump_map_m_3_xform;
 uniform sampler detail_bump_m_3;
 uniform xform2d detail_bump_m_3_xform;
 
+float4 apply_terrain_blend(float4 blend, float4 _0, float4 _1, float4 _2, float4 _3)
+{
+    float4 result = 0;
+    
+    if (blend.x > 0)
+        result += _0 * blend.x;
+    if (blend.y > 0)
+        result += _1 * blend.y;
+    if (blend.z > 0)
+        result += _2 * blend.z;
+    if (blend.w > 0)
+        result += _3 * blend.w;
+    
+    return result;
+}
+
 PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
 {	
 	float4 albedo = 0;
@@ -73,15 +89,8 @@ PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
         normal_2 = calc_terrain_bumpmap(tangent, binormal, normal, texcoord, bump_map_m_2, bump_map_m_2_xform, detail_bump_m_2, detail_bump_m_2_xform);
     if (material_type_3_arg != k_material_off)
         normal_3 = calc_terrain_bumpmap(tangent, binormal, normal, texcoord, bump_map_m_3, bump_map_m_3_xform, detail_bump_m_3, detail_bump_m_3_xform);
-	
-    if (blend.x > 0)
-        m_normal += normal_0 * blend.x;
-    if (blend.y > 0)
-        m_normal += normal_1 * blend.y;
-    if (blend.z > 0)
-        m_normal += normal_2 * blend.z;
-    if (blend.w > 0)
-        m_normal += normal_3 * blend.w;
+    
+    m_normal = apply_terrain_blend(blend, float4(normal_0, 0), float4(normal_1, 0), float4(normal_2, 0), float4(normal_3, 0)).xyz;
 	
     m_normal = normalize(m_normal);
     m_normal = m_normal.x * normalize(tangent) + m_normal.y * normalize(binormal) + m_normal.z * normalize(normal);
@@ -95,25 +104,12 @@ PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
     if (material_type_2_arg != k_material_off)
         albedo_2 = calc_terrain_albedo(texcoord, base_map_m_2, base_map_m_2_xform, detail_map_m_2, detail_map_m_2_xform);
 	if (material_type_3_arg != k_material_off)
-		albedo_3 = calc_terrain_albedo(texcoord, base_map_m_3, base_map_m_3_xform, detail_map_m_3, detail_map_m_3_xform);
-	
-    if (blend.x > 0)
-        albedo += albedo_0 * blend.x;
-    if (blend.y > 0)
-        albedo += albedo_1 * blend.y;
-    if (blend.z > 0)
-        albedo += albedo_2 * blend.z;
-    if (blend.w > 0)
-        albedo += albedo_3 * blend.w;
+        albedo_3 = calc_terrain_albedo(texcoord, base_map_m_3, base_map_m_3_xform, detail_map_m_3, detail_map_m_3_xform);
+    
+    albedo = apply_terrain_blend(blend, albedo_0, albedo_1, albedo_2, albedo_3);
 
     float albedo_tint = DETAIL_MULTIPLIER * global_albedo_tint;
-    
-    // compile order was wrong...
-    //albedo.rgb = apply_debug_tint(albedo.rgb);
-    float3 tint = debug_tint.a * (debug_tint.rgb - albedo.rgb * albedo_tint);
-    albedo.rgb *= albedo_tint;
-    albedo.rgb += tint;
-    
+    albedo.rgb = albedo.rgb * albedo_tint + (debug_tint.a * (debug_tint.rgb - albedo_tint * albedo.rgb));
     albedo.rgb = rgb_to_srgb(albedo.rgb);
     
     PS_OUTPUT_ALBEDO output;

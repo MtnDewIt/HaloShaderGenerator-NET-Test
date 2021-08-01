@@ -63,6 +63,22 @@ float4 normalize_multiply_blend(inout float4 blend)
 	return blend;
 }
 
+float blend_sum_active_materials(in float4 blend)
+{
+    float sum = 0;
+	
+    if (material_type_0_arg != k_material_off && material_type_0_arg != k_material_diffuse_only)
+        sum += blend.x;
+    if (material_type_1_arg != k_material_off && material_type_1_arg != k_material_diffuse_only)
+        sum += blend.y;
+    if (material_type_2_arg != k_material_off && material_type_2_arg != k_material_diffuse_only)
+        sum += blend.z;
+    if (material_type_3_arg != k_material_off && material_type_3_arg != k_material_diffuse_only)
+        sum += blend.w;
+	
+    return sum;
+}
+
 float4 morph(float2 texcoord)
 {
 	float2 blend_map_texcoord = apply_xform2d(texcoord, blend_map_xform);
