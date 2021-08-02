@@ -324,40 +324,64 @@ void calc_dynamic_lighting_terrain(SHADER_DYNAMIC_LIGHT_COMMON common_data, out 
 	color = diffuse + specular;
 }
 
-
 float3 calc_lighting_terrain(SHADER_COMMON common_data, out float4 unknown_output)
-{
-    //float v_dot_n = dot(common_data.surface_normal, common_data.view_dir);
-	//
-    //float l_dot_n = dot(common_data.light_direction, common_data.surface_normal);
-    //float l_dot_r = dot(common_data.light_direction, common_data.reflect_dir);
-    //l_dot_r = max(l_dot_r, 0);
-	//
-	//
-    //float4 blend = blend_type(common_data.texcoord);
-    //blend = normalize_additive_blend(blend);
-	//
-    //float blend_sum = blend.x + blend.y + blend.z + blend.w;
-    //float blend_normalized = blend_sum < 0 ? 1000 : 1 / (blend_sum + 0.001);
-	//
-	//
-    //float specular_exponent = get_specular_power(blend);
-    //float specular_power = pow(l_dot_r, specular_exponent * blend_normalized);
-    //specular_power *= specular_exponent * blend_normalized + 1.0f;
-    //specular_power *= INV_2PI;
+{	
+    float3 diffuse = common_data.diffuse_reflectance;
 	
+    float v_dot_n = dot(common_data.surface_normal, common_data.view_dir);
+    float sn_dot_n = dot(common_data.view_dir, common_data.surface_normal);
 	
-	float3 diffuse;
+    float3 reflect_dir = (v_dot_n * common_data.surface_normal - common_data.view_dir) * 2 + common_data.view_dir;
+    reflect_dir = normalize(reflect_dir);
+	
+    float l_dot_n = dot(common_data.dominant_light_direction, common_data.surface_normal);
+    float l_dot_r = dot(common_data.dominant_light_direction, reflect_dir);
+    l_dot_r = max(l_dot_r, 0);
+	
+    float4 blend = blend_type(common_data.texcoord);
+    blend = normalize_additive_blend(blend);
+	
+    float blend_sum = blend_sum_active_materials(blend);
+    float blend_normalized = blend_sum < 0 ? 1000 : 1 / (blend_sum + 0.001);
+	
+    float specular_exponent;
+    float fresnel_curve_steepness;
+    blend_specular_parameters(blend, specular_exponent, fresnel_curve_steepness);
+	
+    float specular_power = pow(l_dot_r, specular_exponent * blend_normalized);
+    specular_power *= specular_exponent * blend_normalized + 1.0f;
+    specular_power *= INV_2PI;
+	
+    fresnel_curve_steepness *= blend_normalized;
+	
+    float3 specular_tint = get_specular_tint(blend, common_data.albedo.rgb);
+	
+    float fresnel_base = 1.0f - saturate(sn_dot_n);
+    float fresnel = pow(fresnel_base, fresnel_curve_steepness);
+    float3 fresnel_color = lerp(specular_tint, 1.0f, fresnel);
+    fresnel_color = common_data.albedo.a * fresnel_color;
+	
+    float3 specular;
+	
+    if (v_dot_n > 0 && l_dot_n > 0)
+        specular = specular_power * common_data.dominant_light_intensity;
+    else
+        specular = 0;
+	
+    specular *= fresnel_color;
+	specular *= get_analytical_specular_contribution(blend);
 	
 	float3 diffuse_accumulation = 0;
 	float3 specular_accumulation = 0;
-		
 	calc_material_lambert_diffuse_ps(common_data.surface_normal, common_data.world_position, 0, 0, diffuse_accumulation, specular_accumulation);
-		
-	diffuse = common_data.diffuse_reflectance + diffuse_accumulation;
 	
-	diffuse *= common_data.albedo.rgb;
+    float area_specular = get_area_specular_contribution(blend);
 	
+    diffuse *= area_specular;
+    diffuse += diffuse_accumulation;
+    diffuse *= get_diffuse_coefficient(blend);
+    diffuse *= common_data.albedo.rgb;
+    diffuse += specular;
 
 	ENVIRONMENT_MAPPING_COMMON env_mapping_common_data;
 	
@@ -368,7 +392,6 @@ float3 calc_lighting_terrain(SHADER_COMMON common_data, out float4 unknown_outpu
 	env_mapping_common_data.area_specular = 0;
 	env_mapping_common_data.specular_exponent = 0.0;
 	envmap_type(env_mapping_common_data, diffuse, unknown_output);
-	
 
 	return diffuse;
 }
