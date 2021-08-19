@@ -21,7 +21,8 @@ namespace HaloShaderGenerator.Shader
         Blend_Mode blend_mode;
         Parallax parallax;
         Misc misc;
-        Distortion distortion;
+        Shared.Distortion distortion;
+        Shared.Soft_Fade soft_fade;
 
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
@@ -32,8 +33,8 @@ namespace HaloShaderGenerator.Shader
         /// Generator instantiation for method specific shaders.
         /// </summary>
         public ShaderGenerator(Albedo albedo, Bump_Mapping bump_mapping, Alpha_Test alpha_test, Specular_Mask specular_mask, Material_Model material_model,
-            Environment_Mapping environment_mapping, Self_Illumination self_illumination, Blend_Mode blend_mode, Parallax parallax, Misc misc, 
-            Distortion distortion, bool applyFixes = false)
+            Environment_Mapping environment_mapping, Self_Illumination self_illumination, Blend_Mode blend_mode, Parallax parallax, Misc misc,
+            Shared.Distortion distortion, bool applyFixes = false)
         {
             this.albedo = albedo;
             this.bump_mapping = bump_mapping;
@@ -46,6 +47,7 @@ namespace HaloShaderGenerator.Shader
             this.parallax = parallax;
             this.misc = misc;
             this.distortion = distortion;
+            this.soft_fade = Shared.Soft_Fade.Off;
             TemplateGenerationValid = true;
         }
 
@@ -61,7 +63,8 @@ namespace HaloShaderGenerator.Shader
             this.blend_mode = (Blend_Mode)options[7];
             this.parallax = (Parallax)options[8];
             this.misc = (Misc)options[9];
-            this.distortion = (Distortion)options[10];
+            this.distortion = (Shared.Distortion)options[10];
+            this.soft_fade = Shared.Soft_Fade.Off;
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -88,7 +91,8 @@ namespace HaloShaderGenerator.Shader
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Blend_Mode>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Parallax>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Misc>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Distortion>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Distortion>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Soft_Fade>());
 
             macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes ? 1 : 0));
 
@@ -147,6 +151,7 @@ namespace HaloShaderGenerator.Shader
             macros.Add(ShaderGeneratorBase.CreateMacro("blend_type_arg", sBlendMode, "k_blend_mode_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("misc_arg", misc, "k_misc_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("distortion_arg", distortion, "k_distortion_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("soft_fade_arg", soft_fade, "k_soft_fade_"));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_shader.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
 
@@ -735,15 +740,19 @@ namespace HaloShaderGenerator.Shader
 
             switch (distortion)
             {
-                case Distortion.Off:
-                    break;
-                case Distortion.On:
+                case Shared.Distortion.On:
                     result.AddSamplerParameter("distort_map");
                     result.AddFloatParameter("distort_scale");
-                    //result.AddBooleanParameter("soft_fresnel_enabled");
-                    //result.AddFloatParameter("soft_fresnel_power");
-                    //result.AddBooleanParameter("soft_z_enabled");
-                    //result.AddFloatParameter("soft_z_range");
+                    break;
+            }
+
+            switch (soft_fade)
+            {
+                case Shared.Soft_Fade.On:
+                    result.AddBooleanParameter("soft_fresnel_enabled");
+                    result.AddFloatParameter("soft_fresnel_power");
+                    result.AddBooleanParameter("soft_z_enabled");
+                    result.AddFloatParameter("soft_z_range");
                     break;
             }
 

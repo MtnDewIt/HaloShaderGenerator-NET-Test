@@ -13,7 +13,7 @@
 uniform sampler2D dynamic_light_gel_texture;
 
 PS_OUTPUT_DEFAULT calculate_dynamic_light(
-float2 position,
+float4 position,
 float2 texcoord,
 float3 camera_dir,
 float3 tangent,
@@ -52,7 +52,7 @@ bool is_cinematic)
 	
 	float4 albedo;
 	float3 surface_normal;
-	get_albedo_and_normal(actually_calc_albedo, position.xy, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz, albedo, surface_normal);
+	get_albedo_and_normal(actually_calc_albedo, position, texcoord.xy, camera_dir, tangent.xyz, binormal.xyz, normal.xyz, albedo, surface_normal);
 	float c_specular_mask = 1.0;
 	calc_specular_mask_ps(albedo, texcoord, c_specular_mask);
 	float3 reflect_dir = 2 * dot(view_dir, surface_normal) * surface_normal - camera_dir;
@@ -112,12 +112,12 @@ bool is_cinematic)
 
 PS_OUTPUT_DEFAULT shader_entry_dynamic_light(VS_OUTPUT_DYNAMIC_LIGHT input)
 {
-	return calculate_dynamic_light(input.position.xy, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, false);
+	return calculate_dynamic_light(input.position, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, false);
 }
 
 PS_OUTPUT_DEFAULT shader_entry_dynamic_light_cinematic(VS_OUTPUT_DYNAMIC_LIGHT input)
 {
-	return calculate_dynamic_light(input.position.xy, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, true);
+	return calculate_dynamic_light(input.position, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, true);
 }
 
 #endif

@@ -156,6 +156,8 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_misc_first_person_never_with_rotating_bitmaps 3
 #define k_distortion_off 0
 #define k_distortion_on 1
+#define k_soft_fade_off 0
+#define k_soft_fade_on 1
 #define k_specialized_rendering_none 0
 #define k_specialized_rendering_distortion 1
 #define k_specialized_rendering_distortion_expensive 2
@@ -201,6 +203,7 @@ This file contains a list of blank definitions to help with Intellisense
 #define blend_type_arg 0
 #define misc_arg 0
 #define distortion_arg 0
+#define soft_fade_arg 0
 #define specialized_rendering_arg 0
 #define render_targets_arg 0
 #define lighting_arg 0

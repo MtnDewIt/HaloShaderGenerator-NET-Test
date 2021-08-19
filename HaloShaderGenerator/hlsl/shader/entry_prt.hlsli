@@ -19,10 +19,11 @@
 #include "..\methods\misc.hlsli"
 #include "..\methods\alpha_test.hlsli"
 
+#include "..\methods\soft_fade.hlsli"
 #include "entry_sfx_distort.hlsli"
 
 PS_OUTPUT_DEFAULT entry_static_sh_prt(
-float2 position,
+float4 position,
 float2 texcoord,
 float3 camera_dir,
 float3 normal,
@@ -57,13 +58,15 @@ float4 prt)
             }
 			
             common_data.surface_normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, calc_albedo_texcoord);
-            common_data.albedo = calc_albedo_ps(calc_albedo_texcoord, position, common_data.surface_normal, common_data.view_dir);
+            common_data.albedo = calc_albedo_ps(calc_albedo_texcoord, position.xy, common_data.surface_normal, common_data.view_dir);
+			
+            apply_soft_fade(common_data.albedo.rgb, dot(common_data.n_view_dir, normalize(common_data.surface_normal)), position);
         }
 		else
 		{
-			position += 0.5;
+			float2 fragcoord = position.xy + 0.5;
 			float2 inv_texture_size = (1.0 / texture_size);
-			float2 texcoord = position * inv_texture_size;
+            float2 texcoord = fragcoord.xy * inv_texture_size;
 			float4 normal_texture_sample = tex2D(normal_texture, texcoord);
 			common_data.surface_normal = normal_import(normal_texture_sample.xyz);
 			float4 albedo_texture_sample = tex2D(albedo_texture, texcoord);
@@ -152,12 +155,12 @@ float4 prt)
 
 PS_OUTPUT_DEFAULT shader_entry_static_sh(VS_OUTPUT_STATIC_SH input)
 {
-	return entry_static_sh_prt(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, 1.0);
+	return entry_static_sh_prt(input.position, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, 1.0);
 }
 
 PS_OUTPUT_DEFAULT shader_entry_static_prt(VS_OUTPUT_STATIC_PRT input)
 {
-	return entry_static_sh_prt(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector);
+	return entry_static_sh_prt(input.position, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector);
 }
 
 #endif

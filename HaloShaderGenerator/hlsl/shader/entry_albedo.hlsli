@@ -12,11 +12,12 @@
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 
+#include "..\methods\soft_fade.hlsli"
 #include "entry_sfx_distort.hlsli"
 
 void get_albedo_and_normal(
 bool calc_albedo,
-float2 fragcoord,
+float4 position,
 float2 texcoord,
 float3 camera_dir,
 float3 tangent,
@@ -39,11 +40,14 @@ out float3 out_normal)
         }
 		
         out_normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, calc_albedo_texcoord);
-        albedo = calc_albedo_ps(calc_albedo_texcoord, fragcoord, out_normal, camera_dir);
+        albedo = calc_albedo_ps(calc_albedo_texcoord, position.xy, out_normal, camera_dir);
+			
+        if (shaderstage != k_shaderstage_albedo)
+            apply_soft_fade(albedo.rgb, dot(normalize(camera_dir), normalize(out_normal)), position);
     }
 	else
 	{
-		fragcoord += 0.5;
+		float2 fragcoord = position.xy + 0.5;
 		float2 inv_texture_size = (1.0 / texture_size);
 		float2 texcoord = fragcoord * inv_texture_size; 
 		float4 normal_texture_sample = tex2D(normal_texture, texcoord);
@@ -61,7 +65,7 @@ PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
 	float2 texcoord = calc_parallax_ps(input.texcoord, n_view_dir, input.tangent, input.binormal, input.normal.xyz);
 	float alpha = calc_alpha_test_ps(texcoord);
 	
-	get_albedo_and_normal(true, input.position.xy, texcoord, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, normal);
+	get_albedo_and_normal(true, input.position, texcoord, input.camera_dir, input.tangent.xyz, input.binormal.xyz, input.normal.xyz, albedo, normal);
 
 	albedo.rgb = rgb_to_srgb(albedo.rgb);
 

@@ -129,16 +129,4 @@ namespace HaloShaderGenerator.Shader
         First_Person_Always,
         First_Person_Never_With_rotating_Bitmaps
     }
-
-    public enum Distortion
-    {
-        Off,
-        On
-    }
-
-    public enum Soft_Fade
-    {
-        Off,
-        On
-    }
 }

@@ -154,4 +154,16 @@ namespace HaloShaderGenerator.Shared
         Off,
         On,
     }
+
+    public enum Distortion
+    {
+        Off,
+        On
+    }
+
+    public enum Soft_Fade
+    {
+        Off,
+        On
+    }
 }

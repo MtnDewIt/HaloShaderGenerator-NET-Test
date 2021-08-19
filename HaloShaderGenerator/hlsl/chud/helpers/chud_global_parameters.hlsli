@@ -33,6 +33,7 @@ uniform float4 chud_widget_transform2_ps : register(c51);
 uniform float4 chud_widget_transform3_ps : register(c52);
 uniform float4 chud_widget_mirror_ps : register(c53);
 // unconfirmed if 54-56 exist here. might be some spacing in case they wanted to change some stuff
+uniform float4 chud_brightness_constrast_scale_offset : register(c56); // from ms30
 uniform float4 cortana_back_colormix_result : register(c57);
 uniform float4 cortana_hsv_data : register(c58); // made up name <hue, saturation, value, 0>
 uniform float4 cortana_background_color : register(c59); // made up name <color.rgb, 0>
