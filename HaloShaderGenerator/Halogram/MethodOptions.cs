@@ -10,6 +10,8 @@ namespace HaloShaderGenerator.Halogram
         Warp,
         Overlay,
         Edge_Fade,
+        //Distortion,
+        //Soft_Fade,
     }
 
     public enum Albedo

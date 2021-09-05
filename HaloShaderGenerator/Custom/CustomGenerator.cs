@@ -141,7 +141,7 @@ namespace HaloShaderGenerator.Custom
             macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Custom, "shadertype_"));
 
             // prevent crash
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shader.Distortion>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Distortion>());
             macros.Add(ShaderGeneratorBase.CreateMacro("distortion_arg", "Off", "k_distortion_"));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_custom.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");

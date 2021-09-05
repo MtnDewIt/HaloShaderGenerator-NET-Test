@@ -18,6 +18,8 @@ namespace HaloShaderGenerator.Halogram
         Warp warp;
         Overlay overlay;
         Edge_Fade edge_fade;
+        Shared.Distortion distortion;
+        Shared.Soft_Fade soft_fade;
 
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
@@ -36,6 +38,8 @@ namespace HaloShaderGenerator.Halogram
             this.warp = warp;
             this.overlay = overlay;
             this.edge_fade = edge_fade;
+            this.distortion = Shared.Distortion.Off;//distortion;
+            this.soft_fade = Shared.Soft_Fade.Off;//soft_fade;
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -50,6 +54,8 @@ namespace HaloShaderGenerator.Halogram
             this.warp = (Warp)options[4];
             this.overlay = (Overlay)options[5];
             this.edge_fade = (Edge_Fade)options[6];
+            this.distortion = Shared.Distortion.Off;// (Shared.Distortion)options[7];
+            this.soft_fade = Shared.Soft_Fade.Off;// (Shared.Soft_Fade)options[8];
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -73,6 +79,8 @@ namespace HaloShaderGenerator.Halogram
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Warp>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Overlay>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Edge_Fade>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Distortion>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.Soft_Fade>());
 
             //
             // Convert to shared enum
@@ -121,6 +129,8 @@ namespace HaloShaderGenerator.Halogram
             macros.Add(ShaderGeneratorBase.CreateMacro("warp_arg", warp, "k_warp_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("overlay_arg", overlay, "k_overlay_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("edge_fade_arg", edge_fade, "k_edge_fade_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("distortion_arg", distortion, "k_distortion_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("soft_fade_arg", soft_fade, "k_soft_fade_"));
 
             macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes ? 1 : 0));
             macros.Add(ShaderGeneratorBase.CreateMacro("_HALOGRAM", 1));
@@ -516,6 +526,26 @@ namespace HaloShaderGenerator.Halogram
                     result.AddFloat4Parameter("edge_fade_edge_tint");
                     result.AddFloat4Parameter("edge_fade_center_tint");
                     result.AddFloatParameter("edge_fade_power");
+                    break;
+            }
+
+            switch (distortion)
+            {
+                case Shared.Distortion.On:
+                    result.AddSamplerParameter("distort_map");
+                    result.AddFloatParameter("distort_scale");
+                    //result.AddFloatParameter("distort_fadeoff");
+                    //result.AddBooleanParameter("distort_selfonly");
+                    break;
+            }
+
+            switch (soft_fade)
+            {
+                case Shared.Soft_Fade.On:
+                    result.AddBooleanParameter("soft_fresnel_enabled");
+                    result.AddFloatParameter("soft_fresnel_power");
+                    result.AddBooleanParameter("soft_z_enabled");
+                    result.AddFloatParameter("soft_z_range");
                     break;
             }
 

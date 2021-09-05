@@ -30,7 +30,8 @@ namespace HaloShaderGenerator.Globals
         Screen,
         Custom,
         Foliage,
-        ZOnly
+        ZOnly,
+        Glass
     }
 
     public enum ChudShader

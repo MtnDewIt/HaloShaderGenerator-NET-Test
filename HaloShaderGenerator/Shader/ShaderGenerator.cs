@@ -743,6 +743,8 @@ namespace HaloShaderGenerator.Shader
                 case Shared.Distortion.On:
                     result.AddSamplerParameter("distort_map");
                     result.AddFloatParameter("distort_scale");
+                    //result.AddFloatParameter("distort_fadeoff");
+                    //result.AddBooleanParameter("distort_selfonly");
                     break;
             }
 

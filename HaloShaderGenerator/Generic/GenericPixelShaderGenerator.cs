@@ -7,7 +7,7 @@ namespace HaloShaderGenerator.Shader
 {
     public class GenericPixelShaderGenerator
     {
-        public static ShaderGeneratorResult GeneratePixelShader(string name, ShaderStage entry, bool chud = false)
+        public static ShaderGeneratorResult GeneratePixelShader(string name, string entry, bool chud = false)
         {
             string template = $"{(chud ? "chud" : "explicit")}\\{name}.hlsl";
 
@@ -15,7 +15,7 @@ namespace HaloShaderGenerator.Shader
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
             macros.Add(new D3D.SHADER_MACRO { Name = "PIXEL_SHADER", Definition = "1" });
 
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(template, macros, $"ps_{entry.ToString().ToLower()}", "ps_3_0");
+            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(template, macros, $"ps_{entry}", "ps_3_0");
             return new ShaderGeneratorResult(shaderBytecode);
         }
     }
