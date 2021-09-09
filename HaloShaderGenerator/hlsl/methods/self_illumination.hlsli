@@ -500,6 +500,26 @@ inout float3 diffuse)
     diffuse += self_illum_sample;
 }
 
+void calc_self_illumination_illum_change_color_ps(
+in float2 position,
+in float2 texcoord,
+in float3 albedo,
+in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
+in float view_tangent,
+in float view_binormal,
+inout float3 diffuse)
+{
+    float2 self_illum_map_texcoord = apply_xform2d(texcoord, self_illum_map_xform);
+    float3 self_illum_map_sample = tex2D(self_illum_map, self_illum_map_texcoord).rgb;
+    self_illum_map_sample *= ((primary_change_color_blend * self_illum_color.rgb) + (1.0f - primary_change_color_blend) * self_illum_color.rgb);
+    self_illum_map_sample *= self_illum_intensity;
+    self_illum_map_sample *= g_alt_exposure.x;
+
+    diffuse += self_illum_map_sample;
+}
+
 
 // fixups
 #define calc_self_illumination_off_ps calc_self_illumination_none_ps

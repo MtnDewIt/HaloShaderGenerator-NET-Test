@@ -102,6 +102,7 @@ namespace HaloShaderGenerator.Shader
         Simple_With_Alpha_Mask,
         Simple_Four_Change_Color,
         //Illum_Detail_World_Space_Four_Cc
+        Illum_Change_Color
     }
 
     public enum Blend_Mode

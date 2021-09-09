@@ -716,10 +716,16 @@ namespace HaloShaderGenerator.Shader
 
                 case Self_Illumination.Simple_Four_Change_Color:
                     result.AddSamplerParameter("self_illum_map");
-                    //result.AddFloat4Parameter("self_illum_color"); object_change_color_quaternary
+                    result.AddFloat4Parameter("self_illum_color", RenderMethodExtern.object_change_color_quaternary);
                     result.AddFloatParameter("self_illum_intensity");
                     break;
 
+                case Self_Illumination.Illum_Change_Color:
+                    result.AddSamplerParameter("self_illum_map");
+                    result.AddFloat4Parameter("self_illum_color", RenderMethodExtern.object_change_color_primary);
+                    result.AddFloatParameter("self_illum_intensity");
+                    result.AddFloatParameter("primary_change_color_blend");
+                    break;
             }
 
             switch (parallax)
