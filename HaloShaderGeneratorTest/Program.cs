@@ -19,20 +19,20 @@ namespace HaloShaderGenerator
         static readonly bool ExplicitTestSingle = true;
         static public readonly ExplicitShader ExplicitShader = ExplicitShader.pixel_copy;
 
-        static readonly bool ChudTest = true;
+        static readonly bool ChudTest = false;
         static readonly string ChudReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\chud";
         static readonly bool ChudTestSingle = true;
         static public readonly ChudShader ChudShader = ChudShader.chud_simple;
 
-        static readonly bool TemplateTest = false;
+        static readonly bool TemplateTest = true;
         static readonly string ShaderReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\Shaders";
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
-        static readonly ShaderType TestShaderType = ShaderType.Shader;
+        static readonly ShaderType TestShaderType = ShaderType.Water;
 
         static public readonly bool OutputAll = true;
 
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { ShaderStage.Albedo };
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { ShaderStage.Static_Per_Pixel };
 
         #region Shader
         static readonly List<VertexType> VertexOverrides = new List<VertexType> { };
@@ -96,11 +96,11 @@ namespace HaloShaderGenerator
 
         static readonly List<List<int>> TerrainOverrides = new List<List<int>>
         {
-            new List<int> { 0, 0, 0, 0, 0, 0},
-            new List<int> { 0, 0, 0, 0, 0, 1},
-            new List<int> { 0, 0, 1, 0, 2, 2},
-            new List<int> { 0, 0, 2, 0, 0, 2},
-            new List<int> { 0, 0, 0, 0, 0, 2},
+            //new List<int> { 0, 0, 0, 0, 0, 0},
+            //new List<int> { 0, 0, 0, 0, 0, 1},
+            //new List<int> { 0, 0, 1, 0, 2, 2},
+            //new List<int> { 0, 0, 2, 0, 0, 2},
+            //new List<int> { 0, 0, 0, 0, 0, 2},
         };
 
         static readonly List<List<int>> TerrainMethodOverrides = new List<List<int>> { TerrainBlendingOverride, TerrainEnvMapOverride, TerrainMaterial0Override, TerrainMaterial1Override,
@@ -264,7 +264,28 @@ namespace HaloShaderGenerator
             new List<int> { 2, 1, 2, 0, 0 },
         };
         
-        static readonly List<List<int>> ScreenMethodOverrides = new List<List<int>> { ScreenWarpOverrides, ScreenBaseOverrides, ScreenOverlayAOverrides, ScreenOverlayBOverrides, ScreenBlendModeOverrides };
+        static readonly List<List<int>> ScreenMethodOverrides = new List<List<int>> { ScreenWarpOverrides, 
+            ScreenBaseOverrides, ScreenOverlayAOverrides, ScreenOverlayBOverrides, ScreenBlendModeOverrides };
+        #endregion
+
+        #region water
+
+        static readonly List<int> WaveshapeOverrides = new List<int> { };
+        static readonly List<int> WatercolorOverrides = new List<int> { };
+        static readonly List<int> ReflectionOverrides = new List<int> { };
+        static readonly List<int> RefractionOverrides = new List<int> { };
+        static readonly List<int> BankalphaOverrides = new List<int> { };
+        static readonly List<int> AppearanceOverrides = new List<int> { };
+        static readonly List<int> GlobalShapeOverrides = new List<int> { };
+        static readonly List<int> FoamOverrides = new List<int> { };
+
+        static readonly List<List<int>> WaterOverrides = new List<List<int>>
+        {
+            //new List<int> { 0, 1, 1, 1, 1, 0, 1, 3 },
+        };
+
+        static readonly List<List<int>> WaterMethodOverrides = new List<List<int>> { WaveshapeOverrides, WatercolorOverrides, 
+            ReflectionOverrides, RefractionOverrides, BankalphaOverrides, AppearanceOverrides, GlobalShapeOverrides, FoamOverrides };
         #endregion
 
         static GenericUnitTest GetUnitTest(ShaderType shaderType)
@@ -279,7 +300,7 @@ namespace HaloShaderGenerator
                 case ShaderType.LightVolume:    return new LightVolumeUnitTest(ShaderReferencePath);
                 case ShaderType.Particle:       return new ParticleUnitTest(ShaderReferencePath);
                 case ShaderType.Terrain:        return new TerrainUnitTest(ShaderReferencePath);
-                //case ShaderType.Water:          return new WaterUnitTest(ShaderReferencePath);
+                case ShaderType.Water:          return new WaterUnitTest(ShaderReferencePath);
                 case ShaderType.Screen:         return new ScreenUnitTest(ShaderReferencePath);
                 //case ShaderType.Foliage:        return new FoliageUnitTest(ShaderReferencePath);
             }
@@ -299,7 +320,7 @@ namespace HaloShaderGenerator
                 case ShaderType.LightVolume:    return LightVolumeMethodOverrides;
                 case ShaderType.Particle:       return ParticleMethodOverrides;
                 case ShaderType.Terrain:        return TerrainMethodOverrides;
-                //case ShaderType.Water:          return WaterMethodOverrides;
+                case ShaderType.Water:          return WaterMethodOverrides;
                 case ShaderType.Screen:         return ScreenMethodOverrides;
                 //case ShaderType.Foliage:        return FoliageMethodOverrides;
             }
@@ -319,7 +340,7 @@ namespace HaloShaderGenerator
                 case ShaderType.LightVolume:    return LightVolumeOverrides;
                 case ShaderType.Particle:       return ParticleOverrides;
                 case ShaderType.Terrain:        return TerrainOverrides;
-                //case ShaderType.Water:          return WaterOverrides;
+                case ShaderType.Water:          return WaterOverrides;
                 case ShaderType.Screen:         return ScreenOverrides;
                 //case ShaderType.Foliage:        return FoliageOverrides;
             }
@@ -500,7 +521,7 @@ namespace HaloShaderGenerator
                 case ShaderType.Particle:       return new Particle.ParticleGenerator(bMethods);
                 case ShaderType.Terrain:        return new Terrain.TerrainGenerator(bMethods);
                 //case ShaderType.Cortana:        return new Cortana.CortanaGenerator(bMethods);
-                //case ShaderType.Water:          return new Water.WaterGenerator(bMethods);
+                case ShaderType.Water:          return new Water.WaterGenerator(bMethods);
                 case ShaderType.Black:          return new Black.ShaderBlackGenerator();
                 case ShaderType.Screen:         return new Screen.ScreenGenerator(bMethods);
                 case ShaderType.Custom:         return new Custom.CustomGenerator(bMethods);
@@ -524,7 +545,7 @@ namespace HaloShaderGenerator
                 case ShaderType.Particle:       return new Particle.ParticleGenerator();
                 case ShaderType.Terrain:        return new Terrain.TerrainGenerator();
                 //case ShaderType.Cortana:        return new Cortana.CortanaGenerator();
-                //case ShaderType.Water:          return new Water.WaterGenerator();
+                case ShaderType.Water:          return new Water.WaterGenerator();
                 case ShaderType.Black:          return new Black.ShaderBlackGenerator();
                 case ShaderType.Screen:         return new Screen.ScreenGenerator();
                 case ShaderType.Custom:         return new Custom.CustomGenerator();
@@ -619,7 +640,7 @@ namespace HaloShaderGenerator
         #region test methods independent shaders
         static void TestVertexShader(string name)
         {
-            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(name, ShaderStage.Default).Bytecode;
+            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(name, ShaderStage.Default.ToString()).Bytecode;
             var str = D3DCompiler.Disassemble(bytecode);
             using (FileStream test = new FileInfo($"generated_{name}.vtsh").Create())
             using (StreamWriter writer = new StreamWriter(test))
@@ -632,7 +653,7 @@ namespace HaloShaderGenerator
 
         static void TestPixelShader(string name)
         {
-            var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(name, ShaderStage.Default);
+            var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(name, ShaderStage.Default.ToString());
             var str = D3DCompiler.Disassemble(bytecode.Bytecode);
             using (FileStream test = new FileInfo($"generated_{name}.pixl").Create())
             using (StreamWriter writer = new StreamWriter(test))

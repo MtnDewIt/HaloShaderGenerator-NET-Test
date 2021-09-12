@@ -18,7 +18,7 @@ float2 sge12(in float2 src1, in float src2) {
 }
 
 // 0 for ms23 shader
-#define ODST_SHADER 1
+#define ODST_SHADER 0
 
 uniform float4 g_exposure : register(c0);
 uniform float falloff : register(c94);

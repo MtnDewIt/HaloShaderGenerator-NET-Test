@@ -48,6 +48,8 @@ namespace HaloShaderGenerator.Shader
             this.misc = misc;
             this.distortion = distortion;
             this.soft_fade = Shared.Soft_Fade.Off;
+
+            ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
         }
 

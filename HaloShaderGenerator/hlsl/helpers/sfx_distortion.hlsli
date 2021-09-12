@@ -7,6 +7,7 @@
 
 #include "../vertices/vertices.hlsli"
 #include "input_output.hlsli"
+#include "..\helpers\vertex_shader_helper.hlsli"
 
 // TODO: clean this up with more generic functions, skinned uses the boolean squished thing
 

@@ -84,6 +84,17 @@ namespace HaloShaderGenerator.Globals
         // Vertex shader parameters easy add methods
         //
 
+        public void AddSamplerWithoutXFormVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.sampler2D, rmExtern, ShaderParameterFlags.IsVertexShader));
+        }
+
+        public void AddSamplerVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.sampler2D, rmExtern, ShaderParameterFlags.IsVertexShader));
+            Parameters.Add(new ShaderParameter(parameterName, parameterName + "_xform", HLSLType.Xform_2d, rmExtern, ShaderParameterFlags.IsVertexShader));
+        }
+
         public void AddFloat4ColorVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
             Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, (ShaderParameterFlags.IsVertexShader | ShaderParameterFlags.IsColor)));
