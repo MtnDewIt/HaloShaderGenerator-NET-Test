@@ -50,6 +50,7 @@ namespace HaloShaderGenerator.Custom
         No_Specular_Mask,
         Specular_Mask_From_Diffuse,
         Specular_Mask_From_Texture,
+        Specular_Mask_From_Color_Texture
     }
 
     public enum Material_Model

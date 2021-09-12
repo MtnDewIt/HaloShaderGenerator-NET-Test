@@ -449,6 +449,7 @@ namespace HaloShaderGenerator.Custom
             switch (specular_mask)
             {
                 case Specular_Mask.Specular_Mask_From_Texture:
+                case Specular_Mask.Specular_Mask_From_Color_Texture:
                     result.AddSamplerParameter("specular_mask_texture");
                     break;
             }
