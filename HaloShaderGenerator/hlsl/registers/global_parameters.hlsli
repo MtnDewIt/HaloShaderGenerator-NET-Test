@@ -72,9 +72,11 @@ uniform float4 p_lighting_constant_6 : register(c7);
 uniform float4 p_lighting_constant_7 : register(c8);
 uniform float4 p_lighting_constant_8 : register(c9);
 uniform float4 p_lighting_constant_9 : register(c10);
-uniform float4 k_ps_dominant_light_direction : register(c11);
 uniform float4 g_alt_exposure : register(c12);
+#if shadertype != k_shadertype_water
+uniform float4 k_ps_dominant_light_direction : register(c11);
 uniform float4 k_ps_dominant_light_intensity : register(c13);
+#endif
 uniform float2 texture_size : register(c14);
 uniform float4 dynamic_environment_blend : register(c15);
 uniform float3 Camera_Position_PS : register(c16);
@@ -98,6 +100,7 @@ uniform xform2d p_dynamic_light_gel_xform : register(c5);
 
 // Order here is important
 
+#if shadertype != k_shadertype_water
 
 uniform sampler2D albedo_texture;
 #ifndef DEPTH_BUFFER_DEFINED
@@ -120,10 +123,7 @@ uniform sampler2D normal_texture;
 uniform sampler3D lightprobe_texture_array;
 uniform sampler3D dominant_light_intensity_map;
 
-uniform bool k_is_lightmap_exist;
-uniform bool k_is_water_interaction;
-
 uniform sampler2D scene_ldr_texture;
 
-
+#endif
 #endif
