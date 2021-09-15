@@ -89,7 +89,7 @@ float3 calc_foam_paint_ps(float3 color, float3 lightmap_color, float2 texcoord, 
 float3 calc_foam_both_ps(float3 color, float3 lightmap_color, float2 texcoord, float2 shape_tex, float2 height, float ripple_foam)
 {
     float2 foam_h = height - foam_height;
-    float auto_foam = saturate(foam_h.x * rcp(saturate(foam_h.y)));
+    float auto_foam = saturate(foam_h.x / saturate(foam_h.y));
     auto_foam = pow(auto_foam, foam_pow);
     float painted_foam = tex2D(global_shape_texture, shape_tex).z;
     float foam_mag = max(ripple_foam, max(auto_foam, painted_foam));
