@@ -606,6 +606,9 @@
     <EmbeddedResource Include="hlsl\chud\chud_text_simple.hlsl" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\refraction.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="hlsl\registers\water_parameters.hlsli" />
   </ItemGroup>
   <ItemGroup>
@@ -616,6 +619,15 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\methods\waveshape.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\watercolor.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\reflection.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\methods\bankalpha.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

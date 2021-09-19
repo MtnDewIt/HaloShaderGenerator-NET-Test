@@ -190,6 +190,12 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_overlay_b_none 0
 #define k_overlay_b_tint_add_color 1
 
+#define k_waveshape_default 0
+#define k_refraction_none 0
+#define k_refraction_dynamic 1
+#define k_watercolor_pure 0
+#define k_watercolor_texture 0
+
 // Generics
 #define shaderstage 0
 #define shadertype 0
@@ -219,6 +225,15 @@ This file contains a list of blank definitions to help with Intellisense
 #define base_arg 0
 #define overlay_a_arg 0
 #define overlay_b_arg 0
+
+#define waveshape_arg 0
+#define watercolor_arg 0
+#define reflection_arg 0
+#define refraction_arg 0
+#define bankalpha_arg 0
+#define appearance_arg 0
+#define global_shape_arg 0
+#define foam_arg 0
 
 #endif
 

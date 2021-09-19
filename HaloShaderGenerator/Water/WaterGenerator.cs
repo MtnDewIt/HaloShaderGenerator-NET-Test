@@ -82,6 +82,12 @@ namespace HaloShaderGenerator.Water
             macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Water, "k_shadertype_"));
 
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_watercolor_ps", watercolor, "calc_watercolor_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_reflection_ps", reflection, "calc_reflection_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_refraction_ps", refraction, "calc_refraction_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_bankalpha_ps", bankalpha, "calc_bankalpha_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_foam_ps", foam, "calc_foam_", "_ps"));
+
             macros.Add(ShaderGeneratorBase.CreateMacro("waveshape_arg", waveshape, "k_waveshape_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("watercolor_arg", watercolor, "k_watercolor_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("reflection_arg", reflection, "k_reflection_"));
@@ -231,7 +237,7 @@ namespace HaloShaderGenerator.Water
                     result.AddFloat4Parameter("water_color_pure");
                     break;
                 case Watercolor.Texture:
-                    result.AddSamplerParameter("watercolor_texture");
+                    result.AddSamplerWithoutXFormParameter("watercolor_texture");
                     result.AddFloatParameter("watercolor_coefficient");
                     break;
             }

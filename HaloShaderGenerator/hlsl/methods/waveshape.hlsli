@@ -1,7 +1,10 @@
 ﻿#ifndef _HLSLI_WATER_WAVESHAPE
 #define _HLSLI_WATER_WAVESHAPE
 
+uniform sampler3D wave_slope_array;
+
 #include "../helpers/math.hlsli"
+#include "../helpers/definition_helper.hlsli"
 #include "../registers/water_parameters.hlsli"
 #include "../registers/global_parameters.hlsli"
 
@@ -10,6 +13,9 @@ uniform float time_warp;
 uniform float4 wave_slope_array_xform;
 uniform float time_warp_aux;
 
+// bleh register order
+#include "foam.hlsli"
+
 uniform float slope_range_x;
 uniform float slope_range_y;
 uniform float detail_slope_scale_x;
@@ -17,7 +23,9 @@ uniform float detail_slope_scale_y;
 uniform float detail_slope_scale_z;
 uniform float detail_slope_steepness;
 
-uniform sampler3D wave_slope_array;
+#if refraction_arg == k_refraction_dynamic
+#include "refraction.hlsli"
+#endif
 
 void calc_waveshape_default_ps(
     float2 texcoord,
@@ -55,6 +63,10 @@ void calc_waveshape_default_ps(
     refraction_s = wave_slope * slope_range_xy + (slope_range_xy * -0.5f);
     float2 restored_wave_slope = refraction_s * (wave_slope_steepness / slope_mag);
     
+#if refraction_arg == k_refraction_dynamic
+        refraction_s = refraction_s * max(wave_slope_steepness / slope_mag, minimal_wave_disturbance) + restored_aux_slope;
+#endif
+    
     float2 slope_accum = restored_wave_slope + restored_aux_slope + restored_detail_slope;
     float slope_scale = n_scale >= 1.0f ? 1.0f / n_scale : 1.0f;
     slope_accum = slope_accum * slope_scale + ripple_height;
@@ -63,7 +75,7 @@ void calc_waveshape_default_ps(
     float3 n_m_mul = n_slope.y * v2;
     n_m_mul = n_slope.x * v1 + n_m_mul;
     n_m_mul = n_slope.z * -normalize((v2.yzx * v1.zxy) - (v2.zxy * v1.yzx)) + n_m_mul;
-    normal = n_m_mul;
+    normal = normalize(n_m_mul);
 }
 
 void calc_waveshape_none_ps(

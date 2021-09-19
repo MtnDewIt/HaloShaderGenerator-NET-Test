@@ -5,7 +5,7 @@
 #include "../registers/water_parameters.hlsli"
 #include "../registers/global_parameters.hlsli"
 
-float3 water_get_lightprobe_band0_color(float2 tex)
+float3 water_sample_lightprobe_array(float2 tex)
 {
     if (k_is_lightmap_exist)
     {

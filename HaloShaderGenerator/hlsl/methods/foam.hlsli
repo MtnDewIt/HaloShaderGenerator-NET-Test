@@ -13,7 +13,7 @@ uniform float foam_pow;
 
 #define FOAM_THRESHOLD 0.002f
 
-float3 calc_foam_none_ps(float3 color, float3 lightmap_color, float2 texcoord, float2 shape_tex, float2 height, float ripple_foam)
+float4 calc_foam_none_ps(float3 lightmap_color, float2 texcoord, float2 shape_tex, float2 height, float ripple_foam)
 {
     float foam_mag = max(ripple_foam, 0.0f);
     
@@ -31,12 +31,11 @@ float3 calc_foam_none_ps(float3 color, float3 lightmap_color, float2 texcoord, f
         foam_color.a = foam_mag;
     }
     
-    //todo
-    
-    return color;
+    foam_color.rgb *= lightmap_color;
+    return foam_color;
 }
 
-float3 calc_foam_auto_ps(float3 color, float3 lightmap_color, float2 texcoord, float2 shape_tex, float2 height, float ripple_foam)
+float4 calc_foam_auto_ps(float3 lightmap_color, float2 texcoord, float2 shape_tex, float2 height, float ripple_foam)
 {
     float2 foam_h = height - foam_height;
     float auto_foam = saturate(foam_h.x / saturate(foam_h.y));
@@ -57,12 +56,11 @@ float3 calc_foam_auto_ps(float3 color, float3 lightmap_color, float2 texcoord, f
         foam_color.a = foam_mag;
     }
     
-    //todo
-    
-    return color;
+    foam_color.rgb *= lightmap_color;
+    return foam_color;
 }
 
-float3 calc_foam_paint_ps(float3 color, float3 lightmap_color, float2 texcoord, float2 shape_tex, float2 height, float ripple_foam)
+float4 calc_foam_paint_ps(float3 lightmap_color, float2 texcoord, float2 shape_tex, float2 height, float ripple_foam)
 {
     float painted_foam = tex2D(global_shape_texture, shape_tex).z;
     float foam_mag = max(ripple_foam, painted_foam);
@@ -81,12 +79,11 @@ float3 calc_foam_paint_ps(float3 color, float3 lightmap_color, float2 texcoord, 
         foam_color.a = foam_mag;
     }
     
-    //todo
-    
-    return color;
+    foam_color.rgb *= lightmap_color;
+    return foam_color;
 }
 
-float3 calc_foam_both_ps(float3 color, float3 lightmap_color, float2 texcoord, float2 shape_tex, float2 height, float ripple_foam)
+float4 calc_foam_both_ps(float3 lightmap_color, float2 texcoord, float2 shape_tex, float2 height, float ripple_foam)
 {
     float2 foam_h = height - foam_height;
     float auto_foam = saturate(foam_h.x / saturate(foam_h.y));
@@ -108,12 +105,8 @@ float3 calc_foam_both_ps(float3 color, float3 lightmap_color, float2 texcoord, f
         foam_color.a = foam_mag;
     }
     
-    float3 temp_ = foam_color.rgb * lightmap_color - color;
-    temp_ = foam_color.a * temp_ + color;
-    
-    //TODO
-    
-    return color;
+    foam_color.rgb *= lightmap_color;
+    return foam_color;
 }
 
 #ifndef calc_foam_ps

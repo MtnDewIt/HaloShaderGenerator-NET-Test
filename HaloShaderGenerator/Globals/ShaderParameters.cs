@@ -148,6 +148,17 @@ namespace HaloShaderGenerator.Globals
         // Getters for specific types of paramaters for pixel shaders
         //
 
+        public List<ShaderParameter> GetSamplerParameters()
+        {
+            var result = new List<ShaderParameter>();
+            foreach (var parameter in Parameters)
+            {
+                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern == RenderMethodExtern.none)
+                    result.Add(parameter);
+            }
+            return result;
+        }
+
         public List<ShaderParameter> GetRealPixelParameters()
         {
             var result = new List<ShaderParameter>();
@@ -313,6 +324,7 @@ namespace HaloShaderGenerator.Globals
         IsVertexShader = 1 << 0,
         IsColor = 1 << 1,
         IsXFormOnly = 1 << 2,
+        IsVertexAndPixelSampler = 1 << 3
     }
 
     public class ShaderParameter

@@ -122,8 +122,15 @@ uniform samplerCUBE environment_map environment_map_register;
 uniform sampler2D normal_texture;
 uniform sampler3D lightprobe_texture_array;
 uniform sampler3D dominant_light_intensity_map;
-
 uniform sampler2D scene_ldr_texture;
 
+#else
+uniform sampler3D lightprobe_texture_array;
+uniform sampler2D scene_ldr_texture;
+#ifndef DEPTH_BUFFER_DEFINED
+uniform sampler2D depth_buffer;
+#define DEPTH_BUFFER_DEFINED 1
 #endif
+#endif
+
 #endif

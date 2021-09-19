@@ -12,10 +12,16 @@ PS_OUTPUT_DEFAULT entry_static_per_pixel(VS_OUTPUT_WATER input) : COLOR
 #endif
 
 #if shaderstage == k_shaderstage_static_per_vertex
-#include "water/entry_static_per_vertex.hlsli"
+//#include "water/entry_static_per_vertex.hlsli"
+//PS_OUTPUT_DEFAULT entry_static_per_vertex(VS_OUTPUT_WATER input) : COLOR
+//{	
+//	return water_entry_static_per_vertex(input);
+//}
+// eh works
+#include "water/entry_static_per_pixel.hlsli"
 PS_OUTPUT_DEFAULT entry_static_per_vertex(VS_OUTPUT_WATER input) : COLOR
-{	
-	return water_entry_static_per_vertex(input);
+{
+    return water_entry_static_per_pixel(input);
 }
 #endif
 
