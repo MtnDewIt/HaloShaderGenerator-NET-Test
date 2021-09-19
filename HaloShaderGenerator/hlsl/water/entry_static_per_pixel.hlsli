@@ -10,7 +10,6 @@ uniform sampler2D tex_ripple_buffer_slope_height : register(s1);
 #include "..\helpers\input_output.hlsli"
 #include "..\helpers\types.hlsli"
 
-
 #include "..\methods\waveshape.hlsli"
 uniform bool no_dynamic_lights;
 #include "..\methods\foam.hlsli"
@@ -18,25 +17,8 @@ uniform bool no_dynamic_lights;
 #include "..\methods\reflection.hlsli"
 uniform float fresnel_coefficient;
 #include "..\methods\watercolor.hlsli"
-//uniform float refraction_texcoord_shift;
-//uniform float refraction_extinct_distance;
-//uniform float minimal_wave_disturbance;
-//uniform float refraction_depth_dominant_ratio;
-//uniform float reflection_coefficient;
-//uniform float sunspot_cut;
-//uniform float shadow_intensity_mark;
-//uniform float watercolor_coefficient;
-//uniform float3 water_color_pure;
 uniform float3 water_diffuse;
-//uniform float water_murkiness;
 #include "..\methods\bankalpha.hlsli"
-//uniform sampler3D lightprobe_texture_array;
-//uniform sampler2D scene_ldr_texture;
-//uniform sampler2D depth_buffer;
-//uniform sampler2D watercolor_texture;
-//uniform sampler2D global_shape_texture;
-//uniform samplerCUBE environment_map;
-//foam tex
 #include "..\registers\water_parameters.hlsli"
 
 PS_OUTPUT_DEFAULT water_entry_static_per_pixel(VS_OUTPUT_WATER input)
@@ -123,6 +105,34 @@ PS_OUTPUT_DEFAULT water_entry_static_per_pixel(VS_OUTPUT_WATER input)
     blended_color = scene_color * -scale2 + blended_color;
     float3 final_color = blended_color * v8.xyz + ((1.0f - (scale0 * scale1)) * v9.xyz);
     final_color = final_color * g_exposure.x + (scale2 * scene_color);
+    
+    if (APPLY_HLSL_FIXES)
+    {
+        [branch]
+        if (k_is_camera_underwater)
+        {
+            float2 water_view_tex = (v3.xy / v3.w) * 0.5f + 0.5f;
+            water_view_tex.y = 1.0f - water_view_tex.y;
+            water_view_tex = water_view_tex * k_ps_water_player_view_constant.zw + k_ps_water_player_view_constant.xy;
+            float water_view_depth = tex2D(depth_buffer, water_view_tex).x;
+            if (!APPLY_HLSL_FIXES)
+                water_view_depth = k_ps_water_view_depth_constant.x * rcp(water_view_depth) + k_ps_water_view_depth_constant.y;
+    
+            float4 xform = float4((v3.xy / v3.w), water_view_depth, 1.0f);
+            float4 water_view = mul(xform, k_ps_water_view_xform_inverse);
+            
+            water_view.xyz = water_view.xyz * -(1.0f / water_view.w) + k_ps_camera_position.xyz;
+            float view_murkiness = rcp(rsqrt(dot(water_view.xyz, water_view.xyz))) * k_ps_underwater_murkiness;
+            view_murkiness *= 1.44269502f;
+            view_murkiness = saturate(1.0f / exp2(view_murkiness));
+    
+            view_murkiness = -view_murkiness + 1.0f;
+            view_murkiness = -view_murkiness + 1.0f;
+            view_murkiness *= 0.5f;
+    
+            final_color = lerp(final_color, k_ps_underwater_fog_color, view_murkiness);
+        }
+    }
     
     PS_OUTPUT_DEFAULT output;
     
