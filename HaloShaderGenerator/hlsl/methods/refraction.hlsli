@@ -27,10 +27,9 @@ void calc_refraction_dynamic_ps(float3 vpos, float2 refraction_tex, float2 rippl
     water_view_tex.y = 1.0f - water_view_tex.y;
     water_view_tex = water_view_tex * k_ps_water_player_view_constant.zw + k_ps_water_player_view_constant.xy;
     float water_view_depth = tex2D(depth_buffer, water_view_tex).x;
-    if (!APPLY_HLSL_FIXES)
-        water_view_depth = k_ps_water_view_depth_constant.x * rcp(water_view_depth) + k_ps_water_view_depth_constant.y;
+    water_view_depth = k_ps_water_view_depth_constant.x * rcp(water_view_depth) + k_ps_water_view_depth_constant.y;
     
-    float4 xform = float4((v3.xy / v3.w), water_view_depth, 1.0f);
+    float4 xform = float4((v3.xy / v3.w), 1.0f - water_view_depth, 1.0f);
     float4 water_view = mul(xform, k_ps_water_view_xform_inverse);
     water_view.xyz = water_view.xyz / water_view.w - vpos;
     
@@ -39,16 +38,16 @@ void calc_refraction_dynamic_ps(float3 vpos, float2 refraction_tex, float2 rippl
     refraction_tex = refraction_tex * k_ps_water_player_view_constant.zw;
     refraction_tex = refraction_tex * slope_mag + water_view_tex;
     float2 final_refract_tex = min(k_ps_water_player_view_constant.zw + k_ps_water_player_view_constant.xy - 0.001f, max(refraction_tex, 0.001f + k_ps_water_player_view_constant.xy));
+    
     float refract_depth = tex2D(depth_buffer, final_refract_tex).x;
-    if (!APPLY_HLSL_FIXES)
-        refract_depth = k_ps_water_view_depth_constant.x * rcp(refract_depth) + k_ps_water_view_depth_constant.y;
+    refract_depth = k_ps_water_view_depth_constant.x * rcp(refract_depth) + k_ps_water_view_depth_constant.y;
+    
     out_texcoord = (v3.z / v3.w - refract_depth) >= 0 ? water_view_tex : final_refract_tex;
     
     float final_depth = tex2D(depth_buffer, out_texcoord).x;
-    if (!APPLY_HLSL_FIXES)
-        final_depth = k_ps_water_view_depth_constant.x * rcp(final_depth) + k_ps_water_view_depth_constant.y;
+    final_depth = k_ps_water_view_depth_constant.x * rcp(final_depth) + k_ps_water_view_depth_constant.y;
     
-    float4 final_view = mul(float4(float2(out_texcoord.x, 1.0f - out_texcoord.y) * 2.0f - 1.0f, final_depth, 1.0f), k_ps_water_view_xform_inverse);
+    float4 final_view = mul(float4(float2(out_texcoord.x, 1.0f - out_texcoord.y) * 2.0f - 1.0f, 1.0f - final_depth, 1.0f), k_ps_water_view_xform_inverse);
     final_view.xyz = final_view.xyz / final_view.w - vpos;
     
     float depth_mag = lerp(abs(final_view.z), rcp(rsqrt(dot(final_view.xyz, final_view.xyz))), refraction_depth_dominant_ratio);

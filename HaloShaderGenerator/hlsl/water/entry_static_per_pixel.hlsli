@@ -115,10 +115,9 @@ PS_OUTPUT_DEFAULT water_entry_static_per_pixel(VS_OUTPUT_WATER input)
             water_view_tex.y = 1.0f - water_view_tex.y;
             water_view_tex = water_view_tex * k_ps_water_player_view_constant.zw + k_ps_water_player_view_constant.xy;
             float water_view_depth = tex2D(depth_buffer, water_view_tex).x;
-            if (!APPLY_HLSL_FIXES)
-                water_view_depth = k_ps_water_view_depth_constant.x * rcp(water_view_depth) + k_ps_water_view_depth_constant.y;
+            water_view_depth = k_ps_water_view_depth_constant.x / water_view_depth + k_ps_water_view_depth_constant.y;
     
-            float4 xform = float4((v3.xy / v3.w), water_view_depth, 1.0f);
+            float4 xform = float4((v3.xy / v3.w), 1.0f - water_view_depth, 1.0f);
             float4 water_view = mul(xform, k_ps_water_view_xform_inverse);
             
             water_view.xyz = water_view.xyz * -(1.0f / water_view.w) + k_ps_camera_position.xyz;
@@ -130,7 +129,7 @@ PS_OUTPUT_DEFAULT water_entry_static_per_pixel(VS_OUTPUT_WATER input)
             view_murkiness = -view_murkiness + 1.0f;
             view_murkiness *= 0.5f;
     
-            final_color = lerp(final_color, k_ps_underwater_fog_color, view_murkiness);
+            final_color = lerp(k_ps_underwater_fog_color, final_color, view_murkiness);
         }
     }
     

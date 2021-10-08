@@ -235,6 +235,7 @@ struct VS_RIPPLE_FOG_OUTPUT
 
 uniform float4 g_exposure : register(c0);
 uniform float4x4 k_ps_water_view_xform_inverse : register(c213);
+uniform float4 k_ps_water_view_depth_constant : register(c217);
 uniform float4 k_ps_water_player_view_constant : register(c218);
 uniform float4 k_ps_camera_position : register(c219);
 uniform float k_ps_underwater_murkiness : register(c220);
@@ -245,16 +246,17 @@ uniform sampler2D tex_depth_buffer : register(s1);
 
 PS_OUTPUT_DEFAULT ps_lightmap_debug_mode(in VS_RIPPLE_FOG_OUTPUT input) : COLOR
 {
-    float2 scene_tex = (input.position.xy + 0.5f) * ps_screen_constants;
-    
-    float scene_depth = tex2D(tex_depth_buffer, scene_tex).r;
+    float scene_depth = (k_ps_water_view_depth_constant.x / tex2D(tex_depth_buffer, input.texcoord.xy).r) + k_ps_water_view_depth_constant.y;
     float3 scene_color = tex2D(tex_ldr_buffer, input.texcoord.xy).rgb;
     
-    float4 transform_tex = float4(input.texcoord.xy, scene_depth, 1.0f);
+    float4 transform_tex = float4(input.texcoord.xy, 1.0f - scene_depth, 1.0f);
+    transform_tex.y = 1.0f - transform_tex.y;
+    transform_tex.xy -= 0.5f;
+    transform_tex.xy /= 0.5f;
     
     float4 water_view = mul(transform_tex, k_ps_water_view_xform_inverse);
     
-    water_view.xyz = water_view.xyz * -(1.0f / water_view.w) + k_ps_camera_position.xyz;
+    water_view.xyz = water_view.xyz / water_view.w - k_ps_camera_position.xyz;
     float view_murkiness = rcp(rsqrt(dot(water_view.xyz, water_view.xyz))) * k_ps_underwater_murkiness;
     view_murkiness *= k_underwater_murkiness_multiplier;
     view_murkiness = saturate(1.0f / exp2(view_murkiness));
@@ -263,7 +265,7 @@ PS_OUTPUT_DEFAULT ps_lightmap_debug_mode(in VS_RIPPLE_FOG_OUTPUT input) : COLOR
     view_murkiness = -view_murkiness + 1.0f;
     view_murkiness *= 0.5f;
     
-    float3 fog_color = lerp(scene_color, k_ps_underwater_fog_color, view_murkiness);
+    float3 fog_color = lerp(k_ps_underwater_fog_color, scene_color, view_murkiness);
     
     fog_color = max(fog_color, 0);
     
