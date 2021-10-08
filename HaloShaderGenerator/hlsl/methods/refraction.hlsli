@@ -42,7 +42,7 @@ void calc_refraction_dynamic_ps(float3 vpos, float2 refraction_tex, float2 rippl
     float refract_depth = tex2D(depth_buffer, final_refract_tex).x;
     refract_depth = k_ps_water_view_depth_constant.x * rcp(refract_depth) + k_ps_water_view_depth_constant.y;
     
-    out_texcoord = (v3.z / v3.w - refract_depth) >= 0 ? water_view_tex : final_refract_tex;
+    out_texcoord = 1.0f - refract_depth > (v3.z / v3.w) ? water_view_tex : final_refract_tex;
     
     float final_depth = tex2D(depth_buffer, out_texcoord).x;
     final_depth = k_ps_water_view_depth_constant.x * rcp(final_depth) + k_ps_water_view_depth_constant.y;
