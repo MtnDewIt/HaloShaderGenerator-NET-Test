@@ -117,13 +117,13 @@ float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
     float2 distort_val = distortion_scale.x * pixel_change.xy;
     clip(depth_val == 0 ? -1 : 1);
     
-    float fudge = 1.0f;
+    float rt_b = x360_fudge_constant;
     if (!APPLY_HLSL_FIXES)
-        fudge = pc_fudge_constant;
+        rt_b = pc_fudge_constant;
     
     if (DISTORTION_EXPENSIVE)
     {
-        float2 expensive_frag_pos = get_x360_z_buffer_coord(distort_val * (fudge / 64.0f) + input.position.xy);
+        float2 expensive_frag_pos = get_x360_z_buffer_coord(distort_val * rt_b + input.position.xy);
         float depth_fade_exp = calc_depth_fade(expensive_frag_pos, input_depth, false);
         clip(-depth_fade_exp < 0 ? 1 : -1);
     }

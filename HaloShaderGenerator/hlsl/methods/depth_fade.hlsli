@@ -17,14 +17,15 @@ uniform sampler2D depth_buffer;
 
 uniform float depth_fade_range;
 
+#include "..\registers\global_parameters.hlsli"
+
 float apply_z_fixup(in float z)
 {
-    // Should work when sampling actual z buffer
-//#if APPLY_HLSL_FIXES == 1
-//        return 1.0f / ((depth_constants.x + depth_constants.y) - depth_constants.y * z.x);
-//#else
+#if APPLY_HLSL_FIXES == 1
+        return 1.0f / ((depth_constants.x + depth_constants.y) - depth_constants.y * z.x);
+#else
         return z;
-//#endif
+#endif
 }
 
 float calc_depth_fade(float2 texcoord, float depth, bool fade_range)
@@ -34,7 +35,11 @@ float calc_depth_fade(float2 texcoord, float depth, bool fade_range)
     
     float zbuf_depth = apply_z_fixup(tex2D(depth_buffer, texcoord).r);
     
+#if APPLY_HLSL_FIXES == 1
+    return saturate((depth - zbuf_depth) / (fade_range ? depth_fade_range : 1.0f));
+#else
     return saturate((zbuf_depth - depth) / (fade_range ? depth_fade_range : 1.0f));
+#endif
 }
 
 #endif
