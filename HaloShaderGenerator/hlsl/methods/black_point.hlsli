@@ -9,19 +9,11 @@
 
 void black_point_on(inout float alpha, float black_point)
 {
-    // black_point is the darkest pixel determined in the vertex shader
-    // i'd assume something there is wrong
-    
-    if (!APPLY_HLSL_FIXES)
-    {
-        float white_point = 1.0f;
-        
-        float new_alpha = saturate((alpha - black_point) * (1 / (-black_point + 0.5f * (1 - -black_point))));
-        float bwPoint = white_point + black_point;
-        float mid_point = bwPoint * 0.5f; // (white_point + black_point) / 2.0f
-        bwPoint = saturate(alpha - (bwPoint * 0.5f));
-        alpha = mid_point * new_alpha + bwPoint;
-    }
+    float new_alpha = saturate((alpha - black_point) * (1 / (-black_point + 0.5f * (1 - -black_point))));
+    float bwPoint = 1.0f + black_point;
+    float mid_point = bwPoint * 0.5f; // (white_point + black_point) / 2.0f
+    bwPoint = saturate(alpha - (bwPoint * 0.5f));
+    alpha = mid_point * new_alpha + bwPoint;
 }
 
 #endif
