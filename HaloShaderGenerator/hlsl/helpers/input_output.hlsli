@@ -97,6 +97,16 @@ struct VS_OUTPUT_STATIC_PRT
 	float3 sky_radiance : COLOR1;
 };
 
+struct VS_OUTPUT_STATIC_PRT_TERRAIN
+{
+    float4 position : SV_Position;
+    float2 texcoord : TEXCOORD;
+    float3 camera_dir : TEXCOORD4;
+    float4 prt_radiance_vector : TEXCOORD5;
+    float3 extinction_factor : COLOR;
+    float3 sky_radiance : COLOR1;
+};
+
 struct VS_OUTPUT_ACTIVE_CAMO
 {
 	float4 position : SV_Position;
@@ -166,6 +176,15 @@ struct VS_OUTPUT_STATIC_SH
 	float3 sky_radiance : COLOR1;
 };
 
+struct VS_OUTPUT_STATIC_SH_TERRAIN
+{
+    float4 position : SV_Position;
+    float3 texcoord : TEXCOORD; //z is used for the angle of the dominant light dir?
+    float3 camera_dir : TEXCOORD4;
+    float3 extinction_factor : COLOR;
+    float3 sky_radiance : COLOR1;
+};
+
 struct VS_OUTPUT_ZONLY // doesnt look like this but ehh good enough
 {
     float4 position : SV_Position;
@@ -196,6 +215,16 @@ struct VS_OUTPUT_PER_PIXEL
 	float3 sky_radiance : COLOR1;
 };
 
+struct VS_OUTPUT_PER_PIXEL_TERRAIN
+{
+    float4 position : SV_Position;
+    float2 texcoord : TEXCOORD;
+    float2 lightmap_texcoord : TEXCOORD4_CENTROID;
+    float3 camera_dir : TEXCOORD5;
+    float3 extinction_factor : COLOR;
+    float3 sky_radiance : COLOR1;
+};
+
 struct VS_OUTPUT_PER_VERTEX
 {
 	float4 position : SV_Position;
@@ -209,6 +238,21 @@ struct VS_OUTPUT_PER_VERTEX
 	float4 color2 : TEXCOORD6;
 	float4 color3 : TEXCOORD7;
 	float3 color4 : TEXCOORD8;
+	
+    float4 extinction_factor : COLOR;
+    float3 foliage_sky_radiance : COLOR1;
+};
+
+struct VS_OUTPUT_PER_VERTEX_TERRAIN
+{
+    float4 position : SV_Position;
+    float4 texcoord : TEXCOORD;
+    float3 camera_dir : TEXCOORD4;
+	
+    float4 color1 : TEXCOORD5;
+    float4 color2 : TEXCOORD6;
+    float4 color3 : TEXCOORD7;
+    float3 color4 : TEXCOORD8;
 	
     float4 extinction_factor : COLOR;
     float3 foliage_sky_radiance : COLOR1;

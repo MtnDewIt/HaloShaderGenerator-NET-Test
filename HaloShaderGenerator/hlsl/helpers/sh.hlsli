@@ -44,6 +44,25 @@ in float3 dominant_light_intensity)
 	return diffuse_reflectance;
 }
 
+float3 lightmap_lightprobe_color(
+in float3 normal,
+in float4 sh_0,
+in float4 sh_312[3])
+{
+    float c2 = 0.511664f;
+    float c3 = 0.280999988;
+    float c4 = 0.886227f;
+    float3 x1;
+	
+	//linear
+    x1.r = dot(normal, sh_312[0].xyz);
+    x1.g = dot(normal, sh_312[1].xyz);
+    x1.b = dot(normal, sh_312[2].xyz);
+
+    float3 lightprobe_color = c4 * sh_0.rgb + (-2.f * c2) * x1;
+    return max(lightprobe_color /= PI, 0);
+}
+
 float3 lightmap_diffuse_reflectance(
 in float3 normal,
 in float4 sh_0,

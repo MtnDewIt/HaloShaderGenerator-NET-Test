@@ -13,17 +13,17 @@ PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
 
 #if shaderstage == k_shaderstage_static_per_pixel
 #include "terrain/entry_per_pixel_lighting.hlsli"
-PS_OUTPUT_DEFAULT entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input) : COLOR
+PS_OUTPUT_DEFAULT entry_static_per_pixel(VS_OUTPUT_PER_PIXEL_TERRAIN input) : COLOR
 {	
-	return shader_entry_static_per_pixel(input);
+	return terrain_entry_static_per_pixel(input);
 }
 #endif
 
 #if shaderstage == k_shaderstage_static_per_vertex
 #include "terrain/entry_per_vertex_lighting.hlsli"
-PS_OUTPUT_DEFAULT entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input) : COLOR
+PS_OUTPUT_DEFAULT entry_static_per_vertex(VS_OUTPUT_PER_VERTEX_TERRAIN input) : COLOR
 {	
-	return shader_entry_static_per_vertex(input);
+	return terrain_entry_static_per_vertex(input);
 }
 #endif
 
@@ -50,22 +50,22 @@ PS_OUTPUT_DEFAULT entry_dynamic_light_cinematic(VS_OUTPUT_TERRAIN_DYNAMIC_LIGHT 
 
 #if shaderstage == k_shaderstage_static_sh || shaderstage == k_shaderstage_static_prt_ambient || shaderstage == k_shaderstage_static_prt_linear || shaderstage == k_shaderstage_static_prt_quadratic
 #include "terrain/entry_prt.hlsli"
-PS_OUTPUT_DEFAULT entry_static_sh(VS_OUTPUT_STATIC_SH input) : COLOR
+PS_OUTPUT_DEFAULT entry_static_sh(VS_OUTPUT_STATIC_SH_TERRAIN input) : COLOR
 {
 	return shader_entry_static_sh(input);
 }
 
-PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PRT input) : COLOR
+PS_OUTPUT_DEFAULT entry_static_prt_ambient(VS_OUTPUT_STATIC_PRT_TERRAIN input) : COLOR
 {
 	return shader_entry_static_prt(input);
 }
 
-PS_OUTPUT_DEFAULT entry_static_prt_linear(VS_OUTPUT_STATIC_PRT input) : COLOR
+PS_OUTPUT_DEFAULT entry_static_prt_linear(VS_OUTPUT_STATIC_PRT_TERRAIN input) : COLOR
 {
 	return shader_entry_static_prt(input);
 }
 
-PS_OUTPUT_DEFAULT entry_static_prt_quadratic(VS_OUTPUT_STATIC_PRT input) : COLOR
+PS_OUTPUT_DEFAULT entry_static_prt_quadratic(VS_OUTPUT_STATIC_PRT_TERRAIN input) : COLOR
 {
 	return shader_entry_static_prt(input);
 }

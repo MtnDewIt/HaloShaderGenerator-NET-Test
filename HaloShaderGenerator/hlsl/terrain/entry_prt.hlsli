@@ -88,14 +88,14 @@ float4 prt)
 }
 
 
-PS_OUTPUT_DEFAULT shader_entry_static_sh(VS_OUTPUT_STATIC_SH input)
+PS_OUTPUT_DEFAULT shader_entry_static_sh(VS_OUTPUT_STATIC_SH_TERRAIN input)
 {
-	return entry_static_sh_prt(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, 1.0);
+    return entry_static_sh_prt(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, 0, 0, 0, input.sky_radiance, input.extinction_factor, 1.0);
 }
 
-PS_OUTPUT_DEFAULT shader_entry_static_prt(VS_OUTPUT_STATIC_PRT input)
+PS_OUTPUT_DEFAULT shader_entry_static_prt(VS_OUTPUT_STATIC_PRT_TERRAIN input)
 {
-	return entry_static_sh_prt(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector);
+    return entry_static_sh_prt(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, 0, 0, 0, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector);
 }
 
 #endif

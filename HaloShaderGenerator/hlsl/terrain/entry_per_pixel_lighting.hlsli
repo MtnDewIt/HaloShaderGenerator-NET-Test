@@ -11,7 +11,7 @@
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 
-PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
+PS_OUTPUT_DEFAULT terrain_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL_TERRAIN input)
 {
 	SHADER_COMMON common_data;
 	{
@@ -20,9 +20,6 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 		common_data.view_dir = input.camera_dir;
 		common_data.n_view_dir = normalize(input.camera_dir);
 		common_data.fragcoord = input.position.xy;
-		common_data.tangent = input.tangent;
-		common_data.binormal = input.binormal;
-        common_data.normal = input.normal;
         common_data.texcoord = input.texcoord.xy;
         common_data.alpha = 1.0f;
 		

@@ -15,6 +15,7 @@ uniform float3 specular_tint_m_0;
 uniform float fresnel_curve_steepness_m_0;
 uniform float area_specular_contribution_m_0;
 uniform float analytical_specular_contribution_m_0;
+uniform float environment_specular_contribution_m_0;
 uniform float albedo_specular_tint_blend_m_0;
 
 uniform float diffuse_coefficient_m_1;
@@ -24,6 +25,7 @@ uniform float3 specular_tint_m_1;
 uniform float fresnel_curve_steepness_m_1;
 uniform float area_specular_contribution_m_1;
 uniform float analytical_specular_contribution_m_1;
+uniform float environment_specular_contribution_m_1;
 uniform float albedo_specular_tint_blend_m_1;
 
 uniform float diffuse_coefficient_m_2;
@@ -33,6 +35,7 @@ uniform float3 specular_tint_m_2;
 uniform float fresnel_curve_steepness_m_2;
 uniform float area_specular_contribution_m_2;
 uniform float analytical_specular_contribution_m_2;
+uniform float environment_specular_contribution_m_2;
 uniform float albedo_specular_tint_blend_m_2;
 
 uniform float diffuse_coefficient_m_3;
@@ -42,6 +45,7 @@ uniform float3 specular_tint_m_3;
 uniform float fresnel_curve_steepness_m_3;
 uniform float area_specular_contribution_m_3;
 uniform float analytical_specular_contribution_m_3;
+uniform float environment_specular_contribution_m_3;
 uniform float albedo_specular_tint_blend_m_3;
 
 
@@ -225,6 +229,9 @@ float get_analytical_specular_contribution(int index)
 
 float get_analytical_specular_contribution(float4 blend)
 {
+    if (material_type_3_arg != k_material_diffuse_plus_specular && material_type_2_arg != k_material_diffuse_plus_specular && material_type_1_arg != k_material_diffuse_plus_specular && material_type_0_arg != k_material_diffuse_plus_specular)
+        return 1.0f;
+	
 	float analytical_specular_contribution = 0;
 	analytical_specular_contribution += get_specular_coefficient(0) * blend.x * get_analytical_specular_contribution(0);
 	analytical_specular_contribution += get_specular_coefficient(1) * blend.y * get_analytical_specular_contribution(1);
@@ -235,6 +242,9 @@ float get_analytical_specular_contribution(float4 blend)
 
 float get_area_specular_contribution(float4 blend)
 {
+    if (material_type_3_arg != k_material_diffuse_plus_specular && material_type_2_arg != k_material_diffuse_plus_specular && material_type_1_arg != k_material_diffuse_plus_specular && material_type_0_arg != k_material_diffuse_plus_specular)
+        return 1.0f;
+	
 	float area_specular_contribution = 0;
 	area_specular_contribution += area_specular_contribution_m_0 * get_specular_coefficient(0) * blend.x;
 	area_specular_contribution += area_specular_contribution_m_1 * get_specular_coefficient(1) * blend.y;
@@ -254,6 +264,16 @@ float get_diffuse_coefficient(float4 blend)
 	diffuse_coefficient += get_diffuse_coefficient(2) * blend.z;
 	diffuse_coefficient += get_diffuse_coefficient(3) * blend.w;
 	return diffuse_coefficient;
+}
+
+float get_environment_specular_contribution(float4 blend)
+{
+    float environment_contribution = 0;
+    environment_contribution += environment_specular_contribution_m_0 * get_specular_coefficient(0) * blend.x;
+    environment_contribution += environment_specular_contribution_m_1 * get_specular_coefficient(1) * blend.y;
+    environment_contribution += environment_specular_contribution_m_2 * get_specular_coefficient(2) * blend.z;
+    environment_contribution += environment_specular_contribution_m_3 * get_specular_coefficient(3) * blend.w;
+    return environment_contribution;
 }
 
 void blend_specular_parameters(in float4 blend, out float specular_power, out float fresnel_steepness)
@@ -329,7 +349,7 @@ float3 calc_lighting_terrain(SHADER_COMMON common_data, out float4 unknown_outpu
     float3 diffuse = common_data.diffuse_reflectance;
 	
     float v_dot_n = dot(common_data.surface_normal, common_data.view_dir);
-    float sn_dot_n = dot(common_data.view_dir, common_data.surface_normal);
+    float sn_dot_n = dot(normalize(common_data.view_dir), common_data.surface_normal);
 	
     float3 reflect_dir = (v_dot_n * common_data.surface_normal - common_data.view_dir) * 2 + common_data.view_dir;
     reflect_dir = normalize(reflect_dir);
@@ -348,8 +368,15 @@ float3 calc_lighting_terrain(SHADER_COMMON common_data, out float4 unknown_outpu
     float fresnel_curve_steepness;
     blend_specular_parameters(blend, specular_exponent, fresnel_curve_steepness);
 	
-    float specular_power = pow(l_dot_r, specular_exponent * blend_normalized);
-    specular_power *= specular_exponent * blend_normalized + 1.0f;
+    float bn_spec_exp = specular_exponent * blend_normalized;
+	
+    float3 diffuse_accumulation = 0;
+    float3 specular_accumulation = 0;
+    calc_material_lambert_diffuse_ps(common_data.surface_normal, common_data.world_position, common_data.reflect_dir, bn_spec_exp, diffuse_accumulation, specular_accumulation);
+    specular_accumulation *= bn_spec_exp;
+	
+    float specular_power = pow(l_dot_r, bn_spec_exp);
+    specular_power *= bn_spec_exp + 1.0f;
     specular_power *= INV_2PI;
 	
     fresnel_curve_steepness *= blend_normalized;
@@ -368,30 +395,30 @@ float3 calc_lighting_terrain(SHADER_COMMON common_data, out float4 unknown_outpu
     else
         specular = 0;
 	
+    float3 lightprobe_color = lightmap_lightprobe_color(common_data.surface_normal, common_data.sh_0, common_data.sh_312);
+    float3 area_specular = lightprobe_color * get_area_specular_contribution(blend);
+	
+    specular += specular_accumulation;
+    specular *= get_analytical_specular_contribution(blend);
+    specular += area_specular;
     specular *= fresnel_color;
-	specular *= get_analytical_specular_contribution(blend);
 	
-	float3 diffuse_accumulation = 0;
-	float3 specular_accumulation = 0;
-	calc_material_lambert_diffuse_ps(common_data.surface_normal, common_data.world_position, 0, 0, diffuse_accumulation, specular_accumulation);
+    float3 env_color = 0;
+    ENVIRONMENT_MAPPING_COMMON env_mapping_common_data;
+    env_mapping_common_data.reflect_dir = common_data.reflect_dir;
+    env_mapping_common_data.view_dir = common_data.view_dir;
+    env_mapping_common_data.env_area_specular = specular * get_environment_specular_contribution(blend);
+    env_mapping_common_data.specular_coefficient = 1.0;
+    env_mapping_common_data.area_specular = 0.0;
+    env_mapping_common_data.specular_exponent = 0.0;
+	envmap_type(env_mapping_common_data, env_color, unknown_output);
 	
-    float area_specular = get_area_specular_contribution(blend);
 	
-    diffuse *= area_specular;
     diffuse += diffuse_accumulation;
-    diffuse *= get_diffuse_coefficient(blend);
     diffuse *= common_data.albedo.rgb;
+    diffuse *= get_diffuse_coefficient(blend);
     diffuse += specular;
-
-	ENVIRONMENT_MAPPING_COMMON env_mapping_common_data;
-	
-	env_mapping_common_data.reflect_dir = common_data.reflect_dir;
-	env_mapping_common_data.view_dir = common_data.view_dir;
-	env_mapping_common_data.env_area_specular = get_environment_contribution(common_data.sh_0);
-	env_mapping_common_data.specular_coefficient = 1.0;
-	env_mapping_common_data.area_specular = 0;
-	env_mapping_common_data.specular_exponent = 0.0;
-	envmap_type(env_mapping_common_data, diffuse, unknown_output);
+    diffuse += env_color;
 
 	return diffuse;
 }
