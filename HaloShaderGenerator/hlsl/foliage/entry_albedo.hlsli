@@ -3,6 +3,8 @@
 
 #include "..\helpers\input_output.hlsli"
 #include "..\methods\albedo.hlsli"
+#include "..\methods\alpha_test.hlsli"
+#include "..\helpers\definition_helper.hlsli"
 
 PS_OUTPUT_ALBEDO foliage_entry_albedo(VS_OUTPUT_ALBEDO input)
 {
@@ -14,11 +16,9 @@ PS_OUTPUT_ALBEDO foliage_entry_albedo(VS_OUTPUT_ALBEDO input)
     output.diffuse = albedo;
     output.normal = float4(normal_export(input.normal.xyz), albedo.w);
 	
-    if (blend_type_arg == k_blend_mode_opaque)
-    {
-        output.normal.w = 1.0;
-        output.diffuse.w = 1.0;
-    }
+    float alpha_test = calc_alpha_test_ps(input.texcoord);
+    output.normal.w = alpha_test;
+    output.diffuse.w = alpha_test;
     
     output.unknown = input.normal.wwww;
     return output;

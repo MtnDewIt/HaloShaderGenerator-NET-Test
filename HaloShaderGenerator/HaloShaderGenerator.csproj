@@ -137,6 +137,8 @@
     <Compile Include="DirectX\D3D.cs" />
     <Compile Include="DirectX\D3DCompiler.cs" />
     <Compile Include="DirectX\Include.cs" />
+    <Compile Include="Foliage\FoliageGenerator.cs" />
+    <Compile Include="Foliage\MethodOptions.cs" />
     <Compile Include="Generator\ShaderGeneratorInterfaces.cs" />
     <Compile Include="Generator\ShaderGeneratorResult.cs" />
     <Compile Include="Generic\GenericPixelShaderGenerator.cs" />
@@ -532,9 +534,6 @@
     <EmbeddedResource Include="hlsl\glvs_halogram.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\foliage\entry_albedo.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="hlsl\glvs_decal.hlsl" />
   </ItemGroup>
   <ItemGroup>
@@ -628,6 +627,21 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\methods\bankalpha.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\pixl_foliage.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\foliage\entry_albedo.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\foliage\entry_per_pixel_lighting.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\foliage\entry_per_vertex_lighting.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\foliage\entry_prt.hlsli" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

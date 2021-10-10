@@ -86,7 +86,8 @@ struct VS_OUTPUT_ALBEDO
 struct VS_OUTPUT_STATIC_PRT
 {
 	float4 position : SV_Position;
-	float2 texcoord : TEXCOORD;
+    float2 texcoord : TEXCOORD;
+    float3 unknown_lighting_color : TEXCOORD1;
 	float3 normal : TEXCOORD3;
 	float3 binormal : TEXCOORD4;
 	float3 tangent : TEXCOORD5;
@@ -155,7 +156,8 @@ struct PS_OUTPUT_DEFAULT_LDR_ONLY
 struct VS_OUTPUT_STATIC_SH
 {
 	float4 position : SV_Position;
-	float3 texcoord : TEXCOORD; //z is used for the angle of the dominant light dir?
+    float3 texcoord : TEXCOORD; //z is used for the angle of the dominant light dir?
+    float3 unknown_lighting_color : TEXCOORD1;
 	float3 normal : TEXCOORD3; 
 	float3 binormal : TEXCOORD4;
 	float3 tangent : TEXCOORD5;
@@ -183,7 +185,8 @@ struct PS_OUTPUT_SHADOW_GENERATE
 struct VS_OUTPUT_PER_PIXEL
 {
 	float4 position : SV_Position;
-	float2 texcoord : TEXCOORD;
+    float2 texcoord : TEXCOORD;
+    float3 unknown_lighting_color : TEXCOORD1;
 	float3 normal : TEXCOORD3;
 	float3 binormal : TEXCOORD4;
 	float3 tangent : TEXCOORD5;
@@ -207,7 +210,8 @@ struct VS_OUTPUT_PER_VERTEX
 	float4 color3 : TEXCOORD7;
 	float3 color4 : TEXCOORD8;
 	
-	float4 extinction_factor : COLOR;
+    float4 extinction_factor : COLOR;
+    float3 foliage_sky_radiance : COLOR1;
 };
 
 struct VS_OUTPUT_PER_VERTEX_COLOR

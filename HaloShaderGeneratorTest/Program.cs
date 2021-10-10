@@ -28,11 +28,11 @@ namespace HaloShaderGenerator
         static readonly string ShaderReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\Shaders";
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
-        static readonly ShaderType TestShaderType = ShaderType.Water;
+        static readonly ShaderType TestShaderType = ShaderType.Foliage;
 
         static public readonly bool OutputAll = true;
 
-        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { ShaderStage.Static_Per_Pixel };
+        static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> {  };
 
         #region Shader
         static readonly List<VertexType> VertexOverrides = new List<VertexType> { };
@@ -288,6 +288,20 @@ namespace HaloShaderGenerator
             ReflectionOverrides, RefractionOverrides, BankalphaOverrides, AppearanceOverrides, GlobalShapeOverrides, FoamOverrides };
         #endregion
 
+        #region foliage
+
+        static readonly List<int> FoliageAlbedoOverrides = new List<int> { };
+        static readonly List<int> FoliageAlphaTestOverrides = new List<int> { };
+        static readonly List<int> FoliageMaterialModelOverrides = new List<int> { };
+
+        static readonly List<List<int>> FoliageOverrides = new List<List<int>>
+        {
+            new List<int> { 0, 1, 0 }
+        };
+
+        static readonly List<List<int>> FoliageMethodOverrides = new List<List<int>> { FoliageAlbedoOverrides, FoliageAlphaTestOverrides, FoliageMaterialModelOverrides };
+        #endregion
+
         static GenericUnitTest GetUnitTest(ShaderType shaderType)
         {
             switch (shaderType)
@@ -302,7 +316,7 @@ namespace HaloShaderGenerator
                 case ShaderType.Terrain:        return new TerrainUnitTest(ShaderReferencePath);
                 case ShaderType.Water:          return new WaterUnitTest(ShaderReferencePath);
                 case ShaderType.Screen:         return new ScreenUnitTest(ShaderReferencePath);
-                //case ShaderType.Foliage:        return new FoliageUnitTest(ShaderReferencePath);
+                case ShaderType.Foliage:        return new FoliageUnitTest(ShaderReferencePath);
             }
 
             throw new Exception($"No unit test for \"shaderType\" found.");
@@ -322,7 +336,7 @@ namespace HaloShaderGenerator
                 case ShaderType.Terrain:        return TerrainMethodOverrides;
                 case ShaderType.Water:          return WaterMethodOverrides;
                 case ShaderType.Screen:         return ScreenMethodOverrides;
-                //case ShaderType.Foliage:        return FoliageMethodOverrides;
+                case ShaderType.Foliage:        return FoliageMethodOverrides;
             }
 
             throw new Exception($"No method overrides for \"shaderType\" found.");
@@ -342,7 +356,7 @@ namespace HaloShaderGenerator
                 case ShaderType.Terrain:        return TerrainOverrides;
                 case ShaderType.Water:          return WaterOverrides;
                 case ShaderType.Screen:         return ScreenOverrides;
-                //case ShaderType.Foliage:        return FoliageOverrides;
+                case ShaderType.Foliage:        return FoliageOverrides;
             }
 
             throw new Exception($"No overrides for \"shaderType\" found.");
@@ -525,7 +539,7 @@ namespace HaloShaderGenerator
                 case ShaderType.Black:          return new Black.ShaderBlackGenerator();
                 case ShaderType.Screen:         return new Screen.ScreenGenerator(bMethods);
                 case ShaderType.Custom:         return new Custom.CustomGenerator(bMethods);
-                //case ShaderType.Foliage:        return new Foliage.FoliageGenerator(bMethods);
+                case ShaderType.Foliage:        return new Foliage.FoliageGenerator(bMethods);
                 case ShaderType.ZOnly:          return new ZOnly.ZOnlyGenerator(bMethods);
             }
 
@@ -549,7 +563,7 @@ namespace HaloShaderGenerator
                 case ShaderType.Black:          return new Black.ShaderBlackGenerator();
                 case ShaderType.Screen:         return new Screen.ScreenGenerator();
                 case ShaderType.Custom:         return new Custom.CustomGenerator();
-                //case ShaderType.Foliage:        return new Foliage.FoliageGenerator();
+                case ShaderType.Foliage:        return new Foliage.FoliageGenerator();
                 case ShaderType.ZOnly:          return new ZOnly.ZOnlyGenerator();
             }
 

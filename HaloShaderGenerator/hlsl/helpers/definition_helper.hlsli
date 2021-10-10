@@ -225,6 +225,7 @@ This file contains a list of blank definitions to help with Intellisense
 #define base_arg 0
 #define overlay_a_arg 0
 #define overlay_b_arg 0
+#define alpha_test_arg 0
 
 #define waveshape_arg 0
 #define watercolor_arg 0
