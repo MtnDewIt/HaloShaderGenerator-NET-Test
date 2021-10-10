@@ -42,7 +42,7 @@ float4 prt)
 		common_data.binormal = binormal;
 		common_data.normal = normal;
 		common_data.texcoord = calc_parallax_ps(texcoord, common_data.n_view_dir, tangent, binormal, normal);
-		common_data.alpha = calc_alpha_test_ps(common_data.texcoord);
+		common_data.alpha = calc_alpha_test_ps(common_data.texcoord, 1.0f);
 
 		if (actually_calc_albedo)
         {

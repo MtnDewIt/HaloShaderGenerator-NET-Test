@@ -32,7 +32,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 		common_data.binormal = input.binormal;
 		common_data.normal = input.normal;
 		common_data.texcoord = calc_parallax_ps(input.texcoord.xy, common_data.n_view_dir, input.tangent, input.binormal, input.normal);
-		common_data.alpha = calc_alpha_test_ps(common_data.texcoord);
+		common_data.alpha = calc_alpha_test_ps(common_data.texcoord, 1.0f);
 
 		if (actually_calc_albedo)
         {

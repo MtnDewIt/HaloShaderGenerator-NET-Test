@@ -10,7 +10,7 @@ PS_OUTPUT_SHADOW_GENERATE entry_shadow_generate(VS_OUTPUT_SHADOW_GENERATE input)
 {
 	PS_OUTPUT_SHADOW_GENERATE output;
 	
-	calc_alpha_test_ps(input.texcoord);
+	calc_alpha_test_ps(input.texcoord, 1.0f);
 	
 	output.unknown = 1.0;
 	output.depth = input.depth;

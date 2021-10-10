@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
@@ -237,7 +238,10 @@ namespace HaloShaderGenerator.Foliage
             {
                 string methodName = ((FoliageMethods)i).ToString().ToLower();
 
-                result.Parameters.AddRange(GetParametersInOption(methodName, optionIndices[i], out _, out _).Parameters);
+                var parameters = GetParametersInOption(methodName, optionIndices[i], out _, out _).Parameters;
+                parameters = parameters.Where(x => !x.Flags.HasFlag(ShaderParameterFlags.IsVertexShader)).ToList();
+
+                result.Parameters.AddRange(parameters);
             }
 
             return result;
@@ -245,7 +249,20 @@ namespace HaloShaderGenerator.Foliage
 
         public ShaderParameters GetVertexShaderParameters()
         {
-            return new ShaderParameters();
+            var result = new ShaderParameters();
+
+            List<int> optionIndices = new List<int> { (int)albedo, (int)alpha_test, (int)material_model };
+            for (int i = 0; i < Enum.GetValues(typeof(FoliageMethods)).Length; i++)
+            {
+                string methodName = ((FoliageMethods)i).ToString().ToLower();
+
+                var parameters = GetParametersInOption(methodName, optionIndices[i], out _, out _).Parameters;
+                parameters = parameters.Where(x => x.Flags.HasFlag(ShaderParameterFlags.IsVertexShader)).ToList();
+
+                result.Parameters.AddRange(parameters);
+            }
+
+            return result;
         }
 
         public ShaderParameters GetGlobalParameters()
@@ -281,11 +298,11 @@ namespace HaloShaderGenerator.Foliage
                         result.AddFloat4Parameter("albedo_color");
                         rmopName = @"shaders\shader_options\albedo_default";
                         break;
-                    //case Albedo.Simple:
-                    //    result.AddSamplerParameter("base_map");
-                    //    result.AddFloat4Parameter("albedo_color");
-                    //    rmopName = @"shaders\shader_options\albedo_simple";
-                    //    break;
+                    case Albedo.Simple:
+                        result.AddSamplerParameter("base_map");
+                        result.AddFloat4Parameter("albedo_color");
+                        rmopName = @"shaders\shader_options\albedo_simple";
+                        break;
                 }
             }
             if (methodName == "alpha_test")
@@ -294,7 +311,7 @@ namespace HaloShaderGenerator.Foliage
                 switch ((Alpha_Test)option)
                 {
                     case Alpha_Test.None:
-                    //case Alpha_Test.From_Albedo_Alpha:
+                    case Alpha_Test.From_Albedo_Alpha:
                         rmopName = @"shaders\shader_options\alpha_test_off";
                         break;
                     case Alpha_Test.Simple:
@@ -309,19 +326,19 @@ namespace HaloShaderGenerator.Foliage
                 switch ((Material_Model)option)
                 {
                     case Material_Model.Default:
-                        result.AddFloat4Parameter("back_light");
-                        result.AddFloat4Parameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
-                        result.AddFloatParameter("animation_amplitude_horizontal");
+                        result.AddFloat4VertexParameter("back_light");
+                        result.AddFloat4VertexParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                        result.AddFloatVertexParameter("animation_amplitude_horizontal");
                         rmopName = @"shaders\foliage_options\material_default";
                         break;
                     //case Material_Model.Flat:
-                    //    result.AddFloat4Parameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                    //    result.AddFloat4VertexParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
                     //    result.AddFloatParameter("animation_amplitude_horizontal");
                     //    rmopName = @"shaders\foliage_options\material_flat";
                     //    break;
                     //case Material_Model.Specular:
-                    //    result.AddFloat4Parameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
-                    //    result.AddFloatParameter("animation_amplitude_horizontal");
+                    //    result.AddFloat4VertexParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                    //    result.AddFloatVertexParameter("animation_amplitude_horizontal");
                     //    result.AddFloatParameter("foliage_translucency");
                     //    result.AddFloat4Parameter("foliage_specular_color");
                     //    result.AddFloatParameter("foliage_specular_intensity");
@@ -329,8 +346,8 @@ namespace HaloShaderGenerator.Foliage
                     //    rmopName = @"shaders\foliage_options\material_specular";
                     //    break;
                     //case Material_Model.Translucent:
-                    //    result.AddFloat4Parameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
-                    //    result.AddFloatParameter("animation_amplitude_horizontal");
+                    //    result.AddFloat4VertexParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                    //    result.AddFloatVertexParameter("animation_amplitude_horizontal");
                     //    result.AddFloatParameter("foliage_translucency");
                     //    rmopName = @"shaders\foliage_options\material_translucent";
                     //    break;

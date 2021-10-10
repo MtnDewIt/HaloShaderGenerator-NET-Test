@@ -27,7 +27,7 @@ bool is_cinematic)
 {
 	float3 view_dir = normalize(camera_dir);
 	texcoord = calc_parallax_ps(texcoord, view_dir, tangent, binormal, normal);
-	float alpha = calc_alpha_test_ps(texcoord);
+	float alpha = calc_alpha_test_ps(texcoord, 1.0f);
 	
 	float3 world_position = Camera_Position_PS - camera_dir;
 

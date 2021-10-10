@@ -31,7 +31,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 		common_data.binormal = input.binormal;
 		common_data.normal = input.normal;
 		common_data.texcoord = input.texcoord.xy;
-		common_data.alpha = calc_alpha_test_ps(common_data.texcoord);
+		common_data.alpha = calc_alpha_test_ps(common_data.texcoord, 1.0f);
 
 		if (actually_calc_albedo)
         {

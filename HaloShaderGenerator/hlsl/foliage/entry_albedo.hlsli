@@ -16,7 +16,7 @@ PS_OUTPUT_ALBEDO foliage_entry_albedo(VS_OUTPUT_ALBEDO input)
     output.diffuse = albedo;
     output.normal = float4(normal_export(input.normal.xyz), albedo.w);
 	
-    float alpha_test = calc_alpha_test_ps(input.texcoord);
+    float alpha_test = calc_alpha_test_ps(input.texcoord, albedo.a);
     output.normal.w = alpha_test;
     output.diffuse.w = alpha_test;
     

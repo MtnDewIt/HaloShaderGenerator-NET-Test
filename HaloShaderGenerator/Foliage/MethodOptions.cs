@@ -10,13 +10,15 @@ namespace HaloShaderGenerator.Foliage
 
     public enum Albedo
     {
-        Default
+        Default,
+        Simple
     }
 
     public enum Alpha_Test
     {
         None,
-        Simple
+        Simple,
+        From_Albedo_Alpha
     }
 
     public enum Material_Model

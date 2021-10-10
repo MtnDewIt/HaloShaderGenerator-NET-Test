@@ -70,6 +70,7 @@ namespace HaloShaderGenerator.Shared
         None,
         Simple,
         Multiply_Map,
+        From_Albedo_Alpha
     }
 
     public enum Material_Model

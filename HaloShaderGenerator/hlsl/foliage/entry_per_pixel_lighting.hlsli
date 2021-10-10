@@ -22,7 +22,6 @@ PS_OUTPUT_DEFAULT foliage_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
         common_data.binormal = input.binormal;
         common_data.normal = input.normal;
         common_data.texcoord = input.texcoord.xy;
-        common_data.alpha = calc_alpha_test_ps(common_data.texcoord);
         
         {
             float2 position = input.position.xy;
@@ -34,6 +33,8 @@ PS_OUTPUT_DEFAULT foliage_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
             float4 albedo_texture_sample = tex2D(albedo_texture, texcoord);
             common_data.albedo = albedo_texture_sample;
         }
+		
+        common_data.alpha = calc_alpha_test_ps(common_data.texcoord, common_data.albedo.a);
 		
         common_data.surface_normal = normalize(common_data.surface_normal);
 				
