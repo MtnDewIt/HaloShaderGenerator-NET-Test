@@ -143,21 +143,21 @@ VS_OUTPUT_PER_VERTEX entry_static_per_vertex(input_vertex_format input, STATIC_P
     output.color4 = rgbe_to_rgb(per_vertex.color_1);
 	
     float3 rgb_2 = rgbe_to_rgb(per_vertex.color_2);
-    output.color1.r = rgb_2.r;
-    output.color2.r = rgb_2.g;
-    output.color3.r = rgb_2.b;
+    output.lightmap_coefficients.color1.r = rgb_2.r;
+    output.lightmap_coefficients.color2.r = rgb_2.g;
+    output.lightmap_coefficients.color3.r = rgb_2.b;
     float3 rgb_3 = rgbe_to_rgb(per_vertex.color_3);
-    output.color1.g = rgb_3.r;
-    output.color2.g = rgb_3.g;
-    output.color3.g = rgb_3.b;
+    output.lightmap_coefficients.color1.g = rgb_3.r;
+    output.lightmap_coefficients.color2.g = rgb_3.g;
+    output.lightmap_coefficients.color3.g = rgb_3.b;
     float3 rgb_4 = rgbe_to_rgb(per_vertex.color_4);
-    output.color1.b = rgb_4.r;
-    output.color2.b = rgb_4.g;
-    output.color3.b = rgb_4.b;
+    output.lightmap_coefficients.color1.b = rgb_4.r;
+    output.lightmap_coefficients.color2.b = rgb_4.g;
+    output.lightmap_coefficients.color3.b = rgb_4.b;
     float3 rgb_5 = rgbe_to_rgb(per_vertex.color_5);
-    output.color1.a = rgb_5.r;
-    output.color2.a = rgb_5.g;
-    output.color3.a = rgb_5.b;
+    output.lightmap_coefficients.color1.a = rgb_5.r;
+    output.lightmap_coefficients.color2.a = rgb_5.g;
+    output.lightmap_coefficients.color3.a = rgb_5.b;
 	
 	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord.xy);
 	
