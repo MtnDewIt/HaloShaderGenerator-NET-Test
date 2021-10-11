@@ -87,7 +87,6 @@ struct VS_OUTPUT_STATIC_PRT
 {
 	float4 position : SV_Position;
     float2 texcoord : TEXCOORD;
-    float3 unknown_lighting_color : TEXCOORD1;
 	float3 normal : TEXCOORD3;
 	float3 binormal : TEXCOORD4;
 	float3 tangent : TEXCOORD5;
@@ -95,6 +94,20 @@ struct VS_OUTPUT_STATIC_PRT
 	float4 prt_radiance_vector : TEXCOORD7;
 	float3 extinction_factor : COLOR;
 	float3 sky_radiance : COLOR1;
+};
+
+struct VS_OUTPUT_STATIC_PRT_FOLIAGE
+{
+    float4 position : SV_Position;
+    float2 texcoord : TEXCOORD;
+    float3 unknown_lighting_color : TEXCOORD1;
+    float3 normal : TEXCOORD3;
+    float3 binormal : TEXCOORD4;
+    float3 tangent : TEXCOORD5;
+    float3 camera_dir : TEXCOORD6;
+    float4 prt_radiance_vector : TEXCOORD7;
+    float3 extinction_factor : COLOR;
+    float3 sky_radiance : COLOR1;
 };
 
 struct VS_OUTPUT_STATIC_PRT_TERRAIN
@@ -167,13 +180,25 @@ struct VS_OUTPUT_STATIC_SH
 {
 	float4 position : SV_Position;
     float3 texcoord : TEXCOORD; //z is used for the angle of the dominant light dir?
-    float3 unknown_lighting_color : TEXCOORD1;
 	float3 normal : TEXCOORD3; 
 	float3 binormal : TEXCOORD4;
 	float3 tangent : TEXCOORD5;
 	float3 camera_dir : TEXCOORD6;
 	float3 extinction_factor : COLOR;
 	float3 sky_radiance : COLOR1;
+};
+
+struct VS_OUTPUT_STATIC_SH_FOLIAGE
+{
+    float4 position : SV_Position;
+    float3 texcoord : TEXCOORD; //z is used for the angle of the dominant light dir?
+    float3 unknown_lighting_color : TEXCOORD1;
+    float3 normal : TEXCOORD3;
+    float3 binormal : TEXCOORD4;
+    float3 tangent : TEXCOORD5;
+    float3 camera_dir : TEXCOORD6;
+    float3 extinction_factor : COLOR;
+    float3 sky_radiance : COLOR1;
 };
 
 struct VS_OUTPUT_STATIC_SH_TERRAIN
@@ -205,7 +230,6 @@ struct VS_OUTPUT_PER_PIXEL
 {
 	float4 position : SV_Position;
     float2 texcoord : TEXCOORD;
-    float3 unknown_lighting_color : TEXCOORD1;
 	float3 normal : TEXCOORD3;
 	float3 binormal : TEXCOORD4;
 	float3 tangent : TEXCOORD5;
@@ -213,6 +237,20 @@ struct VS_OUTPUT_PER_PIXEL
 	float3 camera_dir : TEXCOORD7;
 	float3 extinction_factor : COLOR;
 	float3 sky_radiance : COLOR1;
+};
+
+struct VS_OUTPUT_PER_PIXEL_FOLIAGE
+{
+    float4 position : SV_Position;
+    float2 texcoord : TEXCOORD;
+    float3 unknown_lighting_color : TEXCOORD1;
+    float3 normal : TEXCOORD3;
+    float3 binormal : TEXCOORD4;
+    float3 tangent : TEXCOORD5;
+    float2 lightmap_texcoord : TEXCOORD6_CENTROID;
+    float3 camera_dir : TEXCOORD7;
+    float3 extinction_factor : COLOR;
+    float3 sky_radiance : COLOR1;
 };
 
 struct VS_OUTPUT_PER_PIXEL_TERRAIN
@@ -225,6 +263,14 @@ struct VS_OUTPUT_PER_PIXEL_TERRAIN
     float3 sky_radiance : COLOR1;
 };
 
+struct s_per_vertex_lightmap_coefficients
+{
+    float4 color1 : TEXCOORD5;
+    float4 color2 : TEXCOORD6;
+    float4 color3 : TEXCOORD7;
+    float3 color4 : TEXCOORD8;
+};
+
 struct VS_OUTPUT_PER_VERTEX
 {
 	float4 position : SV_Position;
@@ -233,12 +279,19 @@ struct VS_OUTPUT_PER_VERTEX
 	float3 tangent : TEXCOORD2;
 	float3 normal : TEXCOORD3;
 	float3 binormal : TEXCOORD4;
-	
-	float4 color1 : TEXCOORD5;
-	float4 color2 : TEXCOORD6;
-	float4 color3 : TEXCOORD7;
-	float3 color4 : TEXCOORD8;
-	
+    s_per_vertex_lightmap_coefficients lightmap_coefficients;
+    float4 extinction_factor : COLOR;
+};
+
+struct VS_OUTPUT_PER_VERTEX_FOLIAGE
+{
+    float4 position : SV_Position;
+    float4 texcoord : TEXCOORD;
+    float3 camera_dir : TEXCOORD1;
+    float3 tangent : TEXCOORD2;
+    float3 normal : TEXCOORD3;
+    float3 binormal : TEXCOORD4;
+    s_per_vertex_lightmap_coefficients lightmap_coefficients;
     float4 extinction_factor : COLOR;
     float3 foliage_sky_radiance : COLOR1;
 };
@@ -248,14 +301,8 @@ struct VS_OUTPUT_PER_VERTEX_TERRAIN
     float4 position : SV_Position;
     float4 texcoord : TEXCOORD;
     float3 camera_dir : TEXCOORD4;
-	
-    float4 color1 : TEXCOORD5;
-    float4 color2 : TEXCOORD6;
-    float4 color3 : TEXCOORD7;
-    float3 color4 : TEXCOORD8;
-	
+    s_per_vertex_lightmap_coefficients lightmap_coefficients;
     float4 extinction_factor : COLOR;
-    float3 foliage_sky_radiance : COLOR1;
 };
 
 struct VS_OUTPUT_PER_VERTEX_COLOR

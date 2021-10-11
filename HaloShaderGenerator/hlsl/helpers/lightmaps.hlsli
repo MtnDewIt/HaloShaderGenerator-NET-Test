@@ -119,7 +119,7 @@ out float3 dominant_light_intensity)
 }
 
 void unpack_per_vertex_lightmap_coefficients(
-in VS_OUTPUT_PER_VERTEX per_vertex,
+in s_per_vertex_lightmap_coefficients coefficients,
 out float4 sh_0,
 out float4 sh_312[3],
 out float4 sh_457[3],
@@ -127,43 +127,19 @@ out float4 sh_8866[3],
 out float3 dominant_light_dir,
 out float3 dominant_light_intensity)
 {
-	sh_0 = float4(per_vertex.color1.x, per_vertex.color2.x, per_vertex.color3.x, 0.0);
-	sh_312[0] = float4(per_vertex.color1.w, per_vertex.color1.y, -per_vertex.color1.z, 0);
-	sh_312[1] = float4(per_vertex.color2.w, per_vertex.color2.y, -per_vertex.color2.z, 0);
-	sh_312[2] = float4(per_vertex.color3.w, per_vertex.color3.y, -per_vertex.color3.z, 0);
+    sh_0 = float4(coefficients.color1.x, coefficients.color2.x, coefficients.color3.x, 0.0);
+    sh_312[0] = float4(coefficients.color1.w, coefficients.color1.y, -coefficients.color1.z, 0);
+	sh_312[1] = float4(coefficients.color2.w, coefficients.color2.y, -coefficients.color2.z, 0);
+    sh_312[2] = float4(coefficients.color3.w, coefficients.color3.y, -coefficients.color3.z, 0);
 	sh_457[0] = 0;
 	sh_457[1] = 0;
 	sh_457[2] = 0;
 	sh_8866[0] = 0;
 	sh_8866[1] = 0;
 	sh_8866[2] = 0;
-	dominant_light_intensity = per_vertex.color4;
-	dominant_light_dir = 0.21265601 * per_vertex.color1.wyz + 0.71515799 * per_vertex.color2.wyz + 0.07218560 * per_vertex.color3.wyz;
+    dominant_light_intensity = coefficients.color4;
+    dominant_light_dir = 0.21265601 * coefficients.color1.wyz + 0.71515799 * coefficients.color2.wyz + 0.07218560 * coefficients.color3.wyz;
 	dominant_light_dir = normalize(float3(1, 1, -1) * -dominant_light_dir);
-}
-
-void terrain_unpack_per_vertex_lightmap_coefficients(
-in VS_OUTPUT_PER_VERTEX_TERRAIN per_vertex,
-out float4 sh_0,
-out float4 sh_312[3],
-out float4 sh_457[3],
-out float4 sh_8866[3],
-out float3 dominant_light_dir,
-out float3 dominant_light_intensity)
-{
-    sh_0 = float4(per_vertex.color1.x, per_vertex.color2.x, per_vertex.color3.x, 0.0);
-    sh_312[0] = float4(per_vertex.color1.w, per_vertex.color1.y, -per_vertex.color1.z, 0);
-    sh_312[1] = float4(per_vertex.color2.w, per_vertex.color2.y, -per_vertex.color2.z, 0);
-    sh_312[2] = float4(per_vertex.color3.w, per_vertex.color3.y, -per_vertex.color3.z, 0);
-    sh_457[0] = 0;
-    sh_457[1] = 0;
-    sh_457[2] = 0;
-    sh_8866[0] = 0;
-    sh_8866[1] = 0;
-    sh_8866[2] = 0;
-    dominant_light_intensity = per_vertex.color4;
-    dominant_light_dir = 0.21265601 * per_vertex.color1.wyz + 0.71515799 * per_vertex.color2.wyz + 0.07218560 * per_vertex.color3.wyz;
-    dominant_light_dir = normalize(float3(1, 1, -1) * -dominant_light_dir);
 }
 
 #endif

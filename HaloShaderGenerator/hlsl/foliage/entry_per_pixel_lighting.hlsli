@@ -9,7 +9,7 @@
 #include "..\helpers\color_processing.hlsli"
 #include "..\methods\alpha_test.hlsli"
 
-PS_OUTPUT_DEFAULT foliage_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
+PS_OUTPUT_DEFAULT foliage_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL_FOLIAGE input)
 {
     SHADER_COMMON common_data;
 	{

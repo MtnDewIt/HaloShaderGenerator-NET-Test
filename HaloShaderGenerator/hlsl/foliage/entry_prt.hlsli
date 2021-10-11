@@ -88,12 +88,12 @@ float3 unknown_lighting_color)
     return output;
 }
 
-PS_OUTPUT_DEFAULT foliage_entry_static_sh(VS_OUTPUT_STATIC_SH input)
+PS_OUTPUT_DEFAULT foliage_entry_static_sh(VS_OUTPUT_STATIC_SH_FOLIAGE input)
 {
     return entry_static_sh_prt(input.position, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, 1.0, input.unknown_lighting_color);
 }
 
-PS_OUTPUT_DEFAULT foliage_entry_static_prt(VS_OUTPUT_STATIC_PRT input)
+PS_OUTPUT_DEFAULT foliage_entry_static_prt(VS_OUTPUT_STATIC_PRT_FOLIAGE input)
 {
     return entry_static_sh_prt(input.position, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector, input.unknown_lighting_color);
 }

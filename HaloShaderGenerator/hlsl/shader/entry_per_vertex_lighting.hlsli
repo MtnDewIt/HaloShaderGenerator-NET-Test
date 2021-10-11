@@ -29,7 +29,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 	
 	SHADER_COMMON common_data;
 	{
-		unpack_per_vertex_lightmap_coefficients(input, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, common_data.dominant_light_direction, common_data.dominant_light_intensity);
+        unpack_per_vertex_lightmap_coefficients(input.lightmap_coefficients, common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, common_data.dominant_light_direction, common_data.dominant_light_intensity);
 		
 		
 		common_data.view_dir = input.camera_dir;
