@@ -398,27 +398,26 @@ float3 calc_lighting_terrain(SHADER_COMMON common_data, out float4 unknown_outpu
     float3 lightprobe_color = lightmap_lightprobe_color(common_data.surface_normal, common_data.sh_0, common_data.sh_312);
     float3 area_specular = lightprobe_color * get_area_specular_contribution(blend);
 	
-    specular += specular_accumulation;
-    specular *= get_analytical_specular_contribution(blend);
-    specular += area_specular;
-    specular *= fresnel_color;
-	
     float3 env_color = 0;
     ENVIRONMENT_MAPPING_COMMON env_mapping_common_data;
     env_mapping_common_data.reflect_dir = common_data.reflect_dir;
     env_mapping_common_data.view_dir = common_data.view_dir;
-    env_mapping_common_data.env_area_specular = specular * get_environment_specular_contribution(blend);
-    env_mapping_common_data.specular_coefficient = 1.0;
+    env_mapping_common_data.env_area_specular = lightprobe_color;
+    env_mapping_common_data.specular_coefficient = get_environment_specular_contribution(blend);
     env_mapping_common_data.area_specular = 0.0;
     env_mapping_common_data.specular_exponent = 0.0;
 	envmap_type(env_mapping_common_data, env_color, unknown_output);
 	
+    specular += specular_accumulation;
+    specular *= get_analytical_specular_contribution(blend);
+    specular += area_specular;
+    specular += env_color;
+    specular *= fresnel_color;
 	
     diffuse += diffuse_accumulation;
     diffuse *= common_data.albedo.rgb;
     diffuse *= get_diffuse_coefficient(blend);
     diffuse += specular;
-    diffuse += env_color;
 
 	return diffuse;
 }
