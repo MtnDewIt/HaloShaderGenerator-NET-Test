@@ -153,5 +153,10 @@ namespace HaloShaderGenerator.Black
         {
             return Enum.GetValues(typeof(BlackMethods));
         }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            return null;
+        }
     }
 }

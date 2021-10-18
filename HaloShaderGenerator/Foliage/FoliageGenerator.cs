@@ -361,5 +361,20 @@ namespace HaloShaderGenerator.Foliage
         {
             return Enum.GetValues(typeof(FoliageMethods));
         }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            switch ((FoliageMethods)methodIndex)
+            {
+                case FoliageMethods.Albedo:
+                    return Enum.GetValues(typeof(Albedo));
+                case FoliageMethods.Alpha_Test:
+                    return Enum.GetValues(typeof(Alpha_Test));
+                case FoliageMethods.Material_Model:
+                    return Enum.GetValues(typeof(Material_Model));
+            }
+
+            return null;
+        }
     }
 }

@@ -246,5 +246,20 @@ namespace HaloShaderGenerator.LightVolume
         {
             return Enum.GetValues(typeof(LightVolumeMethods));
         }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            switch ((LightVolumeMethods)methodIndex)
+            {
+                case LightVolumeMethods.Albedo:
+                    return Enum.GetValues(typeof(Albedo));
+                case LightVolumeMethods.Blend_Mode:
+                    return Enum.GetValues(typeof(Blend_Mode));
+                case LightVolumeMethods.Fog:
+                    return Enum.GetValues(typeof(Fog));
+            }
+
+            return null;
+        }
     }
 }

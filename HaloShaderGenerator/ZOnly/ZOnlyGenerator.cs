@@ -228,5 +228,16 @@ namespace HaloShaderGenerator.ZOnly
         {
             return Enum.GetValues(typeof(ZOnlyMethods));
         }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            switch ((ZOnlyMethods)methodIndex)
+            {
+                case ZOnlyMethods.Test:
+                    return Enum.GetValues(typeof(Test));
+            }
+
+            return null;
+        }
     }
 }

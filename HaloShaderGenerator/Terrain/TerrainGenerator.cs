@@ -442,5 +442,24 @@ namespace HaloShaderGenerator.Terrain
         {
             return Enum.GetValues(typeof(TerrainMethods));
         }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            switch ((TerrainMethods)methodIndex)
+            {
+                case TerrainMethods.Blending:
+                    return Enum.GetValues(typeof(Blending));
+                case TerrainMethods.Environment_Map:
+                    return Enum.GetValues(typeof(Environment_Mapping));
+                case TerrainMethods.Material_0:
+                case TerrainMethods.Material_1:
+                case TerrainMethods.Material_2:
+                    return Enum.GetValues(typeof(Material));
+                case TerrainMethods.Material_3:
+                    return Enum.GetValues(typeof(Material_No_Detail_Bump));
+            }
+
+            return null;
+        }
     }
 }

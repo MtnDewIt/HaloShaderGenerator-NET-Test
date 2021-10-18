@@ -275,5 +275,22 @@ namespace HaloShaderGenerator.Beam
         {
             return Enum.GetValues(typeof(BeamMethods));
         }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            switch ((BeamMethods)methodIndex)
+            {
+                case BeamMethods.Albedo:
+                    return Enum.GetValues(typeof(Albedo));
+                case BeamMethods.Blend_Mode:
+                    return Enum.GetValues(typeof(Blend_Mode));
+                case BeamMethods.Black_Point:
+                    return Enum.GetValues(typeof(Black_Point));
+                case BeamMethods.Fog:
+                    return Enum.GetValues(typeof(Fog));
+            }
+
+            return null;
+        }
     }
 }

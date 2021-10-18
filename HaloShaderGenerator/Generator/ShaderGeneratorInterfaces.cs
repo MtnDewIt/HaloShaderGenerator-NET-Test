@@ -106,6 +106,8 @@ namespace HaloShaderGenerator.Generator
         ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName);
 
         Array GetMethodNames();
+
+        Array GetMethodOptionNames(int methodIndex);
     }
 
 }

@@ -394,5 +394,30 @@ namespace HaloShaderGenerator.Water
         {
             return Enum.GetValues(typeof(WaterMethods));
         }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            switch ((WaterMethods)methodIndex)
+            {
+                case WaterMethods.Waveshape:
+                    return Enum.GetValues(typeof(Waveshape));
+                case WaterMethods.Watercolor:
+                    return Enum.GetValues(typeof(Watercolor));
+                case WaterMethods.Reflection:
+                    return Enum.GetValues(typeof(Reflection));
+                case WaterMethods.Refraction:
+                    return Enum.GetValues(typeof(Refraction));
+                case WaterMethods.Bankalpha:
+                    return Enum.GetValues(typeof(Bankalpha));
+                case WaterMethods.Appearance:
+                    return Enum.GetValues(typeof(Appearance));
+                case WaterMethods.Global_Shape:
+                    return Enum.GetValues(typeof(Global_Shape));
+                case WaterMethods.Foam:
+                    return Enum.GetValues(typeof(Foam));
+            }
+
+            return null;
+        }
     }
 }

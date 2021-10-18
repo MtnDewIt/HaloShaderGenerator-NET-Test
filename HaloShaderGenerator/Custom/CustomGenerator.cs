@@ -909,5 +909,34 @@ namespace HaloShaderGenerator.Custom
         {
             return Enum.GetValues(typeof(CustomMethods));
         }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            switch ((CustomMethods)methodIndex)
+            {
+                case CustomMethods.Albedo:
+                    return Enum.GetValues(typeof(Albedo));
+                case CustomMethods.Bump_Mapping:
+                    return Enum.GetValues(typeof(Bump_Mapping));
+                case CustomMethods.Alpha_Test:
+                    return Enum.GetValues(typeof(Alpha_Test));
+                case CustomMethods.Specular_Mask:
+                    return Enum.GetValues(typeof(Specular_Mask));
+                case CustomMethods.Material_Model:
+                    return Enum.GetValues(typeof(Material_Model));
+                case CustomMethods.Environment_Mapping:
+                    return Enum.GetValues(typeof(Environment_Mapping));
+                case CustomMethods.Self_Illumination:
+                    return Enum.GetValues(typeof(Self_Illumination));
+                case CustomMethods.Blend_Mode:
+                    return Enum.GetValues(typeof(Blend_Mode));
+                case CustomMethods.Parallax:
+                    return Enum.GetValues(typeof(Parallax));
+                case CustomMethods.Misc:
+                    return Enum.GetValues(typeof(Misc));
+            }
+
+            return null;
+        }
     }
 }

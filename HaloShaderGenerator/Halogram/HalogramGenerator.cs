@@ -585,5 +585,32 @@ namespace HaloShaderGenerator.Halogram
         {
             return Enum.GetValues(typeof(HalogramMethods));
         }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            switch ((HalogramMethods)methodIndex)
+            {
+                case HalogramMethods.Albedo:
+                    return Enum.GetValues(typeof(Albedo));
+                case HalogramMethods.Self_Illumination:
+                    return Enum.GetValues(typeof(Self_Illumination));
+                case HalogramMethods.Blend_Mode:
+                    return Enum.GetValues(typeof(Blend_Mode));
+                case HalogramMethods.Misc:
+                    return Enum.GetValues(typeof(Misc));
+                case HalogramMethods.Warp:
+                    return Enum.GetValues(typeof(Warp));
+                case HalogramMethods.Overlay:
+                    return Enum.GetValues(typeof(Overlay));
+                case HalogramMethods.Edge_Fade:
+                    return Enum.GetValues(typeof(Edge_Fade));
+                //case HalogramMethods.Distortion:
+                //    return Enum.GetValues(typeof(Shared.Distortion));
+                //case HalogramMethods.Soft_Fade:
+                //    return Enum.GetValues(typeof(Shared.Soft_Fade));
+            }
+
+            return null;
+        }
     }
 }

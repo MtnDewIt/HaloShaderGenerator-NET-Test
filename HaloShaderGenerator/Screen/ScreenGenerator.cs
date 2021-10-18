@@ -301,5 +301,24 @@ namespace HaloShaderGenerator.Screen
         {
             return Enum.GetValues(typeof(ScreenMethods));
         }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            switch ((ScreenMethods)methodIndex)
+            {
+                case ScreenMethods.Warp:
+                    return Enum.GetValues(typeof(Warp));
+                case ScreenMethods.Base:
+                    return Enum.GetValues(typeof(Base));
+                case ScreenMethods.Overlay_A:
+                    return Enum.GetValues(typeof(Overlay_A));
+                case ScreenMethods.Overlay_B:
+                    return Enum.GetValues(typeof(Overlay_B));
+                case ScreenMethods.Blend_Mode:
+                    return Enum.GetValues(typeof(Blend_Mode));
+            }
+
+            return null;
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace HaloShaderGenerator.Shader
     {
         private bool TemplateGenerationValid;
         private bool ApplyFixes;
+        private bool MS30 = false;
 
         Albedo albedo;
         Bump_Mapping bump_mapping;
@@ -72,6 +73,7 @@ namespace HaloShaderGenerator.Shader
             TemplateGenerationValid = true;
         }
 
+        public void SetMS30(bool ms30) => MS30 = ms30;
 
         public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
         {
@@ -198,6 +200,9 @@ namespace HaloShaderGenerator.Shader
                 return null;
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
+
+            if (MS30)
+                macros.Add(ShaderGeneratorBase.CreateMacro("MS30_SHADER", 1));
 
             macros.Add(new D3D.SHADER_MACRO { Name = "_VERTEX_SHADER_HELPER_HLSLI", Definition = "1" });
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
@@ -801,6 +806,39 @@ namespace HaloShaderGenerator.Shader
         public Array GetMethodNames()
         {
             return Enum.GetValues(typeof(ShaderMethods));
+        }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            switch ((ShaderMethods)methodIndex)
+            {
+                case ShaderMethods.Albedo:
+                    return Enum.GetValues(typeof(Albedo));
+                case ShaderMethods.Bump_Mapping:
+                    return Enum.GetValues(typeof(Bump_Mapping));
+                case ShaderMethods.Alpha_Test:
+                    return Enum.GetValues(typeof(Alpha_Test));
+                case ShaderMethods.Specular_Mask:
+                    return Enum.GetValues(typeof(Specular_Mask));
+                case ShaderMethods.Material_Model:
+                    return Enum.GetValues(typeof(Material_Model));
+                case ShaderMethods.Environment_Mapping:
+                    return Enum.GetValues(typeof(Environment_Mapping));
+                case ShaderMethods.Self_Illumination:
+                    return Enum.GetValues(typeof(Self_Illumination));
+                case ShaderMethods.Blend_Mode:
+                    return Enum.GetValues(typeof(Blend_Mode));
+                case ShaderMethods.Parallax:
+                    return Enum.GetValues(typeof(Parallax));
+                case ShaderMethods.Misc:
+                    return Enum.GetValues(typeof(Misc));
+                case ShaderMethods.Distortion:
+                    return Enum.GetValues(typeof(Shared.Distortion));
+                //case ShaderMethods.Soft_Fade:
+                //    return Enum.GetValues(typeof(Shared.Soft_Fade));
+            }
+
+            return null;
         }
     }
 }

@@ -458,13 +458,109 @@ namespace HaloShaderGenerator.Particle
                         break;
                 }
             }
-
+            if (methodName == "blend_mode")
+            {
+                optionName = ((Blend_Mode)option).ToString();
+            }
+            if (methodName == "specialized_rendering")
+            {
+                optionName = ((Specialized_Rendering)option).ToString();
+                switch ((Specialized_Rendering)option)
+                {
+                    case Specialized_Rendering.Distortion:
+                    case Specialized_Rendering.Distortion_Expensive:
+                    case Specialized_Rendering.Distortion_Diffuse:
+                    case Specialized_Rendering.Distortion_Expensive_Diffuse:
+                        result.AddFloatParameter("distortion_scale");
+                        rmopName = @"shaders\particle_options\distortion_diffuse";
+                        break;
+                }
+            }
+            if (methodName == "lighting")
+            {
+                optionName = ((Lighting)option).ToString();
+            }
+            if (methodName == "render_targets")
+            {
+                optionName = ((Render_Targets)option).ToString();
+            }
+            if (methodName == "depth_fade")
+            {
+                optionName = ((Depth_Fade)option).ToString();
+                switch ((Depth_Fade)option)
+                {
+                    case Depth_Fade.On:
+                        result.AddFloatParameter("depth_fade_range");
+                        rmopName = @"shaders\particle_options\depth_fade_on";
+                        break;
+                }
+            }
+            if (methodName == "black_point")
+            {
+                optionName = ((Black_Point)option).ToString();
+            }
+            if (methodName == "fog")
+            {
+                optionName = ((Fog)option).ToString();
+            }
+            if (methodName == "frame_blend")
+            {
+                optionName = ((Frame_Blend)option).ToString();
+                switch ((Frame_Blend)option)
+                {
+                    case Frame_Blend.On:
+                        result.AddFloatVertexParameter("starting_uv_scale");
+                        result.AddFloatVertexParameter("ending_uv_scale");
+                        rmopName = @"shaders\particle_options\frame_blend_on";
+                        break;
+                }
+            }
+            if (methodName == "self_illumination")
+            {
+                optionName = ((Self_Illumination)option).ToString();
+                switch ((Self_Illumination)option)
+                {
+                    case Self_Illumination.Constant_Color:
+                        result.AddFloat4VertexParameter("self_illum_color");
+                        rmopName = @"shaders\particle_options\self_illumination_constant_color";
+                        break;
+                }
+            }
             return result;
         }
 
         public Array GetMethodNames()
         {
             return Enum.GetValues(typeof(ParticleMethods));
+        }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            switch ((ParticleMethods)methodIndex)
+            {
+                case ParticleMethods.Albedo:
+                    return Enum.GetValues(typeof(Albedo));
+                case ParticleMethods.Blend_Mode:
+                    return Enum.GetValues(typeof(Blend_Mode));
+                case ParticleMethods.Specialized_Rendering:
+                    return Enum.GetValues(typeof(Specialized_Rendering));
+                case ParticleMethods.Lighting:
+                    return Enum.GetValues(typeof(Lighting));
+                case ParticleMethods.Render_Targets:
+                    return Enum.GetValues(typeof(Render_Targets));
+                case ParticleMethods.Depth_Fade:
+                    return Enum.GetValues(typeof(Depth_Fade));
+                case ParticleMethods.Black_Point:
+                    return Enum.GetValues(typeof(Black_Point));
+                case ParticleMethods.Fog:
+                    return Enum.GetValues(typeof(Fog));
+                case ParticleMethods.Frame_Blend:
+                    return Enum.GetValues(typeof(Frame_Blend));
+                case ParticleMethods.Self_Illumination:
+                    return Enum.GetValues(typeof(Self_Illumination));
+            }
+
+            return null;
         }
     }
 }

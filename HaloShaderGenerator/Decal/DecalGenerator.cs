@@ -366,5 +366,26 @@ namespace HaloShaderGenerator.Decal
         {
             return Enum.GetValues(typeof(DecalMethods));
         }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            switch ((DecalMethods)methodIndex)
+            {
+                case DecalMethods.Albedo:
+                    return Enum.GetValues(typeof(Albedo));
+                case DecalMethods.Blend_Mode:
+                    return Enum.GetValues(typeof(Blend_Mode));
+                case DecalMethods.Render_Pass:
+                    return Enum.GetValues(typeof(Render_Pass));
+                case DecalMethods.Specular:
+                    return Enum.GetValues(typeof(Specular));
+                case DecalMethods.Bump_Mapping:
+                    return Enum.GetValues(typeof(Bump_Mapping));
+                case DecalMethods.Tinting:
+                    return Enum.GetValues(typeof(Tinting));
+            }
+
+            return null;
+        }
     }
 }

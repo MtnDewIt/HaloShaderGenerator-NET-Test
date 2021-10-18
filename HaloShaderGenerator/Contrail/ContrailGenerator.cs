@@ -262,5 +262,22 @@ namespace HaloShaderGenerator.Contrail
         {
             return Enum.GetValues(typeof(ContrailMethods));
         }
+
+        public Array GetMethodOptionNames(int methodIndex)
+        {
+            switch ((ContrailMethods)methodIndex)
+            {
+                case ContrailMethods.Albedo:
+                    return Enum.GetValues(typeof(Albedo));
+                case ContrailMethods.Blend_Mode:
+                    return Enum.GetValues(typeof(Blend_Mode));
+                case ContrailMethods.Black_Point:
+                    return Enum.GetValues(typeof(Black_Point));
+                case ContrailMethods.Fog:
+                    return Enum.GetValues(typeof(Fog));
+            }
+
+            return null;
+        }
     }
 }
