@@ -140,7 +140,7 @@ VS_OUTPUT_PER_VERTEX entry_static_per_vertex(input_vertex_format input, STATIC_P
     float3 sky_radiance;
 	
 	// pack 5 rgb colors into 4  values
-    output.color4 = rgbe_to_rgb(per_vertex.color_1);
+    output.lightmap_coefficients.color4 = rgbe_to_rgb(per_vertex.color_1);
 	
     float3 rgb_2 = rgbe_to_rgb(per_vertex.color_2);
     output.lightmap_coefficients.color1.r = rgb_2.r;
