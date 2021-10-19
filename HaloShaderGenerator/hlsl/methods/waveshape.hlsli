@@ -5,6 +5,8 @@ uniform sampler3D wave_slope_array;
 
 #include "../helpers/math.hlsli"
 #include "../helpers/definition_helper.hlsli"
+#include "../helpers/bumpmap_math.hlsli"
+
 #include "../registers/water_parameters.hlsli"
 #include "../registers/global_parameters.hlsli"
 
@@ -22,6 +24,11 @@ uniform float detail_slope_scale_x;
 uniform float detail_slope_scale_y;
 uniform float detail_slope_scale_z;
 uniform float detail_slope_steepness;
+
+uniform sampler bump_map;
+uniform xform2d bump_map_xform;
+uniform sampler bump_detail_map;
+uniform xform2d bump_detail_map_xform;
 
 #if refraction_arg == k_refraction_dynamic
 #include "refraction.hlsli"
@@ -90,7 +97,13 @@ void calc_waveshape_none_ps(
     out float3 normal,
     out float2 refraction_s)
 {
-    //todo
+    refraction_s = 0.0f;
+    float3 n_slope = normalize(float3(0.0f, 0.0f, 1.0f));
+    
+    float3 n_m_mul = n_slope.y * v2;
+    n_m_mul = n_slope.x * v1 + n_m_mul;
+    n_m_mul = n_slope.z * -normalize((v2.yzx * v1.zxy) - (v2.zxy * v1.yzx)) + n_m_mul;
+    normal = normalize(n_m_mul);
 }
 
 void calc_waveshape_bump_ps(
@@ -105,7 +118,20 @@ void calc_waveshape_bump_ps(
     out float3 normal,
     out float2 refraction_s)
 {
-    //todo
+    float3 bump_map_sample = sample_normal_2d(bump_map, apply_xform2d(texcoord, bump_map_xform));
+    float3 bump = normalize(bump_map_sample);
+    float3 bump_detail_map_sample = sample_normal_2d(bump_detail_map, apply_xform2d(texcoord, bump_detail_map_xform));
+	
+    bump.xy += normalize(bump_detail_map_sample).xy;
+    bump.xy /= max(bump.z, 0.01f);
+    
+    refraction_s = bump.xy;
+    float3 n_slope = normalize(float3(bump.xy, 1.0f));
+    
+    float3 n_m_mul = n_slope.y * v2;
+    n_m_mul = n_slope.x * v1 + n_m_mul;
+    n_m_mul = n_slope.z * -normalize((v2.yzx * v1.zxy) - (v2.zxy * v1.yzx)) + n_m_mul;
+    normal = normalize(n_m_mul);
 }
 
 #ifndef calc_waveshape_ps

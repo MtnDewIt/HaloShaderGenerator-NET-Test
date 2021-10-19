@@ -82,6 +82,7 @@ namespace HaloShaderGenerator.Water
             macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Water, "k_shadertype_"));
 
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_waveshape_ps", waveshape, "calc_waveshape_", "_ps"));
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_watercolor_ps", watercolor, "calc_watercolor_", "_ps"));
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_reflection_ps", reflection, "calc_reflection_", "_ps"));
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_refraction_ps", refraction, "calc_refraction_", "_ps"));
