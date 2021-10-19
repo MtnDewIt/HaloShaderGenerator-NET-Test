@@ -357,8 +357,160 @@ namespace HaloShaderGenerator.Decal
         public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
         {
             ShaderParameters result = new ShaderParameters();
-            rmopName = "";
-            optionName = "";
+            rmopName = null;
+            optionName = null;
+
+            if (methodName == "albedo")
+            {
+                optionName = ((Albedo)option).ToString();
+                switch ((Albedo)option)
+                {
+                    case Albedo.Diffuse_Only:
+                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddFloatVertexParameter("u_tiles");
+                        result.AddFloatVertexParameter("v_tiles");
+                        rmopName = @"shaders\decal_options\albedo_diffuse_only";
+                        break;
+                    case Albedo.Palettized:
+                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddFloatVertexParameter("u_tiles");
+                        result.AddFloatVertexParameter("v_tiles");
+                        rmopName = @"shaders\decal_options\albedo_palettized";
+                        break;
+                    case Albedo.Palettized_Plus_Alpha:
+                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddSamplerWithoutXFormParameter("alpha_map");
+                        result.AddFloatVertexParameter("u_tiles");
+                        result.AddFloatVertexParameter("v_tiles");
+                        rmopName = @"shaders\decal_options\albedo_palettized_plus_alpha";
+                        break;
+                    case Albedo.Diffuse_Plus_Alpha:
+                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddSamplerWithoutXFormParameter("alpha_map");
+                        result.AddFloatVertexParameter("u_tiles");
+                        result.AddFloatVertexParameter("v_tiles");
+                        rmopName = @"shaders\decal_options\albedo_diffuse_plus_alpha";
+                        break;
+                    case Albedo.Emblem_Change_Color:
+                        result.AddSamplerWithoutXFormParameter("tex0_sampler", RenderMethodExtern.emblem_player_shoulder_texture);
+                        result.AddSamplerWithoutXFormParameter("tex1_sampler", RenderMethodExtern.emblem_player_shoulder_texture);
+                        result.AddFloat4Parameter("emblem_color_background_argb");
+                        result.AddFloat4Parameter("emblem_color_icon1_argb");
+                        result.AddFloat4Parameter("emblem_color_icon2_argb");
+                        result.AddFloatVertexParameter("u_tiles");
+                        result.AddFloatVertexParameter("v_tiles");
+                        rmopName = @"shaders\decal_options\albedo_emblem_change_color";
+                        break;
+                    case Albedo.Change_Color:
+                        result.AddSamplerWithoutXFormParameter("change_color_map");
+                        result.AddFloat3Parameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
+                        result.AddFloat3Parameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
+                        result.AddFloat3Parameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary);
+                        result.AddFloatVertexParameter("u_tiles");
+                        result.AddFloatVertexParameter("v_tiles");
+                        rmopName = @"shaders\decal_options\albedo_change_color";
+                        break;
+                    case Albedo.Diffuse_Plus_Alpha_Mask:
+                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddSamplerWithoutXFormParameter("alpha_map");
+                        result.AddFloatVertexParameter("u_tiles");
+                        result.AddFloatVertexParameter("v_tiles");
+                        rmopName = @"shaders\decal_options\albedo_diffuse_plus_alpha_mask";
+                        break;
+                    case Albedo.Palettized_Plus_Alpha_Mask:
+                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddSamplerWithoutXFormParameter("alpha_map");
+                        result.AddFloatVertexParameter("u_tiles");
+                        result.AddFloatVertexParameter("v_tiles");
+                        rmopName = @"shaders\decal_options\albedo_palettized_plus_alpha_mask";
+                        break;
+                    case Albedo.Vector_Alpha:
+                        result.AddSamplerParameter("base_map");
+                        result.AddFloatVertexParameter("u_tiles");
+                        result.AddFloatVertexParameter("v_tiles");
+                        result.AddSamplerWithoutXFormParameter("vector_map");
+                        result.AddFloatParameter("vector_sharpness");
+                        result.AddFloatParameter("antialias_tweak");
+                        rmopName = @"shaders\decal_options\albedo_vector_alpha";
+                        break;
+                    case Albedo.Vector_Alpha_Drop_Shadow:
+                        result.AddSamplerParameter("base_map");
+                        result.AddFloatVertexParameter("u_tiles");
+                        result.AddFloatVertexParameter("v_tiles");
+                        result.AddSamplerWithoutXFormParameter("vector_map");
+                        result.AddFloatParameter("vector_sharpness");
+                        result.AddSamplerWithoutXFormParameter("shadow_vector_map");
+                        result.AddFloatParameter("shadow_darkness");
+                        result.AddFloatParameter("shadow_sharpness");
+                        result.AddFloatParameter("antialias_tweak");
+                        rmopName = @"shaders\decal_options\albedo_vector_alpha_drop_shadow";
+                        break;
+                }
+            }
+            if (methodName == "blend_mode")
+            {
+                optionName = ((Blend_Mode)option).ToString();
+            }
+            if (methodName == "render_pass")
+            {
+                optionName = ((Render_Pass)option).ToString();
+            }
+            if (methodName == "specular")
+            {
+                optionName = ((Specular)option).ToString();
+
+                switch ((Specular)option)
+                {
+                    case Specular.Modulate:
+                        result.AddFloatParameter("specular_multiplier");
+                        rmopName = @"shaders\decal_options\specular_modulate";
+                        break;
+                }
+            }
+            if (methodName == "bump_mapping")
+            {
+                optionName = ((Bump_Mapping)option).ToString();
+
+                switch ((Bump_Mapping)option)
+                {
+                    case Bump_Mapping.Standard:
+                        result.AddSamplerParameter("bump_map");
+                        rmopName = @"shaders\decal_options\bump_mapping_standard";
+                        break;
+                    case Bump_Mapping.Standard_Mask:
+                        result.AddSamplerParameter("bump_map");
+                        rmopName = @"shaders\decal_options\bump_mapping_standard_mask";
+                        break;
+                }
+            }
+            if (methodName == "tinting")
+            {
+                optionName = ((Tinting)option).ToString();
+
+                switch ((Tinting)option)
+                {
+                    case Tinting.Unmodulated:
+                        result.AddFloat4Parameter("tint_color");
+                        result.AddFloatParameter("intensity");
+                        rmopName = @"shaders\decal_options\tinting_unmodulated";
+                        break;
+                    case Tinting.Partially_Modulated:
+                        result.AddFloat4Parameter("tint_color");
+                        result.AddFloatParameter("intensity");
+                        result.AddFloatParameter("modulation_factor");
+                        rmopName = @"shaders\decal_options\tinting_partially_modulated";
+                        break;
+                    case Tinting.Fully_Modulated:
+                        result.AddFloat4Parameter("tint_color");
+                        result.AddFloatParameter("intensity");
+                        rmopName = @"shaders\decal_options\tinting_fully_modulated";
+                        break;
+                }
+            }
+
             return result;
         }
 

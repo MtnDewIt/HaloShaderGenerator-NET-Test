@@ -204,9 +204,9 @@ namespace HaloShaderGenerator.ZOnly
         public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
         {
             ShaderParameters result = new ShaderParameters();
-            rmopName = "";
-            optionName = "";
-            
+            rmopName = null;
+            optionName = null;
+
             if (methodName == "test")
             {
                 optionName = ((Test)option).ToString();

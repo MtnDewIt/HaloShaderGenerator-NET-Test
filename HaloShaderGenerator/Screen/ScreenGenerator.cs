@@ -289,10 +289,90 @@ namespace HaloShaderGenerator.Screen
         public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
         {
             ShaderParameters result = new ShaderParameters();
-            rmopName = "";
-            optionName = "";
+            rmopName = null;
+            optionName = null;
 
+            if (methodName == "warp")
+            {
+                optionName = ((Warp)option).ToString();
 
+                switch ((Warp)option)
+                {
+                    case Warp.Pixel_Space:
+                    case Warp.Screen_Space:
+                        result.AddSamplerParameter("warp_map");
+                        result.AddFloatParameter("warp_amount");
+                        rmopName = @"shaders\screen_options\warp_simple";
+                        break;
+                }
+            }
+            if (methodName == "base")
+            {
+                optionName = ((Base)option).ToString();
+
+                switch ((Base)option)
+                {
+                    case Base.Single_Screen_Space:
+                    case Base.Single_Pixel_Space:
+                        result.AddSamplerParameter("base_map");
+                        rmopName = @"shaders\screen_options\base_single";
+                        break;
+                }
+            }
+            if (methodName == "overlay_a")
+            {
+                optionName = ((Overlay_A)option).ToString();
+
+                switch ((Overlay_A)option)
+                {
+                    case Overlay_A.Tint_Add_Color:
+                        result.AddFloat4ColorParameter("tint_color");
+                        result.AddFloat4ColorParameter("add_color");
+                        rmopName = @"shaders\screen_options\overlay_tint_add_color";
+                        break;
+                    case Overlay_A.Detail_Screen_Space:
+                    case Overlay_A.Detail_Pixel_Space:
+                        result.AddSamplerParameter("detail_map_a");
+                        result.AddFloatParameter("detail_fade_a");
+                        result.AddFloatParameter("detail_multiplier_a");
+                        rmopName = @"shaders\screen_options\detail_a";
+                        break;
+                    case Overlay_A.Detail_Masked_Screen_Space:
+                        result.AddSamplerParameter("detail_map_a");
+                        result.AddSamplerParameter("detail_mask_a");
+                        result.AddFloatParameter("detail_fade_a");
+                        result.AddFloatParameter("detail_multiplier_a");
+                        rmopName = @"shaders\screen_options\detail_mask_a";
+                        break;
+                }
+            }
+            if (methodName == "overlay_b")
+            {
+                optionName = ((Overlay_B)option).ToString();
+
+                switch ((Overlay_B)option)
+                {
+                    case Overlay_B.Tint_Add_Color:
+                        result.AddFloat4ColorParameter("tint_color");
+                        result.AddFloat4ColorParameter("add_color");
+                        rmopName = @"shaders\screen_options\overlay_tint_add_color";
+                        break;
+                }
+            }
+            if (methodName == "blend_mode")
+            {
+                optionName = ((Blend_Mode)option).ToString();
+
+                switch ((Blend_Mode)option)
+                {
+                    case Blend_Mode.Opaque:
+                        break;
+                    default:
+                        result.AddFloatParameter("fade");
+                        rmopName = @"shaders\screen_options\blend";
+                        break;
+                }
+            }
 
             return result;
         }

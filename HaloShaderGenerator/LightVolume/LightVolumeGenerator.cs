@@ -237,8 +237,35 @@ namespace HaloShaderGenerator.LightVolume
         public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
         {
             ShaderParameters result = new ShaderParameters();
-            rmopName = "";
-            optionName = "";
+            rmopName = null;
+            optionName = null;
+
+            if (methodName == "albedo")
+            {
+                optionName = ((Albedo)option).ToString();
+
+                switch ((Albedo)option)
+                {
+                    case Albedo.Diffuse_Only:
+                        result.AddSamplerWithoutXFormParameter("base_map");
+                        rmopName = @"shaders\light_volume_options\albedo_diffuse_only";
+                        break;
+                    case Albedo.Circular:
+                        result.AddFloatParameter("center_offset");
+                        result.AddFloatParameter("falloff");
+                        rmopName = @"shaders\light_volume_options\albedo_circular";
+                        break;
+                }
+            }
+            if (methodName == "blend_mode")
+            {
+                optionName = ((Blend_Mode)option).ToString();
+            }
+            if (methodName == "fog")
+            {
+                optionName = ((Fog)option).ToString();
+            }
+
             return result;
         }
 

@@ -297,6 +297,10 @@ namespace HaloShaderGenerator.Water
 
             switch (foam)
             {
+                case Foam.None:
+                    result.AddSamplerParameter("foam_texture");
+                    result.AddSamplerParameter("foam_texture_detail");
+                    break;
                 case Foam.Auto:
                     result.AddSamplerParameter("foam_texture");
                     result.AddSamplerParameter("foam_texture_detail");
@@ -385,8 +389,177 @@ namespace HaloShaderGenerator.Water
         public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
         {
             ShaderParameters result = new ShaderParameters();
-            rmopName = "";
-            optionName = "";
+            rmopName = null;
+            optionName = null;
+
+            if (methodName == "waveshape")
+            {
+                optionName = ((Waveshape)option).ToString();
+
+                switch ((Waveshape)option)
+                {
+                    case Waveshape.Default:
+                        result.AddFloatParameter("displacement_range_x");
+                        result.AddFloatParameter("displacement_range_y");
+                        result.AddFloatParameter("displacement_range_z");
+                        result.AddFloatParameter("slope_range_x");
+                        result.AddFloatParameter("slope_range_y");
+                        result.AddSamplerParameter("wave_displacement_array");
+                        result.AddFloatParameter("wave_height");
+                        result.AddFloatParameter("time_warp");
+                        result.AddSamplerParameter("wave_slope_array");
+                        result.AddFloatParameter("wave_height_aux");
+                        result.AddFloatParameter("time_warp_aux");
+                        result.AddFloatVertexParameter("choppiness_forward");
+                        result.AddFloatVertexParameter("choppiness_backward");
+                        result.AddFloatVertexParameter("choppiness_side");
+                        result.AddFloatParameter("detail_slope_scale_x");
+                        result.AddFloatParameter("detail_slope_scale_y");
+                        result.AddFloatParameter("detail_slope_scale_z");
+                        result.AddFloatParameter("detail_slope_steepness");
+                        result.AddFloatVertexParameter("wave_visual_damping_distance");
+                        rmopName = @"shaders\water_options\waveshape_default";
+                        break;
+                    case Waveshape.Bump:
+                        result.AddSamplerParameter("bump_map");
+                        result.AddSamplerParameter("bump_detail_map");
+                        rmopName = @"shaders\water_options\waveshape_bump";
+                        break;
+                }
+            }
+            if (methodName == "watercolor")
+            {
+                optionName = ((Watercolor)option).ToString();
+
+                switch ((Watercolor)option)
+                {
+                    case Watercolor.Pure:
+                        result.AddFloat4Parameter("water_color_pure");
+                        rmopName = @"shaders\water_options\watercolor_pure";
+                        break;
+                    case Watercolor.Texture:
+                        result.AddSamplerWithoutXFormParameter("watercolor_texture");
+                        result.AddFloatParameter("watercolor_coefficient");
+                        rmopName = @"shaders\water_options\watercolor_texture";
+                        break;
+                }
+            }
+            if (methodName == "reflection")
+            {
+                optionName = ((Reflection)option).ToString();
+
+                switch ((Reflection)option)
+                {
+                    case Reflection.Static:
+                        result.AddSamplerWithoutXFormParameter("environment_map");
+                        result.AddFloatParameter("reflection_coefficient");
+                        result.AddFloatParameter("sunspot_cut");
+                        result.AddFloatParameter("shadow_intensity_mark");
+                        rmopName = @"shaders\water_options\reflection_static";
+                        break;
+                    case Reflection.Dynamic:
+                        result.AddFloatParameter("reflection_coefficient");
+                        rmopName = @"shaders\water_options\reflection_dynamic";
+                        break;
+                }
+            }
+            if (methodName == "refraction")
+            {
+                optionName = ((Refraction)option).ToString();
+
+                switch ((Refraction)option)
+                {
+                    case Refraction.Dynamic:
+                        result.AddFloatParameter("refraction_texcoord_shift");
+                        result.AddFloatParameter("water_murkiness");
+                        result.AddFloatParameter("refraction_extinct_distance");
+                        result.AddFloatParameter("minimal_wave_disturbance");
+                        result.AddFloatParameter("refraction_depth_dominant_ratio");
+                        rmopName = @"shaders\water_options\refraction_dynamic";
+                        break;
+                }
+            }
+            if (methodName == "bankalpha")
+            {
+                optionName = ((Bankalpha)option).ToString();
+
+                switch ((Bankalpha)option)
+                {
+                    case Bankalpha.Depth:
+                        result.AddFloatParameter("bankalpha_infuence_depth");
+                        rmopName = @"shaders\water_options\bankalpha_depth";
+                        break;
+                    case Bankalpha.Paint:
+                        result.AddSamplerParameter("watercolor_texture");
+                        rmopName = @"shaders\water_options\bankalpha_paint";
+                        break;
+                }
+            }
+            if (methodName == "appearance")
+            {
+                optionName = ((Appearance)option).ToString();
+
+                switch ((Appearance)option)
+                {
+                    case Appearance.Default:
+                        result.AddFloatParameter("fresnel_coefficient");
+                        result.AddFloat4Parameter("water_diffuse");
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        rmopName = @"shaders\water_options\appearance_default";
+                        break;
+                }
+            }
+            if (methodName == "global_shape")
+            {
+                optionName = ((Global_Shape)option).ToString();
+
+                switch ((Global_Shape)option)
+                {
+                    case Global_Shape.Paint:
+                        result.AddSamplerWithoutXFormParameter("global_shape_texture");
+                        rmopName = @"shaders\water_options\globalshape_paint";
+                        break;
+                    case Global_Shape.Depth:
+                        result.AddFloatParameter("globalshape_infuence_depth");
+                        rmopName = @"shaders\water_options\globalshape_depth";
+                        break;
+                }
+            }
+            if (methodName == "foam")
+            {
+                optionName = ((Foam)option).ToString();
+
+                switch ((Foam)option)
+                {
+                    case Foam.None:
+                        result.AddSamplerParameter("foam_texture");
+                        result.AddSamplerParameter("foam_texture_detail");
+                        rmopName = @"shaders\water_options\foam_none";
+                        break;
+                    case Foam.Auto:
+                        result.AddSamplerParameter("foam_texture");
+                        result.AddSamplerParameter("foam_texture_detail");
+                        result.AddFloatParameter("foam_height");
+                        result.AddFloatParameter("foam_pow");
+                        rmopName = @"shaders\water_options\foam_auto";
+                        break;
+                    case Foam.Paint:
+                        result.AddSamplerParameter("foam_texture");
+                        result.AddSamplerParameter("foam_texture_detail");
+                        result.AddSamplerWithoutXFormParameter("global_shape_texture");
+                        rmopName = @"shaders\water_options\foam_paint";
+                        break;
+                    case Foam.Both:
+                        result.AddSamplerParameter("foam_texture");
+                        result.AddSamplerParameter("foam_texture_detail");
+                        result.AddSamplerWithoutXFormParameter("global_shape_texture");
+                        result.AddFloatParameter("foam_height");
+                        result.AddFloatParameter("foam_pow");
+                        rmopName = @"shaders\water_options\foam_both";
+                        break;
+                }
+            }
+
             return result;
         }
 

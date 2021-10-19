@@ -433,8 +433,176 @@ namespace HaloShaderGenerator.Terrain
         public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
         {
             ShaderParameters result = new ShaderParameters();
-            rmopName = "";
-            optionName = "";
+            rmopName = null;
+            optionName = null;
+
+            if (methodName == "blending")
+            {
+                optionName = ((Blending)option).ToString();
+
+                switch ((Blending)option)
+                {
+                    case Blending.Morph:
+                        result.AddSamplerParameter("blend_map");
+                        result.AddFloatParameter("global_albedo_tint");
+                        rmopName = @"shaders\terrain_options\default_blending";
+                        break;
+                    case Blending.Dynamic_Morph:
+                        result.AddSamplerParameter("blend_map");
+                        result.AddFloatParameter("global_albedo_tint");
+                        result.AddFloatParameter("dynamic_material");
+                        result.AddFloatParameter("transition_sharpness");
+                        result.AddFloatParameter("transition_threshold");
+                        rmopName = @"shaders\terrain_options\dynamic_blending";
+                        break;
+                }
+            }
+            if (methodName == "environment_mapping")
+            {
+                optionName = ((Environment_Mapping)option).ToString();
+
+                switch ((Environment_Mapping)option)
+                {
+                    case Environment_Mapping.Per_Pixel:
+                        result.AddSamplerWithoutXFormParameter("environment_map");
+                        result.AddFloat3ColorParameter("env_tint_color");
+                        result.AddFloatParameter("env_roughness_scale");
+                        rmopName = @"shaders\shader_options\env_map_per_pixel";
+                        break;
+                    case Environment_Mapping.Dynamic:
+                        result.AddFloat3ColorParameter("env_tint_color");
+                        result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
+                        result.AddSamplerParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
+                        result.AddFloatParameter("env_roughness_scale");
+                        rmopName = @"shaders\shader_options\env_map_dynamic";
+                        break;
+                }
+            }
+            if (methodName == "material_0")
+            {
+                optionName = ((Material)option).ToString();
+
+                switch ((Material)option)
+                {
+                    case Material.Diffuse_Only:
+                        result.AddSamplerParameter("base_map_m_0");
+                        result.AddSamplerParameter("detail_map_m_0");
+                        result.AddSamplerParameter("bump_map_m_0");
+                        result.AddSamplerParameter("detail_bump_m_0");
+                        rmopName = @"shaders\terrain_options\diffuse_only_m_0";
+                        break;
+                    case Material.Diffuse_Plus_Specular:
+                        result.AddSamplerParameter("base_map_m_0");
+                        result.AddSamplerParameter("detail_map_m_0");
+                        result.AddSamplerParameter("bump_map_m_0");
+                        result.AddSamplerParameter("detail_bump_m_0");
+                        result.AddFloatParameter("diffuse_coefficient_m_0");
+                        result.AddFloatParameter("specular_coefficient_m_0");
+                        result.AddFloatParameter("specular_power_m_0");
+                        result.AddFloat3Parameter("specular_tint_m_0");
+                        result.AddFloatParameter("fresnel_curve_steepness_m_0");
+                        result.AddFloatParameter("area_specular_contribution_m_0");
+                        result.AddFloatParameter("analytical_specular_contribution_m_0");
+                        result.AddFloatParameter("environment_specular_contribution_m_0");
+                        result.AddFloatParameter("albedo_specular_tint_blend_m_0");
+                        rmopName = @"shaders\terrain_options\diffuse_plus_specular_m_0";
+                        break;
+                }
+            }
+            if (methodName == "material_1")
+            {
+                optionName = ((Material)option).ToString();
+
+                switch ((Material)option)
+                {
+                    case Material.Diffuse_Only:
+                        result.AddSamplerParameter("base_map_m_1");
+                        result.AddSamplerParameter("detail_map_m_1");
+                        result.AddSamplerParameter("bump_map_m_1");
+                        result.AddSamplerParameter("detail_bump_m_1");
+                        rmopName = @"shaders\terrain_options\diffuse_only_m_1";
+                        break;
+                    case Material.Diffuse_Plus_Specular:
+                        result.AddSamplerParameter("base_map_m_1");
+                        result.AddSamplerParameter("detail_map_m_1");
+                        result.AddSamplerParameter("bump_map_m_1");
+                        result.AddSamplerParameter("detail_bump_m_1");
+                        result.AddFloatParameter("diffuse_coefficient_m_1");
+                        result.AddFloatParameter("specular_coefficient_m_1");
+                        result.AddFloatParameter("specular_power_m_1");
+                        result.AddFloat3Parameter("specular_tint_m_1");
+                        result.AddFloatParameter("fresnel_curve_steepness_m_1");
+                        result.AddFloatParameter("area_specular_contribution_m_1");
+                        result.AddFloatParameter("analytical_specular_contribution_m_1");
+                        result.AddFloatParameter("environment_specular_contribution_m_1");
+                        result.AddFloatParameter("albedo_specular_tint_blend_m_1");
+                        rmopName = @"shaders\terrain_options\diffuse_plus_specular_m_1";
+                        break;
+                }
+            }
+            if (methodName == "material_2")
+            {
+                optionName = ((Material)option).ToString();
+
+                switch ((Material)option)
+                {
+                    case Material.Diffuse_Only:
+                        result.AddSamplerParameter("base_map_m_2");
+                        result.AddSamplerParameter("detail_map_m_2");
+                        result.AddSamplerParameter("bump_map_m_2");
+                        result.AddSamplerParameter("detail_bump_m_2");
+                        rmopName = @"shaders\terrain_options\diffuse_only_m_2";
+                        break;
+                    case Material.Diffuse_Plus_Specular:
+                        result.AddSamplerParameter("base_map_m_2");
+                        result.AddSamplerParameter("detail_map_m_2");
+                        result.AddSamplerParameter("bump_map_m_2");
+                        result.AddSamplerParameter("detail_bump_m_2");
+                        result.AddFloatParameter("diffuse_coefficient_m_2");
+                        result.AddFloatParameter("specular_coefficient_m_2");
+                        result.AddFloatParameter("specular_power_m_2");
+                        result.AddFloat3Parameter("specular_tint_m_2");
+                        result.AddFloatParameter("fresnel_curve_steepness_m_2");
+                        result.AddFloatParameter("area_specular_contribution_m_2");
+                        result.AddFloatParameter("analytical_specular_contribution_m_2");
+                        result.AddFloatParameter("environment_specular_contribution_m_2");
+                        result.AddFloatParameter("albedo_specular_tint_blend_m_2");
+                        rmopName = @"shaders\terrain_options\diffuse_plus_specular_m_2";
+                        break;
+                }
+            }
+            if (methodName == "material_3")
+            {
+                optionName = ((Material_No_Detail_Bump)option).ToString();
+
+                switch ((Material_No_Detail_Bump)option)
+                {
+                    case Material_No_Detail_Bump.Diffuse_Only:
+                        result.AddSamplerParameter("base_map_m_3");
+                        result.AddSamplerParameter("detail_map_m_3");
+                        result.AddSamplerParameter("bump_map_m_3");
+                        result.AddSamplerParameter("detail_bump_m_3");
+                        rmopName = @"shaders\terrain_options\diffuse_only_m_3";
+                        break;
+                    case Material_No_Detail_Bump.Diffuse_Plus_Specular:
+                        result.AddSamplerParameter("base_map_m_3");
+                        result.AddSamplerParameter("detail_map_m_3");
+                        result.AddSamplerParameter("bump_map_m_3");
+                        result.AddSamplerParameter("detail_bump_m_3");
+                        result.AddFloatParameter("diffuse_coefficient_m_3");
+                        result.AddFloatParameter("specular_coefficient_m_3");
+                        result.AddFloatParameter("specular_power_m_3");
+                        result.AddFloat3Parameter("specular_tint_m_3");
+                        result.AddFloatParameter("fresnel_curve_steepness_m_3");
+                        result.AddFloatParameter("area_specular_contribution_m_3");
+                        result.AddFloatParameter("analytical_specular_contribution_m_3");
+                        result.AddFloatParameter("environment_specular_contribution_m_3");
+                        result.AddFloatParameter("albedo_specular_tint_blend_m_3");
+                        rmopName = @"shaders\terrain_options\diffuse_plus_specular_m_3";
+                        break;
+                }
+            }
+
             return result;
         }
 

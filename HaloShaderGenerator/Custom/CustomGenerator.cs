@@ -471,6 +471,14 @@ namespace HaloShaderGenerator.Custom
                     result.AddFloatParameter("albedo_specular_tint_blend");
                     result.AddFloatParameter("analytical_anti_shadow_control");
                     break;
+                case Material_Model.Custom_Specular:
+                    result.AddFloatParameter("diffuse_coefficient");
+                    result.AddFloatParameter("specular_coefficient");
+                    result.AddFloatParameter("environment_map_specular_contribution");
+                    result.AddSamplerWithoutXFormParameter("specular_lobe");
+                    result.AddSamplerWithoutXFormParameter("glancing_falloff");
+                    result.AddSamplerWithoutXFormParameter("material_map");
+                    break;
             }
             switch (environment_mapping)
             {
@@ -757,15 +765,15 @@ namespace HaloShaderGenerator.Custom
                         result.AddFloatParameter("analytical_anti_shadow_control");
                         rmopName = @"shaders\shader_options\material_two_lobe_phong_option";
                         break;
-                    //case Material_Model.Custom_Specular:
-                    //    result.AddFloatParameter("diffuse_coefficient");
-                    //    result.AddFloatParameter("specular_coefficient");
-                    //    result.AddFloatParameter("environment_map_specular_contribution");
-                    //    result.AddSamplerWithoutXFormParameter("specular_lobe");
-                    //    result.AddSamplerWithoutXFormParameter("glancing_falloff");
-                    //    result.AddSamplerWithoutXFormParameter("material_map");
-                    //    rmopName = @"shaders\custom_options\material_custom_specular";
-                    //    break;
+                    case Material_Model.Custom_Specular:
+                        result.AddFloatParameter("diffuse_coefficient");
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddSamplerWithoutXFormParameter("specular_lobe");
+                        result.AddSamplerWithoutXFormParameter("glancing_falloff");
+                        result.AddSamplerWithoutXFormParameter("material_map");
+                        rmopName = @"shaders\custom_options\material_custom_specular";
+                        break;
                 }
             }
             if (methodName == "environment_mapping")

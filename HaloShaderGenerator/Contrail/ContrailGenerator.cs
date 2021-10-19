@@ -253,8 +253,43 @@ namespace HaloShaderGenerator.Contrail
         public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
         {
             ShaderParameters result = new ShaderParameters();
-            rmopName = "";
-            optionName = "";
+            rmopName = null;
+            optionName = null;
+
+            if (methodName == "albedo")
+            {
+                optionName = ((Albedo)option).ToString();
+                switch ((Albedo)option)
+                {
+                    case Albedo.Diffuse_Only:
+                        result.AddSamplerWithoutXFormParameter("base_map");
+                        rmopName = @"shaders\contrail_options\albedo_diffuse_only";
+                        break;
+                    case Albedo.Palettized:
+                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddSamplerWithoutXFormParameter("palette");
+                        rmopName = @"shaders\contrail_options\albedo_palettized";
+                        break;
+                    case Albedo.Palettized_Plus_Alpha:
+                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddSamplerWithoutXFormParameter("alpha_map");
+                        rmopName = @"shaders\contrail_options\albedo_palettized_plus_alpha";
+                        break;
+                }
+            }
+            if (methodName == "blend_mode")
+            {
+                optionName = ((Blend_Mode)option).ToString();
+            }
+            if (methodName == "black_point")
+            {
+                optionName = ((Black_Point)option).ToString();
+            }
+            if (methodName == "fog")
+            {
+                optionName = ((Fog)option).ToString();
+            }
             return result;
         }
 
