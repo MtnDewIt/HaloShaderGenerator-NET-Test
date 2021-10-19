@@ -83,7 +83,10 @@ uniform float3 Camera_Position_PS : register(c16);
 uniform float simple_light_count : register(c17);
 uniform float4 simple_lights[40] : register(c18);
 #if shadertype == k_shadertype_decal
+#ifndef DECAL_FADE
 uniform float fade : register(c32);
+#define DECAL_FADE fade
+#endif
 #endif
 uniform float4 p_render_debug_mode : register(c94);
 uniform float4 primary_change_color_old : register(c190);

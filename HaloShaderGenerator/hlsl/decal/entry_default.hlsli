@@ -22,34 +22,49 @@
 #include "..\helpers\definition_helper.hlsli"
 #include "..\registers\global_parameters.hlsli"
 
+#ifndef DECAL_FADE
+uniform float fade : register(c32);
+#define DECAL_FADE fade
+#endif
+
+#define APPLY_ALPHA_FADE (decal_bump_mapping_arg != k_decal_bump_mapping_leave || decal_specular_arg != k_decal_specular_leave)
+#define APPLY_BLEND_FADE (blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_add_src_times_dstalpha || blend_type_arg == k_blend_mode_add_src_times_srcalpha        \
+    || blend_type_arg == k_blend_mode_pre_multiplied_alpha || blend_type_arg == k_blend_mode_inv_alpha_blend)
+#define BLEND_IS_MULTIPLY (blend_type_arg == k_blend_mode_multiply || blend_type_arg == k_blend_mode_double_multiply)
+
+void decal_apply_fade(inout float4 color)
+{
+    color = decal_blend_mode(color, DECAL_FADE);
+	
+    if (APPLY_ALPHA_FADE && !APPLY_BLEND_FADE)
+    {
+        color.a *= DECAL_FADE;
+    }
+    
+    if (blend_type_arg == k_blend_mode_pre_multiplied_alpha)
+    {
+        if (albedo_arg != k_albedo_vector_alpha_drop_shadow && albedo_arg != k_albedo_vector_alpha)
+            color.rgb *= color.a;
+        color.rgb *= DECAL_FADE;
+    }
+}
+
 float4 decal_entry_default_calculate_color(VS_OUTPUT_DECAL input)
 {
+    // calc base diffuse
     float4 color = calc_albedo_ps(float4(input.texcoord.zw, 0, 0), input.texcoord.xy, 0.0f, 0.0f, 1.0f, 1.0f);
-    
-    // apply fully modulated tint
-    if (decal_tinting_arg == k_decal_tinting_fully_modulated)
-        decal_tinting(color);
-    
-    if (decal_render_pass_arg == k_decal_render_pass_post_lighting && blend_type_arg == k_blend_mode_pre_multiplied_alpha)
-        color.rgb *= g_exposure.x;
-    
-    color = decal_blend_mode(color, fade);
-    
-    // H3 doesn't have this, leaving out for now.
-    //if (blend_type_arg == k_blend_mode_pre_multiplied_alpha)
-    //{
-    //    color.rgb *= fade;
-    //}
-    
-    // applies to blend_mode that DON'T fade the alpha
-    if (decal_specular_arg == k_decal_specular_modulate && (blend_type_arg == k_blend_mode_multiply || blend_type_arg == k_blend_mode_additive))
-        color.a *= fade;
-    
-    // apply tint
-    if (decal_tinting_arg != k_decal_tinting_fully_modulated)
-        decal_tinting(color);
-    
-    //decal_apply_fade(color);
+    // apply tint and modulate
+    decal_tinting(color);
+    // apply lighting modulation
+    if (decal_render_pass_arg == k_decal_render_pass_post_lighting && !BLEND_IS_MULTIPLY)
+    {
+        if (blend_type_arg == k_blend_mode_additive || blend_type_arg == k_blend_mode_add_src_times_srcalpha)
+            color.rgb *= g_alt_exposure.y;
+        else
+            color.rgb *= g_exposure.x;
+    }
+    // apply fade    
+    decal_apply_fade(color);
     
     return color;
 }
@@ -75,14 +90,15 @@ PS_OUTPUT_DECAL decal_entry_default(VS_OUTPUT_DECAL input)
     
     if (decal_render_pass_arg == k_decal_render_pass_post_lighting)
     {
-        if (blend_type_arg == k_blend_mode_multiply)
+        if (BLEND_IS_MULTIPLY)
         {
             output.color_ldr = color * g_exposure.w;
             output.color_hdr = color * g_exposure.z;
         }
         else
         {
-            color.rgb *= g_alt_exposure.y;
+            if (blend_type_arg == k_blend_mode_pre_multiplied_alpha)
+                color.rgb *= color.a;
             output.color_ldr = export_low_frequency(color);
             output.color_hdr = export_high_frequency(color);
         }
