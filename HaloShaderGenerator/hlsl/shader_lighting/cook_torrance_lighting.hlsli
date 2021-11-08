@@ -102,7 +102,12 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 	float c_albedo_blend, c_roughness, c_specular_coefficient;
 	float c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient, c_environment_map_specular_contribution;
 	get_material_parameters_2(common_data.texcoord, c_specular_coefficient, c_albedo_blend, c_roughness, c_diffuse_coefficient, c_analytical_specular_coefficient, c_area_specular_coefficient, c_environment_map_specular_contribution);
+	
+#if shadertype != k_shadertype_cortana
 	bool use_albedo_blend_with_specular_tint = albedo_blend_with_specular_tint.x > 0 ? true : false;
+#else
+	bool use_albedo_blend_with_specular_tint = true;
+#endif
 	bool use_analytical_antishadow_control = analytical_anti_shadow_control.x > 0 ? true : false;
 		
 	float3 fresnel_f0 = use_albedo_blend_with_specular_tint ? fresnel_color : lerp(fresnel_color, common_data.albedo.rgb, c_albedo_blend);
