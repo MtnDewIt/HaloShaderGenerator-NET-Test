@@ -55,9 +55,11 @@ PS_OUTPUT_DEFAULT cortana_entry_active_camo(VS_OUTPUT_CORTANA_PRT input)
             common_data.surface_normal = normal_import(normal_texture_sample.xyz);
             float4 albedo_texture_sample = tex2D(albedo_texture, texcoord);
             common_data.albedo = albedo_texture_sample;
-        }
-		
-        common_data.surface_normal = normalize(common_data.surface_normal);
+        } 
+        
+        //common_data.surface_normal = normalize(common_data.surface_normal);
+        float d_normal = dot(common_data.surface_normal, common_data.surface_normal);
+        common_data.surface_normal /= sqrt(d_normal);
 		
         common_data.specular_mask = 1.0;
 		
@@ -67,6 +69,7 @@ PS_OUTPUT_DEFAULT cortana_entry_active_camo(VS_OUTPUT_CORTANA_PRT input)
         common_data.world_position = Camera_Position_PS - common_data.view_dir;
 		
         get_current_sh_coefficients_quadratic(common_data.sh_0, common_data.sh_312, common_data.sh_457, common_data.sh_8866, common_data.dominant_light_direction, common_data.dominant_light_intensity);
+        common_data.dominant_light_intensity *= pow(d_normal, 8.0f);
 		
         common_data.sh_0_no_dominant_light = common_data.sh_0;
         common_data.sh_312_no_dominant_light[0] = common_data.sh_312[0];
