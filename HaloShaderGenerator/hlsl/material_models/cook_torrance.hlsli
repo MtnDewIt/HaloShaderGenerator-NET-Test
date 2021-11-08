@@ -22,7 +22,7 @@ uniform float fresnel_power;
 uniform float roughness;
 uniform float albedo_blend;
 uniform float3 specular_tint;
-uniform bool albedo_blend_with_specular_tint;
+uniform float albedo_blend_with_specular_tint;
 uniform bool use_fresnel_color_environment;
 uniform float3 fresnel_color_environment;
 uniform float rim_fresnel_coefficient;
