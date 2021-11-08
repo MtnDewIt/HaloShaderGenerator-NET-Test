@@ -485,6 +485,8 @@ float4 calc_albedo_default_vs(float2 texcoord, float2 position, float3 surface_n
 	return 0;
 }
 
+#if shadertype == k_shadertype_cortana
+
 uniform float4 detail_color;
 uniform sampler2D scanline_map;
 uniform float4 scanline_map_xform;
@@ -492,12 +494,10 @@ uniform float scanline_amount_transparent;
 uniform float scanline_amount_opaque;
 uniform float4 ss_constants; // _render_method_extern_screen_constants
 
-#if shadertype == k_shadertype_cortana
 uniform float layer_depth;
 uniform float layer_contrast;
 uniform int layer_count;
 uniform float texcoord_aspect_ratio;
-#endif
 uniform float depth_darken;
 
 float4 calc_albedo_cortana_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir) // camera_dir = view_dir in this func
@@ -539,6 +539,7 @@ float4 calc_albedo_cortana_ps(float2 texcoord, float2 position, float3 surface_n
     return albedo;
 }
 
+#endif
 
 //fixups
 #define calc_albedo_two_change_color_anim_overlay_ps calc_albedo_two_change_color_anim_ps
