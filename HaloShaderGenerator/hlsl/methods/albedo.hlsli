@@ -485,6 +485,60 @@ float4 calc_albedo_default_vs(float2 texcoord, float2 position, float3 surface_n
 	return 0;
 }
 
+uniform float4 detail_color;
+uniform sampler2D scanline_map;
+uniform float4 scanline_map_xform;
+uniform float scanline_amount_transparent;
+uniform float scanline_amount_opaque;
+uniform float4 ss_constants; // _render_method_extern_screen_constants
+
+#if shadertype == k_shadertype_cortana
+uniform float layer_depth;
+uniform float layer_contrast;
+uniform int layer_count;
+uniform float texcoord_aspect_ratio;
+#endif
+uniform float depth_darken;
+
+float4 calc_albedo_cortana_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir) // camera_dir = view_dir in this func
+{
+    float4 albedo = tex2D(base_map, apply_xform2d(texcoord, base_map_xform));
+    albedo *= albedo_color;
+	
+    float2 res_scale = float2(1280.0f, 720.0f) * ss_constants.xy;
+    float4 scanline_sample = tex2D(scanline_map, apply_xform2d(position * res_scale, scanline_map_xform));
+    float scanline_blend = scanline_amount_transparent + albedo.a * (scanline_amount_opaque - scanline_amount_transparent);
+    float4 scanline_final = 1.0f + scanline_blend * (scanline_sample - 1.0f);
+    albedo.rgb *= scanline_final.rgb;
+	
+	// TODO: fix rmt2 routing
+    float fp_layer_count = 0.0f;
+    for (int i = 0; i < layer_count; i++)
+        fp_layer_count += 1.0f; // hack
+	
+    float2 detail_texcoord = apply_xform2d(texcoord, detail_map_xform);
+    float2 offset = camera_dir.xy * detail_map_xform.xy * float2(texcoord_aspect_ratio, 1.0f) * layer_depth / fp_layer_count;
+	
+    float4 accum = 0.0f;
+    float darkness = 1.0f;
+    for (i = 0; i < layer_count; i++)
+    {
+        accum += darkness * tex2D(detail_map, detail_texcoord);
+        detail_texcoord -= offset;
+        darkness *= depth_darken;
+    }
+    accum /= fp_layer_count;
+	
+    float4 final_detail;
+    final_detail.rgb = pow(abs(accum.rgb), layer_contrast) * detail_color.rgb;
+    final_detail.a = accum.a * detail_color.a;
+
+    albedo.rgb = albedo.rgb + (1.0f - albedo.a) * final_detail.rgb;
+    albedo.a = albedo.a * scanline_final.a + (1.0f - albedo.a) * final_detail.a;
+	
+    return albedo;
+}
+
 
 //fixups
 #define calc_albedo_two_change_color_anim_overlay_ps calc_albedo_two_change_color_anim_ps

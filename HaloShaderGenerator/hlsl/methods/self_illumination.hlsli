@@ -37,10 +37,12 @@ uniform float meter_value;
 uniform float primary_change_color_blend;
 
 // multilayer_additive, ml_add_four_change_color, ml_add_five_change_color
+#if shadertype != k_shadertype_cortana
 uniform float layer_depth;
 uniform float layer_contrast;
 uniform float texcoord_aspect_ratio;
 uniform float depth_darken;
+#endif
 uniform int layers_of_4; // global
 
 uniform float3 self_illum_heat_color;

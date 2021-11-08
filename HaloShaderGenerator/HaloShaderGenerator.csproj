@@ -129,7 +129,8 @@
     <Compile Include="Black\ShaderBlackGenerator.cs" />
     <Compile Include="Contrail\ContrailGenerator.cs" />
     <Compile Include="Contrail\MethodOptions.cs" />
-    <Compile Include="Cortana\CortanaShaderGenerator.cs" />
+    <Compile Include="Cortana\CortanaGenerator.cs" />
+    <Compile Include="Cortana\MethodOptions.cs" />
     <Compile Include="Custom\CustomGenerator.cs" />
     <Compile Include="Custom\MethodOptions.cs" />
     <Compile Include="Decal\DecalGenerator.cs" />
@@ -227,9 +228,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\helpers\lighting.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="hlsl\pixl_shader_cortana.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="hlsl\black\" />
@@ -592,6 +590,10 @@
     <EmbeddedResource Include="hlsl\explicit\registers\displacement_motion_blur_registers.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="hlsl\cortana\entry_albedo.hlsli" />
+    <EmbeddedResource Include="hlsl\cortana\entry_prt.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="hlsl\chud\helpers\chud_global_parameters.hlsli" />
     <EmbeddedResource Include="hlsl\chud\helpers\chud_input_output.hlsli" />
   </ItemGroup>
@@ -642,6 +644,14 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="hlsl\foliage\entry_prt.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\cortana_lighting\cortana_lighting.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\cortana\entry_active_camo.hlsli" />
+    <EmbeddedResource Include="hlsl\pixl_cortana.hlsl" />
+    <EmbeddedResource Include="hlsl\glvs_cortana.hlsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

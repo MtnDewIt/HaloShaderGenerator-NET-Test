@@ -95,6 +95,7 @@ uniform float3 depth_constants : register(c201);
 uniform float4 p_lightmap_compress_constant_0 : register(c210);
 uniform float4 p_lightmap_compress_constant_1 : register(c211);
 uniform float4 k_ps_active_camo_factor : register(c212);
+uniform float4 k_ps_distort_bounds : register(c213);
 uniform float4 p_atmosphere_constant_0 : register(c215);
 uniform float4 p_atmosphere_constant_extra : register(c221);
 

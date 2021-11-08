@@ -389,4 +389,18 @@ struct VS_OUTPUT_SCREEN
     float4 texcoord : TEXCOORD;
 };
 
+struct VS_OUTPUT_CORTANA_PRT // active camo + prt
+{
+    float4 position : SV_Position;
+    float4 texcoord : TEXCOORD0;
+    float3 normal : TEXCOORD1;
+    float3 binormal : TEXCOORD2;
+    float3 tangent : TEXCOORD3;
+    float3 camera_dir : TEXCOORD4;
+    float4 prt_radiance_vector : TEXCOORD5;
+    float4 camo_param : TEXCOORD6;
+    float3 extinction_factor : COLOR0;
+    float4 sky_radiance : COLOR1;
+};
+
 #endif

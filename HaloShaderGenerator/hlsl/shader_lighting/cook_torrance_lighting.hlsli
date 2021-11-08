@@ -18,8 +18,10 @@
 
 float3 get_specular_tint()
 {
+#if shadertype != k_shadertype_cortana
     if (albedo_arg == k_albedo_four_change_color_applying_to_specular)
         return quaternary_change_color;
+#endif
     return specular_tint;
 }
 
@@ -145,10 +147,12 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 	if (use_albedo_blend_with_specular_tint)
         c_specular_tint = spec_tint * (1.0 - c_albedo_blend) + c_albedo_blend * common_data.albedo.rgb;
 	
+#if shadertype != k_shadertype_cortana
     if (albedo_arg == k_albedo_four_change_color_applying_to_specular)
     {
         c_specular_tint = tertiary_change_color.rgb - c_specular_tint;
     }
+#endif
 	
 	env_area_specular *= common_data.precomputed_radiance_transfer.z;
 	env_area_specular = env_area_specular * c_specular_tint;
