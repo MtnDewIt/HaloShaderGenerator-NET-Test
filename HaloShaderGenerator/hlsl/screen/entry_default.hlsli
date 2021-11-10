@@ -10,6 +10,7 @@
 #include "..\methods\base.hlsli"
 #include "..\methods\overlay.hlsli"
 
+uniform float4 screenspace_xform : register(c200);
 uniform float fade;
 
 float4 calc_screen_blending(float4 color)
@@ -39,11 +40,10 @@ float4 calc_screen_blending(float4 color)
 
 float4 screen_entry_default(VS_OUTPUT_SCREEN input)
 {
-    float2 warp = calc_screen_warp(input.texcoord.xy);
-    float2 texcoord = warp + input.texcoord.xy;
+    float2 warp = calc_screen_warp(input.texcoord);
+    float4 texcoord = input.texcoord + float4(warp, warp / screenspace_xform.xy);
     
-    float4 base = calc_base(texcoord, input.texcoord.zw, warp);
-    
+    float4 base = calc_base(texcoord);
     float4 overlay_a = overlay_type_a(texcoord, base);
     float4 overlay_b = overlay_type_b(texcoord, overlay_a);
 

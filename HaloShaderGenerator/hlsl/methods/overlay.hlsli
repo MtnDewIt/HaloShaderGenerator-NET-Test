@@ -106,17 +106,7 @@ uniform float4 detail_mask_a_xform;
 uniform float detail_fade_a;
 uniform float detail_multiplier_a;
 
-float4 overlay_none(float2 texcoord, float4 base)
-{
-    return base;
-}
-
-float4 overlay_tint_add_color(float2 texcoord, float4 base)
-{
-    return base * tint_color + add_color;
-}
-
-float4 overlay_detail_screen_space(float2 texcoord, float4 base)
+float4 screen_overlay_detail_ps(float2 texcoord, float4 base)
 {
     float4 detail = tex2D(detail_map_a, apply_xform2d(texcoord, detail_map_a_xform));
     detail.rgb *= detail_multiplier_a;
@@ -128,18 +118,12 @@ float4 overlay_detail_screen_space(float2 texcoord, float4 base)
     return base * detail;
 }
 
-float4 overlay_detail_pixel_space(float2 texcoord, float4 base)
+float4 screen_overlay_detail_masked(float2 texcoord, float4 base)
 {
-    // TODO
-    return base;
-}
-
-float4 overlay_detail_masked_screen_space(float2 texcoord, float4 base)
-{
-    float4 detail = tex2D(detail_map_a, apply_xform2d(texcoord, detail_map_a_xform));
+    float4 detail = tex2D(detail_map_a, apply_xform2d(texcoord.xy, detail_map_a_xform));
     detail.rgb *= detail_multiplier_a;
     
-    float detail_mask = tex2D(detail_mask_a, apply_xform2d(texcoord, detail_mask_a_xform)).a;
+    float detail_mask = tex2D(detail_mask_a, apply_xform2d(texcoord.xy, detail_mask_a_xform)).a;
     detail_mask = saturate(detail_mask * detail_fade_a);
     
     detail -= 1.0f;
@@ -148,6 +132,37 @@ float4 overlay_detail_masked_screen_space(float2 texcoord, float4 base)
     
     return base * detail;
 }
+
+
+float4 overlay_none(float4 texcoord, float4 base)
+{
+    return base;
+}
+
+float4 overlay_tint_add_color(float4 texcoord, float4 base)
+{
+    return base * tint_color + add_color;
+}
+
+float4 overlay_detail_screen_space(float4 texcoord, float4 base)
+{
+    return screen_overlay_detail_ps(texcoord.xy, base);
+}
+
+float4 overlay_detail_pixel_space(float4 texcoord, float4 base)
+{
+    return screen_overlay_detail_ps(texcoord.zw, base);
+}
+
+float4 overlay_detail_masked_screen_space(float4 texcoord, float4 base)
+{
+    return screen_overlay_detail_masked(texcoord.xy, base);
+}
+
+//float4 overlay_detail_masked_pixel_space(float4 texcoord, float4 base)
+//{
+//    return screen_overlay_detail_masked(texcoord.zw, base);
+//}
 
 #ifndef overlay_type_a
 #define overlay_type_a overlay_none

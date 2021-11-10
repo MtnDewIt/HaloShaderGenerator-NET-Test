@@ -35,19 +35,19 @@ float2 calc_warp_parallax_simple(float2 texcoord, float3 camera_dir, float3 tang
     return texcoord;
 }
 
-float2 calc_screen_warp_none(float2 texcoord)
+float2 calc_screen_warp_none(float4 texcoord)
 {
     return float2(0, 0);
 }
 
-float2 calc_screen_warp_pixel_space(float2 texcoord)
+float2 calc_screen_warp_pixel_space(float4 texcoord)
 {
-    return float2(0, 0); // unused
+    return tex2D(warp_map, apply_xform2d(texcoord.zw, warp_map_xform)).xy * warp_amount;
 }
 
-float2 calc_screen_warp_screen_space(float2 texcoord)
+float2 calc_screen_warp_screen_space(float4 texcoord)
 {
-    return tex2D(warp_map, apply_xform2d(texcoord, warp_map_xform)).xy * warp_amount;
+    return tex2D(warp_map, apply_xform2d(texcoord.xy, warp_map_xform)).xy * warp_amount;
 }
 
 #ifndef calc_warp
