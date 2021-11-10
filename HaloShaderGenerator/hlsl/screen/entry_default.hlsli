@@ -22,10 +22,11 @@ float4 calc_screen_blending(float4 color)
     {
         return (color * fade + (1.0f - fade)) * 0.03125f;
     }
-    // TODO
     if (blend_type_arg == k_blend_mode_alpha_blend)
     {
+        return float4(color.rgb, color.a * fade * 0.03125f);
     }
+    // TODO
     if (blend_type_arg == k_blend_mode_double_multiply)
     {
     }
