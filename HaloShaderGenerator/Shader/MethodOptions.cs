@@ -128,6 +128,7 @@ namespace HaloShaderGenerator.Shader
         First_Person_Never,
         First_Person_Sometimes,
         First_Person_Always,
-        First_Person_Never_With_rotating_Bitmaps
+        First_Person_Never_With_rotating_Bitmaps,
+        Always_Calc_Albedo
     }
 }

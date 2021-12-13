@@ -229,7 +229,7 @@ namespace HaloShaderGenerator.Shader
 
         public int GetMethodCount()
         {
-            return 11;
+            return Enum.GetValues(typeof(ShaderMethods)).Length;
         }
 
         public int GetMethodOptionCount(int methodIndex)
@@ -237,27 +237,27 @@ namespace HaloShaderGenerator.Shader
             switch ((ShaderMethods)methodIndex)
             {
                 case ShaderMethods.Albedo:
-                    return 15;
+                    return Enum.GetValues(typeof(Albedo)).Length;
                 case ShaderMethods.Bump_Mapping:
-                    return 4;
+                    return Enum.GetValues(typeof(Bump_Mapping)).Length;
                 case ShaderMethods.Alpha_Test:
-                    return 2;
+                    return Enum.GetValues(typeof(Alpha_Test)).Length;
                 case ShaderMethods.Specular_Mask:
-                    return 4;
+                    return Enum.GetValues(typeof(Specular_Mask)).Length;
                 case ShaderMethods.Material_Model:
-                    return 9;
+                    return Enum.GetValues(typeof(Material_Model)).Length;
                 case ShaderMethods.Environment_Mapping:
-                    return 5;
+                    return Enum.GetValues(typeof(Environment_Mapping)).Length;
                 case ShaderMethods.Self_Illumination:
-                    return 10;
+                    return Enum.GetValues(typeof(Self_Illumination)).Length;
                 case ShaderMethods.Blend_Mode:
-                    return 6;
+                    return Enum.GetValues(typeof(Blend_Mode)).Length;
                 case ShaderMethods.Parallax:
-                    return 4;
+                    return Enum.GetValues(typeof(Parallax)).Length;
                 case ShaderMethods.Misc:
-                    return 2;
+                    return Enum.GetValues(typeof(Misc)).Length;
                 case ShaderMethods.Distortion:
-                    return 2;
+                    return Enum.GetValues(typeof(Shared.Distortion)).Length;
             }
             return -1;
         }

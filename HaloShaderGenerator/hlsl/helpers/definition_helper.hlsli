@@ -155,6 +155,7 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_misc_first_person_sometimes 1
 #define k_misc_first_person_always 2
 #define k_misc_first_person_never_with_rotating_bitmaps 3
+#define k_misc_always_calc_albedo 4
 #define k_distortion_off 0
 #define k_distortion_on 1
 #define k_soft_fade_off 0
