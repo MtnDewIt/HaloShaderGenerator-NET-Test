@@ -665,6 +665,9 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\explicit\decorator_shaded.hlsl" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\explicit\decorator_no_wind.hlsl" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>
