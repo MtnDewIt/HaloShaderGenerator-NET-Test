@@ -361,7 +361,7 @@ namespace HaloShaderGenerator
 
             foreach (var entry in entries)
             {
-                string filePath = Path.Combine(Path.Combine(ReferencePath, explicitShader.ToString()), $"0_{entry}.pixel_shader");
+                string filePath = Path.Combine(Path.Combine(ReferencePath, explicitShader.ToString()), $"0_{entry.ToString().ToLower()}.pixel_shader");
                 var file = new FileInfo(filePath);
 
                 if (file.Exists == false)
@@ -378,7 +378,7 @@ namespace HaloShaderGenerator
 
                 if (!equal)
                 {
-                    string filename = $"generated_{Application.ExplicitShader}_{entry}.pixel_shader";
+                    string filename = $"generated_{Application.ExplicitShader}_{entry.ToString().ToLower()}.pixel_shader";
                     Application.WriteShaderFile(filename, disassembly);
                 }
             }

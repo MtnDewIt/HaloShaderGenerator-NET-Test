@@ -653,6 +653,18 @@
     <EmbeddedResource Include="hlsl\pixl_cortana.hlsl" />
     <EmbeddedResource Include="hlsl\glvs_cortana.hlsl" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\explicit\decorator_default.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\explicit\registers\decorator_registers.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\explicit\helpers\decorator_helper.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\explicit\decorator_shaded.hlsl" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>

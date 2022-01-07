@@ -37,30 +37,25 @@ VS_DECORATOR_DEFAULT_OUTPUT vs_default(in S_DECORATOR_VERTEX_INPUT input)
     input.position.xyz = input.position.xyz * Position_Compression_Scale.xyz + Position_Compression_Offset.xyz;
     input.texcoord = input.texcoord.xy * UV_Compression_Scale_Offset.xy + UV_Compression_Scale_Offset.zw;
 	
-    float2 wind = sample_wind_noise(input.instance_position.xy);
-    instance_movement_factor *= saturate(input.position.z);
-    wind.xy *= instance_movement_factor;
-	
-    float h_sq = (dot(input.instance_quaternion, input.instance_quaternion) * input.position.z) + 0.01f;
-    float height_scale = sqrt(h_sq / (h_sq + dot(wind.xy, wind.xy)));
+    float3 transformed_pos = quat_transform_point(input.instance_quaternion, input.position.xyz);
 
-    input.position.z *= height_scale;
-	
     float4 world_position;
     world_position.w = input.position.w;
-    world_position.xyz = quat_transform_point(input.instance_quaternion, input.position.xyz) + input.instance_position.xyz;
-    world_position.xy += wind.xy * height_scale;
+    world_position.xyz = transformed_pos + input.instance_position.xyz;
 
     output.position = mul(float4(world_position.xyz, 1.0f), View_Projection);
 
-    float3 world_normal = normalize(quat_transform_point(input.instance_quaternion, input.normal.xyz));
+    //float3 world_normal = normalize(quat_transform_point(input.instance_quaternion, input.normal.xyz));
+    float3 world_normal = normalize(transformed_pos);
 
     float3 dynamic_lighting = 0.0f;
     calc_simple_lights_spec_only(world_position.xyz, dynamic_lighting);
 
     output.texcoord.xy = input.texcoord;
-    output.texcoord.zw = 0.0f;
     output.lighting.rgb = (input.instance_color.rgb * exp2(input.instance_color.a * 63.75f - 31.75f)) + dynamic_lighting;
+
+    output.texcoord.z = dot(transformed_pos, sun_direction) / sqrt(dot(transformed_pos, transformed_pos));
+    output.texcoord.w = sqrt(dot(transformed_pos, transformed_pos));
     
     float3 extinction;
     calculate_atmosphere_radiance_new(Camera_Position, world_position.xyz, extinction, output.radiance.xyz);
@@ -85,6 +80,7 @@ PS_OUTPUT_ALBEDO ps_default(in VS_DECORATOR_DEFAULT_OUTPUT input) : COLOR
     PS_OUTPUT_ALBEDO output;
 
     float4 light = input.lighting;
+	light.rgb *= saturate(input.texcoord.z) * contrast.y + contrast.x;
 
     float4 color = tex2D(diffuse_texture, input.texcoord.xy) * light + float4(input.radiance.rgb, 0.0f);
 
