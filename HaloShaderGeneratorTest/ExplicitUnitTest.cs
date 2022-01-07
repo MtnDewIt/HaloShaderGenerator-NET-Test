@@ -31,25 +31,25 @@ namespace HaloShaderGenerator
 
         public override string GenerateExplicitPixelShader(ExplicitShader explicitShader, ShaderStage entry)
         {
-            var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(explicitShader.ToString(), entry.ToString(), false).Bytecode;
+            var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(explicitShader.ToString(), entry.ToString().ToLower(), false).Bytecode;
             return D3DCompiler.Disassemble(bytecode);
         }
 
         public override string GenerateExplicitVertexShader(ExplicitShader explicitShader, ShaderStage entry)
         {
-            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(explicitShader.ToString(), entry.ToString(), false).Bytecode;
+            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(explicitShader.ToString(), entry.ToString().ToLower(), false).Bytecode;
             return D3DCompiler.Disassemble(bytecode);
         }
 
         public override string GenerateChudPixelShader(ChudShader chudShader, ShaderStage entry)
         {
-            var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(chudShader.ToString(), entry.ToString(), true).Bytecode;
+            var bytecode = GenericPixelShaderGenerator.GeneratePixelShader(chudShader.ToString(), entry.ToString().ToLower(), true).Bytecode;
             return D3DCompiler.Disassemble(bytecode);
         }
 
         public override string GenerateChudVertexShader(ChudShader chudShader, ShaderStage entry)
         {
-            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(chudShader.ToString(), entry.ToString(), true).Bytecode;
+            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(chudShader.ToString(), entry.ToString().ToLower(), true).Bytecode;
             return D3DCompiler.Disassemble(bytecode);
         }
     }
