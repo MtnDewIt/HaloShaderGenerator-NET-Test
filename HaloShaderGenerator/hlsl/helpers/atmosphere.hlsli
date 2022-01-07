@@ -88,4 +88,63 @@ void calculate_atmosphere_radiance(float4 vertex_position, float3 camera_dir, ou
 	}
 }
 
+void calculate_atmosphere_radiance_new(in float3 camera_position, in float3 world_position, out float3 extinction, out float3 radiance)
+{
+    float3 light_source_direction = v_atmosphere_constant_0.xyz;
+    float distance_bias = v_atmosphere_constant_0.w;
+    float3 light_source_color = v_atmosphere_constant_1.xyz;
+    float max_fog_thickness = v_atmosphere_constant_1.w;
+    float3 beta_molecules = v_atmosphere_constant_2.xyz;
+    float sun_phase = v_atmosphere_constant_2.w;
+    float3 beta_particles = v_atmosphere_constant_3.xyz;
+    float sea_level = v_atmosphere_constant_3.w;
+    float3 beta_m_theta_prefix = v_atmosphere_constant_4.xyz;
+    float mie_height_scale = v_atmosphere_constant_4.w;
+    float3 beta_p_theta_prefix_phased = v_atmosphere_constant_5.xyz;
+    float rayleigh_height_scale = v_atmosphere_constant_5.w;
+
+    if (max_fog_thickness < 0.0f)
+    {
+        extinction = 1.0f;
+        radiance = 0.0f;
+    }
+    else
+    {
+        float3 view_vector = camera_position - world_position;
+        float dist = sqrt(dot(view_vector, view_vector));
+        view_vector /= dist;
+
+        float d_dir = -dot(view_vector, light_source_direction);
+
+        dist = min(max(dist + distance_bias, 0.0f), max_fog_thickness);
+		
+        float camera_height = max(camera_position.z - sea_level, 0.0f);
+        float world_height = max(world_position.z - sea_level, 0.0f);
+        float height_diff = camera_height - world_height;
+		
+        camera_height *= LOG2_E;
+        world_height *= LOG2_E;
+		
+        if (height_diff * height_diff > EPSILON)
+        {
+            float scale1 = -(exp2(-camera_height / mie_height_scale) - exp2(-world_height / mie_height_scale)) * dist * mie_height_scale / height_diff;
+            float scale2 = -(exp2(-camera_height / rayleigh_height_scale) - exp2(-world_height / rayleigh_height_scale)) * dist * rayleigh_height_scale / height_diff;
+			
+            extinction = exp2(-(beta_molecules * scale2 + beta_particles * scale1));
+        }
+        else
+        {
+            float scale1 = exp2(-camera_height / mie_height_scale) * dist;
+            float scale2 = exp2(-camera_height / rayleigh_height_scale) * dist;
+			
+            extinction = exp2(-(beta_molecules * scale2 + beta_particles * scale1));
+        }
+		
+        float3 beta_m_theta = beta_m_theta_prefix * (1.0f + d_dir * d_dir);
+        float3 beta_p_theta = beta_p_theta_prefix_phased * pow(sun_phase - v_atmosphere_constant_extra.x * d_dir, -1.5f);
+
+        radiance = light_source_color * (beta_m_theta + beta_p_theta) * (1.0f - extinction);
+    }
+}
+
 #endif

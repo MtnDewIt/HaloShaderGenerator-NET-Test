@@ -66,4 +66,17 @@ float3 normal_import(float3 normal)
 {
 	return normal * 2.0 - 1.0;
 }
+
+float4 quat_mul(float4 quat0, float4 quat1)
+{
+    float4 result = float4(cross(quat0.xyz, quat1.xyz), -dot(quat0.xyz, quat1.xyz));
+    result.xyz += quat0.w * quat1.xyz;
+    result.xyzw += quat1.w * quat0.xyzw;
+    return result;
+}
+
+float3 quat_transform_point(float4 quat, float3 point3d)
+{
+    return quat_mul(quat, quat_mul(float4(point3d, 0), float4(-quat.xyz, quat.w))).xyz;
+}
 #endif

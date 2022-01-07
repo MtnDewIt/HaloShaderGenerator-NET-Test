@@ -60,7 +60,7 @@ in float4 sh_312[3])
     x1.b = dot(normal, sh_312[2].xyz);
 
     float3 lightprobe_color = c4 * sh_0.rgb + (-2.f * c2) * x1;
-    return max(lightprobe_color /= PI, 0);
+    return max(lightprobe_color / PI, 0);
 }
 
 float3 lightmap_diffuse_reflectance(
