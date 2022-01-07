@@ -25,7 +25,7 @@ uniform float4 wind_data2 : register(c244);
 uniform float4 LOD_constants : register(c245);
 uniform float4 translucency : register(c246);
 uniform float3 sun_direction : register(c247);
-uniform float4 sun_color : register(c248);
+uniform float3 sun_color : register(c248);
 uniform float4 wave_flow : register(c249);
 uniform sampler2D wind_texture : register(s0);
 
