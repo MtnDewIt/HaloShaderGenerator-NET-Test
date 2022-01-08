@@ -94,7 +94,7 @@ namespace HaloShaderGenerator.Foliage
             if (!IsEntryPointSupported(entryPoint) || !IsPixelShaderShared(entryPoint))
                 return null;
 
-            Alpha_Test alphaTestOption;
+            Alpha_Test alphaTestOption = Alpha_Test.None;
 
             switch ((FoliageMethods)methodIndex)
             {
