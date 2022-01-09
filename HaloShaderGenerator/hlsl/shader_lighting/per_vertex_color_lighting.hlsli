@@ -17,7 +17,10 @@ float3 calc_per_vertex_color_lighting(SHADER_COMMON common_data, out float4 unkn
     n_view.y = dot(common_data.n_view_dir, common_data.binormal);
     n_view.z = dot(common_data.n_view_dir, common_data.tangent);
 	
-	calc_self_illumination_ps(0, common_data.texcoord.xy, common_data.albedo.rgb, n_view, 0, 0, 0, 0, self_illum);
+    float view_tangent = dot(common_data.tangent, common_data.n_view_dir);
+    float view_binormal = dot(common_data.binormal, common_data.n_view_dir);
+	
+	calc_self_illumination_ps(0, common_data.texcoord.xy, common_data.albedo.rgb, n_view, common_data.view_dir, dot(common_data.n_view_dir, common_data.surface_normal), view_tangent, view_binormal, self_illum);
 	
 	if (!common_data.no_dynamic_lights)
 	{

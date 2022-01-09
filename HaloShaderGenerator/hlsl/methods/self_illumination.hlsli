@@ -425,6 +425,37 @@ inout float3 diffuse)
     diffuse += color;
 }
 
+void calc_self_illumination_palettized_depth_fade_ps(
+in float2 position,
+in float2 texcoord,
+in float3 albedo,
+in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
+in float view_tangent,
+in float view_binormal,
+inout float3 diffuse)
+{
+    float alpha_mask = tex2D(alpha_mask_map, apply_xform2d(texcoord, alpha_mask_map_xform)).a;
+    float noise_a = tex2D(noise_map_a, apply_xform2d(texcoord, noise_map_a_xform)).r;
+    
+    float depth = tex2D(depth_buffer, (position.xy + 0.5f) / texture_size.xy).r; // * global_depth_constants.y + global_depth_constants.z;
+    depth = -abs(dot(camera_dir, global_camera_forward)) + depth; // + rcp(depth);
+    
+    float plasma_depth_modulation = saturate((n_camera_dir / depth_fade_range) * depth);
+        
+    float u_coordinate = alpha_mask * -plasma_depth_modulation + 1.0f;
+    u_coordinate = saturate(u_coordinate * alpha_modulation_factor.x + noise_a);
+        
+    float3 color = tex2D(palette, float2(u_coordinate, v_coordinate)).rgb;
+	
+    color *= self_illum_color.rgb;
+    color *= self_illum_intensity;
+    color *= g_alt_exposure.x;
+    
+    diffuse += color;
+}
+
 uniform sampler2D ceiling;
 uniform float4 ceiling_xform;
 uniform float distance_fade_scale;
@@ -520,6 +551,20 @@ inout float3 diffuse)
     self_illum_map_sample *= g_alt_exposure.x;
 
     diffuse += self_illum_map_sample;
+}
+
+void calc_self_illumination_change_color_detail_ps(
+in float2 position,
+in float2 texcoord,
+in float3 albedo,
+in float3 n_view,
+in float3 camera_dir,
+in float n_camera_dir,
+in float view_tangent,
+in float view_binormal,
+inout float3 diffuse)
+{
+    calc_self_illumination_detail_ps(position, texcoord, albedo, n_view, camera_dir, n_camera_dir, view_tangent, view_binormal, diffuse);
 }
 
 

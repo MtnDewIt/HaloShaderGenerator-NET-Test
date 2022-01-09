@@ -479,6 +479,10 @@ namespace HaloShaderGenerator.Shader
                     result.AddSamplerParameter("color_mask_map");
                     result.AddFloat4ColorParameter("albedo_color");
                     break;
+                case Albedo.Simple:
+                    result.AddSamplerParameter("base_map");
+                    result.AddFloat4Parameter("albedo_color");
+                    break;
             }
 
             switch (bump_mapping)
@@ -733,6 +737,40 @@ namespace HaloShaderGenerator.Shader
                     result.AddFloatParameter("self_illum_intensity");
                     result.AddFloatParameter("primary_change_color_blend");
                     break;
+
+                case Self_Illumination.Multilayer_Additive:
+                    result.AddSamplerParameter("self_illum_map");
+                    result.AddFloat4Parameter("self_illum_color");
+                    result.AddFloatParameter("self_illum_intensity");
+                    result.AddFloatParameter("layer_depth");
+                    result.AddFloatParameter("layer_contrast");
+                    result.AddFloatParameter("layers_of_4");
+                    result.AddIntegerParameter("layers_of_4");
+                    result.AddFloatParameter("texcoord_aspect_ratio");
+                    result.AddFloatParameter("depth_darken");
+                    break;
+
+                case Self_Illumination.Palettized_Plasma:
+                    result.AddSamplerParameter("noise_map_a");
+                    result.AddSamplerParameter("noise_map_b");
+                    result.AddSamplerWithoutXFormParameter("palette");
+                    result.AddSamplerParameter("alpha_mask_map");
+                    result.AddFloatParameter("alpha_modulation_factor");
+                    result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z);
+                    result.AddFloatParameter("depth_fade_range");
+                    result.AddFloat4Parameter("self_illum_color");
+                    result.AddFloatParameter("self_illum_intensity");
+                    result.AddFloatParameter("v_coordinate");
+                    result.AddFloat3Parameter("global_depth_constants", RenderMethodExtern.global_depth_constants);
+                    result.AddFloat3Parameter("global_camera_forward", RenderMethodExtern.global_camera_forward);
+                    break;
+
+                case Self_Illumination.Change_Color_Detail:
+                    result.AddSamplerParameter("self_illum_map");
+                    result.AddSamplerParameter("self_illum_detail_map");
+                    result.AddFloat4Parameter("self_illum_color", RenderMethodExtern.object_change_color_primary);
+                    result.AddFloatParameter("self_illum_intensity");
+                    break;
             }
 
             switch (parallax)
@@ -832,6 +870,7 @@ namespace HaloShaderGenerator.Shader
                         rmopName = @"shaders\shader_options\albedo_two_change_color";
                         break;
                     case Albedo.Four_Change_Color:
+                    case Albedo.Four_Change_Color_Applying_To_Specular:
                         result.AddSamplerParameter("base_map");
                         result.AddSamplerParameter("detail_map");
                         result.AddSamplerParameter("change_color_map");
@@ -933,6 +972,11 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerParameter("color_mask_map");
                         result.AddFloat4ColorParameter("albedo_color");
                         rmopName = @"shaders\shader_options\albedo_color_mask_hard_light";
+                        break;
+                    case Albedo.Simple:
+                        result.AddSamplerParameter("base_map");
+                        result.AddFloat4Parameter("albedo_color");
+                        rmopName = @"shaders\shader_options\albedo_simple";
                         break;
                 }
             }
@@ -1253,6 +1297,40 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("self_illum_intensity");
                         result.AddFloatParameter("primary_change_color_blend");
                         rmopName = @"shaders\shader_options\illum_change_color";
+                        break;
+                    case Self_Illumination.Multilayer_Additive:
+                        result.AddSamplerParameter("self_illum_map");
+                        result.AddFloat4Parameter("self_illum_color");
+                        result.AddFloatParameter("self_illum_intensity");
+                        result.AddFloatParameter("layer_depth");
+                        result.AddFloatParameter("layer_contrast");
+                        result.AddFloatParameter("layers_of_4");
+                        result.AddIntegerParameter("layers_of_4");
+                        result.AddFloatParameter("texcoord_aspect_ratio");
+                        result.AddFloatParameter("depth_darken");
+                        rmopName = @"sshaders\shader_options\illum_multilayer";
+                        break;
+                    case Self_Illumination.Palettized_Plasma:
+                        result.AddSamplerParameter("noise_map_a");
+                        result.AddSamplerParameter("noise_map_b");
+                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddSamplerParameter("alpha_mask_map");
+                        result.AddFloatParameter("alpha_modulation_factor");
+                        result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z);
+                        result.AddFloatParameter("depth_fade_range");
+                        result.AddFloat4Parameter("self_illum_color");
+                        result.AddFloatParameter("self_illum_intensity");
+                        result.AddFloatParameter("v_coordinate");
+                        result.AddFloat3Parameter("global_depth_constants", RenderMethodExtern.global_depth_constants);
+                        result.AddFloat3Parameter("global_camera_forward", RenderMethodExtern.global_camera_forward);
+                        rmopName = @"shaders\shader_options\illum_palettized_plasma";
+                        break;
+                    case Self_Illumination.Change_Color_Detail:
+                        result.AddSamplerParameter("self_illum_map");
+                        result.AddSamplerParameter("self_illum_detail_map");
+                        result.AddFloat4Parameter("self_illum_color", RenderMethodExtern.object_change_color_primary);
+                        result.AddFloatParameter("self_illum_intensity");
+                        rmopName = @"shaders\shader_options\illum_change_color_detail";
                         break;
                 }
             }

@@ -44,6 +44,7 @@ namespace HaloShaderGenerator.Halogram
         Scope_Blur,
         Palettized_Plasma,
         Palettized_Plasma_Change_Color,
+        Palettized_Depth_Fade,
     }
 
     public enum Blend_Mode
@@ -60,7 +61,8 @@ namespace HaloShaderGenerator.Halogram
         First_Person_Never,
         First_Person_Sometimes,
         First_Person_Always,
-        First_Person_Never_With_rotating_Bitmaps
+        First_Person_Never_With_rotating_Bitmaps,
+        Always_Calc_Albedo
     }
 
     public enum Warp

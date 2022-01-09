@@ -190,9 +190,11 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 	
 	float3 env_color = 0;
 	envmap_type(env_mapping_common_data, env_color, unknown_output);
-	
-	float3 self_illum = 0;
-	calc_self_illumination_ps(0, common_data.texcoord.xy, common_data.albedo.rgb, 0, 0, 0, 0, 0, self_illum);
+    
+    float view_tangent = dot(common_data.tangent, common_data.n_view_dir);
+    float view_binormal = dot(common_data.binormal, common_data.n_view_dir);
+    float3 self_illum = 0;
+	calc_self_illumination_ps(0, common_data.texcoord.xy, common_data.albedo.rgb, 0, common_data.view_dir, dot(common_data.n_view_dir, common_data.surface_normal), view_tangent, view_binormal, self_illum);
 	
 	if (self_illum_is_diffuse)
 	{

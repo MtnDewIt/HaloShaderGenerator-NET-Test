@@ -47,7 +47,10 @@ float3 calc_lighting_foliage_ps(SHADER_COMMON common_data, out float4 unknown_ou
     n_view.y = dot(common_data.n_view_dir, common_data.binormal);
     n_view.z = dot(common_data.n_view_dir, common_data.tangent);
 	
-	calc_self_illumination_ps(0, common_data.texcoord.xy, common_data.albedo.rgb, n_view, 0, 0, 0, 0, diffuse.rgb);
+    float view_tangent = dot(common_data.tangent, common_data.n_view_dir);
+    float view_binormal = dot(common_data.binormal, common_data.n_view_dir);
+	
+	calc_self_illumination_ps(0, common_data.texcoord.xy, common_data.albedo.rgb, n_view, common_data.view_dir, dot(common_data.n_view_dir, common_data.surface_normal), view_tangent, view_binormal, diffuse.rgb);
 	
 	envmap_type(env_mapping_common_data, diffuse, unknown_output);
 	

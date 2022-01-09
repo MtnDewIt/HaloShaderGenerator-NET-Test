@@ -39,6 +39,8 @@ namespace HaloShaderGenerator.Shader
         Two_Change_Color_Chameleon,
         Chameleon_Masked,
         Color_Mask_Hard_Light,
+        Four_Change_Color_Applying_To_Specular,
+        Simple,
         //Two_Change_Color_Tex_Overlay,
         //Chameleon_Albedo_Masked
     }
@@ -102,7 +104,10 @@ namespace HaloShaderGenerator.Shader
         Simple_With_Alpha_Mask,
         Simple_Four_Change_Color,
         //Illum_Detail_World_Space_Four_Cc
-        Illum_Change_Color
+        Illum_Change_Color,
+        Multilayer_Additive,
+        Palettized_Plasma,
+        Change_Color_Detail,
     }
 
     public enum Blend_Mode
