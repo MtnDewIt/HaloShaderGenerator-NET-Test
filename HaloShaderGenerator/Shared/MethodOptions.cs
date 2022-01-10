@@ -119,7 +119,9 @@ namespace HaloShaderGenerator.Shared
         Palettized_Plasma_Change_Color,
         Constant_Color,
         Window_Room,
-        Illum_Change_Color
+        Illum_Change_Color,
+        Change_Color_Detail,
+        Palettized_Depth_Fade,
     }
 
     public enum Blend_Mode
