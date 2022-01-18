@@ -11,13 +11,13 @@ uniform float minimal_wave_disturbance;
 uniform float refraction_depth_dominant_ratio;
 uniform float water_murkiness;
 
-void calc_refraction_none_ps(float3 vpos, float2 refraction_tex, float2 ripple_buffer_height, float4 v4, float4 v3, float slope_mag, out float2 out_texcoord, out float final_murkiness)
+void calc_refraction_none_ps(float4 vpos, float2 refraction_tex, float2 ripple_buffer_height, float4 v4, float4 v3, float slope_mag, out float2 out_texcoord, out float final_murkiness)
 {
     out_texcoord = vpos.xy / texture_size; // todo: actual
     final_murkiness = 0.0f;
 }
 
-void calc_refraction_dynamic_ps(float3 vpos, float2 refraction_tex, float2 ripple_buffer_height, float4 v4, float4 v3, float slope_mag, out float2 out_texcoord, out float final_murkiness)
+void calc_refraction_dynamic_ps(float4 vpos, float2 refraction_tex, float2 ripple_buffer_height, float4 v4, float4 v3, float slope_mag, out float2 out_texcoord, out float final_murkiness)
 {
     refraction_tex = ripple_buffer_height + refraction_tex;
     refraction_tex = refraction_tex * v4.yx;
@@ -31,7 +31,7 @@ void calc_refraction_dynamic_ps(float3 vpos, float2 refraction_tex, float2 rippl
     
     float4 xform = float4((v3.xy / v3.w), 1.0f - water_view_depth, 1.0f);
     float4 water_view = mul(xform, k_ps_water_view_xform_inverse);
-    water_view.xyz = water_view.xyz / water_view.w - vpos;
+    water_view.xyz = water_view.xyz / water_view.w - vpos.xyz;
     
     refraction_tex *= saturate(rcp(rsqrt(dot(water_view.xyz, water_view.xyz))) * 3.0f);
     refraction_tex = saturate(rcp(v4.w) + rcp(v4.w)) * refraction_tex;
@@ -48,8 +48,15 @@ void calc_refraction_dynamic_ps(float3 vpos, float2 refraction_tex, float2 rippl
     final_depth = k_ps_water_view_depth_constant.x * rcp(final_depth) + k_ps_water_view_depth_constant.y;
     
     float4 final_view = mul(float4(float2(out_texcoord.x, 1.0f - out_texcoord.y) * 2.0f - 1.0f, 1.0f - final_depth, 1.0f), k_ps_water_view_xform_inverse);
-    final_view.xyz = final_view.xyz / final_view.w - vpos;
+    final_view.xyz = final_view.xyz / final_view.w - vpos.xyz;
     
+//#if reach_compatibility_arg == k_reach_compatibility_enabled
+//    final_murkiness = saturate(exp2(water_murkiness * final_view.z));
+//    final_murkiness *= saturate((rcp(v4.w) * refraction_extinct_distance));
+//
+//    if (k_is_camera_underwater)
+//        final_murkiness *= 0.02f;
+//#else
     float depth_mag = lerp(abs(final_view.z), rcp(rsqrt(dot(final_view.xyz, final_view.xyz))), refraction_depth_dominant_ratio);
     float murkiness = depth_mag * water_murkiness.x;
     murkiness = murkiness * 1.44269502f;
@@ -61,6 +68,7 @@ void calc_refraction_dynamic_ps(float3 vpos, float2 refraction_tex, float2 rippl
     murkiness_cut = murkiness_cut * murkiness;
     
     final_murkiness = murkiness >= 0 ? murkiness_cut : 0.0f;
+//#endif
 }
 
 #ifndef calc_refraction_ps

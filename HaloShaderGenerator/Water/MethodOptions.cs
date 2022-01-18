@@ -10,7 +10,8 @@ namespace HaloShaderGenerator.Water
         Bankalpha,
         Appearance,
         Global_Shape,
-        Foam
+        Foam,
+        Reach_Compatibility
     }
 
     public enum Waveshape
@@ -43,7 +44,8 @@ namespace HaloShaderGenerator.Water
     {
         None,
         Depth,
-        Paint
+        Paint,
+        From_Shape_Texture_Alpha
     }
 
     public enum Appearance
@@ -64,5 +66,11 @@ namespace HaloShaderGenerator.Water
         Auto,
         Paint,
         Both
+    }
+
+    public enum Reach_Compatibility
+    {
+        Disabled,
+        Enabled
     }
 }

@@ -197,6 +197,8 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_refraction_dynamic 1
 #define k_watercolor_pure 0
 #define k_watercolor_texture 0
+#define k_reach_compatibility_disabled 0
+#define k_reach_compatibility_enabled 1
 
 // Generics
 #define shaderstage 0
@@ -237,6 +239,7 @@ This file contains a list of blank definitions to help with Intellisense
 #define appearance_arg 0
 #define global_shape_arg 0
 #define foam_arg 0
+#define reach_compatibility_arg 0
 
 #endif
 

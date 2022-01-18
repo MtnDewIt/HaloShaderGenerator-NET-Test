@@ -19,11 +19,12 @@ namespace HaloShaderGenerator.Water
         Appearance appearance;
         Global_Shape global_shape;
         Foam foam;
+        Reach_Compatibility reach_compatibility;
 
         public WaterGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
 
         public WaterGenerator(Waveshape waveshape, Watercolor watercolor, Reflection reflection, Refraction refraction, 
-            Bankalpha bankalpha, Appearance appearance, Global_Shape global_shape, Foam foam, bool applyFixes = false)
+            Bankalpha bankalpha, Appearance appearance, Global_Shape global_shape, Foam foam, Reach_Compatibility reach_compatibility, bool applyFixes = false)
         {
             this.waveshape = waveshape;
             this.watercolor = watercolor;
@@ -33,6 +34,7 @@ namespace HaloShaderGenerator.Water
             this.appearance = appearance;
             this.global_shape = global_shape;
             this.foam = foam;
+            this.reach_compatibility = reach_compatibility;
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -48,6 +50,7 @@ namespace HaloShaderGenerator.Water
             this.appearance = (Appearance)options[5];
             this.global_shape = (Global_Shape)options[6];
             this.foam = (Foam)options[7];
+            this.reach_compatibility = options.Length > 8 ? (Reach_Compatibility)options[8] : Reach_Compatibility.Disabled;
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -72,6 +75,7 @@ namespace HaloShaderGenerator.Water
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Appearance>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Global_Shape>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Foam>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Reach_Compatibility>());
 
             macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes ? 1 : 0));
 
@@ -97,6 +101,7 @@ namespace HaloShaderGenerator.Water
             macros.Add(ShaderGeneratorBase.CreateMacro("appearance_arg", appearance, "k_appearance_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("global_shape_arg", global_shape, "k_global_shape_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("foam_arg", foam, "k_foam_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("reach_compatibility_arg", reach_compatibility, "k_reach_compatibility_"));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"pixl_water.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
 
@@ -146,6 +151,8 @@ namespace HaloShaderGenerator.Water
                     return Enum.GetValues(typeof(Global_Shape)).Length;
                 case WaterMethods.Foam:
                     return Enum.GetValues(typeof(Foam)).Length;
+                case WaterMethods.Reach_Compatibility:
+                    return Enum.GetValues(typeof(Reach_Compatibility)).Length;
             }
             return -1;
         }
@@ -170,6 +177,8 @@ namespace HaloShaderGenerator.Water
                     return (int)global_shape;
                 case WaterMethods.Foam:
                     return (int)foam;
+                case WaterMethods.Reach_Compatibility:
+                    return (int)reach_compatibility;
             }
             return -1;
         }
@@ -275,6 +284,9 @@ namespace HaloShaderGenerator.Water
                 case Bankalpha.Paint:
                     result.AddSamplerParameter("watercolor_texture");
                     break;
+                case Bankalpha.From_Shape_Texture_Alpha:
+                    result.AddSamplerWithoutXFormParameter("global_shape_texture"); //v
+                    break;
             }
 
             switch (appearance)
@@ -319,6 +331,17 @@ namespace HaloShaderGenerator.Water
                     result.AddSamplerWithoutXFormParameter("global_shape_texture"); //v
                     result.AddFloatParameter("foam_height");
                     result.AddFloatParameter("foam_pow");
+                    break;
+            }
+
+            switch (reach_compatibility)
+            {
+                case Reach_Compatibility.Enabled:
+                    result.AddFloatParameter("slope_scaler");
+                    result.AddFloatParameter("normal_variation_tweak");
+                    result.AddFloatParameter("fresnel_dark_spot");
+                    result.AddFloatParameter("foam_coefficient");
+                    result.AddFloatParameter("foam_cut");
                     break;
             }
 
@@ -494,6 +517,10 @@ namespace HaloShaderGenerator.Water
                         result.AddSamplerParameter("watercolor_texture");
                         rmopName = @"shaders\water_options\bankalpha_paint";
                         break;
+                    case Bankalpha.From_Shape_Texture_Alpha:
+                        result.AddSamplerWithoutXFormParameter("global_shape_texture");
+                        rmopName = @"shaders\water_options\bankalpha_from_shape_texture_alpha";
+                        break;
                 }
             }
             if (methodName == "appearance")
@@ -560,6 +587,22 @@ namespace HaloShaderGenerator.Water
                         break;
                 }
             }
+            if (methodName == "reach_compatibility")
+            {
+                optionName = ((Reach_Compatibility)option).ToString();
+
+                switch ((Reach_Compatibility)option)
+                {
+                    case Reach_Compatibility.Enabled:
+                        result.AddFloatParameter("slope_scaler");
+                        result.AddFloatParameter("normal_variation_tweak");
+                        result.AddFloatParameter("fresnel_dark_spot");
+                        result.AddFloatParameter("foam_coefficient");
+                        result.AddFloatParameter("foam_cut");
+                        rmopName = @"shaders\water_options\reach_compatibility_enabled";
+                        break;
+                }
+            }
 
             return result;
         }
@@ -589,6 +632,8 @@ namespace HaloShaderGenerator.Water
                     return Enum.GetValues(typeof(Global_Shape));
                 case WaterMethods.Foam:
                     return Enum.GetValues(typeof(Foam));
+                case WaterMethods.Reach_Compatibility:
+                    return Enum.GetValues(typeof(Reach_Compatibility));
             }
 
             return null;
