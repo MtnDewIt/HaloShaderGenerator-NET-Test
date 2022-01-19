@@ -30,7 +30,12 @@ float3 calc_reflection_static_ps(float3 inc_n, float3 normal, float3 lightprobe_
     env_tex.z = abs(env_tex.z);
     float4 env_sample = texCUBE(environment_map, env_tex);
     
-    float3 reflection = env_sample.xyz;
+    float env_scale = 1.0f;
+#if reach_compatibility_arg == k_reach_compatibility_enabled
+    env_scale = 256.0f;
+#endif
+    
+    float3 reflection = env_sample.xyz * env_scale;
     reflection *= saturate(env_sample.w - sunspot_cut.x) * light_scale + min(sunspot_cut.x, env_sample.w);
     reflection *= reflection_coefficient;
     return reflection;
