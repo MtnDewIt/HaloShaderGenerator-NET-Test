@@ -8,11 +8,20 @@ uniform float3 Camera_Forward : register(c4);
 uniform float3 Camera_Left : register(c5);
 uniform float3 Camera_Up : register(c6);
 uniform float3 Camera_Position : register(c7);
+
+uniform float3 screen_xform_x : register(c8);
+uniform float3 screen_xform_y : register(c9);
+uniform float3 viewport_scale : register(c10);
+uniform float3 viewport_offset : register(c11);
+
+#if shadertype != k_shadertype_water
 uniform float4 Position_Compression_Scale : register(c12);
 uniform float4 Position_Compression_Offset : register(c13);
 uniform float4 UV_Compression_Scale_Offset : register(c14);
-uniform float4 v_atmosphere_constant_extra : register(c15);
 uniform float4 Nodes[210] : register(c16); // node transformations, supports up to 70 nodes
+#endif
+
+uniform float4 v_atmosphere_constant_extra : register(c15);
 
 uniform float4 g_exposure : register(c232);
 uniform float4 v_atmosphere_constant_0 : register(c233);

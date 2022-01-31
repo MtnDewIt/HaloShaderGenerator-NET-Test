@@ -115,8 +115,51 @@ namespace HaloShaderGenerator.Water
 
         public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)
         {
-            // TODO
-            return null;
+            if (!IsVertexFormatSupported(vertexType) || !IsEntryPointSupported(entryPoint))
+                return null;
+
+            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
+
+            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<VertexType>());
+
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Waveshape>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Watercolor>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Reflection>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Refraction>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Bankalpha>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Appearance>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Global_Shape>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Foam>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Reach_Compatibility>());
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_vertex_transform", vertexType, "calc_vertex_transform_", ""));
+            macros.Add(ShaderGeneratorBase.CreateMacro("transform_unknown_vector", vertexType, "transform_unknown_vector_", ""));
+            macros.Add(ShaderGeneratorBase.CreateVertexMacro("input_vertex_format", vertexType));
+            macros.Add(ShaderGeneratorBase.CreateMacro("transform_dominant_light", vertexType, "transform_dominant_light_", ""));
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("vertextype", vertexType, "k_vertextype_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Water, "k_shadertype_"));
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes ? 1 : 0));
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("waveshape_arg", waveshape, "k_waveshape_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("watercolor_arg", watercolor, "k_watercolor_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("reflection_arg", reflection, "k_reflection_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("refraction_arg", refraction, "k_refraction_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("bankalpha_arg", bankalpha, "k_bankalpha_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("appearance_arg", appearance, "k_appearance_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("global_shape_arg", global_shape, "k_global_shape_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("foam_arg", foam, "k_foam_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("reach_compatibility_arg", reach_compatibility, "k_reach_compatibility_"));
+
+
+            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(@"glvs_water.hlsl", macros, $"entry_{entryPoint.ToString().ToLower()}", "vs_3_0");
+
+            return new ShaderGeneratorResult(shaderBytecode);
         }
 
         public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)
@@ -354,8 +397,13 @@ namespace HaloShaderGenerator.Water
                 return null;
             var result = new ShaderParameters();
 
-            result.AddPrefixedFloat4VertexParameter("waveshape", "category_");
-            result.AddPrefixedFloat4VertexParameter("global_shape", "category_");
+            //result.AddPrefixedFloat4VertexParameter("waveshape", "category_");
+            //result.AddPrefixedFloat4VertexParameter("global_shape", "category_");
+            //result.AddPrefixedFloat4VertexParameter("reach_compatibility", "category_");
+
+            result.AddCategoryVertexParameter("waveshape");
+            result.AddCategoryVertexParameter("global_shape");
+            result.AddCategoryVertexParameter("reach_compatibility");
 
             switch (waveshape)
             {

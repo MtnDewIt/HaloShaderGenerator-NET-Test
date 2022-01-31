@@ -377,8 +377,8 @@ struct VS_OUTPUT_WATER
     float4 position_ws__water_depth : TEXCOORD6;
     float4 base_tex : TEXCOORD8;
     float4 lm_tex : TEXCOORD9;
-    float3 extinction_factor : TEXCOORD10;
-    float3 sky_radiance : TEXCOORD11;
+    float4 extinction_factor : TEXCOORD10;
+    float4 sky_radiance : TEXCOORD11;
 };
 
 struct VS_OUTPUT_SCREEN

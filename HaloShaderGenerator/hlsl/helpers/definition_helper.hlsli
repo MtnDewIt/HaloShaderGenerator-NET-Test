@@ -193,10 +193,26 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_overlay_b_tint_add_color 1
 
 #define k_waveshape_default 0
+#define k_waveshape_none 1
+#define k_waveshape_bump 2
 #define k_refraction_none 0
 #define k_refraction_dynamic 1
+#define k_reflection_none 0
+#define k_reflection_static 1
+#define k_reflection_dynamic 2
 #define k_watercolor_pure 0
-#define k_watercolor_texture 0
+#define k_watercolor_texture 1
+#define k_foam_none 0
+#define k_foam_auto 1
+#define k_foam_paint 2
+#define k_foam_both 3
+#define k_bankalpha_none 0
+#define k_bankalpha_depth 1
+#define k_bankalpha_paint 2
+#define k_bankalpha_from_shape_texture_alpha 3
+#define k_global_shape_none 0
+#define k_global_shape_paint 1
+#define k_global_shape_depth 2
 #define k_reach_compatibility_disabled 0
 #define k_reach_compatibility_enabled 1
 

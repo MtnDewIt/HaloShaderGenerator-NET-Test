@@ -680,6 +680,9 @@
   <ItemGroup>
     <EmbeddedResource Include="hlsl\glps_foliage.hlsl" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\glvs_water.hlsl" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>
