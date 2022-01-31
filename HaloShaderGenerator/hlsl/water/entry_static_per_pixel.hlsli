@@ -57,12 +57,22 @@ PS_OUTPUT_DEFAULT water_entry_static_per_pixel(VS_OUTPUT_WATER input)
     float3 normal;
     float2 refraction_s;
     float foam_height_const;
-    calc_waveshape_ps(input.texcoord.xy, slope_mag, height_scale_aux, height_scale, ripple_buffer_height, input.texcoord.w, tangent, binormal, normal, refraction_s, foam_height_const);
+    float2 slope;
+    calc_waveshape_ps(input.texcoord.xy, slope_mag, height_scale_aux, height_scale, ripple_buffer_height, input.texcoord.w, tangent, binormal, normal, refraction_s, foam_height_const, slope);
+    
+    float bankalpha = calc_bankalpha_ps(water_depth, input.base_tex.xy);
     
     float3 lightprobe_color = water_sample_lightprobe_array(input.lm_tex.xy, normal);
     
     float3 watercolor = calc_watercolor_ps(lightprobe_color, input.base_tex.xy);
     
+//#if reach_compatibility_arg == k_reach_compatibility_enabled && refraction_arg == k_refraction_dynamic
+//    float3 scene_color;
+//    float3 color_refraction;
+//    float refraction_amount;
+//    calc_refraction_dynamic_reach_ps(input.position_ss, float4(position_ws, 1.0f), slope, bankalpha, input.extinction_factor.w, watercolor, color_refraction, scene_color, refraction_amount);
+//    watercolor = color_refraction;
+//#else
     float2 final_tex;
     float final_murkiness;
     calc_refraction_ps(input.position_ws__water_depth, refraction_s, ripple_buffer_height, input.incident_ws__view_dist, input.position_ss, slope_mag, final_tex, final_murkiness);
@@ -72,6 +82,7 @@ PS_OUTPUT_DEFAULT water_entry_static_per_pixel(VS_OUTPUT_WATER input)
     float3 scene_color = tex2D(scene_ldr_texture, final_tex).rgb;
     watercolor *= slope_mag;
     watercolor = final_murkiness * (scene_color - watercolor) + watercolor;
+//#endif
     
     float3 sun_dir = float3(0.0f, 0.0f, 1.0f);
     float3 diffuse_color = lightprobe_color * (saturate(dot(sun_dir, normal)) * water_diffuse);
@@ -98,7 +109,7 @@ PS_OUTPUT_DEFAULT water_entry_static_per_pixel(VS_OUTPUT_WATER input)
     
     diffuse_color = diffuse_color + lerp(watercolor, reflection, fresnel);
     
-    float bankalpha = calc_bankalpha_ps(water_depth, input.base_tex.xy);
+    //float bankalpha = calc_bankalpha_ps(water_depth, input.base_tex.xy);
     refraction_amount = (1.0f - bankalpha) + refraction_amount * bankalpha;
     
     float3 blended_color = lerp(scene_color, diffuse_color, bankalpha);
@@ -109,7 +120,7 @@ PS_OUTPUT_DEFAULT water_entry_static_per_pixel(VS_OUTPUT_WATER input)
     blended_color = foam.a * (foam.rgb - blended_color) + blended_color;
     
     float3 final_color = blended_color - scene_color * refraction_amount;
-    final_color = final_color * input.extinction_factor + input.sky_radiance * (1.0f - refraction_amount);
+    final_color = final_color * input.extinction_factor.rgb + input.sky_radiance.rgb * (1.0f - refraction_amount);
     final_color = final_color * g_exposure.x;
     final_color = final_color + scene_color * refraction_amount;
     

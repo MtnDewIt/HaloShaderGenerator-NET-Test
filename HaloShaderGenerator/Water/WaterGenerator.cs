@@ -328,7 +328,7 @@ namespace HaloShaderGenerator.Water
                     result.AddSamplerParameter("watercolor_texture");
                     break;
                 case Bankalpha.From_Shape_Texture_Alpha:
-                    result.AddSamplerWithoutXFormParameter("global_shape_texture"); //v
+                    result.AddSamplerParameter("global_shape_texture"); //v
                     break;
             }
 
@@ -344,7 +344,7 @@ namespace HaloShaderGenerator.Water
             switch (global_shape)
             {
                 case Global_Shape.Paint:
-                    result.AddSamplerWithoutXFormParameter("global_shape_texture"); //v
+                    result.AddSamplerParameter("global_shape_texture"); //v
                     break;
                 case Global_Shape.Depth:
                     result.AddFloatParameter("globalshape_infuence_depth"); //v
@@ -366,12 +366,12 @@ namespace HaloShaderGenerator.Water
                 case Foam.Paint:
                     result.AddSamplerParameter("foam_texture");
                     result.AddSamplerParameter("foam_texture_detail");
-                    result.AddSamplerWithoutXFormParameter("global_shape_texture"); //v
+                    result.AddSamplerParameter("global_shape_texture"); //v
                     break;
                 case Foam.Both:
                     result.AddSamplerParameter("foam_texture");
                     result.AddSamplerParameter("foam_texture_detail");
-                    result.AddSamplerWithoutXFormParameter("global_shape_texture"); //v
+                    result.AddSamplerParameter("global_shape_texture"); //v
                     result.AddFloatParameter("foam_height");
                     result.AddFloatParameter("foam_pow");
                     break;
@@ -427,7 +427,7 @@ namespace HaloShaderGenerator.Water
             switch (global_shape)
             {
                 case Global_Shape.Paint:
-                    result.AddSamplerWithoutXFormVertexParameter("global_shape_texture"); //v
+                    result.AddSamplerVertexParameter("global_shape_texture"); //v
                     break;
                 case Global_Shape.Depth:
                     result.AddFloatVertexParameter("globalshape_infuence_depth"); //v
@@ -437,10 +437,10 @@ namespace HaloShaderGenerator.Water
             switch (foam)
             {
                 case Foam.Paint:
-                    result.AddSamplerWithoutXFormVertexParameter("global_shape_texture"); //v
+                    result.AddSamplerVertexParameter("global_shape_texture"); //v
                     break;
                 case Foam.Both:
-                    result.AddSamplerWithoutXFormVertexParameter("global_shape_texture"); //v
+                    result.AddSamplerVertexParameter("global_shape_texture"); //v
                     break;
             }
 
@@ -566,7 +566,7 @@ namespace HaloShaderGenerator.Water
                         rmopName = @"shaders\water_options\bankalpha_paint";
                         break;
                     case Bankalpha.From_Shape_Texture_Alpha:
-                        result.AddSamplerWithoutXFormParameter("global_shape_texture");
+                        result.AddSamplerParameter("global_shape_texture");
                         rmopName = @"shaders\water_options\bankalpha_from_shape_texture_alpha";
                         break;
                 }
@@ -592,7 +592,7 @@ namespace HaloShaderGenerator.Water
                 switch ((Global_Shape)option)
                 {
                     case Global_Shape.Paint:
-                        result.AddSamplerWithoutXFormParameter("global_shape_texture");
+                        result.AddSamplerParameter("global_shape_texture");
                         rmopName = @"shaders\water_options\globalshape_paint";
                         break;
                     case Global_Shape.Depth:
@@ -622,13 +622,13 @@ namespace HaloShaderGenerator.Water
                     case Foam.Paint:
                         result.AddSamplerParameter("foam_texture");
                         result.AddSamplerParameter("foam_texture_detail");
-                        result.AddSamplerWithoutXFormParameter("global_shape_texture");
+                        result.AddSamplerParameter("global_shape_texture");
                         rmopName = @"shaders\water_options\foam_paint";
                         break;
                     case Foam.Both:
                         result.AddSamplerParameter("foam_texture");
                         result.AddSamplerParameter("foam_texture_detail");
-                        result.AddSamplerWithoutXFormParameter("global_shape_texture");
+                        result.AddSamplerParameter("global_shape_texture");
                         result.AddFloatParameter("foam_height");
                         result.AddFloatParameter("foam_pow");
                         rmopName = @"shaders\water_options\foam_both";

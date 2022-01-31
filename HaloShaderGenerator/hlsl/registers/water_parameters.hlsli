@@ -19,5 +19,6 @@ uniform sampler2D unknown_s0 : register(s0); //todo: remove
 #ifndef _GLOBAL_SHAPE_TEX
 #define _GLOBAL_SHAPE_TEX
 uniform sampler2D global_shape_texture;
+uniform float4 global_shape_texture_xform;
 #endif
 

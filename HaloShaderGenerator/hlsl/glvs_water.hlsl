@@ -83,6 +83,7 @@ uniform float k_ripple_buffer_radius : register(c133);
 uniform float2 k_ripple_buffer_center : register(c134);
 
 uniform int category_reach_compatibility;
+uniform float4 global_shape_texture_xform;
 
 float4 bc_interp(float4 a, float4 b, float4 c, float3 weights)
 {
@@ -191,7 +192,12 @@ VS_OUTPUT_WATER vs_water_out(WATER_TESSELATED_VERTEX input)
     float shape_choppiness = 1.0f;
     if (category_global_shape == k_global_shape_paint)
     {
-        float4 global_shape = tex2Dlod(global_shape_texture, float4(input.base_tex.xy, 0.0f, mip_level));
+        float2 global_shape_tex = input.base_tex.xy;
+        
+        if (reach_compatibility_enabled())
+            global_shape_tex = global_shape_tex * global_shape_texture_xform.xy + global_shape_texture_xform.zw;
+
+        float4 global_shape = tex2Dlod(global_shape_texture, float4(global_shape_tex, 0.0f, mip_level));
         shape_height = global_shape.x;
         shape_choppiness = global_shape.y;
     }

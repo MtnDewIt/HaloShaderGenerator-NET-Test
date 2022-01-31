@@ -14,15 +14,35 @@ float3 calc_reflection_none_ps(float3 inc_n, float3 normal, float3 lightprobe_co
     return 0.0f;
 }
 
+float3 calc_reflection_static_reach_ps(float3 inc_n, float3 normal, float3 lightprobe_color)
+{		
+    float3 reflect_dir = reflect(-inc_n, lerp(normal, float3(0.0f, 0.0f, 1.0f), 1.0f - normal_variation_tweak));
+    reflect_dir.y *= -1.0;
+
+    float4 environment_sample = texCUBE(environment_map, reflect_dir);
+    environment_sample.rgb *= 256;
+
+    float sun_mag = dot(saturate(lightprobe_color - shadow_intensity_mark), saturate(lightprobe_color - shadow_intensity_mark));
+
+    float sun_cut = saturate(environment_sample.a - sunspot_cut) * sun_mag + min(environment_sample.a, sunspot_cut);
+    return environment_sample.rgb * sun_cut * reflection_coefficient;
+}
+
 float3 calc_reflection_static_ps(float3 inc_n, float3 normal, float3 lightprobe_color)
 {
+#if reach_compatibility_arg == k_reach_compatibility_enabled
+    return calc_reflection_static_reach_ps(inc_n, normal, lightprobe_color);
+#endif
+
     float3 l_shad = saturate(lightprobe_color - shadow_intensity_mark);
     float light_scale = dot(l_shad, l_shad);
 
 #if reach_compatibility_arg == k_reach_compatibility_enabled
-    float z_tweak = (1.0f - normal_variation_tweak) * (1.0f - normal.z);
-    float2 xy_tweak = normal.xy * -(1.0f - normal_variation_tweak);
-    float3 env_tex = reflect(-inc_n, normal + float3(xy_tweak, z_tweak));
+    //float z_tweak = (1.0f - normal_variation_tweak) * (1.0f - normal.z);
+    //float2 xy_tweak = normal.xy * -(1.0f - normal_variation_tweak);
+    //float3 env_tex = reflect(-inc_n, normal + float3(xy_tweak, z_tweak));
+    float3 normal_reflect = lerp(normal, float3(0.0f, 0.0f, 1.0f), 1.0f - normal_variation_tweak);
+    float3 env_tex = reflect(-inc_n, normal_reflect);
 #else
     float3 env_tex = reflect(-inc_n, normal);
 #endif

@@ -72,7 +72,11 @@ float4 calc_foam_auto_ps(float3 lightmap_color, float2 texcoord, float4 base_tex
 
 float4 calc_foam_paint_ps(float3 lightmap_color, float2 texcoord, float4 base_tex, float ripple_foam, float inc_w, float foam_height_const)
 {
-    float painted_foam = tex2D(global_shape_texture, base_tex.xy).z;
+    float2 global_shape_tex = base_tex.xy;
+#if reach_compatibility_arg == k_reach_compatibility_enabled
+    global_shape_tex = global_shape_tex * global_shape_texture_xform.xy + global_shape_texture_xform.zw;
+#endif
+    float painted_foam = tex2D(global_shape_texture, global_shape_tex).z;
     float foam_mag = max(ripple_foam, painted_foam);
     
 #if reach_compatibility_arg == k_reach_compatibility_enabled
@@ -101,7 +105,7 @@ float4 calc_foam_paint_ps(float3 lightmap_color, float2 texcoord, float4 base_te
 float4 calc_foam_both_ps(float3 lightmap_color, float2 texcoord, float4 base_tex, float ripple_foam, float inc_w, float foam_height_const)
 {
 #if reach_compatibility_arg == k_reach_compatibility_enabled
-    float painted_foam = tex2D(global_shape_texture, base_tex.xy).z;
+    float painted_foam = tex2D(global_shape_texture, base_tex.xy * global_shape_texture_xform.xy + global_shape_texture_xform.zw).z;
     float auto_foam = saturate(-foam_cut - foam_height_const) / saturate(1.0f - foam_cut);
     auto_foam = pow(auto_foam, max(foam_pow, 1.0f));
     float foam_mag = max(ripple_foam, max(auto_foam, painted_foam));

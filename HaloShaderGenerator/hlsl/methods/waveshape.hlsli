@@ -46,7 +46,8 @@ void calc_waveshape_default_ps(
     float3 v2,
     out float3 normal,
     out float2 refraction_s,
-    out float foam_height_const)
+    out float foam_height_const,
+    out float2 slope)
 {
     float2 slope_range_xy = float2(slope_range_x, slope_range_y);
     float2 detail_slope_scale = float2(detail_slope_scale_x, detail_slope_scale_y);
@@ -92,6 +93,7 @@ void calc_waveshape_default_ps(
     slope_accum *= slope_scaler;
 #endif
     slope_accum += ripple_height;
+    slope = slope_accum;
 
     float3 n_slope = normalize(float3(slope_accum, 1.0f));
     
@@ -115,10 +117,12 @@ void calc_waveshape_none_ps(
     float3 v2,
     out float3 normal,
     out float2 refraction_s,
-    out float foam_height_const)
+    out float foam_height_const,
+    out float2 slope)
 {
     refraction_s = 0.0f;
     foam_height_const = 0.0f;
+    slope = 0.0f;
     float3 n_slope = normalize(float3(0.0f, 0.0f, 1.0f));
     
     float3 n_m_mul = n_slope.y * v2;
@@ -138,7 +142,8 @@ void calc_waveshape_bump_ps(
     float3 v2,
     out float3 normal,
     out float2 refraction_s,
-    out float foam_height_const)
+    out float foam_height_const,
+    out float2 slope)
 {
     float3 bump_map_sample = sample_normal_2d(bump_map, apply_xform2d(texcoord, bump_map_xform));
     float3 bump = normalize(bump_map_sample);
@@ -153,6 +158,7 @@ void calc_waveshape_bump_ps(
     bump.xy /= max(bump.z, 0.01f) * scalar;
     
     refraction_s = bump.xy;
+    slope = bump.xy;
     float3 n_slope = normalize(float3(bump.xy, 1.0f));
     
     float3 n_m_mul = n_slope.y * v2;
