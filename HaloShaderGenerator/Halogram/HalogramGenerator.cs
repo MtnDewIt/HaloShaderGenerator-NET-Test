@@ -166,6 +166,7 @@ namespace HaloShaderGenerator.Halogram
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<VertexType>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_vertex_transform", vertexType, "calc_vertex_transform_", ""));
             macros.Add(ShaderGeneratorBase.CreateMacro("transform_unknown_vector", vertexType, "transform_unknown_vector_", ""));
             macros.Add(ShaderGeneratorBase.CreateVertexMacro("input_vertex_format", vertexType));
@@ -173,6 +174,7 @@ namespace HaloShaderGenerator.Halogram
 
             macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("vertextype", vertexType, "k_vertextype_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Halogram, "shadertype_"));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(@"glvs_halogram.hlsl", macros, $"entry_{entryPoint.ToString().ToLower()}", "vs_3_0");
 

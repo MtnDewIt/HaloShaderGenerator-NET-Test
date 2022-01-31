@@ -125,6 +125,7 @@ namespace HaloShaderGenerator.Terrain
             macros.Add(new D3D.SHADER_MACRO { Name = "_TERRAIN_HELPER_HLSLI", Definition = "1" });
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
             macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<VertexType>());
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_vertex_transform", vertexType, "calc_vertex_transform_", ""));
             macros.Add(ShaderGeneratorBase.CreateMacro("transform_dominant_light", vertexType, "transform_dominant_light_", ""));
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_distortion", vertexType, "calc_distortion_", ""));
@@ -132,6 +133,7 @@ namespace HaloShaderGenerator.Terrain
 
             macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
             macros.Add(ShaderGeneratorBase.CreateMacro("vertextype", vertexType, "k_vertextype_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Terrain, "shadertype_"));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(@"glvs_terrain.hlsl", macros, $"entry_{entryPoint.ToString().ToLower()}", "vs_3_0");
 

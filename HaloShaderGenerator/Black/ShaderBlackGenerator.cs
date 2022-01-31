@@ -35,8 +35,11 @@ namespace HaloShaderGenerator.Black
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
+            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_vertex_transform", vertexType, "calc_vertex_transform_", ""));
             macros.Add(ShaderGeneratorBase.CreateVertexMacro("input_vertex_format", vertexType));
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Black, "shadertype_"));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(@"glvs_shader_black.hlsl", macros, $"entry_{entryPoint.ToString().ToLower()}", "vs_3_0");
 
