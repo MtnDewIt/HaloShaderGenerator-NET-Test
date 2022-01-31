@@ -422,6 +422,19 @@ namespace HaloShaderGenerator
                         Registers.Add(register);
                         break;
                     }
+
+                    // slight hack, for int's that get compiled only as vector
+                    else if (register.Name == name && register_type == ShaderRegister.RegisterType.Integer)
+                    {
+                        foreach (var register2 in registers)
+                        {
+                            if (register2.Name == name && register2.registerType == ShaderRegister.RegisterType.Vector)
+                            {
+                                Registers.Add(register2);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -114,6 +114,11 @@ namespace HaloShaderGenerator.Globals
             Parameters.Add(new ShaderParameter(parameterName, prefix + parameterName, HLSLType.Float4, rmExtern, ShaderParameterFlags.IsVertexShader));
         }
 
+        public void AddCategoryVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        {
+            Parameters.Add(new ShaderParameter(parameterName, "category_" + parameterName, HLSLType.Float4, rmExtern, ShaderParameterFlags.IsVertexShader | ShaderParameterFlags.IsCategory));
+        }
+
         public void AddFloat3VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
         {
             Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern, ShaderParameterFlags.IsVertexShader));
@@ -247,6 +252,11 @@ namespace HaloShaderGenerator.Globals
             {
                 if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
                     result.Add(parameter);
+                else if (parameter.RegisterType == RegisterType.Integer && 
+                    parameter.RenderMethodExtern == RenderMethodExtern.none && 
+                    parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader) &&
+                    parameter.Flags.HasFlag(ShaderParameterFlags.IsCategory))
+                    result.Add(parameter);
             }
             return result;
         }
@@ -324,7 +334,8 @@ namespace HaloShaderGenerator.Globals
         IsVertexShader = 1 << 0,
         IsColor = 1 << 1,
         IsXFormOnly = 1 << 2,
-        IsVertexAndPixelSampler = 1 << 3
+        IsVertexAndPixelSampler = 1 << 3,
+        IsCategory = 1 << 4
     }
 
     public class ShaderParameter
