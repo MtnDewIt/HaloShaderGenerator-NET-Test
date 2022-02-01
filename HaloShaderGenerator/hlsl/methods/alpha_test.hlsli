@@ -4,6 +4,7 @@
 #include "../helpers/math.hlsli"
 #include "../helpers/types.hlsli"
 #include "../helpers/definition_helper.hlsli"
+#include "../helpers/apply_hlsl_fixes.hlsli"
 
 uniform sampler alpha_test_map;
 uniform xform2d alpha_test_map_xform;
@@ -17,7 +18,7 @@ float calc_alpha_test_simple_ps(float2 texcoord, float albedo_alpha)
 {
 	float2 alpha_test_map_texcoord = apply_xform2d(texcoord, alpha_test_map_xform);
 	float4 alpha_test_map_sample = tex2D(alpha_test_map, alpha_test_map_texcoord);
-#if shadertype != k_shadertype_foliage
+#if shadertype != k_shadertype_foliage || APPLY_HLSL_FIXES == 1
 	clip(alpha_test_map_sample.a - 0.5);
 #endif
 	return alpha_test_map_sample.a;
