@@ -8,6 +8,7 @@
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 #include "..\methods\alpha_test.hlsli"
+#include "..\helpers\apply_hlsl_fixes.hlsli"
 
 PS_OUTPUT_DEFAULT entry_static_sh_prt(
 float4 position,
@@ -31,6 +32,14 @@ float3 unknown_lighting_color)
         common_data.normal = normal;
         common_data.texcoord = texcoord.xy;
         
+#if APPLY_HLSL_FIXES == 1
+        if (actually_calc_albedo)
+        {
+            common_data.albedo = calc_albedo_ps(texcoord, position.xy, normal.xyz, camera_dir);
+            common_data.surface_normal = normal.xyz;
+        }
+        else
+#endif
         {
             float2 fr_position = position.xy;
             fr_position += 0.5;

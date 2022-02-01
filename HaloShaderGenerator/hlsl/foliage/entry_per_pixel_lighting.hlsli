@@ -8,6 +8,7 @@
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 #include "..\methods\alpha_test.hlsli"
+#include "..\helpers\apply_hlsl_fixes.hlsli"
 
 PS_OUTPUT_DEFAULT foliage_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL_FOLIAGE input)
 {
@@ -22,7 +23,15 @@ PS_OUTPUT_DEFAULT foliage_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL_FOLIAGE inp
         common_data.binormal = input.binormal;
         common_data.normal = input.normal;
         common_data.texcoord = input.texcoord.xy;
-        
+
+#if APPLY_HLSL_FIXES == 1
+        if (actually_calc_albedo)
+        {
+            common_data.albedo = calc_albedo_ps(input.texcoord, input.position.xy, input.normal.xyz, input.camera_dir);
+            common_data.surface_normal = input.normal.xyz;
+        }
+        else
+#endif
         {
             float2 position = input.position.xy;
             position += 0.5;

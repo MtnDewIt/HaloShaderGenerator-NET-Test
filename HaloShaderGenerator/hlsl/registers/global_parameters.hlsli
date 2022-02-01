@@ -11,13 +11,18 @@
 #define default_lightmap_size 1024
 
 #if shadertype == k_shadertype_shader
-#if misc_arg == k_misc_first_person_sometimes || misc_arg == k_misc_first_person_always || blend_type_arg == k_blend_mode_additive || blend_type_arg == k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply || blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha
-uniform bool actually_calc_albedo : register(b12);
-#elif misc_arg == k_misc_always_calc_albedo
+    #if misc_arg == k_misc_first_person_sometimes || misc_arg == k_misc_first_person_always || blend_type_arg == k_blend_mode_additive || blend_type_arg == k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply || blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha
+    uniform bool actually_calc_albedo : register(b12);
+    #elif misc_arg == k_misc_always_calc_albedo
+    #define actually_calc_albedo true
+    #else
+    #define actually_calc_albedo false
+    #endif
+#elif shadertype == k_shadertype_foliage && alpha_test_arg != k_alpha_test_none
+// alpha test can give bad results, added this to resolve issues
 #define actually_calc_albedo true
 #else
 #define actually_calc_albedo false
-#endif
 #endif
 
 //
