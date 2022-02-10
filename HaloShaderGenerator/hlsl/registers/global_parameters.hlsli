@@ -10,7 +10,7 @@
 #define shadowmap_texture_size 512
 #define default_lightmap_size 1024
 
-#if shadertype == k_shadertype_shader
+#if shadertype == k_shadertype_shader || shadertype == k_shadertype_halogram || shadertype == k_shadertype_custom
     #if misc_arg == k_misc_first_person_sometimes || misc_arg == k_misc_first_person_always || blend_type_arg == k_blend_mode_additive || blend_type_arg == k_blend_mode_double_multiply || blend_type_arg ==  k_blend_mode_multiply || blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_pre_multiplied_alpha
     uniform bool actually_calc_albedo : register(b12);
     #elif misc_arg == k_misc_always_calc_albedo

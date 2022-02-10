@@ -9,7 +9,7 @@
 #include "..\methods\self_illumination.hlsli"
 
 #if (self_illumination_arg == k_self_illumination_simple && blend_type_arg != k_blend_mode_opaque) || (self_illumination_arg != k_self_illumination_off && self_illumination_arg != k_self_illumination_simple)
-uniform bool actually_calc_albedo : register(b12);
+//uniform bool actually_calc_albedo : register(b12);
 #define actually_calc_albedo_visible 1
 #endif
 
