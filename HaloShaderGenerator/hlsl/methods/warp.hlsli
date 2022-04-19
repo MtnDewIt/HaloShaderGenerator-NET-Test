@@ -35,9 +35,11 @@ float2 calc_warp_parallax_simple(float2 texcoord, float3 camera_dir, float3 tang
     return texcoord;
 }
 
-void import_warp_vec2(inout float2 texcoord, in float2 ref_xy)
+#define k_normal_warp_shift 127.0f
+
+void import_warp_vec2(inout float2 texcoord)
 {
-    texcoord += -(ref_xy / 255.0f);
+    texcoord += -(k_normal_warp_shift / 255.0f);
 }
 
 float2 calc_screen_warp_none(float4 texcoord)
@@ -48,7 +50,7 @@ float2 calc_screen_warp_none(float4 texcoord)
 float2 calc_screen_warp_pixel_space(float4 texcoord)
 {
     float2 warp_vec = tex2D(warp_map, apply_xform2d(texcoord.zw, warp_map_xform)).xy;
-    import_warp_vec2(warp_vec, float2(126.0f, 127.0f));
+    import_warp_vec2(warp_vec);
 
     return warp_vec * warp_amount;
 }
@@ -56,7 +58,7 @@ float2 calc_screen_warp_pixel_space(float4 texcoord)
 float2 calc_screen_warp_screen_space(float4 texcoord)
 {
     float2 warp_vec = tex2D(warp_map, apply_xform2d(texcoord.xy, warp_map_xform)).xy;
-    import_warp_vec2(warp_vec, float2(126.0f, 127.0f));
+    import_warp_vec2(warp_vec);
 
     return warp_vec * warp_amount;
 }
