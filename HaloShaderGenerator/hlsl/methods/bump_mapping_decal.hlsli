@@ -27,7 +27,6 @@ float3 bump_mapping_standard(
     float3 bump_map_sample = sample_normal_2d(bump_map, bump_map_texcoord);
 	
     float3 result = normal_transform(tangent, binormal, normal, bump_map_sample);
-    result = result * 0.5f + 0.5f;
     return result;
 }
 

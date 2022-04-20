@@ -344,12 +344,16 @@ uniform sampler tex0_sampler : register(s0);
 uniform sampler tex1_sampler : register(s1);
 uniform sampler change_color_map; // no transform
 uniform sampler vector_map; // no transform
+uniform sampler shadow_vector_map;
+uniform float4 shadow_vector_map_xform;
 
 uniform float3 primary_change_color;
 uniform float3 secondary_change_color;
 uniform float3 tertiary_change_color;
 uniform float antialias_tweak;
 uniform float vector_sharpness;
+uniform float shadow_sharpness;
+uniform float shadow_darkness;
 
 float4 calc_albedo_emblem_change_color_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
@@ -372,13 +376,27 @@ float4 calc_albedo_change_color_ps(float4 texcoord, float2 billboard_tex, float 
 float4 calc_albedo_vector_alpha_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
 {
     float3 albedo = tex2D(base_map, apply_xform2d(texcoord.xy, base_map_xform)).rgb;
+    float vector_sample = 1.0f - tex2D(vector_map, texcoord.xy).y;
 
     float antialias = max(1000.f * antialias_tweak, 1.0f);
     float sharpness = min(vector_sharpness, antialias);
-    float4 vector_sample = tex2D(vector_map, texcoord.xy);
-    float alpha = saturate((vector_sample.g * -0.5f) * sharpness + 0.5f);
+    float alpha = saturate((vector_sample * -0.5f) * sharpness + 0.5f);
     
-    return float4(albedo.rgb, alpha);
+    return float4(albedo.rgb * alpha, alpha);
+}
+
+float4 calc_albedo_vector_alpha_drop_shadow_ps(float4 texcoord, float2 billboard_tex, float v_coord, in float frame_blend, in float color_alpha, in float depth_fade_val)
+{
+    float3 albedo = tex2D(base_map, apply_xform2d(texcoord.xy, base_map_xform)).rgb;
+    float vector_sample = tex2D(vector_map, texcoord.xy).y;
+    float shadow_sample = 1.0f - tex2D(shadow_vector_map, apply_xform2d(texcoord.xy, shadow_vector_map_xform)).y;
+
+    float antialias = max(1000.f * antialias_tweak, 1.0f);
+    float sharpness = min(vector_sharpness, antialias);
+    float drop_shadow = saturate((shadow_sample * -0.5f) * min(shadow_sharpness, antialias) + 0.5f) * shadow_darkness;
+    float alpha = saturate((vector_sample * -0.5f) * sharpness + 0.5f);
+    
+    return float4(albedo.rgb * alpha, alpha + drop_shadow);
 }
 #endif
 

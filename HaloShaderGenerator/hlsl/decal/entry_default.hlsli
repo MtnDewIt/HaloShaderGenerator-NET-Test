@@ -28,21 +28,25 @@ uniform float fade : register(c32);
 #endif
 
 #define APPLY_ALPHA_FADE (decal_bump_mapping_arg != k_decal_bump_mapping_leave || decal_specular_arg != k_decal_specular_leave)
-#define APPLY_BLEND_FADE (blend_type_arg == k_blend_mode_alpha_blend || blend_type_arg == k_blend_mode_add_src_times_dstalpha || blend_type_arg == k_blend_mode_add_src_times_srcalpha        \
-    || blend_type_arg == k_blend_mode_pre_multiplied_alpha || blend_type_arg == k_blend_mode_inv_alpha_blend)
+#define APPLY_BLEND_FADE (!(blend_type_arg == k_blend_mode_opaque || blend_type_arg == k_blend_mode_additive ||			\
+	blend_type_arg == k_blend_mode_multiply || blend_type_arg == k_blend_mode_double_multiply ||	blend_type_arg == k_blend_mode_maximum ||			\
+	blend_type_arg == k_blend_mode_multiply_add))
 #define BLEND_IS_MULTIPLY (blend_type_arg == k_blend_mode_multiply || blend_type_arg == k_blend_mode_double_multiply)
 
 void decal_apply_fade(inout float4 color)
-{
-    color = decal_blend_mode(color, DECAL_FADE);
+{    
+    if (blend_type_arg == k_blend_mode_additive)
+        color.rgb *= DECAL_FADE;
+    else if (blend_type_arg == k_blend_mode_multiply)
+        color.rgb = lerp(1.0f, color.rgb, DECAL_FADE);
+    else if (blend_type_arg == k_blend_mode_double_multiply)
+        color.rgb = lerp(0.5f, color.rgb, DECAL_FADE);
 	
-    if (APPLY_ALPHA_FADE && !APPLY_BLEND_FADE)
-    {
+    if (APPLY_ALPHA_FADE || APPLY_BLEND_FADE)
         color.a *= DECAL_FADE;
-    }
-    
+	
     if (blend_type_arg == k_blend_mode_pre_multiplied_alpha)
-    {
+	{
         if (albedo_arg != k_albedo_vector_alpha_drop_shadow && albedo_arg != k_albedo_vector_alpha)
             color.rgb *= color.a;
         color.rgb *= DECAL_FADE;
@@ -86,6 +90,8 @@ PS_OUTPUT_DECAL decal_entry_default(VS_OUTPUT_DECAL input)
     
     float4 color = decal_entry_default_calculate_color(input);
     
+    float3 bump_mapping = decal_bump_mapping(input.tangent.xyz, input.binormal.xyz, input.normal.xyz, input.texcoord.zw);
+    
     PS_OUTPUT_DECAL output;
     
     if (decal_render_pass_arg == k_decal_render_pass_post_lighting)
@@ -107,10 +113,8 @@ PS_OUTPUT_DECAL decal_entry_default(VS_OUTPUT_DECAL input)
     }
     else if (decal_bump_mapping_arg != k_decal_bump_mapping_leave)
     {
-        float3 bump_mapping = decal_bump_mapping(input.tangent.xyz, input.binormal.xyz, input.normal.xyz, input.texcoord.zw);
-        
         output.color_ldr = color;
-        output.color_hdr.rgb = bump_mapping;
+        output.color_hdr.rgb = bump_mapping * 0.5f + 0.5f;
         output.color_hdr.a = color.a;
         output.unknown = input.depth;
     }
