@@ -13,6 +13,9 @@ uniform float distortion_scale;
 
 //#include "..\helpers\particle_helper.hlsli"
 #include "..\helpers\apply_hlsl_fixes.hlsli"
+#include "..\helpers\bumpmap_math.hlsli"
+
+uniform bool is_normal_basemap : register(b14); // h3 bubbleshield diffuse is not a normal map...
 
 float2 get_x360_z_buffer_coord(in float2 pos, bool distortion = false)
 {
@@ -97,14 +100,14 @@ float4 particle_entry_default_distortion(VS_OUTPUT_PARTICLE input)
     float input_depth = input.parameters.w;
     float2 frag_pos = get_x360_z_buffer_coord(input.position.xy, true);
     
-    // TODO: fix distortion_expensive?
-    
     float depth_fade = calc_depth_fade(frag_pos, input_depth, true);
     
     float2 distortion_diffuse = calc_albedo_ps(input.texcoord, billboard_texcoord, palette_v_coord, frame_blend_interpolator, input.color.a, depth_fade).xy;
     
-    if (specialized_rendering_arg == k_specialized_rendering_distortion || !APPLY_HLSL_FIXES && specialized_rendering_arg == k_specialized_rendering_distortion_expensive)
-        distortion_diffuse = distortion_diffuse * 2.00787401 - 1.00787401; // range conversion
+    [branch]
+    if ((specialized_rendering_arg == k_specialized_rendering_distortion || specialized_rendering_arg == k_specialized_rendering_distortion_expensive) 
+        && is_normal_basemap)
+        unpack_dxn_to_signed(distortion_diffuse);
     
     distortion_diffuse.y = -distortion_diffuse.y;
     

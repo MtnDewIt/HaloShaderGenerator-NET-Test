@@ -1,6 +1,11 @@
 ﻿#ifndef _BUMPMAP_MATH_HLSLI
 #define _BUMPMAP_MATH_HLSLI
 
+void unpack_dxn_to_signed(inout float2 xy)
+{
+    xy = xy * 2.00787401f - 1.00787401f;
+}
+
 float2 sample_bump_map_2d(sampler bump_map, float2 texcoord)
 {
     float4 bump_map_sample = tex2D(bump_map, texcoord);
