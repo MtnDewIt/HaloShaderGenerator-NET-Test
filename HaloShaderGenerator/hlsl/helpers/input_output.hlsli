@@ -63,7 +63,7 @@ struct ALBEDO_PASS_RESULT
 struct VS_OUTPUT_BLACK_ALBEDO
 {
 	float4 position : SV_Position;
-	float3 color : COLOR0;
+	float3 scattering : COLOR0;
 };
 
 struct VS_OUTPUT_SHADOW_GENERATE

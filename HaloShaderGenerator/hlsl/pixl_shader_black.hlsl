@@ -9,9 +9,10 @@
 PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_BLACK_ALBEDO input) : COLOR
 {
     PS_OUTPUT_ALBEDO output;
-    output.diffuse.rgb = input.color.rgb * g_exposure.x; // should be expose_color(), doesnt show g_exposure as a pixl parameter though?
-	output.diffuse.a = 1.0;
-    output.normal = 0;
+    output.diffuse.rgb = input.scattering * g_exposure.x;
+	output.diffuse.a = 0.0f;
+    output.normal.xyz = float3(0.0f, 0.0f, 0.0f) * 0.5f + 0.5f;
+    output.normal.w = output.diffuse.a;
 	output.unknown = 0;
     return output;
 }
