@@ -29,7 +29,8 @@ namespace HaloShaderGenerator.Halogram
         /// <summary>
         /// Generator instantiation for method specific shaders.
         /// </summary>
-        public HalogramGenerator(Albedo albedo, Self_Illumination self_illumination, Blend_Mode blend_mode, Misc misc, Warp warp, Overlay overlay, Edge_Fade edge_fade, bool applyFixes = false)
+        public HalogramGenerator(Albedo albedo, Self_Illumination self_illumination, Blend_Mode blend_mode, Misc misc, Warp warp, Overlay overlay, 
+            Edge_Fade edge_fade, Shared.Distortion distortion, Shared.Soft_Fade soft_fade, bool applyFixes = false)
         {
             this.albedo = albedo;
             this.self_illumination = self_illumination;
@@ -38,8 +39,8 @@ namespace HaloShaderGenerator.Halogram
             this.warp = warp;
             this.overlay = overlay;
             this.edge_fade = edge_fade;
-            this.distortion = Shared.Distortion.Off;//distortion;
-            this.soft_fade = Shared.Soft_Fade.Off;//soft_fade;
+            this.distortion = distortion;
+            this.soft_fade = soft_fade;
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -54,8 +55,8 @@ namespace HaloShaderGenerator.Halogram
             this.warp = (Warp)options[4];
             this.overlay = (Overlay)options[5];
             this.edge_fade = (Edge_Fade)options[6];
-            this.distortion = Shared.Distortion.Off;// (Shared.Distortion)options[7];
-            this.soft_fade = Shared.Soft_Fade.Off;// (Shared.Soft_Fade)options[8];
+            this.distortion = (Shared.Distortion)options[7];
+            this.soft_fade = (Shared.Soft_Fade)options[8];
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;

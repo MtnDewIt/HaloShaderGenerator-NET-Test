@@ -30,20 +30,14 @@ out float3 out_normal)
 	{
         float2 calc_albedo_texcoord = texcoord;
 		
-        if (shaderstage != k_shaderstage_albedo && distortion_arg == k_distortion_on)
-        {
-            float2 distort_map_texcoord = apply_xform2d(calc_albedo_texcoord, distort_map_xform);
-            float4 distort_map_sample = tex2D(distort_map, distort_map_texcoord);
-        
-            float2 distortion = distort_map_sample.yw * 2.00787401f - 1.00787401f;
-            calc_albedo_texcoord += distortion * distort_scale;
-        }
+        if (shaderstage != k_shaderstage_albedo)
+            apply_sfx_distortion(calc_albedo_texcoord);
 		
         out_normal = calc_bumpmap_ps(tangent, binormal, normal.xyz, calc_albedo_texcoord);
         albedo = calc_albedo_ps(calc_albedo_texcoord, position.xy, out_normal, camera_dir);
 			
         if (shaderstage != k_shaderstage_albedo)
-            apply_soft_fade(albedo.rgb, dot(normalize(camera_dir), normalize(out_normal)), position);
+            apply_soft_fade(albedo, dot(normalize(camera_dir), normalize(out_normal)), position);
     }
 	else
 	{

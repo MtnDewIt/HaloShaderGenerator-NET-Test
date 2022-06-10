@@ -18,8 +18,10 @@ namespace HaloShaderGenerator
             var warp = (Warp)shaderOptions[4];
             var overlay = (Overlay)shaderOptions[5];
             var edge_fade = (Edge_Fade)shaderOptions[6];
+            var distortion = (Shared.Distortion)shaderOptions[7];
+            var soft_fade = (Shared.Soft_Fade)shaderOptions[8];
 
-            var gen = new HalogramGenerator(albedo, self_illumination, blend_mode, misc, warp, overlay, edge_fade);
+            var gen = new HalogramGenerator(albedo, self_illumination, blend_mode, misc, warp, overlay, edge_fade, distortion, soft_fade);
             var bytecode = gen.GeneratePixelShader(stage).Bytecode;
             return D3DCompiler.Disassemble(bytecode);
         }

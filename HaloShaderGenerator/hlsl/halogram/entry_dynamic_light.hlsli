@@ -20,8 +20,10 @@
 #include "..\helpers\lighting.hlsli"
 uniform sampler2D dynamic_light_gel_texture;
 
+#include "..\methods\soft_fade.hlsli"
+
 PS_OUTPUT_DEFAULT calculate_dynamic_light(
-float2 position,
+float4 position,
 float2 texcoord,
 float3 camera_dir,
 float3 tangent,
@@ -65,6 +67,7 @@ bool is_cinematic)
     {
         surface_normal = normal;
 		albedo = calc_albedo_ps(texcoord, position.xy, normal.xyz, camera_dir);
+        apply_soft_fade(albedo, dot(normalize(camera_dir), normalize(surface_normal)), position);
     }
     else
     {
@@ -147,12 +150,12 @@ bool is_cinematic)
 
 PS_OUTPUT_DEFAULT halogram_entry_dynamic_light(VS_OUTPUT_DYNAMIC_LIGHT input)
 {
-    return calculate_dynamic_light(input.position.xy, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, false);
+    return calculate_dynamic_light(input.position, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, false);
 }
 
 PS_OUTPUT_DEFAULT halogram_entry_dynamic_light_cinematic(VS_OUTPUT_DYNAMIC_LIGHT input)
 {
-    return calculate_dynamic_light(input.position.xy, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, true);
+    return calculate_dynamic_light(input.position, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, true);
 }
 
 #endif

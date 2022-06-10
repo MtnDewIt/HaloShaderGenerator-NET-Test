@@ -38,19 +38,12 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
         {
             float2 calc_albedo_texcoord = common_data.texcoord;
 			
-            if (distortion_arg == k_distortion_on)
-            {
-                float2 distort_map_texcoord = apply_xform2d(calc_albedo_texcoord, distort_map_xform);
-                float4 distort_map_sample = tex2D(distort_map, distort_map_texcoord);
-        
-                float2 distortion = distort_map_sample.yw * 2.00787401f - 1.00787401f;
-                calc_albedo_texcoord += distortion * distort_scale;
-            }
+            apply_sfx_distortion(calc_albedo_texcoord);
 			
             common_data.surface_normal = calc_bumpmap_ps(common_data.tangent, common_data.binormal, common_data.normal.xyz, calc_albedo_texcoord);
             common_data.albedo = calc_albedo_ps(calc_albedo_texcoord, common_data.fragcoord, common_data.surface_normal, common_data.view_dir);
 			
-            apply_soft_fade(common_data.albedo.rgb, dot(common_data.n_view_dir, normalize(common_data.surface_normal)), input.position);
+            apply_soft_fade(common_data.albedo, dot(common_data.n_view_dir, normalize(common_data.surface_normal)), input.position);
         }
 		else
 		{

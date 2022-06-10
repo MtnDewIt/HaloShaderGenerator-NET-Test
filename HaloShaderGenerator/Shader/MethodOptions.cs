@@ -19,7 +19,7 @@ namespace HaloShaderGenerator.Shader
         Parallax,
         Misc,
         Distortion,
-        //Soft_Fade
+        Soft_Fade
     }
 
     public enum Albedo

@@ -28,7 +28,7 @@ namespace HaloShaderGenerator
         static readonly string ShaderReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\Shaders";
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
-        static readonly ShaderType TestShaderType = ShaderType.Foliage;
+        static readonly ShaderType TestShaderType = ShaderType.Shader;
 
         static public readonly bool OutputAll = true;
 
@@ -47,6 +47,8 @@ namespace HaloShaderGenerator
         static readonly List<int> ShaderBlendModeOverrides = new List<int> { };
         static readonly List<int> ShaderParallaxOverrides = new List<int> { };
         static readonly List<int> ShaderMiscOverrides = new List<int> { };
+        static readonly List<int> ShaderDistortionOverrides = new List<int> { };
+        static readonly List<int> ShaderSoftFadeOverrides = new List<int> { };
 
         static readonly List<List<int>> ShaderOverrides = new List<List<int>>
         {
@@ -56,7 +58,7 @@ namespace HaloShaderGenerator
         };
 
         static readonly List<List<int>> ShaderMethodOverrides = new List<List<int>> { ShaderAlbedoOverrides, ShaderBumpOverrides, ShaderAlphaOverrides, ShaderSpecularOverrides, ShaderMaterialOverrides,
-                ShaderEnvOverrides, ShaderSelfIllumOverrides, ShaderBlendModeOverrides, ShaderParallaxOverrides, ShaderMiscOverrides, new List<int>() };
+                ShaderEnvOverrides, ShaderSelfIllumOverrides, ShaderBlendModeOverrides, ShaderParallaxOverrides, ShaderMiscOverrides, ShaderDistortionOverrides, ShaderSoftFadeOverrides };
         #endregion
 
         #region particle

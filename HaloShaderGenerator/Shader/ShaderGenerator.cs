@@ -35,7 +35,7 @@ namespace HaloShaderGenerator.Shader
         /// </summary>
         public ShaderGenerator(Albedo albedo, Bump_Mapping bump_mapping, Alpha_Test alpha_test, Specular_Mask specular_mask, Material_Model material_model,
             Environment_Mapping environment_mapping, Self_Illumination self_illumination, Blend_Mode blend_mode, Parallax parallax, Misc misc,
-            Shared.Distortion distortion, bool applyFixes = false)
+            Shared.Distortion distortion, Shared.Soft_Fade soft_fade, bool applyFixes = false)
         {
             this.albedo = albedo;
             this.bump_mapping = bump_mapping;
@@ -48,7 +48,7 @@ namespace HaloShaderGenerator.Shader
             this.parallax = parallax;
             this.misc = misc;
             this.distortion = distortion;
-            this.soft_fade = Shared.Soft_Fade.Off;
+            this.soft_fade = soft_fade;
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -67,7 +67,7 @@ namespace HaloShaderGenerator.Shader
             this.parallax = (Parallax)options[8];
             this.misc = (Misc)options[9];
             this.distortion = (Shared.Distortion)options[10];
-            this.soft_fade = Shared.Soft_Fade.Off;
+            this.soft_fade = (Shared.Soft_Fade)options[11];
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;

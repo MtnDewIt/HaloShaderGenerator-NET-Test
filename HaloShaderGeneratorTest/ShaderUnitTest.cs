@@ -29,7 +29,8 @@ namespace HaloShaderGenerator
             var parallax = (Parallax)shaderOptions[8];
             var misc = (Misc)shaderOptions[9];
             var distortion = (Shared.Distortion)shaderOptions[10];
-            var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion);
+            var soft_fade = (Shared.Soft_Fade)shaderOptions[11];
+            var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion, soft_fade);
             var bytecode = gen.GeneratePixelShader(stage).Bytecode;
             return D3DCompiler.Disassemble(bytecode);
         }
@@ -78,7 +79,7 @@ namespace HaloShaderGenerator
     
     public abstract class GenericUnitTest
     {
-        private static bool IgnoreD3DX = false;
+        private static bool IgnoreD3DX = true;
         private static string ReferencePath;
         private IShaderGenerator ReferenceGenerator;
         private static string ShaderType;
@@ -565,6 +566,17 @@ namespace HaloShaderGenerator
 
             foreach (var testShader in shaders)
             {
+                // if we've added new options, old shader lists won't have them. use this to generate
+                List<int> generatorList = new List<int>();
+
+                for (int i = 0; i < ReferenceGenerator.GetMethodCount(); i++)
+                {
+                    if (i < testShader.Count)
+                        generatorList.Add(testShader[i]);
+                    else
+                        generatorList.Add(0);
+                }
+
                 List<ShaderStage> stages;
                 if (stageOverrides != null && stageOverrides.Count > 0)
                     stages = stageOverrides;
@@ -601,14 +613,14 @@ namespace HaloShaderGenerator
                             continue;
                         }
 
-                        var disassembly = GeneratePixelShader(stage, testShader);
+                        var disassembly = GeneratePixelShader(stage, generatorList);
                         bool equal = CompareShaders(disassembly, filePath, "ps_3_0",  out bool usesD3DX);
                         success &= equal;
-                        DisplayPixelShaderTestResults(equal, BuildShaderName(testShader), stage, usesD3DX);
+                        DisplayPixelShaderTestResults(equal, BuildShaderName(generatorList), stage, usesD3DX);
 
                         if (Application.OutputAll && !equal)
                         {
-                            string filename = $"generated_{stage.ToString().ToLower()}{BuildShaderName(testShader)}.pixl";
+                            string filename = $"generated_{stage.ToString().ToLower()}{BuildShaderName(generatorList)}.pixl";
                             Application.WriteShaderFile(filename, disassembly);
                         }
                     }

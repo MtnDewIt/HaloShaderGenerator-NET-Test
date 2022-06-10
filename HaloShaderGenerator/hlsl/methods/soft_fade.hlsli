@@ -10,8 +10,9 @@ uniform bool use_soft_z;
 uniform float soft_z_range;
 uniform float4 screen_params;
 
-void apply_soft_fade(inout float3 albedo, in float v_dot_n, in float4 position)
+void apply_soft_fade(inout float4 albedo, in float v_dot_n, in float4 position)
 {
+#ifdef soft_fade_arg
     if (soft_fade_arg == k_soft_fade_on)
     {
         float f0 = saturate(abs(v_dot_n));
@@ -29,8 +30,16 @@ void apply_soft_fade(inout float3 albedo, in float v_dot_n, in float4 position)
             albedo_fade *= soft_z;
         }
         
-        albedo *= albedo_fade;
+#ifndef blend_type_arg
+        albedo.rgb *= albedo_fade;
+#else
+        if (blend_type_arg == k_blend_mode_alpha_blend)
+            albedo.a *= albedo_fade;
+        else
+            albedo.rgb *= albedo_fade;
+#endif
     }
+#endif
 }
 
 #endif

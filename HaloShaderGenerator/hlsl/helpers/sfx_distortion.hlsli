@@ -11,23 +11,31 @@
 
 // TODO: clean this up with more generic functions, skinned uses the boolean squished thing
 
+#define UPDATED_SFX_DISTORT 1
+
+uniform float distort_fadeoff;
+
 void calc_distortion_world(WORLD_VERTEX input, out VS_OUTPUT_SFX_DISTORT output)
 {
 	float4 world_position = float4(input.position.xyz, 1.0);
-	float4 screen_position = mul(world_position, View_Projection);
-	output.position = screen_position;
+    output.position = mul(world_position, View_Projection);
 	
 	if (vertextype == k_vertextype_skinned)
 		calculate_z_squish_2(output.position);
 	else
 		calculate_z_squish(output.position);
 	
-	output.position.z = screen_position.z;
 	float3 camera_dir = normalize(world_position.xyz - Camera_Position);
 	float n_dot_c = dot(input.normal.xyz, camera_dir);
 	float distortion_factor = min(abs(n_dot_c), 1.0);
-	output.distortion = distortion_factor * distortion_factor * (3.0 - 2.0 * distortion_factor);
-	output.texcoord.z = screen_position.w;
+	
+#ifdef UPDATED_SFX_DISTORT
+    output.distortion = saturate(output.position.w / distort_fadeoff) + 1.0f;
+#else
+    output.distortion = distortion_factor * distortion_factor * (3.0 - 2.0 * distortion_factor);
+#endif
+	
+    output.texcoord.z = output.position.w;
 	output.texcoord.xy = input.texcoord.xy;
 	output.texcoord.w = 1.0;
 }
@@ -37,24 +45,27 @@ void calc_distortion_rigid(RIGID_VERTEX input, out VS_OUTPUT_SFX_DISTORT output)
 	float3x3 node_transformation = float3x3(Nodes[0].xyz, Nodes[1].xyz, Nodes[2].xyz);
 	float4x4 v_node_transformation = float4x4(Nodes[0], Nodes[1], Nodes[2], float4(0, 0, 0, 0));
 	
-	
 	float2 texcoord = calculate_texcoord(input.texcoord);
 	float3 normal = transform_vector(input.normal.xyz, node_transformation);
 	
 	float4 world_position = float4(decompress_vertex_position(input.position.xyz), 1.0);
 	world_position.xyz = mul(world_position.xyzw, transpose(v_node_transformation)).xyz;
-	float4 screen_position = mul(world_position, View_Projection);
 	
-	output.position = screen_position;
-	calculate_z_squish(screen_position);
-	output.position.z = screen_position.z;
+    output.position = mul(world_position, View_Projection);
+    calculate_z_squish(output.position);
+	
 	float3 camera_dir = normalize(world_position.xyz - Camera_Position);
 	float n_dot_c = dot(normal, camera_dir);
 	float distortion_factor = min(abs(n_dot_c), 1.0);
 	
-	output.distortion = distortion_factor * distortion_factor * (3.0 - 2.0 * distortion_factor);
+#ifdef UPDATED_SFX_DISTORT
+    output.distortion = saturate(output.position.w / distort_fadeoff) + 1.0f;
+#else
+    output.distortion = distortion_factor * distortion_factor * (3.0 - 2.0 * distortion_factor);
+#endif
+	
 	output.texcoord.xy = texcoord;
-	output.texcoord.z = screen_position.w;
+    output.texcoord.z = output.position.w;
 	output.texcoord.w = 1.0;
 }
 
@@ -70,24 +81,27 @@ void calc_distortion_skinned(SKINNED_VERTEX input, out VS_OUTPUT_SFX_DISTORT out
 	float3x3 node_transformation = float3x3(basis1.xyz, basis2.xyz, basis3.xyz);
 	float4x4 v_node_transformation = float4x4(basis1, basis2, basis3, float4(0, 0, 0, 0));
 	
-	
 	float2 texcoord = calculate_texcoord(input.texcoord);
 	float3 normal = transform_vector(input.normal.xyz, node_transformation);
 	
 	float4 world_position = float4(decompress_vertex_position(input.position.xyz), 1.0);
 	world_position.xyz = mul(world_position.xyzw, transpose(v_node_transformation)).xyz;
-	float4 screen_position = mul(world_position, View_Projection);
 	
-	output.position = screen_position;
-	calculate_z_squish(screen_position);
-	output.position.z = screen_position.z;
+    output.position = mul(world_position, View_Projection);
+    calculate_z_squish(output.position);
+	
 	float3 camera_dir = normalize(world_position.xyz - Camera_Position);
 	float n_dot_c = dot(normal, camera_dir);
 	float distortion_factor = min(abs(n_dot_c), 1.0);
 	
-	output.distortion = distortion_factor * distortion_factor * (3.0 - 2.0 * distortion_factor);
+#ifdef UPDATED_SFX_DISTORT
+    output.distortion = saturate(output.position.w / distort_fadeoff) + 1.0f;
+#else
+    output.distortion = distortion_factor * distortion_factor * (3.0 - 2.0 * distortion_factor);
+#endif
+	
 	output.texcoord.xy = texcoord;
-	output.texcoord.z = screen_position.w;
+    output.texcoord.z = output.position.w;
 	output.texcoord.w = 1.0;
 }
 

@@ -21,6 +21,7 @@
 
 #include "..\methods\overlay.hlsli"
 #include "..\methods\edge_fade.hlsli"
+#include "..\methods\soft_fade.hlsli"
 
 PS_OUTPUT_DEFAULT halogram_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 {
@@ -42,6 +43,7 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
         if (sample_albedo == 1)
         {
 			albedo = calc_albedo_ps(texcoord, input.position.xy, input.normal.xyz, input.camera_dir);
+            apply_soft_fade(albedo, dot(camera_dir, normalize(normal)), input.position);
         }
     }
     else

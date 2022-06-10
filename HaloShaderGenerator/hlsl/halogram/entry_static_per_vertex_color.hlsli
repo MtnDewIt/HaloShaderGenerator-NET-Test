@@ -16,6 +16,7 @@
 #include "..\methods\overlay.hlsli"
 #include "..\methods\edge_fade.hlsli"
 #include "..\material_models\lambert.hlsli"
+#include "..\methods\soft_fade.hlsli"
 
 PS_OUTPUT_DEFAULT halogram_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLOR input)
 {
@@ -36,6 +37,7 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_CO
     {
         normal = input.normal;
 		albedo = calc_albedo_ps(texcoord, input.position.xy, input.normal.xyz, input.camera_dir);
+        apply_soft_fade(albedo, dot(camera_dir, normalize(normal)), input.position);
     }
     else
     {
