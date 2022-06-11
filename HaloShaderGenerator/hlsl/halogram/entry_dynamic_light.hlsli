@@ -1,18 +1,10 @@
 ﻿#ifndef _HALOGRAM_DYNAMIC_LIGHT_HLSLI
 #define _HALOGRAM_DYNAMIC_LIGHT_HLSLI
 
-#include "..\helpers\halogram_helper.hlsli"
-
 #include "..\helpers\input_output.hlsli"
 #include "..\methods\albedo.hlsli"
 #include "..\methods\warp.hlsli"
 #include "..\methods\self_illumination.hlsli"
-
-#if (self_illumination_arg == k_self_illumination_simple && blend_type_arg != k_blend_mode_opaque) || (self_illumination_arg != k_self_illumination_off && self_illumination_arg != k_self_illumination_simple)
-//uniform bool actually_calc_albedo : register(b12);
-#define actually_calc_albedo_visible 1
-#endif
-
 #include "..\methods\overlay.hlsli"
 #include "..\methods\edge_fade.hlsli"
 
@@ -62,7 +54,6 @@ bool is_cinematic)
     float4 albedo = float4(0, 0, 0, 1);
     float3 surface_normal;
     
-#ifdef actually_calc_albedo_visible
     if (actually_calc_albedo)
     {
         surface_normal = normal;
@@ -80,16 +71,6 @@ bool is_cinematic)
         float4 albedo_texture_sample = tex2D(albedo_texture, frag_texcoord);
 		albedo = albedo_texture_sample;
     }
-#else
-    float2 frag_position = position.xy;
-    frag_position += 0.5;
-    float2 inv_texture_size = (1.0 / texture_size);
-    float2 frag_texcoord = frag_position * inv_texture_size;
-    float4 normal_texture_sample = tex2D(normal_texture, frag_texcoord);
-    surface_normal = normal_import(normal_texture_sample.xyz);
-    float4 albedo_texture_sample = tex2D(albedo_texture, frag_texcoord);
-    albedo = albedo_texture_sample;
-#endif
     
     float3 reflect_dir = 2 * dot(view_dir, surface_normal) * surface_normal - camera_dir;
 	

@@ -566,6 +566,9 @@ namespace HaloShaderGenerator
 
             foreach (var testShader in shaders)
             {
+                if (HalogramIsMs25(testShader))
+                    continue;
+
                 // if we've added new options, old shader lists won't have them. use this to generate
                 List<int> generatorList = new List<int>();
 
@@ -768,5 +771,29 @@ namespace HaloShaderGenerator
         public abstract string GenerateChudPixelShader(ChudShader chudShader, ShaderStage entry);
 
         public abstract string GenerateChudVertexShader(ChudShader chudShader, ShaderStage entry);
+
+        private bool HalogramIsMs25(List<int> testShader)
+        {
+            if (ReferenceGenerator.GetType() == typeof(Halogram.HalogramGenerator))
+            {
+                foreach (var ms25H in Application.HalogramMS25)
+                {
+                    bool isEqual = true;
+                    for (int i = 0; i < testShader.Count; i++)
+                    {
+                        if (testShader[i] != ms25H[i])
+                        {
+                            isEqual = false;
+                            break;
+                        }
+                    }
+
+                    if (isEqual)
+                        return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

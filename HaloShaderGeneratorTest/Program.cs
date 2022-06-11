@@ -148,7 +148,7 @@ namespace HaloShaderGenerator
             //new List<int> { 2, 9, 1, 1, 0, 2, 0},
         };
 
-        static readonly List<List<int>> HalogramMS25 = new List<List<int>>
+        public static readonly List<List<int>> HalogramMS25 = new List<List<int>>
         {
             new List<int> { 0,5,1,1,0,0,0 },
             new List<int> { 2,3,1,0,0,0,1 },

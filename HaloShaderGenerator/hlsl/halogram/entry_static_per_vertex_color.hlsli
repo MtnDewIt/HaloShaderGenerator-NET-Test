@@ -1,18 +1,10 @@
 ﻿#ifndef _HALOGRAM_STATIC_PER_VERTEX_COLOR_HLSLI
 #define _HALOGRAM_STATIC_PER_VERTEX_COLOR_HLSLI
 
-#include "..\helpers\halogram_helper.hlsli"
-
 #include "..\helpers\input_output.hlsli"
 #include "..\methods\albedo.hlsli"
 #include "..\methods\warp.hlsli"
 #include "..\methods\self_illumination.hlsli"
-
-#if (self_illumination_arg == k_self_illumination_simple && blend_type_arg != k_blend_mode_opaque) || (self_illumination_arg != k_self_illumination_off && self_illumination_arg != k_self_illumination_simple)
-//uniform bool actually_calc_albedo : register(b12);
-#define actually_calc_albedo_visible 1
-#endif
-
 #include "..\methods\overlay.hlsli"
 #include "..\methods\edge_fade.hlsli"
 #include "..\material_models\lambert.hlsli"
@@ -32,7 +24,6 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_CO
     float2 texcoord = input.texcoord;
     float3 world_position = Camera_Position_PS - input.camera_dir;
     
-#ifdef actually_calc_albedo_visible
     if (actually_calc_albedo)
     {
         normal = input.normal;
@@ -50,22 +41,14 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_CO
         float4 albedo_texture_sample = tex2D(albedo_texture, frag_texcoord);
 		albedo = albedo_texture_sample;
     }
-#else
-    float2 position = input.position.xy;
-    position += 0.5;
-    float2 inv_texture_size = (1.0 / texture_size);
-    float2 frag_texcoord = position * inv_texture_size;
-    float4 normal_texture_sample = tex2D(normal_texture, frag_texcoord);
-    normal = normal_import(normal_texture_sample.xyz);
-    float4 albedo_texture_sample = tex2D(albedo_texture, frag_texcoord);
-    albedo = albedo_texture_sample;
-#endif
     
     normal = normalize(input.normal);
     
     float view_normal = dot(camera_dir, normal);
     
     float4 color = albedo;
+    
+    // todo: fix
     
     float3 self_illumination_color = float3(0, 0, 0);
 	calc_self_illumination_ps(input.position.xy, texcoord.xy, albedo.rgb, 0, input.camera_dir.xyz, view_normal, view_tangent, view_binormal, self_illumination_color);

@@ -1,24 +1,10 @@
 ﻿#ifndef _HALOGRAM_STATIC_PER_VERTEX_HLSLI
 #define _HALOGRAM_STATIC_PER_VERTEX_HLSLI
 
-#include "..\helpers\halogram_helper.hlsli"
-
 #include "..\helpers\input_output.hlsli"
 #include "..\methods\albedo.hlsli"
 #include "..\methods\warp.hlsli"
 #include "..\methods\self_illumination.hlsli"
-
-#if (self_illumination_arg == k_self_illumination_simple && blend_type_arg != k_blend_mode_opaque) || (self_illumination_arg != k_self_illumination_off && self_illumination_arg != k_self_illumination_simple)
-//uniform bool actually_calc_albedo : register(b12);
-#define actually_calc_albedo_visible 1
-#endif
-
-#if albedo_arg == k_albedo_two_detail_overlay || self_illumination_arg == k_self_illumination_from_diffuse || self_illumination_arg == k_self_illumination_self_illum_times_diffuse
-#define sample_albedo 1
-#else
-#define sample_albedo 0
-#endif
-
 #include "..\methods\overlay.hlsli"
 #include "..\methods\edge_fade.hlsli"
 #include "..\methods\soft_fade.hlsli"
@@ -38,15 +24,11 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
     
     float3 sky_radiance = float3(input.texcoord.zw, input.extinction_factor.w);
     
-#ifdef actually_calc_albedo_visible
     if (actually_calc_albedo)
     {
         normal = input.normal;
-        if (sample_albedo == 1)
-        {
-			albedo = calc_albedo_ps(texcoord, input.position.xy, input.normal.xyz, input.camera_dir);
-            apply_soft_fade(albedo, dot(camera_dir, normalize(normal)), input.position);
-        }
+        albedo = calc_albedo_ps(texcoord, input.position.xy, input.normal.xyz, input.camera_dir);
+        apply_soft_fade(albedo, dot(camera_dir, normalize(normal)), input.position);
     }
     else
     {
@@ -56,30 +38,15 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
         float2 frag_texcoord = position * inv_texture_size;
         float4 normal_texture_sample = tex2D(normal_texture, frag_texcoord);
         normal = normal_import(normal_texture_sample.xyz);
-        if (sample_albedo == 1)
-        {
-            float4 albedo_texture_sample = tex2D(albedo_texture, frag_texcoord);
-			albedo = albedo_texture_sample;
-        }
+        float4 albedo_texture_sample = tex2D(albedo_texture, frag_texcoord);
+        albedo = albedo_texture_sample;
     }
-#else
-    float2 position = input.position.xy;
-    position += 0.5;
-    float2 inv_texture_size = (1.0 / texture_size);
-    float2 frag_texcoord = position * inv_texture_size;
-    float4 normal_texture_sample = tex2D(normal_texture, frag_texcoord);
-    normal = normal_import(normal_texture_sample.xyz);
-#endif
     
     normal = normalize(normal);
     
     float view_normal = dot(camera_dir, normal);
     
-    float4 color = albedo;
-    
-    // TODO: find proper condition
-    if (albedo_arg == k_albedo_two_detail_overlay)
-        color.rgb = 0;
+    float4 color = 0;
     
 	calc_self_illumination_ps(input.position.xy, texcoord.xy, albedo.rgb, 0, input.camera_dir.xyz, view_normal, view_tangent, view_binormal, color.rgb);
     
