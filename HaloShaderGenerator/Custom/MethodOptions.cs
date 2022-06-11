@@ -68,6 +68,7 @@ namespace HaloShaderGenerator.Custom
         Per_Pixel,
         Dynamic,
         From_Flat_Texture,
+        Per_Pixel_Mip
     }
 
     public enum Self_Illumination

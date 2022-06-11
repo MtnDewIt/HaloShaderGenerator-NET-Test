@@ -218,7 +218,7 @@ namespace HaloShaderGenerator.Custom
 
         public int GetMethodCount()
         {
-            return 10;
+            return Enum.GetValues(typeof(CustomMethods)).Length;
         }
 
         public int GetMethodOptionCount(int methodIndex)
@@ -226,25 +226,25 @@ namespace HaloShaderGenerator.Custom
             switch ((CustomMethods)methodIndex)
             {
                 case CustomMethods.Albedo:
-                    return 12;
+                    return Enum.GetValues(typeof(Albedo)).Length;
                 case CustomMethods.Bump_Mapping:
-                    return 3;
+                    return Enum.GetValues(typeof(Bump_Mapping)).Length;
                 case CustomMethods.Alpha_Test:
-                    return 3;
+                    return Enum.GetValues(typeof(Alpha_Test)).Length;
                 case CustomMethods.Specular_Mask:
-                    return 3;
+                    return Enum.GetValues(typeof(Specular_Mask)).Length;
                 case CustomMethods.Material_Model:
-                    return 4; //5
+                    return Enum.GetValues(typeof(Material_Model)).Length;
                 case CustomMethods.Environment_Mapping:
-                    return 4; //5
+                    return Enum.GetValues(typeof(Environment_Mapping)).Length;
                 case CustomMethods.Self_Illumination:
-                    return 9;
+                    return Enum.GetValues(typeof(Self_Illumination)).Length;
                 case CustomMethods.Blend_Mode:
-                    return 5;
+                    return Enum.GetValues(typeof(Blend_Mode)).Length;
                 case CustomMethods.Parallax:
-                    return 4;
+                    return Enum.GetValues(typeof(Parallax)).Length;
                 case CustomMethods.Misc:
-                    return 4;
+                    return Enum.GetValues(typeof(Misc)).Length;
             }
             return -1;
         }
@@ -480,14 +480,17 @@ namespace HaloShaderGenerator.Custom
                     result.AddFloatParameter("diffuse_coefficient");
                     result.AddFloatParameter("specular_coefficient");
                     result.AddFloatParameter("environment_map_specular_contribution");
+                    result.AddFloatParameter("area_specular_contribution");
+                    result.AddFloatParameter("analytical_specular_contribution");
                     result.AddSamplerWithoutXFormParameter("specular_lobe");
                     result.AddSamplerWithoutXFormParameter("glancing_falloff");
-                    result.AddSamplerWithoutXFormParameter("material_map");
+                    result.AddSamplerParameter("material_map");
                     break;
             }
             switch (environment_mapping)
             {
                 case Environment_Mapping.Per_Pixel:
+                case Environment_Mapping.Per_Pixel_Mip:
                     result.AddSamplerWithoutXFormParameter("environment_map");
                     result.AddFloat4Parameter("env_tint_color");
                     result.AddFloatParameter("env_roughness_scale");
@@ -774,9 +777,11 @@ namespace HaloShaderGenerator.Custom
                         result.AddFloatParameter("diffuse_coefficient");
                         result.AddFloatParameter("specular_coefficient");
                         result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddFloatParameter("area_specular_contribution");
+                        result.AddFloatParameter("analytical_specular_contribution");
                         result.AddSamplerWithoutXFormParameter("specular_lobe");
                         result.AddSamplerWithoutXFormParameter("glancing_falloff");
-                        result.AddSamplerWithoutXFormParameter("material_map");
+                        result.AddSamplerParameter("material_map");
                         rmopName = @"shaders\custom_options\material_custom_specular";
                         break;
                 }
@@ -810,11 +815,11 @@ namespace HaloShaderGenerator.Custom
                         result.AddFloatParameter("env_bloom_override_intensity");
                         rmopName = @"shaders\shader_options\env_map_from_flat_texture";
                         break;
-                    //case Environment_Mapping.Per_Pixel_Mip:
-                    //    result.AddSamplerWithoutXFormParameter("environment_map");
-                    //    result.AddFloat4Parameter("env_tint_color");
-                    //    rmopName = @"shaders\shader_options\env_map_per_pixel";
-                    //    break;
+                    case Environment_Mapping.Per_Pixel_Mip:
+                        result.AddSamplerWithoutXFormParameter("environment_map");
+                        result.AddFloat4Parameter("env_tint_color");
+                        rmopName = @"shaders\shader_options\env_map_per_pixel";
+                        break;
                 }
             }
             if (methodName == "self_illumination")
