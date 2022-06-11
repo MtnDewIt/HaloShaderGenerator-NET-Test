@@ -212,6 +212,10 @@ namespace HaloShaderGenerator.Halogram
                     return Enum.GetValues(typeof(Overlay)).Length;
                 case HalogramMethods.Edge_Fade:
                     return Enum.GetValues(typeof(Edge_Fade)).Length;
+                case HalogramMethods.Distortion:
+                    return Enum.GetValues(typeof(Shared.Distortion)).Length;
+                case HalogramMethods.Soft_Fade:
+                    return Enum.GetValues(typeof(Shared.Soft_Fade)).Length;
             }
 
             return -1;
@@ -235,6 +239,10 @@ namespace HaloShaderGenerator.Halogram
                     return (int)overlay;
                 case HalogramMethods.Edge_Fade:
                     return (int)edge_fade;
+                case HalogramMethods.Distortion:
+                    return (int)distortion;
+                case HalogramMethods.Soft_Fade:
+                    return (int)soft_fade;
             }
             return -1;
         }
@@ -949,10 +957,10 @@ namespace HaloShaderGenerator.Halogram
                     return Enum.GetValues(typeof(Overlay));
                 case HalogramMethods.Edge_Fade:
                     return Enum.GetValues(typeof(Edge_Fade));
-                //case HalogramMethods.Distortion:
-                //    return Enum.GetValues(typeof(Shared.Distortion));
-                //case HalogramMethods.Soft_Fade:
-                //    return Enum.GetValues(typeof(Shared.Soft_Fade));
+                case HalogramMethods.Distortion:
+                    return Enum.GetValues(typeof(Shared.Distortion));
+                case HalogramMethods.Soft_Fade:
+                    return Enum.GetValues(typeof(Shared.Soft_Fade));
             }
 
             return null;

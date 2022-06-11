@@ -260,6 +260,8 @@ namespace HaloShaderGenerator.Shader
                     return Enum.GetValues(typeof(Misc)).Length;
                 case ShaderMethods.Distortion:
                     return Enum.GetValues(typeof(Shared.Distortion)).Length;
+                case ShaderMethods.Soft_Fade:
+                    return Enum.GetValues(typeof(Shared.Soft_Fade)).Length;
             }
             return -1;
         }
@@ -290,6 +292,8 @@ namespace HaloShaderGenerator.Shader
                     return (int)misc;
                 case ShaderMethods.Distortion:
                     return (int)distortion;
+                case ShaderMethods.Soft_Fade:
+                    return (int)soft_fade;
             }
             return -1;
         }
@@ -1429,8 +1433,8 @@ namespace HaloShaderGenerator.Shader
                     return Enum.GetValues(typeof(Misc));
                 case ShaderMethods.Distortion:
                     return Enum.GetValues(typeof(Shared.Distortion));
-                //case ShaderMethods.Soft_Fade:
-                //    return Enum.GetValues(typeof(Shared.Soft_Fade));
+                case ShaderMethods.Soft_Fade:
+                    return Enum.GetValues(typeof(Shared.Soft_Fade));
             }
 
             return null;
