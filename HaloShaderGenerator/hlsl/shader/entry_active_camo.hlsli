@@ -13,14 +13,8 @@ PS_OUTPUT_DEFAULT shader_entry_active_camo(VS_OUTPUT_ACTIVE_CAMO input)
 	fragcoord.x /= texture_size.x;
 	fragcoord.y /= texture_size.y;
 	
-	float2 camo_texcoord = (k_ps_active_camo_factor.yz * input.texcoord.xy) / (4 * aspect_ratio);
-	float camo_scale;
-
-	[flatten]
-	if (0.5f - input.camo_param.w < 0)
-		camo_scale = 1.0f / input.camo_param.w;
-	else
-		camo_scale = 2.0f;
+	float2 camo_texcoord = (k_ps_active_camo_factor.yz * input.camo_param.xy) / (4 * aspect_ratio);
+    float camo_scale = 1.0f / max(0.5f, input.texcoord.w);
 	
 	float2 ldr_texcoord = fragcoord.xy + camo_texcoord * camo_scale;
 	float4 sample = tex2D(scene_ldr_texture, ldr_texcoord);
