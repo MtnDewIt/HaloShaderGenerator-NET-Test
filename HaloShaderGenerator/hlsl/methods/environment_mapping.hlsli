@@ -60,6 +60,15 @@ out float4 unknown_output)
 	diffuse += environment_color;
 }
 
+// on x360, per_pixel used a lod of 0.0f on the cube tex. on pc this was never used - our per_pixel functions the same as per_pixel_mip.
+void envmap_type_per_pixel_mip(
+in ENVIRONMENT_MAPPING_COMMON env_mapping_common_data,
+inout float3 diffuse,
+out float4 unknown_output)
+{
+    envmap_type_per_pixel(env_mapping_common_data, diffuse, unknown_output);
+}
+
 void envmap_type_dynamic(
 in ENVIRONMENT_MAPPING_COMMON env_mapping_common_data,
 inout float3 diffuse,
