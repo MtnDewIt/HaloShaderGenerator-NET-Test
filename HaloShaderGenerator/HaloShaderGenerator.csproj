@@ -687,6 +687,12 @@
     <EmbeddedResource Include="hlsl\material_models\custom_specular.hlsli" />
     <EmbeddedResource Include="hlsl\shader_lighting\custom_specular_lighting.hlsli" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\shader_lighting\hair_lighting.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="hlsl\material_models\hair.hlsli" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>

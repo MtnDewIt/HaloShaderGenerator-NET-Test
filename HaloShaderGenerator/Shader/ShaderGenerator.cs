@@ -645,7 +645,21 @@ namespace HaloShaderGenerator.Shader
                     break;
                 case Material_Model.Car_Paint:
                     throw new System.Exception("Unsupported");
-
+                case Material_Model.Hair:
+                    result.AddFloatParameter("diffuse_coefficient");
+                    result.AddFloat3ColorParameter("diffuse_tint");
+                    result.AddFloatParameter("analytical_specular_coefficient");
+                    result.AddFloatParameter("area_specular_coefficient");
+                    result.AddFloat3ColorParameter("specular_tint");
+                    result.AddFloatParameter("specular_power");
+                    result.AddSamplerWithoutXFormParameter("specular_map");
+                    result.AddSamplerWithoutXFormParameter("specular_shift_map");
+                    result.AddSamplerWithoutXFormParameter("specular_noise_map");
+                    result.AddFloatParameter("environment_map_coefficient");
+                    result.AddFloat3ColorParameter("environment_map_tint");
+                    result.AddFloat3ColorParameter("final_tint");
+                    result.AddBooleanParameter("no_dynamic_lights");
+                    break;
             }
 
             switch (environment_mapping)
@@ -1195,6 +1209,22 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("rim_fresnel_power1");
                         result.AddFloatParameter("rim_fresnel_albedo_blend1");
                         rmopName = @"shaders\shader_options\material_car_paint";
+                        break;
+                    case Material_Model.Hair:
+                        result.AddFloatParameter("diffuse_coefficient");
+                        result.AddFloat3ColorParameter("diffuse_tint");
+                        result.AddFloatParameter("analytical_specular_coefficient");
+                        result.AddFloatParameter("area_specular_coefficient");
+                        result.AddFloat3ColorParameter("specular_tint");
+                        result.AddFloatParameter("specular_power");
+                        result.AddSamplerWithoutXFormParameter("specular_map");
+                        result.AddSamplerWithoutXFormParameter("specular_shift_map");
+                        result.AddSamplerWithoutXFormParameter("specular_noise_map");
+                        result.AddFloatParameter("environment_map_coefficient");
+                        result.AddFloat3ColorParameter("environment_map_tint");
+                        result.AddFloat3ColorParameter("final_tint");
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        rmopName = @"shaders\shader_options\material_hair_option";
                         break;
                 }
             }

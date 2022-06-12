@@ -79,7 +79,7 @@ namespace HaloShaderGenerator.Shader
         Organism,
         Single_Lobe_Phong,
         Car_Paint,
-        //Hair
+        Hair
     }
 
     public enum Environment_Mapping

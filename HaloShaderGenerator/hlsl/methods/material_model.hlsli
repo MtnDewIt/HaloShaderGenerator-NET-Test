@@ -37,6 +37,10 @@ uniform bool no_dynamic_lights;
 #include "../shader_lighting/custom_specular_lighting.hlsli"
 #endif
 
+#if material_type_arg == k_material_model_hair
+#include "../shader_lighting/hair_lighting.hlsli"
+#endif
+
 #include "../shader_lighting/no_material_lighting.hlsli"
 #include "../shader_lighting/none_lighting.hlsli"
 #include "../shader_lighting/per_vertex_color_lighting.hlsli"

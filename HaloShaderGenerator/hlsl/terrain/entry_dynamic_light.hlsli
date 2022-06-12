@@ -81,7 +81,9 @@ bool is_cinematic)
 	common_data.albedo = albedo;
 	common_data.texcoord = texcoord;
 	common_data.surface_normal = surface_normal;
-	common_data.normal = normal;
+    common_data.normal = normal;
+    common_data.binormal = binormal;
+    common_data.tangent = tangent;
 	common_data.view_dir = view_dir;
 	common_data.reflect_dir = 0;
 	common_data.light_intensity = light_intensity;
