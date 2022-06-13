@@ -7,7 +7,7 @@
 #include "..\terrain_lighting\terrain_lighting.hlsli"
 
 #include "..\registers\global_parameters.hlsli"
-#include "..\helpers\input_output.hlsli"
+#include "..\helpers\input_output_terrain.hlsli"
 #include "..\helpers\definition_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 

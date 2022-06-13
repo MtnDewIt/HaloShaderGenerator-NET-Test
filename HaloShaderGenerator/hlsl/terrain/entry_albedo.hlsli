@@ -2,7 +2,7 @@
 #define _TERRAIN_TEMPLATE_ALBEDO_HLSLI
 
 #include "..\registers\global_parameters.hlsli"
-#include "..\helpers\input_output.hlsli"
+#include "..\helpers\input_output_terrain.hlsli"
 #include "..\helpers\terrain_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 #include "..\helpers\bumpmap_math.hlsli"
@@ -63,12 +63,12 @@ float4 apply_terrain_blend(float4 blend, float4 _0, float4 _1, float4 _2, float4
     return result;
 }
 
-PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
+PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO_TERRAIN input)
 {	
 	float4 albedo = 0;
 	float3 m_normal = 0;
 
-	float2 texcoord = input.texcoord;
+	float2 texcoord = input.texcoord.xy;
 	float3 tangent = input.tangent;
 	float3 normal = input.normal.xyz;
 	float3 binormal = input.binormal;

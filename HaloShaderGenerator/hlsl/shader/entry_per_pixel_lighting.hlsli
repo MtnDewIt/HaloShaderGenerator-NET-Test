@@ -30,8 +30,8 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
 		common_data.fragcoord = input.position.xy;
 		common_data.tangent = input.tangent;
 		common_data.binormal = input.binormal;
-		common_data.normal = input.normal;
-		common_data.texcoord = calc_parallax_ps(input.texcoord.xy, common_data.n_view_dir, input.tangent, input.binormal, input.normal);
+		common_data.normal = input.normal.xyz;
+        common_data.texcoord = calc_parallax_ps(input.texcoord.xy, common_data.n_view_dir, input.tangent, input.binormal, input.normal.xyz);
 		common_data.alpha = calc_alpha_test_ps(common_data.texcoord, 1.0f);
 
 		if (actually_calc_albedo)
@@ -43,7 +43,7 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
             common_data.surface_normal = calc_bumpmap_ps(common_data.tangent, common_data.binormal, common_data.normal.xyz, calc_albedo_texcoord);
             common_data.albedo = calc_albedo_ps(calc_albedo_texcoord, common_data.fragcoord, common_data.surface_normal, common_data.view_dir);
 			
-            apply_soft_fade(common_data.albedo, dot(common_data.n_view_dir, normalize(common_data.surface_normal)), input.position);
+            apply_soft_fade(common_data.albedo, dot(common_data.n_view_dir, normalize(common_data.surface_normal)), float4(common_data.fragcoord, 0.0f, input.normal.w));
         }
 		else
 		{

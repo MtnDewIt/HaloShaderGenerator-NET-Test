@@ -133,12 +133,12 @@ bool is_cinematic)
 
 PS_OUTPUT_DEFAULT halogram_entry_dynamic_light(VS_OUTPUT_DYNAMIC_LIGHT input)
 {
-    return calculate_dynamic_light(input.position, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, false);
+    return calculate_dynamic_light(float4(input.position.xy, 0.0f, input.normal.w), input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal.xyz, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, false);
 }
 
 PS_OUTPUT_DEFAULT halogram_entry_dynamic_light_cinematic(VS_OUTPUT_DYNAMIC_LIGHT input)
 {
-    return calculate_dynamic_light(input.position, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, true);
+    return calculate_dynamic_light(float4(input.position.xy, 0.0f, input.normal.w), input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal.xyz, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, true);
 }
 
 #endif

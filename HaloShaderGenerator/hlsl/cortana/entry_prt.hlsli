@@ -111,7 +111,7 @@ float4 prt)
 
 PS_OUTPUT_DEFAULT cortana_entry_static_sh(VS_OUTPUT_STATIC_SH input)
 {
-    return entry_static_sh_prt(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, 1.0);
+    return entry_static_sh_prt(input.position.xy, input.texcoord.xy, input.camera_dir.xyz, input.normal.xyz, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, 1.0);
 }
 
 PS_OUTPUT_DEFAULT cortana_entry_static_prt(VS_OUTPUT_CORTANA_PRT input)

@@ -3,6 +3,7 @@
 
 #include "..\registers\global_parameters.hlsli"
 
+#include "..\helpers\input_output_terrain.hlsli"
 #include "..\helpers\terrain_helper.hlsli"
 #include "..\helpers\color_processing.hlsli"
 #include "..\helpers\lighting.hlsli"
@@ -11,19 +12,6 @@
 
 
 uniform sampler2D dynamic_light_gel_texture;
-
-struct VS_OUTPUT_TERRAIN_DYNAMIC_LIGHT
-{
-	float4 position : SV_Position;
-	float2 texcoord : TEXCOORD0;
-	float3 normal : TEXCOORD1;
-	float3 binormal : TEXCOORD2;
-	float3 tangent : TEXCOORD3;
-	float3 camera_dir : TEXCOORD4;
-	float4 shadowmap_texcoord : TEXCOORD5;
-	float3 extinction_factor : COLOR0;
-	float3 sky_radiance : COLOR1;
-};
 
 PS_OUTPUT_DEFAULT calculate_dynamic_light(
 float2 position,
@@ -112,14 +100,14 @@ bool is_cinematic)
 	return export_color(result);
 }
 
-PS_OUTPUT_DEFAULT shader_entry_dynamic_light(VS_OUTPUT_TERRAIN_DYNAMIC_LIGHT input)
+PS_OUTPUT_DEFAULT shader_entry_dynamic_light(VS_OUTPUT_DYNAMIC_LIGHT_TERRAIN input)
 {
-	return calculate_dynamic_light(input.position.xy, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, input.extinction_factor, false);
+	return calculate_dynamic_light(input.position.xy, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal.xyz, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, input.extinction_factor, false);
 }
 
-PS_OUTPUT_DEFAULT shader_entry_dynamic_light_cinematic(VS_OUTPUT_TERRAIN_DYNAMIC_LIGHT input)
+PS_OUTPUT_DEFAULT shader_entry_dynamic_light_cinematic(VS_OUTPUT_DYNAMIC_LIGHT_TERRAIN input)
 {
-	return calculate_dynamic_light(input.position.xy, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, input.extinction_factor, true);
+	return calculate_dynamic_light(input.position.xy, input.texcoord, input.camera_dir, input.tangent, input.binormal, input.normal.xyz, 0, input.shadowmap_texcoord.w, input.shadowmap_texcoord.z, input.shadowmap_texcoord.xy, input.extinction_factor, true);
 }
 
 #endif

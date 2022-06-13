@@ -26,9 +26,9 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_CO
     
     if (actually_calc_albedo)
     {
-        normal = input.normal;
+        normal = input.normal.xyz;
 		albedo = calc_albedo_ps(texcoord, input.position.xy, input.normal.xyz, input.camera_dir);
-        apply_soft_fade(albedo, dot(camera_dir, normalize(normal)), input.position);
+        apply_soft_fade(albedo, dot(camera_dir, normalize(normal)), float4(input.position.xy, 0.0f, input.normal.w));
     }
     else
     {
@@ -42,7 +42,7 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_CO
 		albedo = albedo_texture_sample;
     }
     
-    normal = normalize(input.normal);
+    normal = normalize(input.normal.xyz);
     
     float view_normal = dot(camera_dir, normal);
     

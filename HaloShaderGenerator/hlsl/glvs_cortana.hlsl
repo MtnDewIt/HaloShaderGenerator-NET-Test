@@ -31,13 +31,14 @@ VS_OUTPUT_STATIC_SH entry_static_sh(input_vertex_format input)
     VS_OUTPUT_STATIC_SH output;
     float4 world_position;
 	
-	calc_vertex_transform(input, world_position, output.position, output.normal, output.tangent, output.binormal, output.texcoord.xy);
+	calc_vertex_transform(input, world_position, output.position, output.normal.xyz, output.tangent, output.binormal, output.texcoord.xy);
+    output.normal.w = output.position.w;
 	
     output.camera_dir = Camera_Position - world_position.xyz;
     calculate_atmosphere_radiance(world_position, output.camera_dir, output.extinction_factor.rgb, output.sky_radiance.rgb);
 
     float3 light_dir = normalize(v_lighting_constant_1.xyz + v_lighting_constant_2.xyz + v_lighting_constant_3.xyz);
-    output.texcoord.z = dot(output.normal, -light_dir);
+    output.texcoord.z = dot(output.normal.xyz, -light_dir);
 	
     return output;
 }

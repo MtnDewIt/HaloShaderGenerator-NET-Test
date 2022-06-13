@@ -2,10 +2,10 @@
 #define _TERRAIN_TEMPLATE_LIGHTMAP_DEBUG_HLSLI
 
 #include "..\registers\global_parameters.hlsli"
-#include "..\helpers\input_output.hlsli"
+#include "..\helpers\input_output_terrain.hlsli"
 #include "..\helpers\color_processing.hlsli"
 
-PS_OUTPUT_DEFAULT shader_entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input) : COLOR
+PS_OUTPUT_DEFAULT shader_entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE_TERRAIN input) : COLOR
 {	
 	float3 result_color = 0;
 	float debug_mode = p_render_debug_mode.x;

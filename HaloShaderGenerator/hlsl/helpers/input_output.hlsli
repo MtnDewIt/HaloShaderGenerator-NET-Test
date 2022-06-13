@@ -89,7 +89,7 @@ struct VS_OUTPUT_STATIC_PRT
 {
 	float4 position : SV_Position;
     float2 texcoord : TEXCOORD;
-	float3 normal : TEXCOORD3;
+	float4 normal : TEXCOORD3; // w = pos.w
 	float3 binormal : TEXCOORD4;
 	float3 tangent : TEXCOORD5;
 	float3 camera_dir : TEXCOORD6;
@@ -112,16 +112,6 @@ struct VS_OUTPUT_STATIC_PRT_FOLIAGE
     float3 sky_radiance : COLOR1;
 };
 
-struct VS_OUTPUT_STATIC_PRT_TERRAIN
-{
-    float4 position : SV_Position;
-    float2 texcoord : TEXCOORD;
-    float3 camera_dir : TEXCOORD4;
-    float4 prt_radiance_vector : TEXCOORD5;
-    float3 extinction_factor : COLOR;
-    float3 sky_radiance : COLOR1;
-};
-
 struct VS_OUTPUT_ACTIVE_CAMO
 {
 	float4 position : SV_Position;
@@ -133,7 +123,7 @@ struct VS_OUTPUT_DYNAMIC_LIGHT
 {
 	float4 position : SV_Position;
 	float2 texcoord : TEXCOORD0;
-	float3 normal : TEXCOORD1;
+	float4 normal : TEXCOORD1; // w = pos.w
 	float3 binormal : TEXCOORD2;
 	float3 tangent : TEXCOORD3;
 	float3 camera_dir : TEXCOORD4;
@@ -182,7 +172,7 @@ struct VS_OUTPUT_STATIC_SH
 {
 	float4 position : SV_Position;
     float3 texcoord : TEXCOORD; //z is used for the angle of the dominant light dir?
-	float3 normal : TEXCOORD3; 
+    float4 normal : TEXCOORD3; // w = pos.w
 	float3 binormal : TEXCOORD4;
 	float3 tangent : TEXCOORD5;
 	float3 camera_dir : TEXCOORD6;
@@ -199,15 +189,6 @@ struct VS_OUTPUT_STATIC_SH_FOLIAGE
     float3 binormal : TEXCOORD4;
     float3 tangent : TEXCOORD5;
     float3 camera_dir : TEXCOORD6;
-    float3 extinction_factor : COLOR;
-    float3 sky_radiance : COLOR1;
-};
-
-struct VS_OUTPUT_STATIC_SH_TERRAIN
-{
-    float4 position : SV_Position;
-    float3 texcoord : TEXCOORD; //z is used for the angle of the dominant light dir?
-    float3 camera_dir : TEXCOORD4;
     float3 extinction_factor : COLOR;
     float3 sky_radiance : COLOR1;
 };
@@ -232,7 +213,7 @@ struct VS_OUTPUT_PER_PIXEL
 {
 	float4 position : SV_Position;
     float2 texcoord : TEXCOORD;
-	float3 normal : TEXCOORD3;
+    float4 normal : TEXCOORD3; // w = pos.w
 	float3 binormal : TEXCOORD4;
 	float3 tangent : TEXCOORD5;
 	float2 lightmap_texcoord : TEXCOORD6_CENTROID;
@@ -255,16 +236,6 @@ struct VS_OUTPUT_PER_PIXEL_FOLIAGE
     float3 sky_radiance : COLOR1;
 };
 
-struct VS_OUTPUT_PER_PIXEL_TERRAIN
-{
-    float4 position : SV_Position;
-    float2 texcoord : TEXCOORD;
-    float2 lightmap_texcoord : TEXCOORD4_CENTROID;
-    float3 camera_dir : TEXCOORD5;
-    float3 extinction_factor : COLOR;
-    float3 sky_radiance : COLOR1;
-};
-
 struct s_per_vertex_lightmap_coefficients
 {
     float4 color1 : TEXCOORD5;
@@ -279,7 +250,7 @@ struct VS_OUTPUT_PER_VERTEX
 	float4 texcoord : TEXCOORD;
 	float3 camera_dir : TEXCOORD1;
 	float3 tangent : TEXCOORD2;
-	float3 normal : TEXCOORD3;
+    float4 normal : TEXCOORD3; // w = pos.w
 	float3 binormal : TEXCOORD4;
     s_per_vertex_lightmap_coefficients lightmap_coefficients;
     float4 extinction_factor : COLOR;
@@ -298,22 +269,13 @@ struct VS_OUTPUT_PER_VERTEX_FOLIAGE
     float3 foliage_sky_radiance : COLOR1;
 };
 
-struct VS_OUTPUT_PER_VERTEX_TERRAIN
-{
-    float4 position : SV_Position;
-    float4 texcoord : TEXCOORD;
-    float3 camera_dir : TEXCOORD4;
-    s_per_vertex_lightmap_coefficients lightmap_coefficients;
-    float4 extinction_factor : COLOR;
-};
-
 struct VS_OUTPUT_PER_VERTEX_COLOR
 {
 	float4 position : SV_Position;
 	float2 texcoord : TEXCOORD;
 	float3 vertex_color : TEXCOORD1;
 	float3 camera_dir : TEXCOORD2;
-	float3 normal : TEXCOORD3;
+    float4 normal : TEXCOORD3; // w = pos.w
 	float3 binormal : TEXCOORD4;
 	float3 tangent : TEXCOORD5;
 	

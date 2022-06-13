@@ -148,12 +148,12 @@ float4 prt)
 
 PS_OUTPUT_DEFAULT shader_entry_static_sh(VS_OUTPUT_STATIC_SH input)
 {
-	return entry_static_sh_prt(input.position, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, 1.0);
+    return entry_static_sh_prt(float4(input.position.xy, 0.0f, input.normal.w), input.texcoord.xy, input.camera_dir.xyz, input.normal.xyz, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, 1.0);
 }
 
 PS_OUTPUT_DEFAULT shader_entry_static_prt(VS_OUTPUT_STATIC_PRT input)
 {
-	return entry_static_sh_prt(input.position, input.texcoord.xy, input.camera_dir.xyz, input.normal, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector);
+    return entry_static_sh_prt(float4(input.position.xy, 0.0f, input.normal.w), input.texcoord.xy, input.camera_dir.xyz, input.normal.xyz, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, input.prt_radiance_vector);
 }
 
 #endif

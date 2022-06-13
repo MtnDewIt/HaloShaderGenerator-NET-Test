@@ -24,9 +24,9 @@ PS_OUTPUT_DEFAULT halogram_entry_static_per_pixel(VS_OUTPUT_PER_PIXEL input)
     
     if (actually_calc_albedo)
     {
-        normal = input.normal;
+        normal = input.normal.xyz;
         albedo = calc_albedo_ps(texcoord, input.position.xy, input.normal.xyz, input.camera_dir);
-        apply_soft_fade(albedo, dot(camera_dir, normalize(normal)), input.position);
+        apply_soft_fade(albedo, dot(camera_dir, normalize(normal)), float4(input.position.xy, 0.0f, input.normal.w));
     }
     else
     {
