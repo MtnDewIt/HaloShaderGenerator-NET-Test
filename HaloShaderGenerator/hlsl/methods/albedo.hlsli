@@ -317,30 +317,31 @@ float3 get_chameleon_color(float3 surface_normal, float3 n_view_dir)
     float n_dot_v = max(dot(surface_normal, n_view_dir), 0.0f);
     float fresnel = pow(n_dot_v, chameleon_fresnel_power);
 	
-    float interpolant = fresnel * rcp(chameleon_color_offset1);
-
-    if (fresnel > chameleon_color_offset1)
-    {
-        interpolant = (fresnel - chameleon_color_offset1) * rcp(chameleon_color_offset2 - chameleon_color_offset1);
-        return lerp(chameleon_color1, chameleon_color2, interpolant);
-    }
     if (fresnel > chameleon_color_offset2)
     {
-        interpolant = (fresnel - chameleon_color_offset2) * rcp(1.0f - chameleon_color_offset2);
+        float interpolant = (fresnel - chameleon_color_offset2) * rcp(1.0f - chameleon_color_offset2);
         return lerp(chameleon_color2, chameleon_color3, interpolant);
     }
-
-    return lerp(chameleon_color0, chameleon_color1, interpolant);
+    else if (fresnel > chameleon_color_offset1)
+    {
+        float interpolant = (fresnel - chameleon_color_offset1) * rcp(chameleon_color_offset2 - chameleon_color_offset1);
+        return lerp(chameleon_color1, chameleon_color2, interpolant);
+    }
+	else
+    {
+        float interpolant = fresnel * rcp(chameleon_color_offset1);
+        return lerp(chameleon_color0, chameleon_color1, interpolant);
+    }
 }
 
 float4 calc_albedo_chameleon_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
 	float3 chameleon = get_chameleon_color(surface_normal, normalize(camera_dir));
 	
-	float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
-	float4 base_map_sample = tex2D(base_map, base_map_texcoord);
-	float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
-	float4 detail_map_sample = tex2D(detail_map, detail_map_texcoord);
+    float4 base_map_sample = tex2D(base_map, apply_xform2d(texcoord, base_map_xform));
+    float4 detail_map_sample = tex2D(detail_map, apply_xform2d(texcoord, detail_map_xform));
+    detail_map_sample.rgb *= DETAIL_MULTIPLIER;
+	
 	float4 albedo = base_map_sample * detail_map_sample;
 	albedo.rgb = chameleon * albedo.rgb;
 	albedo.rgb = apply_debug_tint(albedo.rgb);
@@ -355,45 +356,16 @@ float4 calc_albedo_two_change_color_chameleon_ps(float2 texcoord, float2 positio
 
 float4 calc_albedo_chameleon_masked_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
-	float4 albedo;
-	float3 chameleon;
-	float fresnel = pow(max(dot(surface_normal, normalize(camera_dir)), 0), chameleon_fresnel_power);
-	float3 color0, color1;
-	float t;
-
-	if (chameleon_color_offset1 - fresnel < 0)
-	{
-		t = fresnel / chameleon_color_offset1;
-		color0 = chameleon_color1;
-		color1 = chameleon_color2;
-	}
-	else
-	{
-		t = (fresnel - chameleon_color_offset1) / (chameleon_color_offset2 - chameleon_color_offset1);
-		color0 = chameleon_color0;
-		color1 = chameleon_color1;
-	}
-	if (chameleon_color_offset2 - fresnel < 0)
-	{
-		color0 = chameleon_color2;
-		color1 = chameleon_color3;
-	}
-	else
-	{
-		t = (fresnel - chameleon_color_offset2) / (1.0f - fresnel);
-	}
-
-	chameleon = lerp(color0, color1, t);
+	float3 chameleon = get_chameleon_color(surface_normal, normalize(camera_dir));
 	
-	float2 chameleon_mask_texcoord = apply_xform2d(texcoord, chameleon_mask_map_xform);
-	float4 chameleon_mask_sample = tex2D(chameleon_mask_map, chameleon_mask_texcoord);
+    float4 chameleon_mask_sample = tex2D(chameleon_mask_map, apply_xform2d(texcoord, chameleon_mask_map_xform));
 	chameleon = lerp(1, chameleon, chameleon_mask_sample.x);
 	
-	float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
-	float4 base_map_sample = tex2D(base_map, base_map_texcoord);
-	float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
-	float4 detail_map_sample = tex2D(detail_map, detail_map_texcoord);
-	albedo = base_map_sample * detail_map_sample;
+    float4 base_map_sample = tex2D(base_map, apply_xform2d(texcoord, base_map_xform));
+    float4 detail_map_sample = tex2D(detail_map, apply_xform2d(texcoord, detail_map_xform));
+    detail_map_sample.rgb *= DETAIL_MULTIPLIER;
+	
+	float4 albedo = base_map_sample * detail_map_sample;
 	albedo.rgb = chameleon * albedo.rgb;
 	albedo.rgb = apply_debug_tint(albedo.rgb);
 	
