@@ -5,7 +5,7 @@
 
 #if shaderstage == k_shaderstage_albedo
 #include "terrain/entry_albedo.hlsli"
-PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO input) : COLOR
+PS_OUTPUT_ALBEDO entry_albedo(VS_OUTPUT_ALBEDO_TERRAIN input) : COLOR
 {	
 	return shader_entry_albedo(input);
 }
@@ -29,7 +29,7 @@ PS_OUTPUT_DEFAULT entry_static_per_vertex(VS_OUTPUT_PER_VERTEX_TERRAIN input) : 
 
 #if shaderstage == k_shaderstage_lightmap_debug_mode
 #include "terrain/entry_lightmap_debug.hlsli"
-PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input) : COLOR
+PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE_TERRAIN input) : COLOR
 {
 	return shader_entry_lightmap_debug_mode(input);
 }
@@ -37,12 +37,12 @@ PS_OUTPUT_DEFAULT entry_lightmap_debug_mode(VS_OUTPUT_LIGHTMAP_DEBUG_MODE input)
 
 #if shaderstage == k_shaderstage_dynamic_light || shaderstage == k_shaderstage_dynamic_light_cinematic
 #include "terrain/entry_dynamic_light.hlsli"
-PS_OUTPUT_DEFAULT entry_dynamic_light(VS_OUTPUT_TERRAIN_DYNAMIC_LIGHT input) : COLOR
+PS_OUTPUT_DEFAULT entry_dynamic_light(VS_OUTPUT_DYNAMIC_LIGHT_TERRAIN input) : COLOR
 {
 	return shader_entry_dynamic_light(input);
 }
 
-PS_OUTPUT_DEFAULT entry_dynamic_light_cinematic(VS_OUTPUT_TERRAIN_DYNAMIC_LIGHT input) : COLOR
+PS_OUTPUT_DEFAULT entry_dynamic_light_cinematic(VS_OUTPUT_DYNAMIC_LIGHT_TERRAIN input) : COLOR
 {
 	return shader_entry_dynamic_light_cinematic(input);
 }
