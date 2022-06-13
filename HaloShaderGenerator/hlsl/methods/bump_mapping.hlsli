@@ -62,10 +62,12 @@ float3 calc_bumpmap_detail_masked_ps(
 	float3 bump_detail_map_sample = sample_normal_2d(bump_detail_map, apply_xform2d(texcoord, bump_detail_map_xform));
 	float4 mask_map_sample = tex2D(bump_detail_mask_map, apply_xform2d(texcoord, bump_detail_mask_map_xform));
 	
-#if APPLY_HLSL_FIXES == 1
-    float mask = invert_mask ? 1.0f - mask_map_sample.x : mask_map_sample.x;
-#else
     float mask = mask_map_sample.x;
+#if APPLY_HLSL_FIXES == 1
+	// branch here sucks but its the only way it will actually compile as bool
+	[branch] 
+	if (invert_mask)
+		mask = 1.0f - mask;
 #endif
 
 	float3 bump = normalize(bump_map_sample);
