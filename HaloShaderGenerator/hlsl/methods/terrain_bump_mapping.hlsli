@@ -6,12 +6,6 @@
 #include "../helpers/bumpmap_math.hlsli"
 #include "..\helpers\terrain_helper.hlsli"
 
-#if material_type_3_arg != k_material_off && material_type_2_arg != k_material_off && material_type_1_arg != k_material_off && material_type_0_arg != k_material_off
-#define use_detail_bump false
-#else
-#define use_detail_bump true
-#endif
-
 float reconstruct_normal_test(float2 normal)
 {
 	float z_squared = 1.0 - saturate(dot(normal, normal));
@@ -60,10 +54,11 @@ float3 calc_terrain_bumpmap(
 	sampler bump_map,
 	xform2d bump_map_xform,
 	sampler bump_detail_map,
-	xform2d bump_detail_map_xform
+	xform2d bump_detail_map_xform,
+	bool has_illum
 )
 {
-	if (use_detail_bump)
+    if (!four_materials_active && !has_illum)
 		return calc_bumpmap_detail(tangent, binormal, normal, texcoord, bump_map, bump_map_xform, bump_detail_map, bump_detail_map_xform);
 	else
 		return calc_bumpmap(tangent, binormal, normal, texcoord, bump_map, bump_map_xform);

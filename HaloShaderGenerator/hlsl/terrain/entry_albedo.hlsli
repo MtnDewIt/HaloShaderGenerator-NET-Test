@@ -82,13 +82,13 @@ PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
     // normal
 	
     if (material_type_0_arg != k_material_off)
-        normal_0 = calc_terrain_bumpmap(tangent, binormal, normal, texcoord, bump_map_m_0, bump_map_m_0_xform, detail_bump_m_0, detail_bump_m_0_xform);
+        normal_0 = calc_terrain_bumpmap(tangent, binormal, normal, texcoord, bump_map_m_0, bump_map_m_0_xform, detail_bump_m_0, detail_bump_m_0_xform, material_has_illum(0));
     if (material_type_1_arg != k_material_off)
-        normal_1 = calc_terrain_bumpmap(tangent, binormal, normal, texcoord, bump_map_m_1, bump_map_m_1_xform, detail_bump_m_1, detail_bump_m_1_xform);
+        normal_1 = calc_terrain_bumpmap(tangent, binormal, normal, texcoord, bump_map_m_1, bump_map_m_1_xform, detail_bump_m_1, detail_bump_m_1_xform, material_has_illum(1));
     if (material_type_2_arg != k_material_off)
-        normal_2 = calc_terrain_bumpmap(tangent, binormal, normal, texcoord, bump_map_m_2, bump_map_m_2_xform, detail_bump_m_2, detail_bump_m_2_xform);
+        normal_2 = calc_terrain_bumpmap(tangent, binormal, normal, texcoord, bump_map_m_2, bump_map_m_2_xform, detail_bump_m_2, detail_bump_m_2_xform, material_has_illum(2));
     if (material_type_3_arg != k_material_off)
-        normal_3 = calc_terrain_bumpmap(tangent, binormal, normal, texcoord, bump_map_m_3, bump_map_m_3_xform, detail_bump_m_3, detail_bump_m_3_xform);
+        normal_3 = calc_terrain_bumpmap(tangent, binormal, normal, texcoord, bump_map_m_3, bump_map_m_3_xform, detail_bump_m_3, detail_bump_m_3_xform, material_has_illum(3));
     
     m_normal = apply_terrain_blend(blend, float4(normal_0, 0), float4(normal_1, 0), float4(normal_2, 0), float4(normal_3, 0)).xyz;
 	
@@ -98,13 +98,13 @@ PS_OUTPUT_ALBEDO shader_entry_albedo(VS_OUTPUT_ALBEDO input)
     // albedo
 	
     if (material_type_0_arg != k_material_off)
-        albedo_0 = calc_terrain_albedo(texcoord, base_map_m_0, base_map_m_0_xform, detail_map_m_0, detail_map_m_0_xform);
+        albedo_0 = calc_terrain_albedo(texcoord, base_map_m_0, base_map_m_0_xform, detail_map_m_0, detail_map_m_0_xform, material_has_illum(0));
     if (material_type_1_arg != k_material_off)
-        albedo_1 = calc_terrain_albedo(texcoord, base_map_m_1, base_map_m_1_xform, detail_map_m_1, detail_map_m_1_xform);
+        albedo_1 = calc_terrain_albedo(texcoord, base_map_m_1, base_map_m_1_xform, detail_map_m_1, detail_map_m_1_xform, material_has_illum(1));
     if (material_type_2_arg != k_material_off)
-        albedo_2 = calc_terrain_albedo(texcoord, base_map_m_2, base_map_m_2_xform, detail_map_m_2, detail_map_m_2_xform);
+        albedo_2 = calc_terrain_albedo(texcoord, base_map_m_2, base_map_m_2_xform, detail_map_m_2, detail_map_m_2_xform, material_has_illum(2));
 	if (material_type_3_arg != k_material_off)
-        albedo_3 = calc_terrain_albedo(texcoord, base_map_m_3, base_map_m_3_xform, detail_map_m_3, detail_map_m_3_xform);
+        albedo_3 = calc_terrain_albedo(texcoord, base_map_m_3, base_map_m_3_xform, detail_map_m_3, detail_map_m_3_xform, material_has_illum(3));
     
     albedo = apply_terrain_blend(blend, albedo_0, albedo_1, albedo_2, albedo_3);
 

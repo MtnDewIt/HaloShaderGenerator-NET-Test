@@ -14,8 +14,8 @@ namespace HaloShaderGenerator
             var blend_type = (Blending)shaderOptions[0];
             var env_map = (Environment_Mapping)shaderOptions[1];
             var material_0 = (Material)shaderOptions[2];
-            var material_1 = (Material)shaderOptions[3];
-            var material_2 = (Material)shaderOptions[4];
+            var material_1 = (Material1)shaderOptions[3];
+            var material_2 = (Material2)shaderOptions[4];
             var material_3 = (Material_No_Detail_Bump)shaderOptions[5];
 
             var gen = new TerrainGenerator(blend_type, env_map, material_0, material_1, material_2, material_3);

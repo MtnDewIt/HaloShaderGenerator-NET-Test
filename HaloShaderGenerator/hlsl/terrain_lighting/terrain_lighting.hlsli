@@ -17,6 +17,12 @@ uniform float area_specular_contribution_m_0;
 uniform float analytical_specular_contribution_m_0;
 uniform float environment_specular_contribution_m_0;
 uniform float albedo_specular_tint_blend_m_0;
+uniform sampler2D self_illum_map_m_0;
+uniform float4 self_illum_map_m_0_xform;
+uniform sampler2D self_illum_detail_map_m_0;
+uniform float4 self_illum_detail_map_m_0_xform;
+uniform float3 self_illum_color_m_0;
+uniform float self_illum_intensity_m_0;
 
 uniform float diffuse_coefficient_m_1;
 uniform float specular_coefficient_m_1;
@@ -27,6 +33,12 @@ uniform float area_specular_contribution_m_1;
 uniform float analytical_specular_contribution_m_1;
 uniform float environment_specular_contribution_m_1;
 uniform float albedo_specular_tint_blend_m_1;
+uniform sampler2D self_illum_map_m_1;
+uniform float4 self_illum_map_m_1_xform;
+uniform sampler2D self_illum_detail_map_m_1;
+uniform float4 self_illum_detail_map_m_1_xform;
+uniform float3 self_illum_color_m_1;
+uniform float self_illum_intensity_m_1;
 
 uniform float diffuse_coefficient_m_2;
 uniform float specular_coefficient_m_2;
@@ -37,6 +49,12 @@ uniform float area_specular_contribution_m_2;
 uniform float analytical_specular_contribution_m_2;
 uniform float environment_specular_contribution_m_2;
 uniform float albedo_specular_tint_blend_m_2;
+uniform sampler2D self_illum_map_m_2;
+uniform float4 self_illum_map_m_2_xform;
+uniform sampler2D self_illum_detail_map_m_2;
+uniform float4 self_illum_detail_map_m_2_xform;
+uniform float3 self_illum_color_m_2;
+uniform float self_illum_intensity_m_2;
 
 uniform float diffuse_coefficient_m_3;
 uniform float specular_coefficient_m_3;
@@ -47,7 +65,12 @@ uniform float area_specular_contribution_m_3;
 uniform float analytical_specular_contribution_m_3;
 uniform float environment_specular_contribution_m_3;
 uniform float albedo_specular_tint_blend_m_3;
-
+//uniform sampler2D self_illum_map_m_3;
+//uniform float4 self_illum_map_m_3_xform;
+//uniform sampler2D self_illum_detail_map_m_3;
+//uniform float4 self_illum_detail_map_m_3_xform;
+//uniform float3 self_illum_color_m_3;
+//uniform float self_illum_intensity_m_3;
 
 // add for all the parameters given the index
 
@@ -291,6 +314,78 @@ void blend_specular_parameters(in float4 blend, out float specular_power, out fl
     fresnel_steepness += blend.w * get_fresnel_curve_steepness(3);
 }
 
+void terrain_self_illum(
+float2 texcoord, 
+sampler2D self_illum_map, 
+float4 self_illum_map_xform,
+sampler2D self_illum_detail_map,
+float4 self_illum_detail_map_xform,
+float3 self_illum_color,
+float self_illum_intensity,
+inout float3 illum_accum)
+{
+    float3 illum = tex2D(self_illum_map, apply_xform2d(texcoord, self_illum_map_xform)).rgb;
+    float3 detail = tex2D(self_illum_detail_map, apply_xform2d(texcoord, self_illum_detail_map_xform)).rgb * DETAIL_MULTIPLIER;
+	
+    illum_accum += (illum * detail * self_illum_color) * self_illum_intensity;
+}
+
+float3 calc_self_illum_terrain(float2 texcoord)
+{
+    float3 illum_accum = 0.0f;
+	
+    if (material_has_illum(0))
+    {
+        terrain_self_illum(
+			texcoord, 
+			self_illum_map(0), 
+			self_illum_map_xform(0), 
+			self_illum_detail_map(0), 
+			self_illum_detail_map_xform(0),
+			self_illum_color(0),
+			self_illum_intensity(0),
+			illum_accum);
+    }
+    if (material_has_illum(1))
+    {
+        terrain_self_illum(
+			texcoord,
+			self_illum_map(1),
+			self_illum_map_xform(1),
+			self_illum_detail_map(1),
+			self_illum_detail_map_xform(1),
+			self_illum_color(1),
+			self_illum_intensity(1),
+			illum_accum);
+    }
+    if (material_has_illum(2))
+    {
+        terrain_self_illum(
+			texcoord,
+			self_illum_map(2),
+			self_illum_map_xform(2),
+			self_illum_detail_map(2),
+			self_illum_detail_map_xform(2),
+			self_illum_color(2),
+			self_illum_intensity(2),
+			illum_accum);
+    }
+    //if (material_has_illum(3))
+    //{
+    //    terrain_self_illum(
+	//		texcoord,
+	//		self_illum_map(3),
+	//		self_illum_map_xform(3),
+	//		self_illum_detail_map(3),
+	//		self_illum_detail_map_xform(3),
+	//		self_illum_color(3),
+	//		self_illum_intensity(3),
+	//		illum_accum);
+    //}
+
+    return illum_accum;
+}
+
 void calc_dynamic_lighting_terrain(SHADER_DYNAMIC_LIGHT_COMMON common_data, out float3 color)
 {
     float v_dot_n = dot(common_data.surface_normal, common_data.view_dir);
@@ -418,6 +513,8 @@ float3 calc_lighting_terrain(SHADER_COMMON common_data, out float4 unknown_outpu
     diffuse *= common_data.albedo.rgb;
     diffuse *= get_diffuse_coefficient(blend);
     diffuse += specular;
+	
+    diffuse += calc_self_illum_terrain(common_data.texcoord);
 
 	return diffuse;
 }
