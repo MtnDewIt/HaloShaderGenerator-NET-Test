@@ -312,44 +312,36 @@ uniform float chameleon_fresnel_power;
 uniform sampler2D chameleon_mask_map;
 uniform xform2d chameleon_mask_map_xform;
 
+float3 get_chameleon_color(float3 surface_normal, float3 n_view_dir)
+{
+    float n_dot_v = max(dot(surface_normal, n_view_dir), 0.0f);
+    float fresnel = pow(n_dot_v, chameleon_fresnel_power);
+	
+    float interpolant = fresnel * rcp(chameleon_color_offset1);
+
+    if (fresnel > chameleon_color_offset1)
+    {
+        interpolant = (fresnel - chameleon_color_offset1) * rcp(chameleon_color_offset2 - chameleon_color_offset1);
+        return lerp(chameleon_color1, chameleon_color2, interpolant);
+    }
+    if (fresnel > chameleon_color_offset2)
+    {
+        interpolant = (fresnel - chameleon_color_offset2) * rcp(1.0f - chameleon_color_offset2);
+        return lerp(chameleon_color2, chameleon_color3, interpolant);
+    }
+
+    return lerp(chameleon_color0, chameleon_color1, interpolant);
+}
 
 float4 calc_albedo_chameleon_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
-	float4 albedo;
-	float3 chameleon;
-	float fresnel = pow(max(dot(surface_normal, normalize(camera_dir)), 0), chameleon_fresnel_power);
-	float3 color0, color1;
-	float t;
-
-	if (chameleon_color_offset1 - fresnel < 0)
-	{
-		t = fresnel / chameleon_color_offset1;
-		color0 = chameleon_color1;
-		color1 = chameleon_color2;
-	}
-	else
-	{
-		t = (fresnel - chameleon_color_offset1) / (chameleon_color_offset2 - chameleon_color_offset1);
-		color0 = chameleon_color0;
-		color1 = chameleon_color1;
-	}
-	if (chameleon_color_offset2 - fresnel < 0)
-	{
-		color0 = chameleon_color2;
-		color1 = chameleon_color3;
-	}
-	else
-	{
-		t = (fresnel - chameleon_color_offset2) / (1.0f - fresnel);
-	}
-
-	chameleon = lerp(color0, color1, t);
+	float3 chameleon = get_chameleon_color(surface_normal, normalize(camera_dir));
 	
 	float2 base_map_texcoord = apply_xform2d(texcoord, base_map_xform);
 	float4 base_map_sample = tex2D(base_map, base_map_texcoord);
 	float2 detail_map_texcoord = apply_xform2d(texcoord, detail_map_xform);
 	float4 detail_map_sample = tex2D(detail_map, detail_map_texcoord);
-	albedo = base_map_sample * detail_map_sample;
+	float4 albedo = base_map_sample * detail_map_sample;
 	albedo.rgb = chameleon * albedo.rgb;
 	albedo.rgb = apply_debug_tint(albedo.rgb);
 	
@@ -479,6 +471,119 @@ float4 calc_albedo_simple_ps(float2 texcoord, float2 position, float3 surface_no
 {
     return tex2D(base_map, apply_xform2d(texcoord, base_map_xform)) * albedo_color;
 }
+
+// no reference
+float4 calc_albedo_two_change_color_tex_overlay_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
+{
+    return 0;
+}
+
+uniform sampler2D base_masked_map;
+uniform float4 base_masked_map_xform;
+uniform float4 albedo_masked_color;
+
+float4 calc_albedo_chameleon_albedo_masked_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
+{
+    float3 chameleon = get_chameleon_color(surface_normal, normalize(camera_dir));
+	
+    float4 base_map_sample = tex2D(base_map, apply_xform2d(texcoord, base_map_xform));
+    base_map_sample *= albedo_color;
+    float4 base_masked_map_sample = tex2D(base_masked_map, apply_xform2d(texcoord, base_masked_map_xform));
+    base_masked_map_sample *= albedo_masked_color;
+    base_masked_map_sample.rgb *= chameleon;
+	
+    float4 chameleon_mask_sample = tex2D(chameleon_mask_map, apply_xform2d(texcoord, chameleon_mask_map_xform));
+	
+    float4 albedo = lerp(base_map_sample, base_masked_map_sample, chameleon_mask_sample.x);
+    albedo.rgb = apply_debug_tint(albedo.rgb);
+    return albedo;
+}
+
+uniform samplerCUBE custom_cube;
+
+float4 calc_albedo_custom_cube_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
+{
+    float4 albedo = tex2D(base_map, apply_xform2d(texcoord, base_map_xform));
+    float4 cube = texCUBE(custom_cube, surface_normal);
+	
+    albedo.rgb *= cube.rgb;
+    albedo.rgb = apply_debug_tint(albedo.rgb);
+    albedo.a *= albedo_color.a;
+	
+    return albedo;
+}
+
+uniform samplerCUBE blend_map;
+uniform float4 albedo_second_color;
+
+float4 calc_albedo_two_color_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
+{
+    float4 albedo = tex2D(base_map, apply_xform2d(texcoord, base_map_xform));
+
+    float4 blend = texCUBE(blend_map, surface_normal);
+    blend *= 2.0f;
+
+    albedo *= (blend.y * albedo_color + blend.z * albedo_second_color);
+    albedo.rgb = apply_debug_tint(albedo.rgb);
+	
+    return albedo;
+}
+
+// these options from MCC require use of the new misc attr stuff
+// scrolling_texture_uv might be easily doable but the others require a new VS
+
+//uniform samplerCUBE color_blend_mask_cubemap;
+//float4 calc_albedo_scrolling_cube_mask_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
+//{
+//    float4 albedo = tex2D(base_map, apply_xform2d(texcoord, base_map_xform));
+//	
+//    float3 blend = texCUBE(color_blend_mask_cubemap, misc.xyz);
+//    blend *= 2.0f;
+//	
+//    albedo *= (blend.y * albedo_color + blend.z * albedo_second_color);
+//    albedo.rgb = apply_debug_tint(albedo.rgb);
+//	
+//    return albedo;
+//}
+//
+//uniform samplerCUBE color_cubemap;
+//float4 calc_albedo_scrolling_cube_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
+//{
+//    float4 albedo = tex2D(base_map, apply_xform2d(texcoord, base_map_xform));
+//	
+//    albedo *= texCUBE(color_cubemap, misc.xyz);
+//	
+//    albedo.rgb = apply_debug_tint(albedo.rgb);
+//	
+//    return albedo;
+//}
+//
+//uniform sampler2D color_texture;
+//uniform float u_speed;
+//uniform float v_speed;
+//float4 calc_albedo_scrolling_texture_uv_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
+//{
+//    float2 base_map_tex = apply_xform2d(texcoord, base_map_xform);
+//    float4 albedo = tex2D(base_map, base_map_tex);
+//	
+//    float2 color_tex = base_map_tex + ps_total_time * float2(u_speed, v_speed);
+//    float4 color = tex2D(color_texture, color_tex);
+//
+//    albedo *= color;
+//    albedo.rgb = apply_debug_tint(albedo.rgb);
+//	
+//    return albedo;
+//}
+//
+//float4 calc_albedo_texture_from_misc_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
+//{
+//    float4 albedo = tex2D(base_map, apply_xform2d(texcoord, base_map_xform));
+//
+//    albedo *= tex2D(color_texture, misc.xy);
+//    albedo.rgb = apply_debug_tint(albedo.rgb);
+//	
+//    return albedo;
+//}
 
 float4 calc_albedo_default_vs(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {

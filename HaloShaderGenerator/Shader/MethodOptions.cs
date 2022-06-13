@@ -41,8 +41,15 @@ namespace HaloShaderGenerator.Shader
         Color_Mask_Hard_Light,
         Four_Change_Color_Applying_To_Specular,
         Simple,
-        //Two_Change_Color_Tex_Overlay,
-        //Chameleon_Albedo_Masked
+        Two_Change_Color_Tex_Overlay,
+        Chameleon_Albedo_Masked,
+        Custom_Cube,
+        Two_Color,
+        // uncomment when misc_attr supported
+        //Scrolling_Cube_Mask,
+        //Scrolling_Cube,
+        //Scrolling_Texture_Uv,
+        //Texture_From_Misc,
     }
 
     public enum Bump_Mapping

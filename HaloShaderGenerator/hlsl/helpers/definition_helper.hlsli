@@ -87,6 +87,13 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_albedo_vector_alpha_drop_shadow 37
 #define k_albedo_four_change_color_applying_to_specular 38
 #define k_albedo_simple 39
+#define k_albedo_custom_cube 40
+#define k_albedo_two_color 41
+#define k_albedo_scrolling_cube_mask 42
+#define k_albedo_scrolling_cube 43
+#define k_albedo_scrolling_texture_uv 44
+#define k_albedo_texture_from_misc 45
+
 #define k_bump_mapping_off 0
 #define k_bump_mapping_standard 1
 #define k_bump_mapping_detail 2

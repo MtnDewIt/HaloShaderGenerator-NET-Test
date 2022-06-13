@@ -62,7 +62,13 @@ namespace HaloShaderGenerator.Shared
         Vector_Alpha,
         Vector_Alpha_Drop_Shadow,
         Four_Change_Color_Applying_To_Specular,
-        Simple,
+        Simple, 
+        Custom_Cube,
+        Two_Color,
+        Scrolling_Cube_Mask,
+        Scrolling_Cube,
+        Scrolling_Texture_Uv,
+        Texture_From_Misc,
     }
 
     public enum Alpha_Test
