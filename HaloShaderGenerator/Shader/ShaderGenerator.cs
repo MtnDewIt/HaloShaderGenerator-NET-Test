@@ -563,6 +563,7 @@ namespace HaloShaderGenerator.Shader
                     result.AddSamplerParameter("bump_detail_map");
                     result.AddSamplerParameter("bump_detail_mask_map");
                     result.AddFloatParameter("bump_detail_coefficient");
+                    result.AddBooleanParameter("invert_mask");
                     break;
             }
 
@@ -1142,6 +1143,7 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerParameter("bump_detail_map");
                         result.AddSamplerParameter("bump_detail_mask_map");
                         result.AddFloatParameter("bump_detail_coefficient");
+                        result.AddBooleanParameter("invert_mask");
                         rmopName = @"shaders\shader_options\bump_detail_masked";
                         break;
                 }
