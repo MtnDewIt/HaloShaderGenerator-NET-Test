@@ -30,9 +30,11 @@ in float2 texcoord,
 out float c_specular_coefficient,
 out float c_albedo_blend,
 out float c_roughness,
-out float c_environment_map_specular_contribution)
+out float c_environment_map_specular_contribution,
+out float c_diffuse_coefficient)
 {
     float4 parameters = float4(specular_coefficient, albedo_blend, environment_map_specular_contribution, roughness);
+    c_diffuse_coefficient = diffuse_coefficient;
 	if (use_material_texture)
 	{
         float4 material_texture_sample = tex2D(material_texture, apply_xform2d(texcoord, material_texture_xform));
@@ -43,6 +45,7 @@ out float c_environment_map_specular_contribution)
         //    parameters = material_texture_sample;
 #ifdef ODST_COOK_TORRANCE
 		parameters = material_texture_sample;
+		c_diffuse_coefficient = 1.0f - parameters.x;
 #endif
     }
 	
@@ -64,13 +67,14 @@ void calc_dynamic_lighting_cook_torrance_ps(SHADER_DYNAMIC_LIGHT_COMMON common_d
 	[flatten]
 	if (dot(specular_contribution, specular_contribution) > 0.0001)
     {
-        float c_specular_coefficient, c_albedo_blend, c_roughness, c_environment_map_specular_contribution;
+        float c_specular_coefficient, c_albedo_blend, c_roughness, c_environment_map_specular_contribution, c_diffuse_coefficient;
         get_material_parameters_2(
 			common_data.texcoord, 
 			c_specular_coefficient, 
 			c_albedo_blend, 
 			c_roughness, 
-			c_environment_map_specular_contribution);
+			c_environment_map_specular_contribution,
+			c_diffuse_coefficient);
 		
 #ifndef ODST_COOK_TORRANCE
         float3 fresnel_f0 = albedo_blend_with_specular_tint ? fresnel_color : lerp(fresnel_color, common_data.albedo.rgb, c_albedo_blend);
@@ -96,13 +100,14 @@ void calc_dynamic_lighting_cook_torrance_ps(SHADER_DYNAMIC_LIGHT_COMMON common_d
 
 float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unknown_output)
 {
-    float c_specular_coefficient, c_albedo_blend, c_roughness, c_environment_map_specular_contribution;
+    float c_specular_coefficient, c_albedo_blend, c_roughness, c_environment_map_specular_contribution, c_diffuse_coefficient;
 	get_material_parameters_2(
 		common_data.texcoord, 
 		c_specular_coefficient, 
 		c_albedo_blend, 
 		c_roughness,
-		c_environment_map_specular_contribution);
+		c_environment_map_specular_contribution,
+		c_diffuse_coefficient);
 		
 #ifndef ODST_COOK_TORRANCE
     float3 fresnel_f0 = albedo_blend_with_specular_tint ? fresnel_color : lerp(fresnel_color, common_data.albedo.rgb, c_albedo_blend);
@@ -252,11 +257,11 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 	
 	float3 diffuse = common_data.diffuse_reflectance * common_data.precomputed_radiance_transfer.x;
 	
-    float diffuse_coeff = diffuse_coefficient;
-#ifdef ODST_COOK_TORRANCE
-	if (use_material_texture)
-        diffuse_coeff = 1.0f - c_specular_coefficient;
-#endif
+    float diffuse_coeff = c_diffuse_coefficient;
+//#ifdef ODST_COOK_TORRANCE
+//	if (use_material_texture)
+//        diffuse_coeff = 1.0f - c_specular_coefficient;
+//#endif
 	
     diffuse = (diffuse_accumulation + diffuse) * diffuse_coeff;
 	
