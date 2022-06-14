@@ -72,7 +72,11 @@ void calc_dynamic_lighting_cook_torrance_ps(SHADER_DYNAMIC_LIGHT_COMMON common_d
 			c_roughness, 
 			c_environment_map_specular_contribution);
 		
-		float3 fresnel_f0 = albedo_blend_with_specular_tint.x > 0 ? fresnel_color : lerp(fresnel_color, common_data.albedo.rgb, c_albedo_blend);
+#ifndef ODST_COOK_TORRANCE
+        float3 fresnel_f0 = albedo_blend_with_specular_tint ? fresnel_color : lerp(fresnel_color, common_data.albedo.rgb, c_albedo_blend);
+#else
+		float3 fresnel_f0 = lerp(fresnel_color, common_data.albedo.rgb, c_albedo_blend);
+#endif
 		
         float3 analytic_specular;
 		calc_material_analytic_specular_cook_torrance_ps(
@@ -100,7 +104,11 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
 		c_roughness,
 		c_environment_map_specular_contribution);
 		
+#ifndef ODST_COOK_TORRANCE
     float3 fresnel_f0 = albedo_blend_with_specular_tint ? fresnel_color : lerp(fresnel_color, common_data.albedo.rgb, c_albedo_blend);
+#else
+	float3 fresnel_f0 = lerp(fresnel_color, common_data.albedo.rgb, c_albedo_blend);
+#endif
 	
 	float3 analytic_specular;
 	calc_material_analytic_specular_cook_torrance_ps(
@@ -208,6 +216,7 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
     float3 area_specular = area_specular_part * fresnel_f0 + (1 - fresnel_f0) * env_area_specular_part;
 		
     float3 env_area_specular = area_specular;
+#ifndef ODST_COOK_TORRANCE
     if (use_fresnel_color_environment)
     {
         float3 fresnel_env_f0 = lerp(fresnel_color_environment, common_data.albedo.rgb, c_albedo_blend);
@@ -215,10 +224,13 @@ float3 calc_lighting_cook_torrance_ps(SHADER_COMMON common_data, out float4 unkn
             fresnel_env_f0 = fresnel_color_environment;
         env_area_specular = area_specular_part * fresnel_env_f0 + (1 - fresnel_env_f0) * env_area_specular_part;
     }
+#endif
 	
     float3 c_specular_tint = get_specular_tint();
+#ifndef ODST_COOK_TORRANCE
     if (albedo_blend_with_specular_tint)
         c_specular_tint = c_specular_tint * (1.0 - c_albedo_blend) + c_albedo_blend * common_data.albedo.rgb;
+#endif
 	
 #if shadertype != k_shadertype_cortana
     if (albedo_arg == k_albedo_four_change_color_applying_to_specular)
