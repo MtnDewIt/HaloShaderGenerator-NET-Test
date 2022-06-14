@@ -86,13 +86,8 @@ float3 calc_lighting_two_lobe_phong_ps(SHADER_COMMON common_data, out float4 unk
 	float3 analytic_specular;
 	calc_material_analytic_specular_two_lobe_phong_ps(common_data.reflect_dir, common_data.dominant_light_direction, common_data.dominant_light_intensity, specular_tint, specular_power, analytic_specular);
 	
-	float3 anti_shadow_control;
-	calc_analytical_specular_with_anti_shadow(common_data, analytical_anti_shadow_control, analytic_specular, anti_shadow_control);
-	
-	bool use_analytical_antishadow_control = analytical_anti_shadow_control.x > 0 ? true : false;
-	if (use_analytical_antishadow_control)
-		analytic_specular = anti_shadow_control;
-	
+    if (analytical_anti_shadow_control.x > 0)
+		calc_analytical_specular_with_anti_shadow(common_data, analytical_anti_shadow_control, analytic_specular);
 
 	float3 diffuse_accumulation = 0;
 	float3 specular_accumulation = 0;

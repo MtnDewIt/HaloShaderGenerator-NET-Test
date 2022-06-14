@@ -85,7 +85,12 @@ float4 prt)
 		
 		common_data.diffuse_reflectance = diffuse_reflectance(common_data.surface_normal);
 		
+#if shaderstage == k_shaderstage_static_sh
+		common_data.precomputed_radiance_transfer.xyz = 1.0f;
+		common_data.precomputed_radiance_transfer.w = dot(common_data.normal.xyz, common_data.dominant_light_direction);
+#else
 		common_data.precomputed_radiance_transfer = prt;
+#endif
 		common_data.per_vertex_color = 0.0f;
 		common_data.no_dynamic_lights = no_dynamic_lights;
 		
@@ -148,7 +153,7 @@ float4 prt)
 
 PS_OUTPUT_DEFAULT shader_entry_static_sh(VS_OUTPUT_STATIC_SH input)
 {
-    return entry_static_sh_prt(float4(input.position.xy, 0.0f, input.normal.w), input.texcoord.xy, input.camera_dir.xyz, input.normal.xyz, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, 1.0);
+    return entry_static_sh_prt(float4(input.position.xy, 0.0f, input.normal.w), input.texcoord.xy, input.camera_dir.xyz, input.normal.xyz, input.tangent, input.binormal, input.sky_radiance, input.extinction_factor, 1.0f);
 }
 
 PS_OUTPUT_DEFAULT shader_entry_static_prt(VS_OUTPUT_STATIC_PRT input)

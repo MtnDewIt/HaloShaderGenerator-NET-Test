@@ -86,7 +86,8 @@ namespace HaloShaderGenerator.Shader
         Organism,
         Single_Lobe_Phong,
         Car_Paint,
-        Hair
+        Hair,
+        Cook_Torrance_Odst,
     }
 
     public enum Environment_Mapping

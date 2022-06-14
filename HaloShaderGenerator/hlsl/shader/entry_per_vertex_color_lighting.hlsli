@@ -77,7 +77,9 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex_color(VS_OUTPUT_PER_VERTEX_COLO
 		remove_dominant_light_contribution(common_data.dominant_light_direction, common_data.dominant_light_intensity, common_data.sh_0_no_dominant_light, common_data.sh_312_no_dominant_light);
 	
 		
-		common_data.precomputed_radiance_transfer = 1.0;
+        common_data.precomputed_radiance_transfer.xyz = 1.0;
+        common_data.precomputed_radiance_transfer.w = dot(common_data.normal.xyz, common_data.dominant_light_direction);
+		
 		common_data.per_vertex_color = input.vertex_color;
 		common_data.no_dynamic_lights = false;
 		

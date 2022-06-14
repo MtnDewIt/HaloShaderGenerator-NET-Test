@@ -100,13 +100,23 @@ namespace HaloShaderGenerator.Shader
 
             macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes ? 1 : 0));
 
+            Shared.Material_Model sMaterialModel;
+            if (material_model == Material_Model.Cook_Torrance_Odst)
+            {
+                sMaterialModel = Shared.Material_Model.Cook_Torrance;
+                macros.Add(ShaderGeneratorBase.CreateMacro("ODST_COOK_TORRANCE", 1));
+            }
+            else
+            {
+                sMaterialModel = (Shared.Material_Model)Enum.Parse(typeof(Shared.Material_Model), material_model.ToString());
+            }
+
             //
             // Convert to shared enum
             //
 
             var sAlbedo = Enum.Parse(typeof(Shared.Albedo), albedo.ToString());
             var sAlphaTest = Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
-            var sMaterialModel = Enum.Parse(typeof(Shared.Material_Model), material_model.ToString());
             var sEnvironmentMapping = Enum.Parse(typeof(Shared.Environment_Mapping), environment_mapping.ToString());
             var sSelfIllumination = Enum.Parse(typeof(Shared.Self_Illumination), self_illumination.ToString());
             var sBlendMode = Enum.Parse(typeof(Shared.Blend_Mode), blend_mode.ToString());
@@ -593,6 +603,7 @@ namespace HaloShaderGenerator.Shader
                 case Material_Model.Diffuse_Only:
                     result.AddBooleanParameter("no_dynamic_lights");
                     break;
+                case Material_Model.Cook_Torrance_Odst:
                 case Material_Model.Cook_Torrance:
                     result.AddFloatParameter("diffuse_coefficient");
                     result.AddFloatParameter("specular_coefficient");
@@ -1186,6 +1197,7 @@ namespace HaloShaderGenerator.Shader
                         result.AddBooleanParameter("no_dynamic_lights");
                         rmopName = @"shaders\shader_options\material_diffuse_only";
                         break;
+                    case Material_Model.Cook_Torrance_Odst:
                     case Material_Model.Cook_Torrance:
                         result.AddFloatParameter("diffuse_coefficient");
                         result.AddFloatParameter("specular_coefficient");

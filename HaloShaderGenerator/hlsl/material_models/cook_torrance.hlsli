@@ -22,7 +22,8 @@ uniform float fresnel_power;
 uniform float roughness;
 uniform float albedo_blend;
 uniform float3 specular_tint;
-uniform float albedo_blend_with_specular_tint;
+//uniform float albedo_blend_with_specular_tint;
+uniform bool albedo_blend_with_specular_tint;
 uniform bool use_fresnel_color_environment;
 uniform float3 fresnel_color_environment;
 uniform float rim_fresnel_coefficient;
@@ -256,6 +257,158 @@ out float3 env_area_specular)
 	area_specular = specular_part * k_f0 + (1 - k_f0) * schlick_part;
 	env_area_specular = specular_part * k_f0_env + (1 - k_f0_env) * schlick_part;
 	env_area_specular = use_fresnel_color_environment ? env_area_specular : area_specular;
+}
+
+void calc_cook_torrance_area_specular_order_3(
+in float3 view_dir,
+in float3 rotate_z,
+in float4 sh_0,
+in float4 sh_312[3],
+in float4 sh_457[3],
+in float4 sh_8866[3],
+in float roughness,
+in float fresnel_power,
+in float r_dot_l,
+out float3 area_specular_part,
+out float3 area_schlick_part)
+{
+    float3 specular_part;
+    float3 schlick_part;
+	//build the local frame
+    float3 rotate_x = normalize(view_dir - dot(view_dir, rotate_z) * rotate_z);
+    float3 rotate_y = cross(rotate_z, rotate_x);
+	//calculate the texure coord for lookup
+    float roughness_lookup = max(roughness, 0.05);
+    float v_dot_rotate_x = log2(dot(view_dir, rotate_x));
+    float2 view_lookup = float2(exp2(fresnel_power * v_dot_rotate_x) + 0.015625, roughness_lookup);
+	// bases: 0,2,3,6
+    float4 c_value = tex2D(g_sampler_cc0236, view_lookup);
+    float4 d_value = tex2D(g_sampler_dd0236, view_lookup);
+	
+	//rotate lighting basis 0,2,3,6 into local frame
+	
+    float4 quadratic_a, quadratic_b, sh_local_r, sh_local_g, sh_local_b;
+	
+    quadratic_a.xyz = rotate_z.yzx * rotate_z.xyz * (-SQRT3);
+    quadratic_b = float4(rotate_z.xyz * rotate_z.xyz, 1.0f / 3.0f) * 0.5f * (-SQRT3);
+	
+	//red
+    sh_local_r.xyz = sh_rotate_023(0, rotate_x, rotate_z, sh_0, sh_312);
+    sh_local_r.w = dot(quadratic_a.xyz, sh_457[0].xyz) + dot(quadratic_b.xyzw, sh_8866[0].xyzw);
+	//dot with C and D look up
+    sh_local_r *= float4(1.0f, r_dot_l, r_dot_l, r_dot_l);
+    specular_part.r = dot(c_value, sh_local_r);
+    schlick_part.r = dot(d_value, sh_local_r);
+	
+	//green
+    sh_local_g.xyz = sh_rotate_023(1, rotate_x, rotate_z, sh_0, sh_312);
+    sh_local_g.w = dot(quadratic_a.xyz, sh_457[1].xyz) + dot(quadratic_b.xyzw, sh_8866[1].xyzw);
+    sh_local_g *= float4(1.0f, r_dot_l, r_dot_l, r_dot_l);
+    specular_part.g = dot(c_value, sh_local_g);
+    schlick_part.g = dot(d_value, sh_local_g);
+	
+	//blue
+    sh_local_b.xyz = sh_rotate_023(2, rotate_x, rotate_z, sh_0, sh_312);
+    sh_local_b.w = dot(quadratic_a.xyz, sh_457[2].xyz) + dot(quadratic_b.xyzw, sh_8866[2].xyzw);
+    sh_local_b *= float4(1.0f, r_dot_l, r_dot_l, r_dot_l);
+    specular_part.b = dot(c_value, sh_local_b);
+    schlick_part.b = dot(d_value, sh_local_b);
+	
+    float4 sh_local_basis_7, sh_local_basis_8;
+	
+	// basis - 7
+	
+    c_value = tex2D(g_sampler_c78d78, view_lookup);
+    quadratic_a.xyz = rotate_x.xyz * rotate_z.yzx + rotate_x.yzx *
+	rotate_z.xyz;
+    quadratic_b.xyz = rotate_x.xyz * rotate_z.xyz;
+    sh_local_basis_7.rgb = float3(dot(quadratic_a.xyz, sh_457[0].xyz) +
+	dot(quadratic_b.xyz, sh_8866[0].xyz),
+	dot(quadratic_a.xyz, sh_457[1].xyz) +
+	dot(quadratic_b.xyz, sh_8866[1].xyz),
+	dot(quadratic_a.xyz, sh_457[2].xyz) +
+	dot(quadratic_b.xyz, sh_8866[2].xyz));
+    sh_local_basis_7 *= r_dot_l;
+	//c7 * L7
+    specular_part.rgb += c_value.x * sh_local_basis_7.rgb;
+	//d7 * L7
+    schlick_part.rgb += c_value.z * sh_local_basis_7.rgb;
+	
+	//basis - 8
+    quadratic_a.xyz = rotate_x.xyz * rotate_x.yzx - rotate_y.yzx *
+	rotate_y.xyz;
+    quadratic_b.xyz = 0.5f * (rotate_x.xyz * rotate_x.xyz - rotate_y.xyz *
+	rotate_y.xyz);
+    sh_local_basis_8.rgb = float3(-dot(quadratic_a.xyz, sh_457[0].xyz) -
+	dot(quadratic_b.xyz, sh_8866[0].xyz), -dot(quadratic_a.xyz, sh_457[1].xyz) - dot(quadratic_b.xyz, sh_8866[1].xyz), -dot(quadratic_a.xyz, sh_457[2].xyz) - dot(quadratic_b.xyz, sh_8866[2].xyz));
+    sh_local_basis_8 *= r_dot_l;
+	//c8 * L8
+    specular_part.rgb += c_value.y * sh_local_basis_8.rgb;
+	//d8 * L8
+    schlick_part.rgb += c_value.w * sh_local_basis_8.rgb;
+    schlick_part = schlick_part * 0.01f;
+	
+    area_specular_part = specular_part;
+    area_schlick_part = schlick_part;
+}
+
+void calc_cook_torrance_area_specular_order_2(
+in float3 view_dir,
+in float3 rotate_z,
+in float4 sh_0,
+in float4 sh_312[3],
+in float roughness,
+in float fresnel_power,
+in float r_dot_l,
+out float3 area_specular_part,
+out float3 area_schlick_part)
+{
+    float3 specular_part;
+    float3 schlick_part;
+	//build the local frame
+    float3 rotate_x = normalize(view_dir - dot(view_dir, rotate_z) * rotate_z);
+    float3 rotate_y = cross(rotate_z, rotate_x);
+	//calculate the texure coord for lookup
+    float roughness_lookup = max(roughness, 0.05);
+    float v_dot_rotate_x = log2(dot(view_dir, rotate_x));
+    float2 view_lookup = float2(exp2(fresnel_power * v_dot_rotate_x) + 0.015625, roughness_lookup);
+	// bases: 0,2,3,6
+    float4 c_value = tex2D(g_sampler_cc0236, view_lookup);
+    float4 d_value = tex2D(g_sampler_dd0236, view_lookup);
+	
+	//rotate lighting basis 0,2,3,6 into local frame
+	
+    float4 quadratic_a, quadratic_b, sh_local_r, sh_local_g, sh_local_b;
+	
+    quadratic_a.xyz = rotate_z.yzx * rotate_z.xyz * (-SQRT3);
+    quadratic_b = float4(rotate_z.xyz * rotate_z.xyz, 1.0f / 3.0f) * 0.5f * (-SQRT3);
+	
+	//red
+    sh_local_r.xyz = sh_rotate_023(0, rotate_x, rotate_z, sh_0, sh_312);
+    sh_local_r.w = 0.0f;
+	//dot with C and D look up
+    sh_local_r *= float4(1.0f, r_dot_l, r_dot_l, r_dot_l);
+    specular_part.r = dot(c_value, sh_local_r);
+    schlick_part.r = dot(d_value, sh_local_r);
+	
+	//green
+    sh_local_g.xyz = sh_rotate_023(1, rotate_x, rotate_z, sh_0, sh_312);
+    sh_local_g.w = 0.0f;
+    sh_local_g *= float4(1.0f, r_dot_l, r_dot_l, r_dot_l);
+    specular_part.g = dot(c_value, sh_local_g);
+    schlick_part.g = dot(d_value, sh_local_g);
+	
+	//blue
+    sh_local_b.xyz = sh_rotate_023(2, rotate_x, rotate_z, sh_0, sh_312);
+    sh_local_b.w = 0.0f;
+    sh_local_b *= float4(1.0f, r_dot_l, r_dot_l, r_dot_l);
+    specular_part.b = dot(c_value, sh_local_b);
+    schlick_part.b = dot(d_value, sh_local_b);
+	
+    schlick_part = schlick_part * 0.01f;
+	
+    area_specular_part = specular_part;
+    area_schlick_part = schlick_part;
 }
 
 #endif

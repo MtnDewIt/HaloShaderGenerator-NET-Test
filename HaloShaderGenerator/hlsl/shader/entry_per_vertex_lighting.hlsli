@@ -77,8 +77,9 @@ PS_OUTPUT_DEFAULT shader_entry_static_per_vertex(VS_OUTPUT_PER_VERTEX input)
 		
 		
 		common_data.world_position = Camera_Position_PS - common_data.view_dir;
-
-		common_data.precomputed_radiance_transfer = 1.0;
+		
+        common_data.precomputed_radiance_transfer.xyz = 1.0;
+        common_data.precomputed_radiance_transfer.w = dot(common_data.normal.xyz, common_data.dominant_light_direction);
 		common_data.per_vertex_color = 0.0f;
 		common_data.no_dynamic_lights = no_dynamic_lights;
 		
