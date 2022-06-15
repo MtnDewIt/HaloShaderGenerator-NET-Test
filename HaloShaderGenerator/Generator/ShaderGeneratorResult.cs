@@ -423,6 +423,15 @@ namespace HaloShaderGenerator
                         break;
                     }
 
+                    // for bool compiled as float
+                    else if (register.Name == name && 
+                        register.registerType == ShaderRegister.RegisterType.Vector &&
+                        register_type == ShaderRegister.RegisterType.Boolean)
+                    {
+                        Registers.Add(register);
+                        break;
+                    }
+
                     // slight hack, for int's that get compiled only as vector
                     else if (register.Name == name && register_type == ShaderRegister.RegisterType.Integer)
                     {
