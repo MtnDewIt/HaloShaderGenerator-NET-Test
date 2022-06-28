@@ -512,7 +512,9 @@ float3 calc_lighting_terrain(SHADER_COMMON common_data, out float4 unknown_outpu
     diffuse += diffuse_accumulation;
     diffuse *= common_data.albedo.rgb;
     diffuse *= get_diffuse_coefficient(blend);
-    diffuse += specular;
+	
+    if (material_has_specular(0) || material_has_specular(1) || material_has_specular(2) || material_has_specular(3))
+        diffuse += specular;
 	
     diffuse += calc_self_illum_terrain(common_data.texcoord);
 
