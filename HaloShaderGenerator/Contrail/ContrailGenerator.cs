@@ -37,6 +37,8 @@ namespace HaloShaderGenerator.Contrail
 
         public ContrailGenerator(byte[] options, bool applyFixes = false)
         {
+            options = ValidateOptions(options);
+
             this.albedo = (Albedo)options[0];
             this.blend_mode = (Blend_Mode)options[1];
             this.black_point = (Black_Point)options[2];
@@ -313,6 +315,16 @@ namespace HaloShaderGenerator.Contrail
             }
 
             return null;
+        }
+
+        public byte[] ValidateOptions(byte[] options)
+        {
+            List<byte> optionList = new List<byte>(options);
+
+            while (optionList.Count < GetMethodCount())
+                optionList.Add(0);
+
+            return optionList.ToArray();
         }
     }
 }

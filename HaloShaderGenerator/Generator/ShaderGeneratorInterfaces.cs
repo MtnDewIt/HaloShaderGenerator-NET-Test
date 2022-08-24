@@ -108,6 +108,8 @@ namespace HaloShaderGenerator.Generator
         Array GetMethodNames();
 
         Array GetMethodOptionNames(int methodIndex);
+
+        byte[] ValidateOptions(byte[] options);
     }
 
 }

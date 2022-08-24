@@ -42,6 +42,8 @@ namespace HaloShaderGenerator.Cortana
 
         public CortanaGenerator(byte[] options, bool applyFixes = false)
         {
+            options = ValidateOptions(options);
+
             this.albedo = (Albedo)options[0];
             this.bump_mapping = (Bump_Mapping)options[1];
             this.alpha_test = (Alpha_Test)options[2];
@@ -595,6 +597,16 @@ namespace HaloShaderGenerator.Cortana
                 default:
                     return null;
             }
+        }
+
+        public byte[] ValidateOptions(byte[] options)
+        {
+            List<byte> optionList = new List<byte>(options);
+
+            while (optionList.Count < GetMethodCount())
+                optionList.Add(0);
+
+            return optionList.ToArray();
         }
     }
 }

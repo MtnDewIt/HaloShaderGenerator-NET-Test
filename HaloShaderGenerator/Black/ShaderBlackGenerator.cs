@@ -161,5 +161,10 @@ namespace HaloShaderGenerator.Black
         {
             return null;
         }
+
+        public byte[] ValidateOptions(byte[] options)
+        {
+            return options;
+        }
     }
 }

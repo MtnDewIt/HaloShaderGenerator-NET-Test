@@ -35,6 +35,8 @@ namespace HaloShaderGenerator.LightVolume
 
         public LightVolumeGenerator(byte[] options, bool applyFixes = false)
         {
+            options = ValidateOptions(options);
+
             this.albedo = (Albedo)options[0];
             this.blend_mode = (Blend_Mode)options[1];
             this.fog = (Fog)options[2];
@@ -287,6 +289,16 @@ namespace HaloShaderGenerator.LightVolume
             }
 
             return null;
+        }
+
+        public byte[] ValidateOptions(byte[] options)
+        {
+            List<byte> optionList = new List<byte>(options);
+
+            while (optionList.Count < GetMethodCount())
+                optionList.Add(0);
+
+            return optionList.ToArray();
         }
     }
 }

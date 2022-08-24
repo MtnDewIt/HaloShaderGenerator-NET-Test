@@ -39,6 +39,8 @@ namespace HaloShaderGenerator.Screen
 
         public ScreenGenerator(byte[] options, bool applyFixes = false)
         {
+            options = ValidateOptions(options);
+
             this.warp = (Warp)options[0];
             this._base = (Base)options[1];
             this.overlay_a = (Overlay_A)options[2];
@@ -402,6 +404,16 @@ namespace HaloShaderGenerator.Screen
             }
 
             return null;
+        }
+
+        public byte[] ValidateOptions(byte[] options)
+        {
+            List<byte> optionList = new List<byte>(options);
+
+            while (optionList.Count < GetMethodCount())
+                optionList.Add(0);
+
+            return optionList.ToArray();
         }
     }
 }

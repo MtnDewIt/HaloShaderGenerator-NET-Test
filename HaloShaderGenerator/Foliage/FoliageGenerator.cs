@@ -36,6 +36,8 @@ namespace HaloShaderGenerator.Foliage
 
         public FoliageGenerator(byte[] options, bool applyFixes = false)
         {
+            options = ValidateOptions(options);
+
             this.albedo = (Albedo)options[0];
             this.alpha_test = (Alpha_Test)options[1];
             this.material_model = (Material_Model)options[2];
@@ -375,6 +377,16 @@ namespace HaloShaderGenerator.Foliage
             }
 
             return null;
+        }
+
+        public byte[] ValidateOptions(byte[] options)
+        {
+            List<byte> optionList = new List<byte>(options);
+
+            while (optionList.Count < GetMethodCount())
+                optionList.Add(0);
+
+            return optionList.ToArray();
         }
     }
 }

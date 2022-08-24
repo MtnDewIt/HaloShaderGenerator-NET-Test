@@ -29,6 +29,8 @@ namespace HaloShaderGenerator.ZOnly
 
         public ZOnlyGenerator(byte[] options, bool applyFixes = false)
         {
+            options = ValidateOptions(options);
+
             this.test = (Test)options[0];
 
             //ApplyFixes = applyFixes;
@@ -240,6 +242,16 @@ namespace HaloShaderGenerator.ZOnly
             }
 
             return null;
+        }
+
+        public byte[] ValidateOptions(byte[] options)
+        {
+            List<byte> optionList = new List<byte>(options);
+
+            while (optionList.Count < GetMethodCount())
+                optionList.Add(0);
+
+            return optionList.ToArray();
         }
     }
 }

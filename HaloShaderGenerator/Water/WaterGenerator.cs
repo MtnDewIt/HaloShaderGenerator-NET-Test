@@ -42,6 +42,8 @@ namespace HaloShaderGenerator.Water
 
         public WaterGenerator(byte[] options, bool applyFixes = false)
         {
+            options = ValidateOptions(options);
+
             this.waveshape = (Waveshape)options[0];
             this.watercolor = (Watercolor)options[1];
             this.reflection = (Reflection)options[2];
@@ -685,6 +687,16 @@ namespace HaloShaderGenerator.Water
             }
 
             return null;
+        }
+
+        public byte[] ValidateOptions(byte[] options)
+        {
+            List<byte> optionList = new List<byte>(options);
+
+            while (optionList.Count < GetMethodCount())
+                optionList.Add(0);
+
+            return optionList.ToArray();
         }
     }
 }

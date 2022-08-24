@@ -50,6 +50,8 @@ namespace HaloShaderGenerator.Particle
 
         public ParticleGenerator(byte[] options, bool applyFixes = false)
         {
+            options = ValidateOptions(options);
+
             this.albedo = (Albedo)options[0];
             this.blend_mode = (Blend_Mode)options[1];
             this.specialized_rendering = (Specialized_Rendering)options[2];
@@ -561,6 +563,16 @@ namespace HaloShaderGenerator.Particle
             }
 
             return null;
+        }
+
+        public byte[] ValidateOptions(byte[] options)
+        {
+            List<byte> optionList = new List<byte>(options);
+
+            while (optionList.Count < GetMethodCount())
+                optionList.Add(0);
+
+            return optionList.ToArray();
         }
     }
 }

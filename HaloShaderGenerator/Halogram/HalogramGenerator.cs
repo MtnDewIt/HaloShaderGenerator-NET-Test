@@ -48,6 +48,8 @@ namespace HaloShaderGenerator.Halogram
 
         public HalogramGenerator(byte[] options, bool applyFixes = false)
         {
+            options = ValidateOptions(options);
+
             this.albedo = (Albedo)options[0];
             this.self_illumination = (Self_Illumination)options[1];
             this.blend_mode = (Blend_Mode)options[2];
@@ -964,6 +966,16 @@ namespace HaloShaderGenerator.Halogram
             }
 
             return null;
+        }
+
+        public byte[] ValidateOptions(byte[] options)
+        {
+            List<byte> optionList = new List<byte>(options);
+
+            while (optionList.Count < GetMethodCount())
+                optionList.Add(0);
+
+            return optionList.ToArray();
         }
     }
 }
