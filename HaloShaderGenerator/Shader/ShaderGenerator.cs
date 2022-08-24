@@ -534,28 +534,31 @@ namespace HaloShaderGenerator.Shader
                     result.AddSamplerWithoutXFormParameter("blend_map");
                     result.AddFloat4Parameter("albedo_second_color");
                     break;
-                //case Albedo.Scrolling_Cube_Mask:
-                //    result.AddSamplerParameter("base_map");
-                //    result.AddSamplerParameter("detail_map");
-                //    result.AddFloat4Parameter("albedo_color");
-                //    result.AddSamplerWithoutXFormParameter("color_blend_mask_cubemap");
-                //    result.AddFloat4Parameter("albedo_second_color");
-                //    break;
-                //case Albedo.Scrolling_Cube:
-                //    result.AddSamplerParameter("base_map");
-                //    result.AddSamplerParameter("detail_map");
-                //    result.AddSamplerWithoutXFormParameter("color_cubemap");
-                //    break;
-                //case Albedo.Scrolling_Texture_Uv:
-                //    result.AddSamplerParameter("base_map");
-                //    result.AddSamplerWithoutXFormParameter("color_texture");
-                //    result.AddFloatParameter("u_speed");
-                //    result.AddFloatParameter("v_speed");
-                //    break;
-                //case Albedo.Texture_From_Misc:
-                //    result.AddSamplerParameter("base_map");
-                //    result.AddSamplerWithoutXFormParameter("color_texture");
-                //    break;
+                case Albedo.Emblem:
+                    result.AddSamplerWithoutXFormParameter("emblem_map", RenderMethodExtern.emblem_player_shoulder_texture);
+                    break;
+                    //case Albedo.Scrolling_Cube_Mask:
+                    //    result.AddSamplerParameter("base_map");
+                    //    result.AddSamplerParameter("detail_map");
+                    //    result.AddFloat4Parameter("albedo_color");
+                    //    result.AddSamplerWithoutXFormParameter("color_blend_mask_cubemap");
+                    //    result.AddFloat4Parameter("albedo_second_color");
+                    //    break;
+                    //case Albedo.Scrolling_Cube:
+                    //    result.AddSamplerParameter("base_map");
+                    //    result.AddSamplerParameter("detail_map");
+                    //    result.AddSamplerWithoutXFormParameter("color_cubemap");
+                    //    break;
+                    //case Albedo.Scrolling_Texture_Uv:
+                    //    result.AddSamplerParameter("base_map");
+                    //    result.AddSamplerWithoutXFormParameter("color_texture");
+                    //    result.AddFloatParameter("u_speed");
+                    //    result.AddFloatParameter("v_speed");
+                    //    break;
+                    //case Albedo.Texture_From_Misc:
+                    //    result.AddSamplerParameter("base_map");
+                    //    result.AddSamplerWithoutXFormParameter("color_texture");
+                    //    break;
             }
 
             switch (bump_mapping)
@@ -1104,32 +1107,36 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloat4Parameter("albedo_second_color");
                         rmopName = @"shaders\shader_options\albedo_two_color";
                         break;
-                    //case Albedo.Scrolling_Cube_Mask:
-                    //    result.AddSamplerParameter("base_map");
-                    //    result.AddSamplerParameter("detail_map");
-                    //    result.AddFloat4Parameter("albedo_color");
-                    //    result.AddSamplerWithoutXFormParameter("color_blend_mask_cubemap");
-                    //    result.AddFloat4Parameter("albedo_second_color");
-                    //    rmopName = @"shaders\shader_options\albedo_scrolling_cube_mask";
-                    //    break;
-                    //case Albedo.Scrolling_Cube:
-                    //    result.AddSamplerParameter("base_map");
-                    //    result.AddSamplerParameter("detail_map");
-                    //    result.AddSamplerWithoutXFormParameter("color_cubemap");
-                    //    rmopName = @"shaders\shader_options\albedo_scrolling_cube";
-                    //    break;
-                    //case Albedo.Scrolling_Texture_Uv:
-                    //    result.AddSamplerParameter("base_map");
-                    //    result.AddSamplerWithoutXFormParameter("color_texture");
-                    //    result.AddFloatParameter("u_speed");
-                    //    result.AddFloatParameter("v_speed");
-                    //    rmopName = @"shaders\shader_options\albedo_scrolling_texture_uv";
-                    //    break;
-                    //case Albedo.Texture_From_Misc:
-                    //    result.AddSamplerParameter("base_map");
-                    //    result.AddSamplerWithoutXFormParameter("color_texture");
-                    //    rmopName = @"shaders\shader_options\albedo_texture_from_misc";
-                    //    break;
+                    case Albedo.Emblem:
+                        result.AddSamplerWithoutXFormParameter("emblem_map", RenderMethodExtern.emblem_player_shoulder_texture);
+                        rmopName = @"shaders\shader_options\albedo_emblem";
+                        break;
+                        //case Albedo.Scrolling_Cube_Mask:
+                        //    result.AddSamplerParameter("base_map");
+                        //    result.AddSamplerParameter("detail_map");
+                        //    result.AddFloat4Parameter("albedo_color");
+                        //    result.AddSamplerWithoutXFormParameter("color_blend_mask_cubemap");
+                        //    result.AddFloat4Parameter("albedo_second_color");
+                        //    rmopName = @"shaders\shader_options\albedo_scrolling_cube_mask";
+                        //    break;
+                        //case Albedo.Scrolling_Cube:
+                        //    result.AddSamplerParameter("base_map");
+                        //    result.AddSamplerParameter("detail_map");
+                        //    result.AddSamplerWithoutXFormParameter("color_cubemap");
+                        //    rmopName = @"shaders\shader_options\albedo_scrolling_cube";
+                        //    break;
+                        //case Albedo.Scrolling_Texture_Uv:
+                        //    result.AddSamplerParameter("base_map");
+                        //    result.AddSamplerWithoutXFormParameter("color_texture");
+                        //    result.AddFloatParameter("u_speed");
+                        //    result.AddFloatParameter("v_speed");
+                        //    rmopName = @"shaders\shader_options\albedo_scrolling_texture_uv";
+                        //    break;
+                        //case Albedo.Texture_From_Misc:
+                        //    result.AddSamplerParameter("base_map");
+                        //    result.AddSamplerWithoutXFormParameter("color_texture");
+                        //    rmopName = @"shaders\shader_options\albedo_texture_from_misc";
+                        //    break;
                 }
             }
             if (methodName == "bump_mapping")

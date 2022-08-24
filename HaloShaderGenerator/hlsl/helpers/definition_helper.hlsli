@@ -93,6 +93,7 @@ This file contains a list of blank definitions to help with Intellisense
 #define k_albedo_scrolling_cube 43
 #define k_albedo_scrolling_texture_uv 44
 #define k_albedo_texture_from_misc 45
+#define k_albedo_emblem 46
 
 #define k_bump_mapping_off 0
 #define k_bump_mapping_standard 1

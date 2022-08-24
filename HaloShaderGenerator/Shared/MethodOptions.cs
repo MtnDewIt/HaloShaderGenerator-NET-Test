@@ -69,6 +69,7 @@ namespace HaloShaderGenerator.Shared
         Scrolling_Cube,
         Scrolling_Texture_Uv,
         Texture_From_Misc,
+        Emblem
     }
 
     public enum Alpha_Test

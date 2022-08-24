@@ -45,6 +45,7 @@ namespace HaloShaderGenerator.Shader
         Chameleon_Albedo_Masked,
         Custom_Cube,
         Two_Color,
+        Emblem,
         // uncomment when misc_attr supported
         //Scrolling_Cube_Mask,
         //Scrolling_Cube,

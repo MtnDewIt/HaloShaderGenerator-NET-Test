@@ -501,6 +501,12 @@ float4 calc_albedo_two_color_ps(float2 texcoord, float2 position, float3 surface
     return albedo;
 }
 
+uniform sampler2D emblem_map;
+float4 calc_albedo_emblem_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
+{
+    return tex2D(emblem_map, texcoord);
+}
+
 // these options from MCC require use of the new misc attr stuff
 // scrolling_texture_uv might be easily doable but the others require a new VS
 
