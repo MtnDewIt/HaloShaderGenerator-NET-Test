@@ -504,6 +504,10 @@ float4 calc_albedo_two_color_ps(float2 texcoord, float2 position, float3 surface
 uniform sampler2D emblem_map;
 float4 calc_albedo_emblem_ps(float2 texcoord, float2 position, float3 surface_normal, float3 camera_dir)
 {
+	// decal texcoord_clip()
+    float4 clip_val = texcoord.xyxy * float4(1, 1, -1, -1) + float4(0, 0, 1, 1);
+    clip(clip_val);
+	
     return tex2D(emblem_map, texcoord);
 }
 
