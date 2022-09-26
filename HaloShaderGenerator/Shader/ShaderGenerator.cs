@@ -422,6 +422,7 @@ namespace HaloShaderGenerator.Shader
                     result.AddFloat3ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
                     break;
                 case Albedo.Four_Change_Color:
+                case Albedo.Four_Change_Color_Applying_To_Specular:
                     result.AddSamplerParameter("base_map");
                     result.AddSamplerParameter("detail_map");
                     result.AddSamplerParameter("change_color_map");
