@@ -113,13 +113,19 @@ namespace HaloShaderGenerator.Shader
                 sMaterialModel = (Shared.Material_Model)Enum.Parse(typeof(Shared.Material_Model), material_model.ToString());
             }
 
+            Shared.Environment_Mapping sEnvironmentMapping = (Shared.Environment_Mapping)Enum.Parse(typeof(Shared.Environment_Mapping), environment_mapping.ToString());
+            if (environment_mapping == Environment_Mapping.Dynamic_Reach)
+            {
+                sEnvironmentMapping = Shared.Environment_Mapping.Dynamic;
+                macros.Add(ShaderGeneratorBase.CreateMacro("REACH_ENV_DYNAMIC", 1));
+            }
+
             //
             // Convert to shared enum
             //
 
             var sAlbedo = Enum.Parse(typeof(Shared.Albedo), albedo.ToString());
             var sAlphaTest = Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
-            var sEnvironmentMapping = Enum.Parse(typeof(Shared.Environment_Mapping), environment_mapping.ToString());
             var sSelfIllumination = Enum.Parse(typeof(Shared.Self_Illumination), self_illumination.ToString());
             var sBlendMode = Enum.Parse(typeof(Shared.Blend_Mode), blend_mode.ToString());
 
@@ -745,6 +751,7 @@ namespace HaloShaderGenerator.Shader
                     result.AddFloatParameter("env_roughness_scale");
                     break;
                 case Environment_Mapping.Dynamic:
+                case Environment_Mapping.Dynamic_Reach:
                     result.AddFloat3ColorParameter("env_tint_color");
                     result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
                     result.AddSamplerParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
@@ -1383,6 +1390,7 @@ namespace HaloShaderGenerator.Shader
                         rmopName = @"shaders\shader_options\env_map_per_pixel";
                         break;
                     case Environment_Mapping.Dynamic:
+                    case Environment_Mapping.Dynamic_Reach:
                         result.AddFloat3ColorParameter("env_tint_color");
                         result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
                         result.AddSamplerParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);

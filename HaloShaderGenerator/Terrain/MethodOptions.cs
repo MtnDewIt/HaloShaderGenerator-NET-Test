@@ -26,7 +26,8 @@ namespace HaloShaderGenerator.Terrain
     {
         None,
         Per_Pixel,
-        Dynamic
+        Dynamic,
+        Dynamic_Reach
     }
 
     public enum Material

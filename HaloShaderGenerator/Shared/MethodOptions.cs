@@ -103,6 +103,7 @@ namespace HaloShaderGenerator.Shared
         From_Flat_Texture,
         Custom_Map,
         Per_Pixel_Mip,
+        Dynamic_Reach
     }
 
     public enum Self_Illumination

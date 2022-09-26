@@ -74,7 +74,6 @@ in ENVIRONMENT_MAPPING_COMMON env_mapping_common_data,
 inout float3 diffuse,
 out float4 unknown_output)
 {
-
 	float lod_level = get_lod_level(env_mapping_common_data.reflect_dir);
 
 	float roughness_level = env_mapping_common_data.specular_exponent * env_roughness_scale;
@@ -83,20 +82,20 @@ out float4 unknown_output)
 	dynamic_envmap_texcoord.w = max(lod_level, 4 * roughness_level);
 	dynamic_envmap_texcoord.xyz = env_mapping_common_data.reflect_dir * float3(1, -1, 1);
 	
-	float4 dynamic_environment_map_0_sample = texCUBElod(dynamic_environment_map_0, dynamic_envmap_texcoord);
-	float4 dynamic_environment_map_1_sample = texCUBElod(dynamic_environment_map_1, dynamic_envmap_texcoord);
+	float4 env0 = texCUBElod(dynamic_environment_map_0, dynamic_envmap_texcoord);
+	float4 env1 = texCUBElod(dynamic_environment_map_1, dynamic_envmap_texcoord);
 	
 	unknown_output.rgb = env_tint_color.rgb * env_mapping_common_data.specular_coefficient;
 	unknown_output.a = roughness_level;
+    
+#ifdef REACH_ENV_DYNAMIC
+    float3 environment_color = (env0.rgb*env0.rgb * env0.a) * dynamic_environment_blend.rgb +
+						(env1.rgb*env1.rgb * env1.a) * (1.0f - dynamic_environment_blend.rgb);
+#else
+    float3 environment_color = (env0.rgb * env0.a * 256.0f) * dynamic_environment_blend.rgb +
+						(env1.rgb * env1.a * 256.0f) * (1.0f - dynamic_environment_blend.rgb);
+#endif
 	
-	float3 env_color_0 = dynamic_environment_map_0_sample.rgb * dynamic_environment_map_0_sample.w;
-	env_color_0 *= dynamic_environment_blend.rgb;
-	
-	float3 env_color_1 = dynamic_environment_map_1_sample.rgb * dynamic_environment_map_1_sample.w;
-	env_color_1 *= 256;
-	env_color_1 *= (1.0f - dynamic_environment_blend.rgb);
-	env_color_0 *= 256;
-	float3 environment_color = env_color_0 + env_color_1;
 	environment_color *= env_mapping_common_data.specular_coefficient;
 	environment_color *= env_tint_color.xyz;
 	environment_color *= env_mapping_common_data.env_area_specular;

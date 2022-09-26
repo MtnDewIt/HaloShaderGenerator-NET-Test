@@ -39,7 +39,8 @@ namespace HaloShaderGenerator.Cortana
     {
         None,
         Per_Pixel,
-        Dynamic
+        Dynamic,
+        Dynamic_Reach
     }
 
     public enum Warp
