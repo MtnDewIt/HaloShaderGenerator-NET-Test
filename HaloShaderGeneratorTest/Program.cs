@@ -15,17 +15,17 @@ namespace HaloShaderGenerator
         static readonly ShaderSubtype TestStageType = ShaderSubtype.Pixel; //shared_vertex, shared_pixel, vertex or pixel
 
         static readonly bool ExplicitTest = false;
-        static readonly string ExplicitReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\explicit";
+        static readonly string ExplicitReferencePath = @"D:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\explicit";
         static readonly bool ExplicitTestSingle = true;
         static public readonly ExplicitShader ExplicitShader = ExplicitShader.pixel_copy;
 
-        static readonly bool ChudTest = false;
-        static readonly string ChudReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\chud";
+        static readonly bool ChudTest = true;
+        static readonly string ChudReferencePath = @"D:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\chud";
         static readonly bool ChudTestSingle = true;
         static public readonly ChudShader ChudShader = ChudShader.chud_simple;
 
         static readonly bool TemplateTest = true;
-        static readonly string ShaderReferencePath = @"C:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\Shaders";
+        static readonly string ShaderReferencePath = @"D:\REPOS\TagTool\TagTool\bin\x64\Debug\HaloOnline106708\Shaders";
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
         static readonly ShaderType TestShaderType = ShaderType.Shader;
