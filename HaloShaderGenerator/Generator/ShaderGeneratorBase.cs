@@ -27,20 +27,14 @@ namespace HaloShaderGenerator.Generator
 
                 string relative_path = Path.Combine(parent_directory, filepath);
 
-                // HACK: This should be improved!!!
-                Uri uri1 = new Uri(Directory.GetCurrentDirectory() + "/");
-                Uri uri2 = new Uri(Path.GetFullPath(relative_path));
-                Uri relativeUri = uri1.MakeRelativeUri(uri2);
-                relative_path = relativeUri.ToString();
-                if (relative_path.StartsWith("./")) relative_path = relative_path.Substring(2);
+                Uri uri2 = new Uri(Path.GetFullPath("shaders\\" + relative_path));
 
-                string path = Path.Combine("HaloShaderGenerator\\hlsl", relative_path);
+                FileInfo file = new FileInfo(uri2.AbsolutePath);
 
-                string directory = Path.GetDirectoryName(path);
+                if (!file.Exists)
+                    throw new Exception($"Couldn't find file {relative_path}");
 
-                var resourceName = path.Replace('\\', '.').Replace('/', '.');
-
-                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                using (Stream stream = file.OpenRead())
                 {
                     if(stream == null)
                     {
