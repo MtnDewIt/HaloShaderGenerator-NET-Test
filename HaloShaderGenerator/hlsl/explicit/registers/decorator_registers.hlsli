@@ -5,9 +5,9 @@
 
 //uniform float4x4 View_Projection : register(c0);
 //uniform float3 Camera_Position : register(c7);
-//uniform float4 Position_Compression_Scale : register(c12);
-//uniform float4 Position_Compression_Offset : register(c13);
-//uniform float4 UV_Compression_Scale_Offset : register(c14);
+uniform float4 Position_Compression_Scale : register(c12);
+uniform float4 Position_Compression_Offset : register(c13);
+uniform float4 UV_Compression_Scale_Offset : register(c14);
 //uniform float4 v_atmosphere_constant_extra : register(c15);
 uniform float4 v_simple_lights[40] : register(c16);
 uniform float4 v_simple_light_count : register(c230);
