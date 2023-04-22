@@ -29,8 +29,8 @@ namespace HaloShaderGenerator
             var distortion = (Shared.Distortion)shaderOptions[10];
             var soft_fade = (Shared.Soft_Fade)shaderOptions[11];
             var gen = new ShaderGenerator(albedo, bump_mapping, alpha_test, specular_mask, material_model, environment_mapping, self_illumination, blend_mode, parallax, misc, distortion, soft_fade);
-            var bytecode = gen.GeneratePixelShader(stage).Bytecode;
-            return D3DCompiler.Disassemble(bytecode);
+            var result = gen.GeneratePixelShader(stage);
+            return D3DCompiler.Disassemble(result.Bytecode);
         }
 
         public override string GenerateSharedPixelShader(ShaderStage stage, int methodIndex, int optionIndex)
@@ -208,7 +208,31 @@ namespace HaloShaderGenerator
             return equal;
         }
 
-        public struct DissasemblyConstants
+        public struct RegisterConstant
+        {
+            public string Name;
+            public string Register; // eg. s2 for sampler 2
+
+            public static bool operator==(RegisterConstant a, RegisterConstant b)
+            {
+                return a.Name == b.Name;
+            }
+            public static bool operator!=(RegisterConstant a, RegisterConstant b)
+            {
+                return a.Name != b.Name;
+            }
+            public override bool Equals(object a)
+            {
+                return typeof(RegisterConstant) == a.GetType() && this.Name == ((RegisterConstant)a).Name;
+            }
+
+            public override int GetHashCode()
+            {
+                return Name.GetHashCode();
+            }
+        }
+
+        public struct DisassemblyConstants
         {
             public string Name;
             public int Index;
@@ -217,7 +241,7 @@ namespace HaloShaderGenerator
             public string Z;
             public string W;
 
-            public DissasemblyConstants(string name, int index, string x, string y, string z, string w)
+            public DisassemblyConstants(string name, int index, string x, string y, string z, string w)
             {
                 Name = name;
                 Index = index;
@@ -228,7 +252,7 @@ namespace HaloShaderGenerator
             }
         }
 
-        public static Dictionary<string, DissasemblyConstants> GetConstants(string data, string version)
+        public static Dictionary<string, DisassemblyConstants> GetConstants(string data, string version)
         {
             var startIndex = data.IndexOf(version) + 7;
             var trimmedString = data.Substring(startIndex);
@@ -238,7 +262,7 @@ namespace HaloShaderGenerator
             var constantsBlock = trimmedString.Substring(0, endIndex);
             constantsBlock = constantsBlock.Replace("    def ", "");
             List<string> registerConstants = constantsBlock.Split('\n').ToList();
-            Dictionary<string, DissasemblyConstants> constantsMapping = new Dictionary<string, DissasemblyConstants>();
+            Dictionary<string, DisassemblyConstants> constantsMapping = new Dictionary<string, DisassemblyConstants>();
             for(int i = 0; i < registerConstants.Count; i++)
             {
                 var register = registerConstants[i];
@@ -247,18 +271,40 @@ namespace HaloShaderGenerator
                     continue;
                 var name = regConstants[0];
                 regConstants.RemoveAt(0);
-                constantsMapping[name] = new DissasemblyConstants(name, i, regConstants[0], regConstants[1], regConstants[2], regConstants[3]);
+                constantsMapping[name] = new DisassemblyConstants(name, i, regConstants[0], regConstants[1], regConstants[2], regConstants[3]);
             }
 
             return constantsMapping;
         }
 
-        public static string RebuildConstants(DissasemblyConstants constant)
+        // samplers only for now
+        public static List<RegisterConstant> GetRegisters(string data)
+        {
+            List<RegisterConstant> result = new List<RegisterConstant>();
+            List<string> dataLined = data.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            int titleLineIndex = dataLined.IndexOf("// Registers:");
+            int registerCount = titleLineIndex - 7;
+            int regOffset = dataLined[titleLineIndex + 2].IndexOf("Reg");
+
+            for (int i = titleLineIndex + 4; i < titleLineIndex + 4 + registerCount; i++)
+            {
+                string name = dataLined[i].Remove(0, 5).Split(' ')[0];
+                string register = dataLined[i].Remove(0, regOffset).Split(' ')[0];
+                RegisterConstant constant = new RegisterConstant { Name = name, Register = register };
+                if (register.StartsWith("s"))
+                    result.Add(constant);
+            }
+
+            return result;
+        }
+
+        public static string RebuildConstants(DisassemblyConstants constant)
         {
             return $"{constant.X}, {constant.Y}, {constant.Z}, {constant.W}";
         }
 
-        public static string ReplaceConstants(DissasemblyConstants genConstants, DissasemblyConstants refConstants, string genData)
+        public static string ReplaceConstants(DisassemblyConstants genConstants, DisassemblyConstants refConstants, string genData)
         {
             genData = genData.Replace($"{genConstants.Name} ", $"shadergenprefix{refConstants.Name}shadergensuffix ");
             genData = genData.Replace($"{genConstants.Name}.", $"shadergenprefix{refConstants.Name}shadergensuffix.");
@@ -277,7 +323,7 @@ namespace HaloShaderGenerator
             if (refConstants.Count != genConstants.Count)
                 return false;
 
-            Dictionary<DissasemblyConstants, DissasemblyConstants> swaps = new Dictionary<DissasemblyConstants, DissasemblyConstants>();
+            Dictionary<DisassemblyConstants, DisassemblyConstants> swaps = new Dictionary<DisassemblyConstants, DisassemblyConstants>();
 
             foreach(var refConstantName in refConstants.Keys)
             {
@@ -316,6 +362,45 @@ namespace HaloShaderGenerator
             destConstantBlock = destConstantBlock.Substring(0, endIndex);
 
             genData = genData.Replace(sourceConstantBlock, destConstantBlock);
+
+            // samplers
+            var refSamplers = GetRegisters(refData);
+            var genSamplers = GetRegisters(genData);
+
+            Dictionary<string, string> replacements = new Dictionary<string, string>();
+
+            // replace with generic first so we don't override
+            foreach (var refSampler in refSamplers)
+            {
+                int index = genSamplers.IndexOf(refSampler);
+                if (index == -1)
+                    return false;
+
+                string samplerIndex = genSamplers[index].Register.Remove(0, 1);
+                string rep = $"SAMPLER{samplerIndex}";
+
+                genData = genData.Replace(genSamplers[index].Register, rep);
+                replacements.Add(rep, refSampler.Register);
+            }
+            foreach (var rep in replacements)
+            {
+                // hack for columns
+                if (rep.Key.Remove(0, 6).Length < rep.Value.Length)
+                {
+                    int index = genData.IndexOf(rep.Key);
+
+                    genData = genData.Remove(index + rep.Key.Length, 1);
+                }
+                else if (rep.Key.Remove(0, 6).Length > rep.Value.Length)
+                {
+                    int index = genData.IndexOf(rep.Key);
+
+                    genData = genData.Insert(index + rep.Key.Length, " ");
+                }
+
+                genData = genData.Replace(rep.Key, rep.Value);
+            }
+
             return string.Equals(genData, refData);
         }
 

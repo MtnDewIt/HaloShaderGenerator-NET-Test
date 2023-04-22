@@ -27,7 +27,7 @@ namespace HaloShaderGenerator.Generator
 
                 string relative_path = Path.Combine(parent_directory, filepath);
 
-                Uri uri2 = new Uri(Path.GetFullPath("shaders\\" + relative_path));
+                Uri uri2 = new Uri(Path.GetFullPath("halo_online_shaders\\" + relative_path));
 
                 FileInfo file = new FileInfo(uri2.AbsolutePath);
 
@@ -90,7 +90,7 @@ namespace HaloShaderGenerator.Generator
 #endif
             //flags |= D3DCompiler.D3DCOMPILE.D3DCOMPILE_SKIP_VALIDATION;
             //flags |= D3DCompiler.D3DCOMPILE.D3DCOMPILE_DEBUG;
-            flags |= D3DCompiler.D3DCOMPILE.D3DCOMPILE_OPTIMIZATION_LEVEL2; // if can't get shader to compile 1-1 add or remove this line
+            flags |= D3DCompiler.D3DCOMPILE.D3DCOMPILE_OPTIMIZATION_LEVEL3; // if can't get shader to compile 1-1 add or remove this line
             byte[] shader_code = D3DCompiler.Compile(
                 shader_source,
                 entry,

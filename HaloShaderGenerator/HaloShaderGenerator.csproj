@@ -153,6 +153,8 @@
     <Compile Include="Globals\ShaderStage.cs" />
     <Compile Include="Globals\ShaderType.cs" />
     <Compile Include="Globals\VertexType.cs" />
+    <Compile Include="TemplateGenerator\OptionInfo.cs" />
+    <Compile Include="TemplateGenerator\TemplateGenerator.cs" />
     <Compile Include="Water\MethodOptions.cs" />
     <Compile Include="Water\WaterGenerator.cs" />
     <Compile Include="ZOnly\MethodOptions.cs" />
