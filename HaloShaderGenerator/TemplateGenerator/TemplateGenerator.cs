@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace HaloShaderGenerator.TemplateGenerator
 {
-    internal class TemplateGenerator
+    public class TemplateGenerator
     {
         private bool ApplyFixes;
         private List<OptionInfo> CurrentOptions = null;
@@ -22,15 +22,19 @@ namespace HaloShaderGenerator.TemplateGenerator
             return Shared.Blend_Mode.Opaque;
         }
 
-        private Misc GetMisc()
+        private Shader.Misc GetMisc()
         {
             var miscIndex = CurrentOptions.FindIndex(x => x.Category == "misc");
             if (miscIndex != -1)
-                return (Misc)Enum.Parse(typeof(Misc), CurrentOptions[miscIndex].Option, true);
-            return Misc.First_Person_Never;
+            {
+                if (CurrentOptions[miscIndex].Option == @"first_person_never_w/rotating_bitmaps")
+                    return Shader.Misc.First_Person_Never_With_rotating_Bitmaps;
+                return (Shader.Misc)Enum.Parse(typeof(Misc), CurrentOptions[miscIndex].Option, true);
+            }
+            return Shader.Misc.First_Person_Never;
         }
 
-        private bool SsrEnable(ShaderType shaderType) // todo review
+        private static bool SsrEnable(ShaderType shaderType) // todo review
         {
             switch (shaderType)
             {
@@ -71,11 +75,12 @@ namespace HaloShaderGenerator.TemplateGenerator
             }
         }
 
-        private void CreateGlobalMacros(List<D3D.SHADER_MACRO> macros, 
+        public static void CreateGlobalMacros(List<D3D.SHADER_MACRO> macros, 
             ShaderType shaderType,
             ShaderStage entryPoint, 
             Shared.Blend_Mode blendMode, 
-            Misc misc)
+            Shader.Misc misc,
+            bool applyFixes)
         {
             macros.Add(ShaderGeneratorBase.CreateMacro("PIXEL_SHADER", "1"));
             macros.Add(ShaderGeneratorBase.CreateMacro("entry_point", entryPoint.ToString().ToLower()));
@@ -109,23 +114,36 @@ namespace HaloShaderGenerator.TemplateGenerator
             }
 
             if (blendMode != Shared.Blend_Mode.Opaque ||
-                (misc != Misc.First_Person_Never && 
-                misc != Misc.First_Person_Never_With_rotating_Bitmaps))
+                (misc != Shader.Misc.First_Person_Never && 
+                misc != Shader.Misc.First_Person_Never_With_rotating_Bitmaps))
                 macros.Add(ShaderGeneratorBase.CreateMacro("maybe_calc_albedo", "1"));
 
-            if (ApplyFixes)
+            if (applyFixes)
                 macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_FIXES", "1"));
+        }
+
+        private static List<OptionInfo> ValidateOptionInfo(List<OptionInfo> options)
+        {
+            List<OptionInfo> newOptions = new List<OptionInfo>();
+            foreach (var option in options)
+            {
+                if (option.PsMacro == "invalid" || 
+                    option.PsMacroValue == "invalid")
+                    continue;
+                newOptions.Add(option);
+            }
+            return newOptions;
         }
 
         public ShaderGeneratorResult GeneratePixelShader(ShaderType shaderType, ShaderStage entryPoint, List<OptionInfo> options)
         {
-            CurrentOptions = options;
+            CurrentOptions = ValidateOptionInfo(options);
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
-            CreateGlobalMacros(macros, shaderType, entryPoint, GetBlendMode(), GetMisc());
+            CreateGlobalMacros(macros, shaderType, entryPoint, GetBlendMode(), GetMisc(), ApplyFixes);
 
-            foreach (var option in options)
+            foreach (var option in CurrentOptions)
                 macros.Add(ShaderGeneratorBase.CreateMacro(option.PsMacro, option.PsMacroValue));
 
             string entryName = GetEntryName(entryPoint);

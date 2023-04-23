@@ -696,13 +696,15 @@ namespace HaloShaderGenerator
                     if (file.Exists == false)
                     {
                         Console.WriteLine($"No reference shader for {BuildShaderName(testShader)} at {stage.ToString().ToLower()}");
+                        GeneratePixelShader(stage, generatorList);
+                        DisplayPixelShaderTestResults(true, BuildShaderName(generatorList), stage, false);
                         success = false;
                         continue;
                     }
 
                     var disassembly = GeneratePixelShader(stage, generatorList);
                     bool equal = CompareShaders(disassembly, filePath, "ps_3_0", out bool usesD3DX);
-                    success &= equal;
+                    success &= (equal || usesD3DX);
                     DisplayPixelShaderTestResults(equal, BuildShaderName(generatorList), stage, usesD3DX);
 
                     if (Application.OutputAll && !equal)

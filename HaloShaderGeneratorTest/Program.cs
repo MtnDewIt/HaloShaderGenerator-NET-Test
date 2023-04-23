@@ -28,12 +28,12 @@ namespace HaloShaderGenerator
         static readonly string ShaderReferencePath = @"D:\REPOS\Epsilon\Epsilon\bin\x64\Debug\HaloOnline106708\shaders";
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
-        static readonly ShaderType TestShaderType = ShaderType.Shader;
+        static readonly ShaderType TestShaderType = ShaderType.Terrain;
 
         static public readonly bool OutputAll = true;
 
         static readonly List<ShaderStage> StageOverrides = new List<ShaderStage> { 
-         ShaderStage.Static_Per_Pixel,
+         //ShaderStage.Static_Per_Pixel,
           //ShaderStage.Static_Prt_Ambient
         };
 
@@ -159,6 +159,8 @@ namespace HaloShaderGenerator
             //new List<int> { 0, 8, 1, 0, 1, 0, 0},
             //new List<int> { 0, 9, 0, 1, 0, 2, 0},
             //new List<int> { 2, 9, 1, 1, 0, 2, 0},
+            //new List<int> { 0,8,1,0,1,0,0 },
+            //new List<int> { 0,8,1,0,1,0,0 },
         };
 
         public static readonly List<List<int>> HalogramMS25 = new List<List<int>>
@@ -172,6 +174,8 @@ namespace HaloShaderGenerator
             new List<int> { 0,5,1,0,0,0,1 },
             new List<int> { 0,4,0,0,0,0,0 },
             new List<int> { 9,5,3,0,0,0,0 },
+
+            //new List<int> { 0,8,1,0,1,0,0 },
         };
 
         static readonly List<List<int>> HalogramMethodOverrides = new List<List<int>> { HalogramAlbedoOverride, HalogramSelfIllumOverride, 
