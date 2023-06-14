@@ -438,7 +438,7 @@ namespace HaloShaderGenerator.Shader
                 case ShaderStage.Default:
                 case ShaderStage.Z_Only:
                 case ShaderStage.Water_Shading:
-                case ShaderStage.Water_Tesselation:
+                case ShaderStage.Water_Tessellation:
                 case ShaderStage.Shadow_Apply:
                 case ShaderStage.Static_Default:
                     return false;

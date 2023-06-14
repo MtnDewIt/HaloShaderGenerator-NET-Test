@@ -28,7 +28,7 @@ namespace HaloShaderGenerator
         static readonly string ShaderReferencePath = @"D:\REPOS\Epsilon\Epsilon\bin\x64\Debug\HaloOnline106708\shaders";
         static readonly bool UnitTest = false;
         static readonly bool TestSpecificShader = true;
-        static readonly ShaderType TestShaderType = ShaderType.Terrain;
+        static readonly ShaderType TestShaderType = ShaderType.Water;
 
         static public readonly bool OutputAll = true;
 

@@ -128,6 +128,11 @@ namespace HaloShaderGenerator.Generator
             return new D3D.SHADER_MACRO { Name = name, Definition = definition };
         }
 
+        public static D3D.SHADER_MACRO CreateAutoMacro(string name, string definition)
+        {
+            return new D3D.SHADER_MACRO { Name = "category_" + name, Definition = "category_" + name + "_option_" + definition };
+        }
+
         public static D3D.SHADER_MACRO CreateMacro(string name, object method, string prefix = "", string suffix = "")
         {
             return new D3D.SHADER_MACRO { Name = name, Definition = CreateMethodDefinition(method, prefix, suffix) };
@@ -155,6 +160,23 @@ namespace HaloShaderGenerator.Generator
                 var method_name = method.ToString().ToLower();
 
                 macros.Add(new D3D.SHADER_MACRO { Name = $"k_{method_type_name}_{method_name}", Definition = ((int)method).ToString() });
+            }
+
+            return macros;
+        }
+
+        public static IEnumerable<D3D.SHADER_MACRO> CreateAutoMacroMethodEnumDefinitions<MethodType>() where MethodType : struct, IConvertible
+        {
+            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>(); 
+
+            var method_type_name = typeof(MethodType).Name.ToLower();
+
+            var values = Enum.GetValues(typeof(MethodType));
+            foreach (var method in values)
+            {
+                var method_name = method.ToString().ToLower();
+
+                macros.Add(new D3D.SHADER_MACRO { Name = $"category_{method_type_name}_option_{method_name}", Definition = ((int)method).ToString() });
             }
 
             return macros;

@@ -60,7 +60,7 @@ namespace HaloShaderGenerator.Terrain
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Halogram, entryPoint, Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, ApplyFixes);
+            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Terrain, entryPoint, Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, ApplyFixes);
 
 
             macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", blending == Blending.Dynamic_Morph ? "dynamic" : blending.ToString()));
@@ -82,6 +82,8 @@ namespace HaloShaderGenerator.Terrain
                     entryName = "dynamic_light_cine_ps";
                     break;
             }
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("TERRAIN_COMPILE_HACK", "1"));
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"terrain.fx", macros, entryName, "ps_3_0");
 
@@ -205,7 +207,7 @@ namespace HaloShaderGenerator.Terrain
                 case ShaderStage.Default:
                 case ShaderStage.Z_Only:
                 case ShaderStage.Water_Shading:
-                case ShaderStage.Water_Tesselation:
+                case ShaderStage.Water_Tessellation:
                 case ShaderStage.Shadow_Apply:
                 case ShaderStage.Static_Default:
                 case ShaderStage.Static_Per_Vertex_Color:

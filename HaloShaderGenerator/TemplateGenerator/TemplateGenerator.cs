@@ -45,6 +45,8 @@ namespace HaloShaderGenerator.TemplateGenerator
                 case ShaderType.Terrain:
                 case ShaderType.Foliage:
                 case ShaderType.Glass:
+                case ShaderType.Water:
+                case ShaderType.Custom:
                     return true;
                 default:
                     return false;
@@ -108,6 +110,8 @@ namespace HaloShaderGenerator.TemplateGenerator
                     case ShaderStage.Static_Per_Vertex_Color:
                     case ShaderStage.Z_Only:
                     case ShaderStage.Sfx_Distort:
+                    case ShaderStage.Water_Tessellation:
+                    case ShaderStage.Water_Shading:
                         macros.Add(ShaderGeneratorBase.CreateMacro("SSR_ENABLE", "1"));
                         break;
                 }
