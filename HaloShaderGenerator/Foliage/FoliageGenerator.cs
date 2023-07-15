@@ -54,7 +54,10 @@ namespace HaloShaderGenerator.Foliage
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Foliage, entryPoint, Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, ApplyFixes);
+            var sAlphaTest = Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
+
+            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Foliage, entryPoint, Shared.Blend_Mode.Opaque, 
+                Shader.Misc.First_Person_Never, (Shared.Alpha_Test)sAlphaTest, ApplyFixes);
 
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", albedo, "calc_albedo_", "_ps"));
             macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", material_model, "calculate_material_"));

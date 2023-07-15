@@ -59,7 +59,7 @@ namespace HaloShaderGenerator
             throw new System.NotImplementedException();
         }
 
-        public override string GenerateExplicitVertexShader(ExplicitShader explicitShader, ShaderStage entry)
+        public override string GenerateExplicitVertexShader(ExplicitShader explicitShader, ShaderStage entry, VertexType vertexType)
         {
             throw new System.NotImplementedException();
         }
@@ -69,7 +69,7 @@ namespace HaloShaderGenerator
             throw new System.NotImplementedException();
         }
 
-        public override string GenerateChudVertexShader(ChudShader chudShader, ShaderStage entry)
+        public override string GenerateChudVertexShader(ChudShader chudShader, ShaderStage entry, VertexType vertexType)
         {
             throw new System.NotImplementedException();
         }
@@ -123,7 +123,7 @@ namespace HaloShaderGenerator
 
         public static string GetTestSharedVertexShader(VertexType vertex, ShaderStage stage)
         {
-            var vertexShaderPath = Path.Combine(ReferencePath, $"{ShaderType}_shared_vertex_shaders.glvs");
+            var vertexShaderPath = Path.Combine(ReferencePath, $"{ShaderType}_shared_vertex_shaders");
             vertexShaderPath = Path.Combine(vertexShaderPath, $"{vertex.ToString().ToLower()}");
             vertexShaderPath = Path.Combine(vertexShaderPath, $"{stage.ToString().ToLower()}.shared_vertex_shader");
             return vertexShaderPath;
@@ -131,7 +131,7 @@ namespace HaloShaderGenerator
 
         public static string GetTestSharedPixelShader(ShaderStage stage, int methodIndex = -1, int optionIndex = -1)
         {
-            var vertexShaderPath = Path.Combine(ReferencePath, $"{ShaderType}_shared_pixel_shaders.glps");
+            var vertexShaderPath = Path.Combine(ReferencePath, $"{ShaderType}_shared_pixel_shaders");
             var filename = $"{stage.ToString().ToLower()}";
             if(methodIndex != -1 && optionIndex != -1)
             {
@@ -267,7 +267,7 @@ namespace HaloShaderGenerator
             {
                 var register = registerConstants[i];
                 var regConstants = register.Split(',').ToList();
-                if (regConstants.Count == 0)
+                if (regConstants.Count != 4) // must be 4, otherwise not a constant
                     continue;
                 var name = regConstants[0];
                 regConstants.RemoveAt(0);
@@ -538,8 +538,9 @@ namespace HaloShaderGenerator
         public bool TestExplicitVertexShader(ExplicitShader explicitShader)
         {
             bool success = true;
+            var generator = new ExplicitGenerator();
 
-            var entries = Generic.GenericShaderStage.GetExplicitEntryPoints(explicitShader);
+            var entries = generator.ScrapeEntryPoints(explicitShader);
 
             foreach (var entry in entries)
             {
@@ -553,15 +554,20 @@ namespace HaloShaderGenerator
                     continue;
                 }
 
-                var disassembly = GenerateExplicitVertexShader(explicitShader, entry);
-                bool equal = CompareShaders(disassembly, filePath, "vs_3_0", out bool usesD3DX);
-                success &= equal;
-                DisplayPixelShaderTestResults(equal, explicitShader.ToString(), entry, usesD3DX);
+                var vertexTypes = generator.ScrapeVertexTypes(explicitShader);
 
-                if (!equal)
+                foreach (var vertexType in vertexTypes)
                 {
-                    string filename = $"generated_{Application.ExplicitShader}_{entry}.vertex_shader";
-                    Application.WriteShaderFile(filename, disassembly);
+                    var disassembly = GenerateExplicitVertexShader(explicitShader, entry, vertexType);
+                    bool equal = CompareShaders(disassembly, filePath, "vs_3_0", out bool usesD3DX);
+                    success &= equal;
+                    DisplayPixelShaderTestResults(equal, explicitShader.ToString() + $" {vertexType}", entry, usesD3DX);
+
+                    if (!equal)
+                    {
+                        string filename = $"generated_{Application.ExplicitShader}_{entry}_{vertexType}.vertex_shader";
+                        Application.WriteShaderFile(filename, disassembly);
+                    }
                 }
             }
 
@@ -586,7 +592,7 @@ namespace HaloShaderGenerator
                     continue;
                 }
 
-                var disassembly = GenerateChudVertexShader(chudShader, entry);
+                var disassembly = GenerateChudVertexShader(chudShader, entry, VertexType.SimpleChud);
                 bool equal = CompareShaders(disassembly, filePath, "vs_3_0", out bool usesD3DX);
                 success &= equal;
                 DisplayPixelShaderTestResults(equal, chudShader.ToString(), entry, usesD3DX);
@@ -900,11 +906,11 @@ namespace HaloShaderGenerator
 
         public abstract string GenerateExplicitPixelShader(ExplicitShader explicitShader, ShaderStage entry);
 
-        public abstract string GenerateExplicitVertexShader(ExplicitShader explicitShader, ShaderStage entry);
+        public abstract string GenerateExplicitVertexShader(ExplicitShader explicitShader, ShaderStage entry, VertexType vertexType);
 
         public abstract string GenerateChudPixelShader(ChudShader chudShader, ShaderStage entry);
 
-        public abstract string GenerateChudVertexShader(ChudShader chudShader, ShaderStage entry);
+        public abstract string GenerateChudVertexShader(ChudShader chudShader, ShaderStage entry, VertexType vertexType);
 
         private bool HalogramIsMs25(List<int> testShader)
         {

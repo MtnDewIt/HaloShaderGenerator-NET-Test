@@ -80,7 +80,8 @@ namespace HaloShaderGenerator.Halogram
             var sSelfIllumination = Enum.Parse(typeof(Shared.Self_Illumination), self_illumination.ToString());
             var sBlendMode = Enum.Parse(typeof(Shared.Blend_Mode), blend_mode.ToString());
 
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Halogram, entryPoint, (Shared.Blend_Mode)sBlendMode, (Shader.Misc)misc, ApplyFixes);
+            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Halogram, entryPoint, (Shared.Blend_Mode)sBlendMode, 
+                (Shader.Misc)misc, Shared.Alpha_Test.None, ApplyFixes);
 
             //
             // The following code properly names the macros (like in rmdf)
@@ -172,8 +173,6 @@ namespace HaloShaderGenerator.Halogram
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
             macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"glps_halogram.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
 
@@ -187,22 +186,27 @@ namespace HaloShaderGenerator.Halogram
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
-            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<VertexType>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_vertex_transform", vertexType, "calc_vertex_transform_", ""));
-            macros.Add(ShaderGeneratorBase.CreateMacro("transform_unknown_vector", vertexType, "transform_unknown_vector_", ""));
-            macros.Add(ShaderGeneratorBase.CreateVertexMacro("input_vertex_format", vertexType));
-            macros.Add(ShaderGeneratorBase.CreateMacro("transform_dominant_light", vertexType, "transform_dominant_light_", ""));
+            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.Halogram, entryPoint,
+                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, false, true, vertexType);
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("vertextype", vertexType, "k_vertextype_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Halogram, "shadertype_"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", Albedo.Default, "calc_albedo_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", Albedo.Default, "calc_albedo_", "_vs"));
 
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(@"glvs_halogram.hlsl", macros, $"entry_{entryPoint.ToString().ToLower()}", "vs_3_0");
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_self_illumination_ps", "calc_self_illumination_none_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_parallax_ps", "calc_parallax_off_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_overlay_ps", "calc_overlay_none_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_edge_fade_ps", "calc_edge_fade_none_ps"));
 
-            return new ShaderGeneratorResult(shaderBytecode);
+            macros.Add(ShaderGeneratorBase.CreateMacro("distort_proc_ps", Shared.Distortion.Off, "distort_", "_ps"));
+            macros.Add(ShaderGeneratorBase.CreateMacro("distort_proc_vs", "distort_nocolor_vs"));
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", Blend_Mode.Opaque));
+
+            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
+            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.Halogram);
+            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "vs_3_0");
+
+            return new ShaderGeneratorResult(bytecode);
         }
 
         public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)

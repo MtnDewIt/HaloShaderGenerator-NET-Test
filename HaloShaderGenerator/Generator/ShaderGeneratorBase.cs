@@ -63,6 +63,15 @@ namespace HaloShaderGenerator.Generator
             }
         }
 
+        public static string GetSourceFile(string template)
+        {
+            string fileName = template.Split('\\').Last();
+
+            IncludeManager include = new IncludeManager(template.Replace(fileName, ""));
+
+            return include.ReadResource(fileName);
+        }
+
         public static byte[] GenerateSource(string template, IEnumerable<D3D.SHADER_MACRO> macros, string entry, string version)
         { 
             // Macros should never be duplicated

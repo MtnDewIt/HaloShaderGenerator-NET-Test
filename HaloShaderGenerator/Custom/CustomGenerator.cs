@@ -85,9 +85,10 @@ namespace HaloShaderGenerator.Custom
                 ShaderType.Custom, 
                 entryPoint, 
                 (Shared.Blend_Mode)sBlendMode, 
-                (Shader.Misc)misc, 
+                (Shader.Misc)misc,
+                (Shared.Alpha_Test)sAlphaTest,
                 ApplyFixes);
-
+            
             //
             // The following code properly names the macros (like in rmdf)
             //

@@ -138,6 +138,7 @@
     <Compile Include="DirectX\D3D.cs" />
     <Compile Include="DirectX\D3DCompiler.cs" />
     <Compile Include="DirectX\Include.cs" />
+    <Compile Include="ExplicitGenerator\ExplicitGenerator.cs" />
     <Compile Include="Foliage\FoliageGenerator.cs" />
     <Compile Include="Foliage\MethodOptions.cs" />
     <Compile Include="Generator\ShaderGeneratorInterfaces.cs" />
