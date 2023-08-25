@@ -16,7 +16,7 @@ namespace HaloShaderGenerator.Black
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
             TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Black, entryPoint, Shared.Blend_Mode.Opaque, 
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, true);
+                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.Albedo_Alpha_Without_Fresnel, true);
 
             string entryName = entryPoint.ToString().ToLower() + "_ps";
             switch (entryPoint)

@@ -18,6 +18,14 @@ namespace HaloShaderGenerator.TemplateGenerator
             return Shared.Blend_Mode.Opaque;
         }
 
+        private Shared.Alpha_Blend_Source GetAlphaBlendSource(List<OptionInfo> currentOptions)
+        {
+            var atIndex = currentOptions.FindIndex(x => x.Category == "alpha_blend_source");
+            if (atIndex != -1)
+                return (Shared.Alpha_Blend_Source)Enum.Parse(typeof(Shared.Alpha_Blend_Source), currentOptions[atIndex].Option, true);
+            return Shared.Alpha_Blend_Source.Albedo_Alpha_Without_Fresnel;
+        }
+
         private Shader.Misc GetMisc(List<OptionInfo> currentOptions)
         {
             var miscIndex = currentOptions.FindIndex(x => x.Category == "misc");
@@ -95,6 +103,7 @@ namespace HaloShaderGenerator.TemplateGenerator
             Shared.Blend_Mode blendMode,
             Shader.Misc misc,
             Shared.Alpha_Test alphaTest,
+            Shared.Alpha_Blend_Source alphaBlendSource,
             bool applyFixes,
             bool vs = false,
             VertexType vertexType = VertexType.World)
@@ -149,6 +158,8 @@ namespace HaloShaderGenerator.TemplateGenerator
 
             if (applyFixes)
                 macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_FIXES", "1"));
+
+            macros.Add(ShaderGeneratorBase.CreateMacro("alpha_blend_source", alphaBlendSource.ToString().ToLower()));
         }
 
         private static List<OptionInfo> ValidateOptionInfo(List<OptionInfo> options, bool ps)
@@ -179,7 +190,7 @@ namespace HaloShaderGenerator.TemplateGenerator
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
             CreateGlobalMacros(macros, shaderType, entryPoint, GetBlendMode(currentOptions),
-                GetMisc(currentOptions), GetAlphaTest(currentOptions), applyFixes);
+                GetMisc(currentOptions), GetAlphaTest(currentOptions), GetAlphaBlendSource(currentOptions), applyFixes);
 
             foreach (var option in currentOptions)
             {
@@ -204,7 +215,7 @@ namespace HaloShaderGenerator.TemplateGenerator
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
             CreateGlobalMacros(macros, shaderType, entryPoint, GetBlendMode(currentOptions),
-                GetMisc(currentOptions), GetAlphaTest(currentOptions), applyFixes, true, vertexType);
+                GetMisc(currentOptions), GetAlphaTest(currentOptions), GetAlphaBlendSource(currentOptions), applyFixes, true, vertexType);
 
             foreach (var option in currentOptions)
             {

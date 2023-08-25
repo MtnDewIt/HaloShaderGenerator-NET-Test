@@ -61,7 +61,7 @@ namespace HaloShaderGenerator.Terrain
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
             TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Terrain, entryPoint, Shared.Blend_Mode.Opaque, 
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, ApplyFixes);
+                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.Albedo_Alpha_Without_Fresnel, ApplyFixes);
 
 
             macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", blending == Blending.Dynamic_Morph ? "dynamic" : blending.ToString()));

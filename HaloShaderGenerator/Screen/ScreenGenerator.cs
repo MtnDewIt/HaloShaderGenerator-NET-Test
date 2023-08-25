@@ -62,7 +62,7 @@ namespace HaloShaderGenerator.Screen
             Shared.Blend_Mode sBlendMode = (Shared.Blend_Mode)Enum.Parse(typeof(Shared.Blend_Mode), blend_mode.ToString());
 
             TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Screen, entryPoint, sBlendMode, 
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, ApplyFixes);
+                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.Albedo_Alpha_Without_Fresnel, ApplyFixes);
 
             macros.Add(ShaderGeneratorBase.CreateMacro("warp_type", warp.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateMacro("base_type", _base.ToString().ToLower()));

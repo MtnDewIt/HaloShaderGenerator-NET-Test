@@ -86,7 +86,8 @@ namespace HaloShaderGenerator.Shader
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
             TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.Shader, entryPoint,
-                (Shared.Blend_Mode)blend_mode, (Shader.Misc)misc, Shared.Alpha_Test.None, ApplyFixes);
+                (Shared.Blend_Mode)blend_mode, (Shader.Misc)misc, (Shared.Alpha_Test)alpha_test, 
+                Shared.Alpha_Blend_Source.Albedo_Alpha_Without_Fresnel, ApplyFixes);
 
             //
             // Convert to shared enum
@@ -237,7 +238,7 @@ namespace HaloShaderGenerator.Shader
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
             TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.Shader, entryPoint,
-                Shared.Blend_Mode.Opaque, Misc.First_Person_Never, alphaTestOption, false);
+                Shared.Blend_Mode.Opaque, Misc.First_Person_Never, alphaTestOption, Shared.Alpha_Blend_Source.Albedo_Alpha_Without_Fresnel, false);
 
             string atName = alphaTestOption == Shared.Alpha_Test.None ? "off" : "on";
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", atName, "calc_alpha_test_", "_ps"));
@@ -277,7 +278,7 @@ namespace HaloShaderGenerator.Shader
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
             TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.Shader, entryPoint,
-                Shared.Blend_Mode.Opaque, Misc.First_Person_Never, Shared.Alpha_Test.None, false, true, vertexType);
+                Shared.Blend_Mode.Opaque, Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.Albedo_Alpha_Without_Fresnel, false, true, vertexType);
 
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", Albedo.Default, "calc_albedo_", "_ps"));
             macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", Albedo.Default, "calc_albedo_", "_vs"));
