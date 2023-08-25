@@ -87,6 +87,7 @@ namespace HaloShaderGenerator.Custom
                 (Shared.Blend_Mode)sBlendMode, 
                 (Shader.Misc)misc,
                 (Shared.Alpha_Test)sAlphaTest,
+                Shared.Alpha_Blend_Source.Albedo_Alpha_Without_Fresnel,
                 ApplyFixes);
             
             //

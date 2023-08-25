@@ -147,6 +147,15 @@ namespace HaloShaderGenerator.Shared
         Pre_Multiplied_Alpha,
     }
 
+    public enum Alpha_Blend_Source
+    {
+        Albedo_Alpha_Without_Fresnel,
+        Albedo_Alpha,
+        Opacity_Map_Alpha,
+        Opacity_Map_Rgb,
+        Opacity_Map_Alpha_And_Albedo_Alpha,
+    }
+
     public enum Depth_Fade
     {
         Off,
