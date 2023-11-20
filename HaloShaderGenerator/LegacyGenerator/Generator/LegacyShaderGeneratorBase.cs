@@ -33,7 +33,7 @@ namespace HaloShaderGenerator.LegacyGenerator.Generator
                 relative_path = relativeUri.ToString();
                 if (relative_path.StartsWith("./")) relative_path = relative_path.Substring(2);
 
-                string path = Path.Combine("HaloShaderGenerator\\hlsl", relative_path);
+                string path = Path.Combine("HaloShaderGenerator\\LegacyGenerator\\hlsl", relative_path);
 
                 string directory = Path.GetDirectoryName(path);
 

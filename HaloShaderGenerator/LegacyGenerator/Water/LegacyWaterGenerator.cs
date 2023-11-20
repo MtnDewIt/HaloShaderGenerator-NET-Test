@@ -234,7 +234,7 @@ namespace HaloShaderGenerator.LegacyGenerator.Water
             {
                 case ShaderStage.Static_Per_Pixel:
                 case ShaderStage.Static_Per_Vertex:
-                case ShaderStage.Water_Tesselation:
+                case ShaderStage.Water_Tessellation:
                     return true;
             }
             return false;

@@ -25,8 +25,8 @@ PS_OUTPUT_DEFAULT entry_static_per_vertex(VS_OUTPUT_WATER input) : COLOR
 }
 #endif
 
-#if shaderstage == k_shaderstage_water_tesselation
-float4 entry_water_tesselation() : COLOR
+#if shaderstage == k_shaderstage_water_tessellation
+float4 entry_water_tessellation() : COLOR
 {	
 	return float4(0, 1, 2, 3);
 }
