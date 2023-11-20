@@ -15,7 +15,7 @@
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hlsl\**\*.hlsl" />
-    <EmbeddedResource Include="hlsl\**\*.hlsli" />
+    <EmbeddedResource Include="LegacyGenerator\hlsl\**\*.hlsl" />
+    <EmbeddedResource Include="LegacyGenerator\hlsl\**\*.hlsli" />
   </ItemGroup>
 </Project>
