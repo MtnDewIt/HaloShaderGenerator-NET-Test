@@ -752,7 +752,7 @@ namespace HaloShaderGenerator.LegacyGenerator.Halogram
                         result.AddIntegerParameter("layers_of_4");
                         result.AddFloatParameter("texcoord_aspect_ratio");
                         result.AddFloatParameter("depth_darken");
-                        rmopName = @"sshaders\shader_options\illum_multilayer";
+                        rmopName = @"shaders\shader_options\illum_multilayer";
                         break;
                     case Self_Illumination.Ml_Add_Four_Change_Color:
                         result.AddSamplerParameter("self_illum_map");
@@ -764,7 +764,7 @@ namespace HaloShaderGenerator.LegacyGenerator.Halogram
                         result.AddIntegerParameter("layers_of_4");
                         result.AddFloatParameter("texcoord_aspect_ratio");
                         result.AddFloatParameter("depth_darken");
-                        rmopName = @"shaders\shader_options\illum_ml_add_four_change_color";
+                        rmopName = @"shaders\shader_options\illum_multilayer_four_change_color";
                         break;
                     case Self_Illumination.Ml_Add_Five_Change_Color:
                         result.AddSamplerParameter("self_illum_map");
@@ -776,7 +776,7 @@ namespace HaloShaderGenerator.LegacyGenerator.Halogram
                         result.AddIntegerParameter("layers_of_4");
                         result.AddFloatParameter("texcoord_aspect_ratio");
                         result.AddFloatParameter("depth_darken");
-                        rmopName = @"shaders\shader_options\illum_ml_add_five_change_color";
+                        rmopName = @"shaders\shader_options\illum_multilayer_five_change_color";
                         break;
                     case Self_Illumination.Scope_Blur:
                         result.AddSamplerParameter("self_illum_map");
