@@ -51,7 +51,7 @@ namespace HaloShaderGenerator
 
         public override string GenerateChudVertexShader(ChudShader chudShader, ShaderStage entry, VertexType vertexType)
         {
-            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(chudShader.ToString(), entry.ToString().ToLower(), true).Bytecode;
+            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(chudShader.ToString(), entry.ToString().ToLower(), vertexType).Bytecode;
             return D3DCompiler.Disassemble(bytecode);
         }
     }
