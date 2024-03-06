@@ -8,13 +8,13 @@ namespace HaloShaderGenerator.Shader
 {
     public class GenericVertexShaderGenerator
     {
-        public static ShaderGeneratorResult GenerateVertexShader(string name, string entry, VertexType vertexType)
+        public static ShaderGeneratorResult GenerateVertexShader(string name, string entry, VertexType vertexType, bool applyFixes = false)
         {
             //string template = $"{(chud ? "chud" : "explicit")}\\{name}.hlsl
             string template = $"{name}.hlsl";
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-            CreateMacrosGenericVertex(macros, entry.ToLower(), vertexType, false);
+            CreateMacrosGenericVertex(macros, entry.ToLower(), vertexType, applyFixes);
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(template, macros, $"{entry.ToLower()}_vs", "vs_3_0");
             return new ShaderGeneratorResult(shaderBytecode);

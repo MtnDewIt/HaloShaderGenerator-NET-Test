@@ -8,14 +8,14 @@ namespace HaloShaderGenerator.Shader
 {
     public class GenericPixelShaderGenerator
     {
-        public static ShaderGeneratorResult GeneratePixelShader(string name, string entry, bool chud = false)
+        public static ShaderGeneratorResult GeneratePixelShader(string name, string entry, bool applyFixes = false)
         {
             //string template = $"{(chud ? "chud" : "explicit")}\\{name}.hlsl
             string template = $"{name}.hlsl";
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
-            CreateMacrosGenericPixel(macros, entry.ToLower(), false);
+            CreateMacrosGenericPixel(macros, entry.ToLower(), applyFixes);
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(template, macros, $"{entry.ToLower()}_ps", "ps_3_0");
             return new ShaderGeneratorResult(shaderBytecode);
