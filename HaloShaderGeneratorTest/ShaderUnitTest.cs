@@ -460,9 +460,10 @@ namespace HaloShaderGenerator
 
             var entries = Generic.GenericShaderStage.GetChudEntryPoints(chudShader);
 
-            foreach (var entry in entries)
+            for (int i = 0; i < entries.Count; i++)
             {
-                string filePath = Path.Combine(Path.Combine(ReferencePath, chudShader.ToString()), $"0_{entry}.pixel_shader");
+                var entry = entries[i];
+                string filePath = Path.Combine(Path.Combine(ReferencePath, chudShader.ToString()), $"{i}_{entry.ToString().ToLower()}.pixel_shader");
                 var file = new FileInfo(filePath);
 
                 if (file.Exists == false)
@@ -519,6 +520,9 @@ namespace HaloShaderGenerator
 
             foreach (ChudShader chudShader in Enum.GetValues(typeof(ChudShader)))
             {
+                if (chudShader == ChudShader.chud_unknown)
+                    continue; // no reference for now (need to create own)
+
                 Task<bool> testTask = Task.Run(() => { return TestChudPixelShader(chudShader); });
                 testTasks.Add(testTask);
             }
@@ -578,29 +582,34 @@ namespace HaloShaderGenerator
         {
             bool success = true;
 
+            var vertexTypes = Generic.GenericShaderStage.GetChudVertexTypes(chudShader);
             var entries = Generic.GenericShaderStage.GetChudEntryPoints(chudShader);
 
-            foreach (var entry in entries)
+            foreach (var vertexType in vertexTypes)
             {
-                string filePath = Path.Combine(Path.Combine(ReferencePath, chudShader.ToString()), $"world\\0_{entry}.vertex_shader");
-                var file = new FileInfo(filePath);
-
-                if (file.Exists == false)
+                for (int i = 0; i < entries.Count; i++)
                 {
-                    Console.WriteLine($"No reference shader for {chudShader}");
-                    success = false;
-                    continue;
-                }
+                    var entry = entries[i];
+                    string filePath = Path.Combine(Path.Combine(ReferencePath, chudShader.ToString()), $"world\\{i}_{entry}.vertex_shader");
+                    var file = new FileInfo(filePath);
 
-                var disassembly = GenerateChudVertexShader(chudShader, entry, VertexType.SimpleChud);
-                bool equal = CompareShaders(disassembly, filePath, "vs_3_0", out bool usesD3DX);
-                success &= equal;
-                DisplayPixelShaderTestResults(equal, chudShader.ToString(), entry, usesD3DX);
+                    if (file.Exists == false)
+                    {
+                        Console.WriteLine($"No reference shader for {chudShader}");
+                        success = false;
+                        continue;
+                    }
 
-                if (!equal)
-                {
-                    string filename = $"generated_{Application.ChudShader}_{entry}.vertex_shader";
-                    Application.WriteShaderFile(filename, disassembly);
+                    var disassembly = GenerateChudVertexShader(chudShader, entry, vertexType);
+                    bool equal = CompareShaders(disassembly, filePath, "vs_3_0", out bool usesD3DX);
+                    success &= equal;
+                    DisplayVertexShaderTestResults(equal, vertexType, entry, usesD3DX);
+
+                    if (!equal)
+                    {
+                        string filename = $"generated_{Application.ChudShader}_{vertexType}_{entry}.vertex_shader";
+                        Application.WriteShaderFile(filename, disassembly);
+                    }
                 }
             }
 
@@ -639,6 +648,9 @@ namespace HaloShaderGenerator
 
             foreach (ChudShader chudShader in Enum.GetValues(typeof(ChudShader)))
             {
+                if (chudShader == ChudShader.chud_unknown)
+                    continue; // no reference for now (need to create own)
+
                 Task<bool> testTask = Task.Run(() => { return TestChudVertexShader(chudShader); });
                 testTasks.Add(testTask);
             }

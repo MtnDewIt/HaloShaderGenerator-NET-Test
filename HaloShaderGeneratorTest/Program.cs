@@ -673,7 +673,7 @@ namespace HaloShaderGenerator
         #region test methods independent shaders
         static void TestVertexShader(string name)
         {
-            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(name, ShaderStage.Default.ToString()).Bytecode;
+            var bytecode = GenericVertexShaderGenerator.GenerateVertexShader(name, ShaderStage.Default.ToString(), VertexType.World).Bytecode;
             var str = D3DCompiler.Disassemble(bytecode);
             using (FileStream test = new FileInfo($"generated_{name}.vtsh").Create())
             using (StreamWriter writer = new StreamWriter(test))
