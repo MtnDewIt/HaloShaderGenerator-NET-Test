@@ -330,7 +330,7 @@ VS_OUTPUT_WATER entry_static_per_vertex(WATER_VERTEX_INPUT input)
     return vs_water_out(water_vert);
 }
 
-float4 entry_water_tesselation() : SV_Position
+float4 entry_water_tessellation() : SV_Position
 {
     return 0;
 }
