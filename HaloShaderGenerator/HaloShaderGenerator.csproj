@@ -181,6 +181,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>cd $(SolutionDir)</PostBuildEvent>
+    <PostBuildEvent>cd $(SolutionDir)
+xcopy "halo_online_shaders" "$(ProjectDir)$(OutDir)halo_online_shaders" /e /i /h /Y /d</PostBuildEvent>
   </PropertyGroup>
 </Project>
