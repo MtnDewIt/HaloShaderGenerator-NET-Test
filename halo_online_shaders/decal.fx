@@ -470,7 +470,8 @@ s_decal_render_pixel_out default_ps(s_decal_interpolators IN)
 	tint_and_modulate(diffuse);
 	fade_out(diffuse);
 
-	float3 bump= sample_bump(IN.m_texcoord.xy, IN.m_texcoord.zw, tangent_frame(IN));
+	float3x3 tangent_framev = tangent_frame(IN);
+	float3 bump= sample_bump(IN.m_texcoord.xy, IN.m_texcoord.zw, tangent_framev);
 	
-	return convert_to_decal_target(diffuse, bump, IN.m_pos_w);
+	return convert_to_decal_target(diffuse, bump, IN.m_pos_w, tangent_framev[2]);
 }

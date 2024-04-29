@@ -48,6 +48,7 @@
 
 
 LOCAL_SAMPLER_2D(diffuse_texture, 0);			// pixel shader
+LOCAL_SAMPLER_2D(geo_normal_texture, 1);			// pixel shader
 
 
 #ifdef DECORATOR_EDIT
@@ -352,11 +353,16 @@ default_ps(
 
 	color.rgb *= g_exposure.rrr;
 #if DX_VERSION == 9
-	color.a *= (0.5f / k_decorator_alpha_test_threshold);						// convert alpha for alpha-to-coverage (0.5f based)
+	//color.a *= (0.5f / k_decorator_alpha_test_threshold);						// convert alpha for alpha-to-coverage (0.5f based)
+	clip(color.a - k_decorator_alpha_test_threshold); // we no longer use ATOC
 #endif
 
 #ifdef pc
-	return convert_to_albedo_target(color, normal, position_w);
+	
+	float2 screen_coords = (screen_position.xy + 0.5f) / texture_size.xy;
+	float3 geo_normal = (sample2D(geo_normal_texture, screen_coords).xyz - 0.5f) * 2.0f; // workaround for xenon shadowing parity
+
+	return convert_to_albedo_target(color, geo_normal, position_w, geo_normal);
 #else   
 	return color;
 #endif // pc
