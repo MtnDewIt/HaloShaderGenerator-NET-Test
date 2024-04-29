@@ -432,14 +432,14 @@ struct s_decal_render_pixel_out
 };
 #endif
 
-s_decal_render_pixel_out convert_to_decal_target(float4 color, float3 normal, float pos_w)
+s_decal_render_pixel_out convert_to_decal_target(float4 color, float3 normal, float pos_w, float3 geo_normal)
 {
 	s_decal_render_pixel_out OUT;
 	
 #if (RENDER_TARGET_TYPE== RENDER_TARGET_LIGHTING)
 	OUT= CONVERT_TO_RENDER_TARGET_FOR_BLEND(color, false, false, 0.0f);
 #elif (RENDER_TARGET_TYPE== RENDER_TARGET_ALBEDO_AND_NORMAL)
-	OUT= convert_to_albedo_target_no_srgb(color, normal, pos_w);
+	OUT= convert_to_albedo_target_no_srgb(color, normal, pos_w, float3 geo_normal);
 #else	//if (RENDER_TARGET_TYPE RENDER_TARGET_ALBEDO_ONLY)
 	OUT.m_color0= color;
 #endif
