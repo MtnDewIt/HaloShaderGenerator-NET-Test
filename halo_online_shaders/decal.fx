@@ -178,6 +178,13 @@ PARAM_SAMPLER_2D(change_color_map);
 PARAM(float3, primary_change_color);
 PARAM(float3, secondary_change_color);
 PARAM(float3, tertiary_change_color);
+	
+float4 get_gradients_pc(in float2 value)
+{
+    float2 x_gradient = ddx(value);
+    float2 y_gradient = ddy(value);
+    return float4(x_gradient.x, y_gradient.x, x_gradient.y, y_gradient.y);
+}
 
 float4 sample_diffuse(float2 texcoord_tile, float2 texcoord, float palette_v)
 {
@@ -247,7 +254,12 @@ float4 sample_diffuse(float2 texcoord_tile, float2 texcoord, float palette_v)
 		
 		float scale= antialias_tweak;
 #ifdef pc
+		#ifndef APPLY_FIXES
 		scale /= 0.001f;
+		#else
+		float4 gradients = get_gradients_pc(texcoord.xy);
+		scale /= sqrt(dot(gradients.xyzw, gradients.xyzw));
+		#endif
 #else // !pc
 		float4 gradients;
 		asm {
@@ -271,7 +283,12 @@ float4 sample_diffuse(float2 texcoord_tile, float2 texcoord, float palette_v)
 		
 		float scale= antialias_tweak;
 #ifdef pc
+		#ifndef APPLY_FIXES
 		scale /= 0.001f;
+		#else
+		float4 gradients = get_gradients_pc(texcoord.xy);
+		scale /= sqrt(dot(gradients.xyzw, gradients.xyzw));
+		#endif
 #else // !pc
 		float4 gradients;
 		asm {
@@ -439,7 +456,7 @@ s_decal_render_pixel_out convert_to_decal_target(float4 color, float3 normal, fl
 #if (RENDER_TARGET_TYPE== RENDER_TARGET_LIGHTING)
 	OUT= CONVERT_TO_RENDER_TARGET_FOR_BLEND(color, false, false, 0.0f);
 #elif (RENDER_TARGET_TYPE== RENDER_TARGET_ALBEDO_AND_NORMAL)
-	OUT= convert_to_albedo_target_no_srgb(color, normal, pos_w, float3 geo_normal);
+	OUT= convert_to_albedo_target_no_srgb(color, normal, pos_w, geo_normal);
 #else	//if (RENDER_TARGET_TYPE RENDER_TARGET_ALBEDO_ONLY)
 	OUT.m_color0= color;
 #endif
