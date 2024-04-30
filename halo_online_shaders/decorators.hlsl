@@ -48,7 +48,7 @@
 
 
 LOCAL_SAMPLER_2D(diffuse_texture, 0);			// pixel shader
-LOCAL_SAMPLER_2D(geo_normal_texture, 1);			// pixel shader
+//LOCAL_SAMPLER_2D(geo_normal_texture, 1);			// pixel shader
 
 
 #ifdef DECORATOR_EDIT
@@ -133,9 +133,9 @@ void default_vs(
 	out float4	out_texcoord			:	TEXCOORD0,
 	out float4	out_ambient_light		:	TEXCOORD1,
 	out float4	out_inscatter			:	TEXCOORD2
-#ifdef pc   
-   ,out float3	out_normal  			:	TEXCOORD3
-#endif
+//#ifdef pc   
+//   ,out float3	out_normal  			:	TEXCOORD3
+//#endif
    )
 {
 	
@@ -301,7 +301,7 @@ void default_vs(
 
 #ifdef pc
 	out_inscatter.w= out_position.w;
-   out_normal = world_normal;
+   //out_normal = world_normal;
 #endif // pc
 }
 
@@ -324,9 +324,9 @@ default_ps(
 	in float4	texcoord			:	TEXCOORD0,								// z coordinate is unclamped cosine lobe for the 'sun'
 	in float4	ambient_light		:	TEXCOORD1,
 	in float4	inscatter			:	TEXCOORD2
-#ifdef pc   
-   ,in float3	normal   			:	TEXCOORD3
-#endif
+//#ifdef pc   
+//   ,in float3	normal   			:	TEXCOORD3
+//#endif
    ) : SV_Target0					// w unused
 {
 
@@ -359,10 +359,11 @@ default_ps(
 
 #ifdef pc
 	
-	float2 screen_coords = (screen_position.xy + 0.5f) / texture_size.xy;
-	float3 geo_normal = (sample2D(geo_normal_texture, screen_coords).xyz - 0.5f) * 2.0f; // workaround for xenon shadowing parity
-
-	return convert_to_albedo_target(color, geo_normal, position_w, geo_normal);
+	//float2 screen_coords = (screen_position.xy + 0.5f) / texture_size.xy;
+	//float3 geo_normal = (sample2D(geo_normal_texture, screen_coords).xyz - 0.5f) * 2.0f; // workaround for xenon shadowing parity
+				
+	float3 fake_normal = float3(0,0,1); // up
+	return convert_to_albedo_target(color, fake_normal, position_w, fake_normal);
 #else   
 	return color;
 #endif // pc
