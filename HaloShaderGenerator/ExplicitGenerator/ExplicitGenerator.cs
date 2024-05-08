@@ -100,6 +100,7 @@ namespace HaloShaderGenerator
 
             switch (entryPoint) 
             {
+                case ShaderStage.Default:
                 case ShaderStage.Shadow_Apply:
                 case ShaderStage.Lightmap_Debug_Mode:
                     macros.Add(ShaderGeneratorBase.CreateMacro("SSR_ENABLE", "1"));
