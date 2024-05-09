@@ -119,6 +119,10 @@ namespace HaloShaderGenerator
         {
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
+            // Disassembled data is different from MS23 / 0.7 when fixes are applied
+            if (explicitShader == ExplicitShader.double_gradient || explicitShader == ExplicitShader.gradient)
+                applyFixes = false;
+
             CreateExplicitMacros(macros, entryPoint, applyFixes, false);
 
             string entryName = entryPoint.ToString().ToLower() + "_ps";
