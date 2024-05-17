@@ -54,6 +54,8 @@ float fresnel_curve_steepness;
 // marco
 #define SQR(x) ((x)*(x))
 
+#include "vmf_util.fx"
+
 
 float get_material_cook_torrance_reach_specular_power(float power_or_roughness)
 {
@@ -64,7 +66,7 @@ float get_material_cook_torrance_reach_specular_power(float power_or_roughness)
 	//}
 	//else
 	{
-        return 0.27291 * pow(roughness, -2.1973); // ###ctchou $TODO low roughness still needs slightly higher power - try tweaking
+        return 0.27291 * pow(roughness, -1.3973f); 
     }
 }
 
@@ -436,7 +438,7 @@ void calc_material_cook_torrance_base(
 		if (!no_dynamic_lights)
 		{
 			float3 fragment_position_world= Camera_Position_PS - fragment_to_camera_world;
-			calc_simple_lights_analytical(
+			calc_simple_lights_analytical_reach(
 				fragment_position_world,
 				view_normal,
 				view_reflect_dir_world,											// view direction = fragment to camera,   reflected around fragment normal
@@ -456,8 +458,8 @@ void calc_material_cook_torrance_base(
 		float r_dot_l= saturate(dot(view_light_dir, view_reflect_dir_world));
 
 		//calculate the area sh
-		float3 specular_part=0.0f;
-		float3 schlick_part=0.0f;
+		//float3 specular_part=0.0f;
+		//float3 schlick_part=0.0f;
 		
 // here is where vmf would come into play.
 // we are using order2 as per macro in reach.
@@ -481,26 +483,38 @@ void calc_material_cook_torrance_base(
 		//		schlick_part);	
 		//}
 		//else
-		{
+		//{
+		//
+		//	float4 sh_0= sh_lighting_coefficients[0];
+		//	float4 sh_312[3]= {sh_lighting_coefficients[1], sh_lighting_coefficients[2], sh_lighting_coefficients[3]};
+		//	
+		//	sh_glossy_ct_2(
+		//		view_dir,
+		//		view_normal,
+		//		sh_0,
+		//		sh_312,
+		//		spatially_varying_material_parameters.a,
+		//		r_dot_l,
+		//		1,
+		//		specular_part,
+		//		schlick_part);	
+		//}
+		//				
+		//sh_glossy= specular_part * normal_specular_blend_albedo_color + (1 - normal_specular_blend_albedo_color) * schlick_part;
+
+		dual_vmf_diffuse_specular_with_fresnel_emulated(
+			view_dir,
+			view_normal,
+			view_light_dir,
+			light_color,
+			final_specular_tint_color.rgb,
+			roughness,
+			sh_glossy
+		);
 		
-			float4 sh_0= sh_lighting_coefficients[0];
-			float4 sh_312[3]= {sh_lighting_coefficients[1], sh_lighting_coefficients[2], sh_lighting_coefficients[3]};
-			
-			sh_glossy_ct_2(
-				view_dir,
-				view_normal,
-				sh_0,
-				sh_312,
-				spatially_varying_material_parameters.a,
-				r_dot_l,
-				1,
-				specular_part,
-				schlick_part);	
-		}
-						
-		sh_glossy= specular_part * normal_specular_blend_albedo_color + (1 - normal_specular_blend_albedo_color) * schlick_part;
+		float3 fake_prebaked_analytical_light = spec_tint; // (input)envmap_area_specular_only * final_specular_tint_color.rgb
 		envmap_specular_reflectance_and_roughness.w= spatially_varying_material_parameters.a;
-		envmap_area_specular_only= final_specular_tint_color.rgb + sh_glossy * prt_ravi_diff.z; // todo
+		envmap_area_specular_only= fake_prebaked_analytical_light * sh_glossy * prt_ravi_diff.z; // todo
 				
 		//scaling and masking
 		
