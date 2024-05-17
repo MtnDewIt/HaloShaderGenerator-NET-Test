@@ -15,6 +15,12 @@ namespace HaloShaderGenerator.Shader
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
+            if (name == $@"chud_cortana_composite" ||
+                name == $@"chud_meter_shield" ||
+                name == $@"chud_simple" ||
+                name == $@"chud_text_simple")
+                applyFixes = false;
+
             CreateMacrosGenericPixel(macros, entry.ToLower(), applyFixes);
 
             byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(template, macros, $"{entry.ToLower()}_ps", "ps_3_0");
