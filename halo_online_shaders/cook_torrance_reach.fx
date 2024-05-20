@@ -119,7 +119,7 @@ void calc_material_analytic_specular_cook_torrance_reach_ps(
 	out float3 specular_fresnel_color, // fresnel(specular_albedo_color)
 	out float3 normal_specular_blend_albedo_color, // specular reflectance at normal incidence
 	out float3 analytic_specular_radiance)					// return specular radiance from this light				<--- ONLY REQUIRED OUTPUT FOR DYNAMIC LIGHTS
-{
+{	
     float3 final_specular_color;
 	float specular_power;
 	calculate_fresnel(
@@ -458,30 +458,31 @@ void calc_material_cook_torrance_base(
 		float r_dot_l= saturate(dot(view_light_dir, view_reflect_dir_world));
 
 		//calculate the area sh
-		//float3 specular_part=0.0f;
-		//float3 schlick_part=0.0f;
+		float3 specular_part=0.0f;
+		float3 schlick_part=0.0f;
 		
 // here is where vmf would come into play.
 // we are using order2 as per macro in reach.
+// UPDATE: using order3 for more accurate lighting
 		//if (order3_area_specular)
-		//{
-		//	float4 sh_0= sh_lighting_coefficients[0];
-		//	float4 sh_312[3]= {sh_lighting_coefficients[1], sh_lighting_coefficients[2], sh_lighting_coefficients[3]};
-		//	float4 sh_457[3]= {sh_lighting_coefficients[4], sh_lighting_coefficients[5], sh_lighting_coefficients[6]};
-		//	float4 sh_8866[3]= {sh_lighting_coefficients[7], sh_lighting_coefficients[8], sh_lighting_coefficients[9]};
-		//	sh_glossy_ct_3(
-		//		view_dir,
-		//		view_normal,
-		//		sh_0,
-		//		sh_312,
-		//		sh_457,
-		//		sh_8866,	//NEW_LIGHTMAP: changing to linear
-		//		spatially_varying_material_parameters.a,
-		//		r_dot_l,
-		//		1,
-		//		specular_part,
-		//		schlick_part);	
-		//}
+		{
+			float4 sh_0= sh_lighting_coefficients[0];
+			float4 sh_312[3]= {sh_lighting_coefficients[1], sh_lighting_coefficients[2], sh_lighting_coefficients[3]};
+			float4 sh_457[3]= {sh_lighting_coefficients[4], sh_lighting_coefficients[5], sh_lighting_coefficients[6]};
+			float4 sh_8866[3]= {sh_lighting_coefficients[7], sh_lighting_coefficients[8], sh_lighting_coefficients[9]};
+			sh_glossy_ct_3(
+				view_dir,
+				view_normal,
+				sh_0,
+				sh_312,
+				sh_457,
+				sh_8866,	//NEW_LIGHTMAP: changing to linear
+				spatially_varying_material_parameters.a,
+				r_dot_l,
+				1,
+				specular_part,
+				schlick_part);	
+		}
 		//else
 		//{
 		//
@@ -499,18 +500,18 @@ void calc_material_cook_torrance_base(
 		//		specular_part,
 		//		schlick_part);	
 		//}
-		//				
-		//sh_glossy= specular_part * normal_specular_blend_albedo_color + (1 - normal_specular_blend_albedo_color) * schlick_part;
+						
+		sh_glossy= specular_part * normal_specular_blend_albedo_color + (1 - normal_specular_blend_albedo_color) * schlick_part;
 
-		dual_vmf_diffuse_specular_with_fresnel_emulated(
-			view_dir,
-			view_normal,
-			view_light_dir,
-			light_color,
-			final_specular_tint_color.rgb,
-			roughness,
-			sh_glossy
-		);
+		//dual_vmf_diffuse_specular_with_fresnel_emulated(
+		//	view_dir,
+		//	view_normal,
+		//	view_light_dir,
+		//	light_color,
+		//	final_specular_tint_color.rgb,
+		//	roughness,
+		//	sh_glossy
+		//);
 		
 		float3 fake_prebaked_analytical_light = spec_tint; // (input)envmap_area_specular_only * final_specular_tint_color.rgb
 		envmap_specular_reflectance_and_roughness.w= spatially_varying_material_parameters.a;
