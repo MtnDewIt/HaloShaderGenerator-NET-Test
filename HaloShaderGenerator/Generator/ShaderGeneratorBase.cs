@@ -27,7 +27,11 @@ namespace HaloShaderGenerator.Generator
 
                 string relative_path = Path.Combine(parent_directory, filepath);
 
-                Uri uri2 = new Uri(Path.GetFullPath("halo_online_shaders\\" + relative_path));
+                string directoryPath = Path.GetFullPath("halo_online_shaders\\");
+                if (!Directory.Exists(directoryPath)) // hack for submodule path
+                    directoryPath = Path.GetFullPath("Tools\\halo_online_shaders\\");
+
+                Uri uri2 = new Uri(directoryPath + relative_path);
 
                 FileInfo file = new FileInfo(uri2.AbsolutePath);
 
