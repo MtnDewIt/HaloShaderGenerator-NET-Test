@@ -17,6 +17,6 @@
   <ItemGroup>
     <EmbeddedResource Include="LegacyGenerator\hlsl\**\*.hlsl" />
     <EmbeddedResource Include="LegacyGenerator\hlsl\**\*.hlsli" />
-    <None Include="..\halo_online_shaders\**\*" Link="halo_online_shaders\%(RecursiveDir)\%(FileName)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\halo_online_shaders\**\*" Link="Tools\halo_online_shaders\%(RecursiveDir)\%(FileName)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
