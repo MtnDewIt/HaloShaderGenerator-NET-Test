@@ -98,18 +98,6 @@ namespace HaloShaderGenerator
             macros.Add(ShaderGeneratorBase.CreateMacro("disable_register_reorder", "1"));
             macros.Add(ShaderGeneratorBase.CreateMacro("EXPLICIT_COMPILER", "1"));
 
-            switch (entryPoint) 
-            {
-                case ShaderStage.Default:
-                case ShaderStage.Shadow_Apply:
-                case ShaderStage.Lightmap_Debug_Mode:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("SSR_ENABLE", "1"));
-                    break;
-                default:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("SSR_ENABLE", "0"));
-                    break;
-            }
-
             if (applyFixes)
                 macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_FIXES", "1"));
         }
@@ -118,13 +106,6 @@ namespace HaloShaderGenerator
             bool applyFixes = true)
         {
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            // Disassembled data is different from MS23 / 0.7 when fixes are applied
-            if (explicitShader == ExplicitShader.double_gradient || 
-                explicitShader == ExplicitShader.gradient || 
-                explicitShader == ExplicitShader.screenshot_combine || 
-                explicitShader == ExplicitShader.screenshot_combine_dof)
-                applyFixes = false;
 
             CreateExplicitMacros(macros, entryPoint, applyFixes, false);
 
