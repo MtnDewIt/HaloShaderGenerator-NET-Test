@@ -61,7 +61,7 @@ namespace HaloShaderGenerator.Globals
         chud_cortana_composite,
         chud_directional_damage_apply,
         chud_really_simple,
-        chud_unknown
+        chud_meter_gradient_inverse
     }
 
     public enum ExplicitShader
@@ -156,25 +156,25 @@ namespace HaloShaderGenerator.Globals
         bloom_curve,
         custom_gamma_correct,
         pixel_copy,
-        unknown_5A,
-        exposure_hdr_retrieve,
-        unknown_debug_5C,
+        decorator_edit,
+        hdr_retrieve,
+        smirnov,
         fxaa,
-        unknown_5E,
-        unknown_5F,
-        ssao_ldr,
-        ssao_hdr,
-        ssao_apply,
+        unknown_94,
+        sniper_scope_stencil_pc,
+        ssao,
+        ssao_blur,
+        unknown_98,
         lightshafts,
-        lightshafts_blur,
-        screen_space_reflection,
-        unknown_66,
-        halve_depth_color,
-        halve_depth_normal,
-        unknown_69,
-        screen_space_reflection_blur,
-        unknown_6B,
+        radial_blur,
+        unknown_101,
+        unknown_102,
+        unknown_103,
+        unknown_104,
+        unknown_105,
+        unknown_106,
+        unknown_107,
         hud_camera_nightvision,
-        unknown_6D
+        unknown_109
     }
 }

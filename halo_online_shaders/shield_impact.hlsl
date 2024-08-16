@@ -2,95 +2,142 @@
 
 #include "global.fx"
 #include "hlsl_constant_mapping.fx"
-
 #include "deform.fx"
 
 #define LDR_ALPHA_ADJUST g_exposure.w
 #define HDR_ALPHA_ADJUST g_exposure.b
 #define DARK_COLOR_MULTIPLIER g_exposure.g
+
 #include "render_target.fx"
 #include "shield_impact_registers.fx"
 
 // noise textures
 LOCAL_SAMPLER_2D(shield_impact_noise_texture1, 0);
 LOCAL_SAMPLER_2D(shield_impact_noise_texture2, 1);
+LOCAL_SAMPLER_2D(shield_impact_depth_texture, 2);
 
 
 // Magic line to compile this for various needed vertex types
-//@generate rigid
 //@generate world
+//@generate rigid
 //@generate skinned
+// INSERT EXTRA VERTEX TYPE HERE (CURSE YOU DUAL_QUAT!!!)
+
 
 struct s_vertex_out
 {
-	float4 position : SV_Position;
+	float4 position : SV_POSITION;
 	float4 world_space_pos : TEXCOORD1;
 	float4 texcoord : TEXCOORD2;
 };
 
-s_vertex_out default_vs(
-	in vertex_type vertex_in
-	)
+float2 compute_depth_fade2(float2 screen_coords, float depth, float2 inverse_range)
 {
-	s_vertex_out vertex_out;
+    float4 depth_value;
 
-	float4 local_to_world_transform[3];
-	
-	deform(vertex_in, local_to_world_transform);
-	 	
-	vertex_in.position+= vertex_in.normal * extrusion_distance;
-	
-	vertex_out.world_space_pos= float4(vertex_in.position, 1.0f);	
-	vertex_out.position= mul(float4(vertex_in.position, 1.0f), View_Projection);	
-	vertex_out.texcoord.xyzw= vertex_in.texcoord.xyxx;
-	
-	return vertex_out;
+    depth_value= sample2D(shield_impact_depth_texture, (0.5f + screen_coords) / texture_size);
+    
+    float scene_depth= depth_value.x;
+	float delta_depth= scene_depth - depth;
+
+	return saturate(delta_depth * inverse_range);
 }
 
-// things to expose:
-// VS
-// extrusion amount
-// PS
-// texture 1 & 2 scroll rate
-// shield color, shield hot color
-// intensity exponent, bias, and scale
 
+#define EXTRUSION_DISTANCE		(vertex_params.x)
+#define OSCILLATION_AMPLITUDE	(vertex_params.z)
+#define OSCILLATION_SCALE		(vertex_params.w)
+#define OSCILLATION_OFFSET0		(vertex_params2.xy)
+#define OSCILLATION_OFFSET1		(vertex_params2.zw)
 
-
-accum_pixel default_ps(s_vertex_out pixel_in)
+s_vertex_out default_vs(vertex_type IN)
 {
-	// Some old grid code
-	//float3 grid_test_point= float3(pixel_in.world_space_pos.xyz - k_ps_bound_sphere.xyz);
-	
-	//float3 xyz_relative_frac= frac(grid_test_point * 20.0f + (plasma_value.xyz - 0.5f));
-	//xyz_relative_frac= min((1.0f).xxx - xyz_relative_frac, xyz_relative_frac);
-	//float dist_from_grid= min(xyz_relative_frac.x, min(xyz_relative_frac.y, xyz_relative_frac.z));
-	//dist_from_grid= 2.0f * (0.5f - dist_from_grid);
+	float4 local_to_world_transform[3];
+	deform(IN, local_to_world_transform);
 
-	//float mesh_factor= pow(dist_from_grid.xxx, 12.0f);
+	float3	impact_delta=				IN.position -	impact0_params.xyz;
+	float	impact_distance=			length(impact_delta) /	impact0_params.w;
 	
-	//xyz_relative= pixel_in.world_space_pos.xyz;
-	
-	float3 xyz_relative= float3(pixel_in.world_space_pos.xyz - bound_sphere.xyz);
-	
-	float noise_value1, noise_value2;
-	
-	float time_parameter= texture_quantities.y * shield_dynamic_quantities.x;
-	noise_value1= sample2D(shield_impact_noise_texture1, (pixel_in.texcoord.xy + float2(time_parameter / 12.0f, time_parameter / 13.0f)) * texture_quantities.x);
-	noise_value2= sample2D(shield_impact_noise_texture2, (pixel_in.texcoord.xy - float2(time_parameter / 11.0f, time_parameter / 17.0f)) * texture_quantities.x);
-	
-	float plasma_base= 1.0f-abs(noise_value1 - noise_value2);
-	float plasma_value1= max(0, (pow(plasma_base, plasma1_settings.x)-plasma1_settings.z) * plasma1_settings.y);
-	float plasma_value2= max(0, (pow(plasma_base, plasma2_settings.x)-plasma2_settings.z) * plasma2_settings.y);
+	float3	world_position=				IN.position.xyz + IN.normal * EXTRUSION_DISTANCE;
 
-	float non_plasma_value= 1.0f - min(1.0f, (plasma_value1 + plasma_value2));
-	float shield_impact_factor= shield_dynamic_quantities.y;
-	float overshield_factor= shield_dynamic_quantities.z;
+	float noise_value1=			sample2Dlod(shield_impact_noise_texture1, float4(world_position.xy * OSCILLATION_SCALE + OSCILLATION_OFFSET0, 0.0f, 0.0f), 0.0f);
+	float noise_value2=			sample2Dlod(shield_impact_noise_texture2, float4(world_position.yz * OSCILLATION_SCALE + OSCILLATION_OFFSET1, 0.0f, 0.0f), 0.0f);
+
+	float noise=				(noise_value1 + noise_value2 - 1.0f) * OSCILLATION_AMPLITUDE;
+		
+	world_position		+=		IN.normal * noise;
 	
-	float3 semifinal_shield_impact_color= shield_impact_factor * (plasma_value1 * shield_impact_color1 + plasma_value2 * shield_impact_color2 + non_plasma_value * shield_impact_ambient_color);
-	float3 semifinal_overshield_color= overshield_factor * (plasma_value1 * overshield_color1 + plasma_value2 * overshield_color2 + non_plasma_value * overshield_ambient_color);
-	
-	float4 final_color= float4(semifinal_shield_impact_color + semifinal_overshield_color, 1.0f) * g_exposure.r;
-	return convert_to_render_target(final_color, false, false);
-	
+	float3 camera_to_vertex=	world_position - Camera_Position.xyz;
+		
+	float cosine_view=		-dot(normalize(camera_to_vertex), IN.normal);
+
+	s_vertex_out OUT;
+
+	OUT.world_space_pos=		float4(world_position, cosine_view);
+
+	OUT.position=				mul(float4(world_position, 1.0f), View_Projection);	
+	OUT.texcoord.xy=			IN.texcoord.xy;
+	OUT.texcoord.z=				dot(camera_to_vertex, Camera_Forward.xyz);
+	OUT.texcoord.w=				impact_distance;
+
+	return OUT;
+}
+
+
+#define OUTER_SCALE			(edge_scales.x)
+#define INNER_SCALE			(edge_scales.y)
+#define OUTER_SCALE2		(edge_scales.z)
+#define INNER_SCALE2		(edge_scales.w)
+
+#define OUTER_OFFSET		(edge_offsets.x)
+#define INNER_OFFSET		(edge_offsets.y)
+#define OUTER_OFFSET2		(edge_offsets.z)
+#define INNER_OFFSET2		(edge_offsets.w)
+
+#define PLASMA_TILE_SCALE1	(plasma_scales.x)
+#define PLASMA_TILE_SCALE2	(plasma_scales.y)
+
+#define PLASMA_TILE_OFFSET1	(plasma_offsets.xy)
+#define PLASMA_TILE_OFFSET2	(plasma_offsets.zw)
+
+#define PLASMA_POWER_SCALE	(plasma_scales.z)
+#define PLASMA_POWER_OFFSET	(plasma_scales.w)
+
+#define EDGE_GLOW_COLOR		(edge_glow.rgba)
+#define PLASMA_COLOR		(plasma_color.rgba)
+#define PLASMA_EDGE_COLOR	(plasma_edge_color.rgba)
+
+#define INVERSE_DEPTH_FADE_RANGE	(depth_fade_params.xy)
+
+
+accum_pixel default_ps(s_vertex_out IN)
+{
+	float edge_fade=			IN.world_space_pos.w;
+	float depth=				IN.texcoord.z;
+
+	float2 depth_fades=			compute_depth_fade2(IN.position, depth, INVERSE_DEPTH_FADE_RANGE);
+
+	float	edge_linear=		saturate(min(edge_fade * OUTER_SCALE + OUTER_OFFSET, edge_fade * INNER_SCALE + INNER_OFFSET));
+	float	edge_plasma_linear=	saturate(min(edge_fade * OUTER_SCALE2 + OUTER_OFFSET2, edge_fade * INNER_SCALE2 + INNER_OFFSET2));
+	float	edge_quartic=		pow(edge_linear, 4);
+	float	edge=				edge_quartic * depth_fades.x;
+	float	edge_plasma=		edge_plasma_linear * depth_fades.y;
+
+	float	plasma_noise1=		sample2D(shield_impact_noise_texture1, IN.texcoord.xy * PLASMA_TILE_SCALE1 + PLASMA_TILE_OFFSET1);
+	float	plasma_noise2=		sample2D(shield_impact_noise_texture2, IN.texcoord.xy * PLASMA_TILE_SCALE2 - PLASMA_TILE_OFFSET2);		// Do not change the '-' ...   it makes it compile magically (yay for the xbox shader compiler)
+	float	plasma_base=		saturate(1.0f - abs(plasma_noise1 - plasma_noise2));
+	float	plasma_power=		edge_plasma * PLASMA_POWER_SCALE + PLASMA_POWER_OFFSET;
+	float	plasma=				pow(plasma_base, plasma_power);
+
+	float4	hit_color=			impact0_color * saturate(1.0f - IN.texcoord.w);
+
+	float4	final_color=		edge * EDGE_GLOW_COLOR + (PLASMA_EDGE_COLOR * edge_plasma + PLASMA_COLOR + hit_color) * plasma;
+
+	final_color.rgb	*=			g_exposure.r;
+
+	return	convert_to_render_target(final_color, false, false
+    #ifdef SSR_ENABLE
+    , 0
+    #endif
+    );
 }
