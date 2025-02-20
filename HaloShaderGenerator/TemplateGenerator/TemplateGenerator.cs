@@ -23,7 +23,7 @@ namespace HaloShaderGenerator.TemplateGenerator
             var atIndex = currentOptions.FindIndex(x => x.Category == "alpha_blend_source");
             if (atIndex != -1)
                 return (Shared.Alpha_Blend_Source)Enum.Parse(typeof(Shared.Alpha_Blend_Source), currentOptions[atIndex].Option, true);
-            return Shared.Alpha_Blend_Source.Albedo_Alpha_Without_Fresnel;
+            return Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel;
         }
 
         private Shader.Misc GetMisc(List<OptionInfo> currentOptions)
@@ -159,7 +159,12 @@ namespace HaloShaderGenerator.TemplateGenerator
             if (applyFixes)
                 macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_FIXES", "1"));
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("alpha_blend_source", alphaBlendSource.ToString().ToLower()));
+            if (shaderType != ShaderType.Glass)
+            {
+                // TODO: remove this once alpha_blend_source integrated into all shaders
+                string blendSourceMacro = alphaBlendSource.ToString().ToLower().Remove(0, 5); // remove "from_"
+                macros.Add(ShaderGeneratorBase.CreateMacro("alpha_blend_source", blendSourceMacro));
+            }
         }
 
         private static List<OptionInfo> ValidateOptionInfo(List<OptionInfo> options, bool ps)
