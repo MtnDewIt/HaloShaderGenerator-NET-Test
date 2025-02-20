@@ -66,7 +66,7 @@ namespace HaloShaderGenerator.Water
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
             TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Water, entryPoint, Shared.Blend_Mode.Opaque, 
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.Albedo_Alpha_Without_Fresnel, ApplyFixes);
+                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
 
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Waveshape>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Watercolor>());
@@ -119,7 +119,7 @@ namespace HaloShaderGenerator.Water
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
             TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Shader, entryPoint,
-                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.Albedo_Alpha_Without_Fresnel, false, true, vertexType);
+                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, false, true, vertexType);
 
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Waveshape>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Watercolor>());
