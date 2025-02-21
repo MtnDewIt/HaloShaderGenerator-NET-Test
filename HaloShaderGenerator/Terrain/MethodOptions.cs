@@ -13,13 +13,15 @@ namespace HaloShaderGenerator.Terrain
         Material_0,
         Material_1,
         Material_2,
-        Material_3
+        Material_3,
+        Wetness
     }
 
     public enum Blending
     {
         Morph,
-        Dynamic_Morph
+        Dynamic_Morph,
+        Distance_Blend_Base
     }
 
     public enum Environment_Mapping
@@ -69,5 +71,11 @@ namespace HaloShaderGenerator.Terrain
         Diffuse_Plus_Specular
     }
 
-
+    public enum Wetness 
+    {
+        Default,
+        Proof,
+        Flood,
+        Ripples
+    }
 }

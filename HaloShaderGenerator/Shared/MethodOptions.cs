@@ -69,7 +69,9 @@ namespace HaloShaderGenerator.Shared
         Scrolling_Cube,
         Scrolling_Texture_Uv,
         Texture_From_Misc,
-        Emblem
+        Emblem,
+        Patchy_Emblem,
+        Map
     }
 
     public enum Alpha_Test
@@ -77,22 +79,37 @@ namespace HaloShaderGenerator.Shared
         None,
         Simple,
         Multiply_Map,
-        From_Albedo_Alpha
+        From_Albedo_Alpha,
+        From_Texture
     }
 
     public enum Material_Model
     {
-        Diffuse_Only,
         Cook_Torrance,
+        Diffuse_Only,
         Two_Lobe_Phong,
         Foliage,
         None,
+        Custom_Specular,
+        Two_Lobe_Phong_Reach,
+        Default,
+        Flat,
+        Specular,
+        Translucent,
         Glass,
         Organism,
         Single_Lobe_Phong,
         Car_Paint,
+        Cook_Torrance_Custom_Cube,
+        Cook_Torrance_Pbr_Maps,
+        Cook_Torrance_Two_Color_Spec_Tint,
+        Two_Lobe_Phong_Tint_Map,
+        Cook_Torrance_Scrolling_Cube_Mask,
+        Cook_Torrance_Rim_Fresnel,
+        Cook_Torrance_Scrolling_Cube,
+        Cook_Torrance_From_Albedo,
         Hair,
-        Custom_Specular,
+        Cook_Torrance_Reach
     }
 
     public enum Environment_Mapping
@@ -101,9 +118,10 @@ namespace HaloShaderGenerator.Shared
         Per_Pixel,
         Dynamic,
         From_Flat_Texture,
-        Custom_Map,
         Per_Pixel_Mip,
-        Dynamic_Reach
+        Dynamic_Reach,
+        Custom_Map,
+        From_Flat_exture_As_Cubemap,
     }
 
     public enum Self_Illumination
@@ -116,20 +134,24 @@ namespace HaloShaderGenerator.Shared
         Illum_Detail,
         Meter,
         Self_Illum_Times_Diffuse,
-        Simple_With_Alpha_Mask,
-        Simple_Four_Change_Color,
-        None,
+        Window_Room,
         Multilayer_Additive,
+        Scope_Blur,
         Ml_Add_Four_Change_Color,
         Ml_Add_Five_Change_Color,
-        Scope_Blur,
+        Plasma_Wide_And_Sharp_Five_Change_Color,
+        Self_Illum_Holograms,
         Palettized_Plasma,
         Palettized_Plasma_Change_Color,
-        Constant_Color,
-        Window_Room,
-        Illum_Change_Color,
-        Change_Color_Detail,
         Palettized_Depth_Fade,
+        None,
+        Constant_Color,
+        Simple_With_Alpha_Mask,
+        Simple_Four_Change_Color,
+        Illum_Detail_World_Space_Four_Cc,
+        Illum_Change_Color,
+        Change_Color,
+        Change_Color_Detail,
     }
 
     public enum Blend_Mode
@@ -154,26 +176,6 @@ namespace HaloShaderGenerator.Shared
         From_Opacity_Map_Alpha,
         From_Opacity_Map_Rgb,
         From_Opacity_Map_Alpha_And_Albedo_Alpha,
-    }
-
-    public enum Depth_Fade
-    {
-        Off,
-        On,
-        Low_Res,
-        Palette_Shift,
-    }
-
-    public enum Black_Point
-    {
-        Off,
-        On
-    }
-
-    public enum Fog
-    {
-        Off,
-        On,
     }
 
     public enum Distortion

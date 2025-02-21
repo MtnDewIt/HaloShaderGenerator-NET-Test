@@ -5,7 +5,8 @@ namespace HaloShaderGenerator.Foliage
     {
         Albedo,
         Alpha_Test,
-        Material_Model
+        Material_Model,
+        Wetness
     }
 
     public enum Albedo
@@ -18,11 +19,21 @@ namespace HaloShaderGenerator.Foliage
     {
         None,
         Simple,
-        From_Albedo_Alpha
+        From_Albedo_Alpha,
+        From_Texture
     }
 
     public enum Material_Model
     {
-        Default
+        Default,
+        Flat,
+        Specular,
+        Translucent
+    }
+
+    public enum Wetness 
+    {
+        Simple,
+        Proof
     }
 }

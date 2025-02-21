@@ -13,6 +13,7 @@ namespace HaloShaderGenerator.Custom
         Blend_Mode,
         Parallax,
         Misc,
+        Wetness
     }
 
     public enum Albedo
@@ -29,6 +30,7 @@ namespace HaloShaderGenerator.Custom
         Two_Detail_Black_Point,
         Waterfall,
         Multiply_Map,
+        Simple,
     }
 
     public enum Bump_Mapping
@@ -50,7 +52,8 @@ namespace HaloShaderGenerator.Custom
         No_Specular_Mask,
         Specular_Mask_From_Diffuse,
         Specular_Mask_From_Texture,
-        Specular_Mask_From_Color_Texture
+        Specular_Mask_Mult_Diffuse,
+        Specular_Mask_From_Color_Texture,
     }
 
     public enum Material_Model
@@ -59,7 +62,8 @@ namespace HaloShaderGenerator.Custom
         Two_Lobe_Phong,
         Foliage,
         None,
-        Custom_Specular
+        Custom_Specular,
+        Two_Lobe_Phong_Reach
     }
 
     public enum Environment_Mapping
@@ -108,6 +112,16 @@ namespace HaloShaderGenerator.Custom
         First_Person_Sometimes,
         First_Person_Always,
         First_Person_Never_With_rotating_Bitmaps,
+        Default,
+        Rotating_Bitmaps_Super_Slow,
         Always_Calc_Albedo
+    }
+
+    public enum Wetness 
+    {
+        Default,
+        Flood,
+        Proof,
+        Ripples,
     }
 }

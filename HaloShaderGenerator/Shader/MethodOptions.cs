@@ -19,7 +19,10 @@ namespace HaloShaderGenerator.Shader
         Parallax,
         Misc,
         Distortion,
-        Soft_Fade
+        Soft_Fade,
+        Misc_Attr_Animation,
+        Wetness,
+        Alpha_Blend_Source
     }
 
     public enum Albedo
@@ -39,18 +42,17 @@ namespace HaloShaderGenerator.Shader
         Two_Change_Color_Chameleon,
         Chameleon_Masked,
         Color_Mask_Hard_Light,
-        Four_Change_Color_Applying_To_Specular,
-        Simple,
         Two_Change_Color_Tex_Overlay,
         Chameleon_Albedo_Masked,
         Custom_Cube,
         Two_Color,
-        Emblem,
-        // uncomment when misc_attr supported
-        //Scrolling_Cube_Mask,
-        //Scrolling_Cube,
-        //Scrolling_Texture_Uv,
-        //Texture_From_Misc,
+        Scrolling_Cube_Mask,
+        Scrolling_Cube,
+        Scrolling_Texture_Uv,
+        Texture_From_Misc,
+        Four_Change_Color_Applying_To_Specular,
+        Simple,
+        Emblem
     }
 
     public enum Bump_Mapping
@@ -59,7 +61,12 @@ namespace HaloShaderGenerator.Shader
         Standard,
         Detail,
         Detail_Masked,
-        //Detail_Plus_Detail_Masked
+        Detail_Plus_Detail_Masked,
+        Detail_Unorm,
+        Detail_Blend,
+        Three_Detail_Blend,
+        Standard_Wrinkle,
+        Detail_Wrinkle,
     }
 
     public enum Alpha_Test
@@ -73,7 +80,8 @@ namespace HaloShaderGenerator.Shader
         No_Specular_Mask,
         Specular_Mask_From_Diffuse,
         Specular_Mask_From_Texture,
-        Specular_Mask_From_Color_Texture
+        Specular_Mask_From_Color_Texture,
+        Specular_Mask_Mult_Diffuse
     }
 
     public enum Material_Model
@@ -87,8 +95,17 @@ namespace HaloShaderGenerator.Shader
         Organism,
         Single_Lobe_Phong,
         Car_Paint,
+        Cook_Torrance_Custom_Cube,
+        Cook_Torrance_Pbr_Maps,
+        Cook_Torrance_Two_Color_Spec_Tint,
+        Two_Lobe_Phong_Tint_Map,
+        Cook_Torrance_Scrolling_Cube_Mask,
+        Cook_Torrance_Rim_Fresnel,
+        Cook_Torrance_Scrolling_Cube,
+        Cook_Torrance_From_Albedo,
         Hair,
-        Cook_Torrance_Odst,
+        Cook_Torrance_Reach,
+        Two_Lobe_Phong_Reach
     }
 
     public enum Environment_Mapping
@@ -98,6 +115,7 @@ namespace HaloShaderGenerator.Shader
         Dynamic,
         From_Flat_Texture,
         Custom_Map,
+        From_Flat_exture_As_Cubemap,
         Dynamic_Reach
     }
 
@@ -113,11 +131,12 @@ namespace HaloShaderGenerator.Shader
         Self_Illum_Times_Diffuse,
         Simple_With_Alpha_Mask,
         Simple_Four_Change_Color,
-        //Illum_Detail_World_Space_Four_Cc
+        Illum_Detail_World_Space_Four_Cc,
         Illum_Change_Color,
         Multilayer_Additive,
         Palettized_Plasma,
-        Change_Color_Detail,
+        Change_Color,
+        Change_Color_Detail
     }
 
     public enum Blend_Mode
@@ -144,6 +163,24 @@ namespace HaloShaderGenerator.Shader
         First_Person_Sometimes,
         First_Person_Always,
         First_Person_Never_With_rotating_Bitmaps,
+        Default,
+        Rotating_Bitmaps_Super_Slow,
         Always_Calc_Albedo
+    }
+
+    public enum Misc_Attr_Animation 
+    {
+        Off,
+        Scrolling_Cube,
+        Scrolling_Projected
+    }
+
+    public enum Wetness
+    {
+        Default,
+        Flood,
+        Proof,
+        Simple,
+        Ripples
     }
 }

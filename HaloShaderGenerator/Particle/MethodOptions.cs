@@ -13,6 +13,7 @@ namespace HaloShaderGenerator.Particle
         Fog,
         Frame_Blend,
         Self_Illumination,
+        Warp
     }
 
     public enum Albedo
@@ -23,10 +24,10 @@ namespace HaloShaderGenerator.Particle
         Palettized_Plus_Billboard_Alpha,
         Diffuse_Plus_Sprite_Alpha,
         Palettized_Plus_Sprite_Alpha,
-        Diffuse_Modulated, // odst
-        Palettized_Glow, // odst (unsupported)
-        Palettized_Plasma, // odst
-        Palettized_2d_Plasma // reach
+        Diffuse_Modulated,
+        Palettized_Glow,
+        Palettized_Plasma,
+        Palettized_2d_Plasma
     }
 
     public enum Blend_Mode
@@ -58,6 +59,9 @@ namespace HaloShaderGenerator.Particle
         None,
         Per_Pixel_Ravi_Order_3,
         Per_Vertex_Ravi_Order_0,
+        Per_Pixel_Smooth,
+        Per_Vertex_Ambient,
+        Smoke_Lighting,
     }
 
     public enum Render_Targets
@@ -70,6 +74,7 @@ namespace HaloShaderGenerator.Particle
     {
         Off,
         On,
+        Palette_Shift
     }
 
     public enum Black_Point
@@ -94,5 +99,11 @@ namespace HaloShaderGenerator.Particle
     {
         None,
         Constant_Color,
+    }
+
+    public enum Warp 
+    {
+        None,
+        Sphere
     }
 }

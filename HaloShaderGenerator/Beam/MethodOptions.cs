@@ -6,7 +6,8 @@ namespace HaloShaderGenerator.Beam
         Albedo,
         Blend_Mode,
         Black_Point,
-        Fog
+        Fog,
+        Depth_Fade
     }
 
     public enum Albedo
@@ -43,5 +44,12 @@ namespace HaloShaderGenerator.Beam
     {
         Off,
         On,
+    }
+
+    public enum Depth_Fade 
+    {
+        Off,
+        On,
+        Palette_Shift
     }
 }

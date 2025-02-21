@@ -5,7 +5,8 @@ namespace HaloShaderGenerator.LightVolume
     {
         Albedo,
         Blend_Mode,
-        Fog
+        Fog,
+        Depth_Fade
     }
 
     public enum Albedo
@@ -33,5 +34,12 @@ namespace HaloShaderGenerator.LightVolume
     {
         Off,
         On,
+    }
+
+    public enum Depth_Fade 
+    {
+        Off,
+        On,
+        Biased
     }
 }

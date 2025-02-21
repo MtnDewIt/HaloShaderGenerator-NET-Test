@@ -684,7 +684,6 @@ namespace HaloShaderGenerator.Shader
                 case Material_Model.Diffuse_Only:
                     result.AddBooleanParameter("no_dynamic_lights");
                     break;
-                case Material_Model.Cook_Torrance_Odst:
                 case Material_Model.Cook_Torrance:
                     result.AddFloatParameter("diffuse_coefficient");
                     result.AddFloatParameter("specular_coefficient");
@@ -1283,7 +1282,6 @@ namespace HaloShaderGenerator.Shader
                         result.AddBooleanParameter("no_dynamic_lights");
                         rmopName = @"shaders\shader_options\material_diffuse_only";
                         break;
-                    case Material_Model.Cook_Torrance_Odst:
                     case Material_Model.Cook_Torrance:
                         result.AddFloatParameter("diffuse_coefficient");
                         result.AddFloatParameter("specular_coefficient");

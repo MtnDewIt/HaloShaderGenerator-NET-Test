@@ -79,11 +79,6 @@ namespace HaloShaderGenerator.Cortana
             macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_HLSL_FIXES", ApplyFixes ? 1 : 0));
 
             Shared.Environment_Mapping sEnvironmentMapping = (Shared.Environment_Mapping)Enum.Parse(typeof(Shared.Environment_Mapping), environment_mapping.ToString());
-            if (environment_mapping == Environment_Mapping.Dynamic_Reach)
-            {
-                sEnvironmentMapping = Shared.Environment_Mapping.Dynamic;
-                macros.Add(ShaderGeneratorBase.CreateMacro("REACH_ENV_DYNAMIC", 1));
-            }
 
             //
             // Convert to shared enum
@@ -341,7 +336,6 @@ namespace HaloShaderGenerator.Cortana
                     result.AddFloatParameter("env_roughness_scale");
                     break;
                 case Environment_Mapping.Dynamic:
-                case Environment_Mapping.Dynamic_Reach:
                     result.AddFloat3ColorParameter("env_tint_color");
                     result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
                     result.AddSamplerParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
@@ -513,7 +507,6 @@ namespace HaloShaderGenerator.Cortana
                         rmopName = @"shaders\shader_options\env_map_per_pixel";
                         break;
                     case Environment_Mapping.Dynamic:
-                    case Environment_Mapping.Dynamic_Reach:
                         result.AddFloat3ColorParameter("env_tint_color");
                         result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
                         result.AddSamplerParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
