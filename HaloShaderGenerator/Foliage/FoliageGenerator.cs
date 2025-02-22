@@ -16,6 +16,7 @@ namespace HaloShaderGenerator.Foliage
         Albedo albedo;
         Alpha_Test alpha_test;
         Material_Model material_model;
+        Wetness wetness;
 
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
@@ -25,11 +26,12 @@ namespace HaloShaderGenerator.Foliage
         /// <summary>
         /// Generator instantiation for method specific shaders.
         /// </summary>
-        public FoliageGenerator(Albedo albedo, Alpha_Test alpha_test, Material_Model material_model, bool applyFixes = false)
+        public FoliageGenerator(Albedo albedo, Alpha_Test alpha_test, Material_Model material_model, Wetness wetness, bool applyFixes = false)
         {
             this.albedo = albedo;
             this.alpha_test = alpha_test;
             this.material_model = material_model;
+            this.wetness = wetness;
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -42,6 +44,7 @@ namespace HaloShaderGenerator.Foliage
             this.albedo = (Albedo)options[0];
             this.alpha_test = (Alpha_Test)options[1];
             this.material_model = (Material_Model)options[2];
+            this.wetness = (Wetness)options[3];
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -150,6 +153,8 @@ namespace HaloShaderGenerator.Foliage
                     return Enum.GetValues(typeof(Alpha_Test)).Length;
                 case FoliageMethods.Material_Model:
                     return Enum.GetValues(typeof(Material_Model)).Length;
+                case FoliageMethods.Wetness:
+                    return Enum.GetValues(typeof(Wetness)).Length;
             }
 
             return -1;
@@ -165,6 +170,8 @@ namespace HaloShaderGenerator.Foliage
                     return (int)alpha_test;
                 case FoliageMethods.Material_Model:
                     return (int)material_model;
+                case FoliageMethods.Wetness:
+                    return (int)wetness;
             }
             return -1;
         }
@@ -376,6 +383,8 @@ namespace HaloShaderGenerator.Foliage
                     return Enum.GetValues(typeof(Alpha_Test));
                 case FoliageMethods.Material_Model:
                     return Enum.GetValues(typeof(Material_Model));
+                case FoliageMethods.Wetness:
+                    return Enum.GetValues(typeof(Wetness));
             }
 
             return null;

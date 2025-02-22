@@ -520,9 +520,6 @@ namespace HaloShaderGenerator
 
             foreach (ChudShader chudShader in Enum.GetValues(typeof(ChudShader)))
             {
-                if (chudShader == ChudShader.chud_unknown)
-                    continue; // no reference for now (need to create own)
-
                 Task<bool> testTask = Task.Run(() => { return TestChudPixelShader(chudShader); });
                 testTasks.Add(testTask);
             }
@@ -648,9 +645,6 @@ namespace HaloShaderGenerator
 
             foreach (ChudShader chudShader in Enum.GetValues(typeof(ChudShader)))
             {
-                if (chudShader == ChudShader.chud_unknown)
-                    continue; // no reference for now (need to create own)
-
                 Task<bool> testTask = Task.Run(() => { return TestChudVertexShader(chudShader); });
                 testTasks.Add(testTask);
             }

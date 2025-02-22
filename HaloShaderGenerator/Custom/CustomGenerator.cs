@@ -21,6 +21,7 @@ namespace HaloShaderGenerator.Custom
         Blend_Mode blend_mode;
         Parallax parallax;
         Misc misc;
+        Wetness wetness;
 
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
@@ -31,7 +32,7 @@ namespace HaloShaderGenerator.Custom
         /// Generator instantiation for method specific shaders.
         /// </summary>
         public CustomGenerator(Albedo albedo, Bump_Mapping bump_mapping, Alpha_Test alpha_test, Specular_Mask specular_mask, Material_Model material_model,
-            Environment_Mapping environment_mapping, Self_Illumination self_illumination, Blend_Mode blend_mode, Parallax parallax, Misc misc)
+            Environment_Mapping environment_mapping, Self_Illumination self_illumination, Blend_Mode blend_mode, Parallax parallax, Misc misc, Wetness wetness)
         {
             this.albedo = albedo;
             this.bump_mapping = bump_mapping;
@@ -43,6 +44,7 @@ namespace HaloShaderGenerator.Custom
             this.blend_mode = blend_mode;
             this.parallax = parallax;
             this.misc = misc;
+            this.wetness = wetness;
             TemplateGenerationValid = true;
         }
 
@@ -60,6 +62,7 @@ namespace HaloShaderGenerator.Custom
             this.blend_mode = (Blend_Mode)options[7];
             this.parallax = (Parallax)options[8];
             this.misc = (Misc)options[9];
+            this.wetness = (Wetness)options[10];
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -296,6 +299,8 @@ namespace HaloShaderGenerator.Custom
                     return Enum.GetValues(typeof(Parallax)).Length;
                 case CustomMethods.Misc:
                     return Enum.GetValues(typeof(Misc)).Length;
+                case CustomMethods.Wetness:
+                    return Enum.GetValues(typeof(Wetness)).Length;
             }
             return -1;
         }
@@ -324,6 +329,8 @@ namespace HaloShaderGenerator.Custom
                     return (int)parallax;
                 case CustomMethods.Misc:
                     return (int)misc;
+                case CustomMethods.Wetness:
+                    return (int)wetness;
             }
             return -1;
         }
@@ -1005,6 +1012,8 @@ namespace HaloShaderGenerator.Custom
                     return Enum.GetValues(typeof(Parallax));
                 case CustomMethods.Misc:
                     return Enum.GetValues(typeof(Misc));
+                case CustomMethods.Wetness:
+                    return Enum.GetValues(typeof(Wetness));
             }
 
             return null;

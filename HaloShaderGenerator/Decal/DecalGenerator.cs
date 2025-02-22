@@ -19,6 +19,8 @@ namespace HaloShaderGenerator.Decal
         Specular specular;
         Bump_Mapping bump_mapping;
         Tinting tinting;
+        Parallax parallax;
+        Interier interier;
 
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
@@ -28,7 +30,7 @@ namespace HaloShaderGenerator.Decal
         /// <summary>
         /// Generator instantiation for method specific shaders.
         /// </summary>
-        public DecalGenerator(Albedo albedo, Blend_Mode blend_mode, Render_Pass render_pass, Specular specular, Bump_Mapping bump_mapping, Tinting tinting, bool applyFixes = false)
+        public DecalGenerator(Albedo albedo, Blend_Mode blend_mode, Render_Pass render_pass, Specular specular, Bump_Mapping bump_mapping, Tinting tinting, Parallax parallax, Interier interier, bool applyFixes = false)
         {
             this.albedo = albedo;
             this.blend_mode = blend_mode;
@@ -36,6 +38,8 @@ namespace HaloShaderGenerator.Decal
             this.specular = specular;
             this.bump_mapping = bump_mapping;
             this.tinting = tinting;
+            this.parallax = parallax;
+            this.interier = interier;
 
             ApplyFixes = applyFixes;
             DecalIsSimple = this.render_pass == Render_Pass.Pre_Lighting && this.bump_mapping == Bump_Mapping.Leave;
@@ -52,6 +56,8 @@ namespace HaloShaderGenerator.Decal
             this.specular = (Specular)options[3];
             this.bump_mapping = (Bump_Mapping)options[4];
             this.tinting = (Tinting)options[5];
+            this.parallax = (Parallax)options[6];
+            this.interier = (Interier)options[7];
 
             ApplyFixes = applyFixes;
             DecalIsSimple = this.render_pass == Render_Pass.Pre_Lighting && this.bump_mapping == Bump_Mapping.Leave;
@@ -76,6 +82,8 @@ namespace HaloShaderGenerator.Decal
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Specular>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Bump_Mapping>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Tinting>());
+            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Parallax>());
+            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Interier>());
 
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("albedo", albedo.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("blend_mode", blend_mode.ToString().ToLower()));
@@ -83,6 +91,8 @@ namespace HaloShaderGenerator.Decal
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("specular", specular.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("bump_mapping", bump_mapping.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("tinting", tinting.ToString().ToLower()));
+            macros.Add(ShaderGeneratorBase.CreateAutoMacro("parallax", parallax.ToString().ToLower()));
+            macros.Add(ShaderGeneratorBase.CreateAutoMacro("interier", interier.ToString().ToLower()));
 
             string entryName = entryPoint.ToString().ToLower() + "_ps";
             switch (entryPoint)
@@ -171,6 +181,11 @@ namespace HaloShaderGenerator.Decal
                     return Enum.GetValues(typeof(Bump_Mapping)).Length;
                 case DecalMethods.Tinting:
                     return Enum.GetValues(typeof(Tinting)).Length;
+                case DecalMethods.Parallax:
+                    return Enum.GetValues(typeof(Parallax)).Length;
+                case DecalMethods.Interier:
+                    return Enum.GetValues(typeof(Interier)).Length;
+
             }
 
             return -1;
@@ -192,6 +207,10 @@ namespace HaloShaderGenerator.Decal
                     return (int)bump_mapping;
                 case DecalMethods.Tinting:
                     return (int)tinting;
+                case DecalMethods.Parallax:
+                    return (int)parallax;
+                case DecalMethods.Interier:
+                    return (int)interier;
             }
             return -1;
         }
@@ -528,6 +547,10 @@ namespace HaloShaderGenerator.Decal
                     return Enum.GetValues(typeof(Bump_Mapping));
                 case DecalMethods.Tinting:
                     return Enum.GetValues(typeof(Tinting));
+                case DecalMethods.Parallax:
+                    return Enum.GetValues(typeof(Parallax));
+                case DecalMethods.Interier:
+                    return Enum.GetValues(typeof(Interier));
             }
 
             return null;

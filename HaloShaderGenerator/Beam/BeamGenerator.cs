@@ -16,6 +16,7 @@ namespace HaloShaderGenerator.Beam
         Blend_Mode blend_mode;
         Black_Point black_point;
         Fog fog;
+        Depth_Fade depth_fade;
 
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
@@ -25,12 +26,13 @@ namespace HaloShaderGenerator.Beam
         /// <summary>
         /// Generator instantiation for method specific shaders.
         /// </summary>
-        public BeamGenerator(Albedo albedo, Blend_Mode blend_mode, Black_Point black_point, Fog fog, bool applyFixes = false)
+        public BeamGenerator(Albedo albedo, Blend_Mode blend_mode, Black_Point black_point, Fog fog, Depth_Fade depth_fade, bool applyFixes = false)
         {
             this.albedo = albedo;
             this.blend_mode = blend_mode;
             this.black_point = black_point;
             this.fog = fog;
+            this.depth_fade = depth_fade;
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -44,6 +46,7 @@ namespace HaloShaderGenerator.Beam
             this.blend_mode = (Blend_Mode)options[1];
             this.black_point = (Black_Point)options[2];
             this.fog = (Fog)options[3];
+            this.depth_fade = (Depth_Fade)options[4];
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -65,11 +68,13 @@ namespace HaloShaderGenerator.Beam
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Blend_Mode>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Black_Point>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Fog>());
+            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Depth_Fade>());
 
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("albedo", albedo.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("blend_mode", blend_mode.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("black_point", black_point.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("fog", fog.ToString().ToLower()));
+            macros.Add(ShaderGeneratorBase.CreateAutoMacro("depth_fade", depth_fade.ToString().ToLower()));
 
             string entryName = entryPoint.ToString().ToLower() + "_ps";
             switch (entryPoint)
@@ -146,6 +151,8 @@ namespace HaloShaderGenerator.Beam
                     return Enum.GetValues(typeof(Black_Point)).Length;
                 case BeamMethods.Fog:
                     return Enum.GetValues(typeof(Fog)).Length;
+                case BeamMethods.Depth_Fade:
+                    return Enum.GetValues(typeof(Depth_Fade)).Length;
             }
 
             return -1;
@@ -163,6 +170,8 @@ namespace HaloShaderGenerator.Beam
                     return (int)black_point;
                 case BeamMethods.Fog:
                     return (int)fog;
+                case BeamMethods.Depth_Fade:
+                    return (int)depth_fade;
             }
             return -1;
         }
@@ -313,6 +322,10 @@ namespace HaloShaderGenerator.Beam
             {
                 optionName = ((Fog)option).ToString();
             }
+            if (methodName == "depth_fade") 
+            {
+                optionName = ((Depth_Fade)option).ToString();
+            }
             return result;
         }
 
@@ -333,6 +346,8 @@ namespace HaloShaderGenerator.Beam
                     return Enum.GetValues(typeof(Black_Point));
                 case BeamMethods.Fog:
                     return Enum.GetValues(typeof(Fog));
+                case BeamMethods.Depth_Fade:
+                    return Enum.GetValues(typeof(Depth_Fade));
             }
 
             return null;

@@ -15,6 +15,7 @@ namespace HaloShaderGenerator.LightVolume
         Albedo albedo;
         Blend_Mode blend_mode;
         Fog fog;
+        Depth_Fade depth_fade;
 
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
@@ -24,11 +25,12 @@ namespace HaloShaderGenerator.LightVolume
         /// <summary>
         /// Generator instantiation for method specific shaders.
         /// </summary>
-        public LightVolumeGenerator(Albedo albedo, Blend_Mode blend_mode, Fog fog, bool applyFixes = false)
+        public LightVolumeGenerator(Albedo albedo, Blend_Mode blend_mode, Fog fog, Depth_Fade depth_fade, bool applyFixes = false)
         {
             this.albedo = albedo;
             this.blend_mode = blend_mode;
             this.fog = fog;
+            this.depth_fade = depth_fade;
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -41,6 +43,7 @@ namespace HaloShaderGenerator.LightVolume
             this.albedo = (Albedo)options[0];
             this.blend_mode = (Blend_Mode)options[1];
             this.fog = (Fog)options[2];
+            this.depth_fade = (Depth_Fade)options[3];
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -61,10 +64,12 @@ namespace HaloShaderGenerator.LightVolume
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Albedo>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Blend_Mode>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Fog>());
+            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Depth_Fade>());
 
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("albedo", albedo.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("blend_mode", blend_mode.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("fog", fog.ToString().ToLower()));
+            macros.Add(ShaderGeneratorBase.CreateAutoMacro("depth_fade", depth_fade.ToString().ToLower()));
 
             string entryName = entryPoint.ToString().ToLower() + "_ps";
             switch (entryPoint)
@@ -139,6 +144,8 @@ namespace HaloShaderGenerator.LightVolume
                     return Enum.GetValues(typeof(Blend_Mode)).Length;
                 case LightVolumeMethods.Fog:
                     return Enum.GetValues(typeof(Fog)).Length;
+                case LightVolumeMethods.Depth_Fade:
+                    return Enum.GetValues(typeof(Depth_Fade)).Length;
             }
 
             return -1;
@@ -154,6 +161,8 @@ namespace HaloShaderGenerator.LightVolume
                     return (int)blend_mode;
                 case LightVolumeMethods.Fog:
                     return (int)fog;
+                case LightVolumeMethods.Depth_Fade:
+                    return (int)depth_fade;
             }
             return -1;
         }
@@ -281,6 +290,8 @@ namespace HaloShaderGenerator.LightVolume
                     return Enum.GetValues(typeof(Blend_Mode));
                 case LightVolumeMethods.Fog:
                     return Enum.GetValues(typeof(Fog));
+                case LightVolumeMethods.Depth_Fade:
+                    return Enum.GetValues(typeof(Depth_Fade));
             }
 
             return null;

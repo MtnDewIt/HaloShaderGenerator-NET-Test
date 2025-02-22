@@ -19,12 +19,13 @@ namespace HaloShaderGenerator.Water
         Appearance appearance;
         Global_Shape global_shape;
         Foam foam;
+        Detail detail;
         Reach_Compatibility reach_compatibility;
 
         public WaterGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
 
         public WaterGenerator(Waveshape waveshape, Watercolor watercolor, Reflection reflection, Refraction refraction, 
-            Bankalpha bankalpha, Appearance appearance, Global_Shape global_shape, Foam foam, Reach_Compatibility reach_compatibility, bool applyFixes = false)
+            Bankalpha bankalpha, Appearance appearance, Global_Shape global_shape, Foam foam, Detail detail, Reach_Compatibility reach_compatibility, bool applyFixes = false)
         {
             this.waveshape = waveshape;
             this.watercolor = watercolor;
@@ -34,6 +35,7 @@ namespace HaloShaderGenerator.Water
             this.appearance = appearance;
             this.global_shape = global_shape;
             this.foam = foam;
+            this.detail = detail;
             this.reach_compatibility = reach_compatibility;
 
             ApplyFixes = applyFixes;
@@ -52,7 +54,8 @@ namespace HaloShaderGenerator.Water
             this.appearance = (Appearance)options[5];
             this.global_shape = (Global_Shape)options[6];
             this.foam = (Foam)options[7];
-            this.reach_compatibility = options.Length > 8 ? (Reach_Compatibility)options[8] : Reach_Compatibility.Disabled;
+            this.detail = (Detail)options[8];
+            this.reach_compatibility = options.Length > 9 ? (Reach_Compatibility)options[9] : Reach_Compatibility.Disabled;
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -76,6 +79,7 @@ namespace HaloShaderGenerator.Water
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Appearance>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Global_Shape>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Foam>());
+            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Detail>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Reach_Compatibility>());
 
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("waveshape", waveshape.ToString().ToLower()));
@@ -86,6 +90,7 @@ namespace HaloShaderGenerator.Water
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("appearance", appearance.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("global_shape", global_shape.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("foam", foam.ToString().ToLower()));
+            macros.Add(ShaderGeneratorBase.CreateAutoMacro("detail", detail.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("reach_compatibility", reach_compatibility.ToString().ToLower()));
 
             string entryName = entryPoint.ToString().ToLower() + "_ps";
@@ -129,6 +134,7 @@ namespace HaloShaderGenerator.Water
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Appearance>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Global_Shape>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Foam>());
+            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Detail>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Reach_Compatibility>());
 
             //macros.Add(ShaderGeneratorBase.CreateAutoMacro("waveshape", waveshape.ToString().ToLower()));
@@ -139,6 +145,7 @@ namespace HaloShaderGenerator.Water
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("appearance", Appearance.Default.ToString().ToLower()));
             //macros.Add(ShaderGeneratorBase.CreateAutoMacro("global_shape", global_shape.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("foam", Foam.None.ToString().ToLower()));
+            macros.Add(ShaderGeneratorBase.CreateAutoMacro("detail", Detail.None.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("reach_compatibility", Reach_Compatibility.Disabled.ToString().ToLower()));
 
             string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
@@ -180,6 +187,8 @@ namespace HaloShaderGenerator.Water
                     return Enum.GetValues(typeof(Global_Shape)).Length;
                 case WaterMethods.Foam:
                     return Enum.GetValues(typeof(Foam)).Length;
+                case WaterMethods.Detail:
+                    return Enum.GetValues(typeof(Detail)).Length;
                 case WaterMethods.Reach_Compatibility:
                     return Enum.GetValues(typeof(Reach_Compatibility)).Length;
             }
@@ -206,6 +215,8 @@ namespace HaloShaderGenerator.Water
                     return (int)global_shape;
                 case WaterMethods.Foam:
                     return (int)foam;
+                case WaterMethods.Detail:
+                    return (int)detail;
                 case WaterMethods.Reach_Compatibility:
                     return (int)reach_compatibility;
             }
@@ -666,6 +677,8 @@ namespace HaloShaderGenerator.Water
                     return Enum.GetValues(typeof(Global_Shape));
                 case WaterMethods.Foam:
                     return Enum.GetValues(typeof(Foam));
+                case WaterMethods.Detail:
+                    return Enum.GetValues(typeof(Detail));
                 case WaterMethods.Reach_Compatibility:
                     return Enum.GetValues(typeof(Reach_Compatibility));
             }

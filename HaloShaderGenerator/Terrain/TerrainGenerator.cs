@@ -17,6 +17,7 @@ namespace HaloShaderGenerator.Terrain
         Material1 material_1;
         Material2 material_2;
         Material_No_Detail_Bump material_3;
+        Wetness wetness;
 
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
@@ -26,7 +27,7 @@ namespace HaloShaderGenerator.Terrain
         /// <summary>
         /// Generator instantiation for method specific shaders.
         /// </summary>
-        public TerrainGenerator(Blending blending, Environment_Mapping environment_mapping, Material material_0, Material1 material_1, Material2 material_2, Material_No_Detail_Bump material_3)
+        public TerrainGenerator(Blending blending, Environment_Mapping environment_mapping, Material material_0, Material1 material_1, Material2 material_2, Material_No_Detail_Bump material_3, Wetness wetness)
         {
             this.blending = blending;
             this.environment_mapping = environment_mapping;
@@ -34,6 +35,7 @@ namespace HaloShaderGenerator.Terrain
             this.material_1 = material_1;
             this.material_2 = material_2;
             this.material_3 = material_3;
+            this.wetness = wetness;
             TemplateGenerationValid = true;
         }
 
@@ -47,6 +49,7 @@ namespace HaloShaderGenerator.Terrain
             this.material_1 = (Material1)options[3];
             this.material_2 = (Material2)options[4];
             this.material_3 = (Material_No_Detail_Bump)options[5];
+            this.wetness = (Wetness)options[6];
 
             //ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -70,6 +73,7 @@ namespace HaloShaderGenerator.Terrain
             macros.Add(ShaderGeneratorBase.CreateMacro("material_1_type", material_1));
             macros.Add(ShaderGeneratorBase.CreateMacro("material_2_type", material_2));
             macros.Add(ShaderGeneratorBase.CreateMacro("material_3_type", material_3));
+            macros.Add(ShaderGeneratorBase.CreateMacro("calc_wetness_ps", wetness));
 
             string entryName = entryPoint.ToString().ToLower() + "_ps";
             switch (entryPoint)
@@ -162,6 +166,8 @@ namespace HaloShaderGenerator.Terrain
                     return Enum.GetValues(typeof(Material2)).Length;
                 case TerrainMethods.Material_3:
                     return Enum.GetValues(typeof(Material_No_Detail_Bump)).Length;
+                case TerrainMethods.Wetness:
+                    return Enum.GetValues(typeof(Wetness)).Length;
             }
             return -1;
         }
@@ -182,6 +188,8 @@ namespace HaloShaderGenerator.Terrain
                     return (int)material_2;
                 case TerrainMethods.Material_3:
                     return (int)material_3;
+                case TerrainMethods.Wetness:
+                    return (int)wetness;
                 
             }
             return -1;
@@ -966,6 +974,8 @@ namespace HaloShaderGenerator.Terrain
                     return Enum.GetValues(typeof(Material2));
                 case TerrainMethods.Material_3:
                     return Enum.GetValues(typeof(Material_No_Detail_Bump));
+                case TerrainMethods.Wetness:
+                    return Enum.GetValues(typeof(Wetness));
             }
 
             return null;

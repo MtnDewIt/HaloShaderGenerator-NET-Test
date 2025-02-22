@@ -22,6 +22,7 @@ namespace HaloShaderGenerator.Particle
         Fog fog;
         Frame_Blend frame_blend;
         Self_Illumination self_illumination;
+        Warp warp;
 
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
@@ -32,7 +33,7 @@ namespace HaloShaderGenerator.Particle
         /// Generator instantiation for method specific shaders.
         /// </summary>
         public ParticleGenerator(Albedo albedo, Blend_Mode blend_mode, Specialized_Rendering specialized_rendering, Lighting lighting, Render_Targets render_targets,
-            Depth_Fade depth_fade, Black_Point black_point, Fog fog, Frame_Blend frame_blend, Self_Illumination self_illumination, bool applyFixes = false)
+            Depth_Fade depth_fade, Black_Point black_point, Fog fog, Frame_Blend frame_blend, Self_Illumination self_illumination, Warp warp, bool applyFixes = false)
         {
             this.albedo = albedo;
             this.blend_mode = blend_mode;
@@ -44,6 +45,7 @@ namespace HaloShaderGenerator.Particle
             this.fog = fog;
             this.frame_blend = frame_blend;
             this.self_illumination = self_illumination;
+            this.warp = warp;
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -63,6 +65,7 @@ namespace HaloShaderGenerator.Particle
             this.fog = (Fog)options[7];
             this.frame_blend = (Frame_Blend)options[8];
             this.self_illumination = (Self_Illumination)options[9];
+            this.warp = (Warp)options[10];
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -90,6 +93,7 @@ namespace HaloShaderGenerator.Particle
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Fog>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Frame_Blend>());
             macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Self_Illumination>());
+            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Warp>());
 
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("albedo", albedo.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("blend_mode", blend_mode.ToString().ToLower()));
@@ -101,6 +105,7 @@ namespace HaloShaderGenerator.Particle
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("fog", fog.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("frame_blend", frame_blend.ToString().ToLower()));
             macros.Add(ShaderGeneratorBase.CreateAutoMacro("self_illumination", self_illumination.ToString().ToLower()));
+            macros.Add(ShaderGeneratorBase.CreateAutoMacro("warp", warp.ToString().ToLower()));
 
             string entryName = entryPoint.ToString().ToLower() + "_ps";
             switch (entryPoint)
@@ -189,6 +194,8 @@ namespace HaloShaderGenerator.Particle
                     return Enum.GetValues(typeof(Frame_Blend)).Length;
                 case ParticleMethods.Self_Illumination:
                     return Enum.GetValues(typeof(Self_Illumination)).Length;
+                case ParticleMethods.Warp:
+                    return Enum.GetValues(typeof(Warp)).Length;
             }
 
             return -1;
@@ -218,6 +225,8 @@ namespace HaloShaderGenerator.Particle
                     return (int)frame_blend;
                 case ParticleMethods.Self_Illumination:
                     return (int)self_illumination;
+                case ParticleMethods.Warp:
+                    return (int)warp;
             }
             return -1;
         }
@@ -545,6 +554,8 @@ namespace HaloShaderGenerator.Particle
                     return Enum.GetValues(typeof(Frame_Blend));
                 case ParticleMethods.Self_Illumination:
                     return Enum.GetValues(typeof(Self_Illumination));
+                case ParticleMethods.Warp:
+                    return Enum.GetValues(typeof(Warp));
             }
 
             return null;

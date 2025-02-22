@@ -25,6 +25,9 @@ namespace HaloShaderGenerator.Shader
         Misc misc;
         Shared.Distortion distortion;
         Shared.Soft_Fade soft_fade;
+        Misc_Attr_Animation misc_attr_animation;
+        Wetness wetness;
+        Shared.Alpha_Blend_Source alpha_blend_source;
 
         /// <summary>
         /// Generator insantiation for shared shaders. Does not require method options.
@@ -36,7 +39,7 @@ namespace HaloShaderGenerator.Shader
         /// </summary>
         public ShaderGenerator(Albedo albedo, Bump_Mapping bump_mapping, Alpha_Test alpha_test, Specular_Mask specular_mask, Material_Model material_model,
             Environment_Mapping environment_mapping, Self_Illumination self_illumination, Blend_Mode blend_mode, Parallax parallax, Misc misc,
-            Shared.Distortion distortion, Shared.Soft_Fade soft_fade, bool applyFixes = false)
+            Shared.Distortion distortion, Shared.Soft_Fade soft_fade, Misc_Attr_Animation misc_attr_animation, Wetness wetness, Shared.Alpha_Blend_Source alpha_blend_source, bool applyFixes = false)
         {
             this.albedo = albedo;
             this.bump_mapping = bump_mapping;
@@ -50,6 +53,9 @@ namespace HaloShaderGenerator.Shader
             this.misc = misc;
             this.distortion = distortion;
             this.soft_fade = soft_fade;
+            this.misc_attr_animation = misc_attr_animation;
+            this.wetness = wetness;
+            this.alpha_blend_source = alpha_blend_source;
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -71,6 +77,9 @@ namespace HaloShaderGenerator.Shader
             this.misc = (Misc)options[9];
             this.distortion = (Shared.Distortion)options[10];
             this.soft_fade = (Shared.Soft_Fade)options[11];
+            this.misc_attr_animation = (Misc_Attr_Animation)options[12];
+            this.wetness = (Wetness)options[13];
+            this.alpha_blend_source = (Alpha_Blend_Source)options[14];
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -349,6 +358,12 @@ namespace HaloShaderGenerator.Shader
                     return Enum.GetValues(typeof(Shared.Distortion)).Length;
                 case ShaderMethods.Soft_Fade:
                     return Enum.GetValues(typeof(Shared.Soft_Fade)).Length;
+                case ShaderMethods.Misc_Attr_Animation:
+                    return Enum.GetValues(typeof(Misc_Attr_Animation)).Length;
+                case ShaderMethods.Wetness:
+                    return Enum.GetValues(typeof(Wetness)).Length;
+                case ShaderMethods.Alpha_Blend_Source:
+                    return Enum.GetValues(typeof(Shared.Alpha_Blend_Source)).Length;
             }
             return -1;
         }
@@ -381,6 +396,12 @@ namespace HaloShaderGenerator.Shader
                     return (int)distortion;
                 case ShaderMethods.Soft_Fade:
                     return (int)soft_fade;
+                case ShaderMethods.Misc_Attr_Animation:
+                    return (int)misc_attr_animation;
+                case ShaderMethods.Wetness:
+                    return (int)wetness;
+                case ShaderMethods.Alpha_Blend_Source:
+                    return (int)alpha_blend_source;
             }
             return -1;
         }
@@ -1682,6 +1703,12 @@ namespace HaloShaderGenerator.Shader
                     return Enum.GetValues(typeof(Shared.Distortion));
                 case ShaderMethods.Soft_Fade:
                     return Enum.GetValues(typeof(Shared.Soft_Fade));
+                case ShaderMethods.Misc_Attr_Animation:
+                    return Enum.GetValues(typeof(Misc_Attr_Animation));
+                case ShaderMethods.Wetness:
+                    return Enum.GetValues(typeof(Wetness));
+                case ShaderMethods.Alpha_Blend_Source:
+                    return Enum.GetValues(typeof(Shared.Alpha_Blend_Source));
             }
 
             return null;
