@@ -1,4 +1,3 @@
-﻿
 namespace HaloShaderGenerator.Screen
 {
     public enum ScreenMethods
@@ -39,7 +38,7 @@ namespace HaloShaderGenerator.Screen
     public enum Overlay_B
     {
         None,
-        Tint_Add_Color,
+        Tint_Add_Color
     }
 
     public enum Blend_Mode

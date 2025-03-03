@@ -31,7 +31,10 @@ namespace HaloShaderGenerator.Globals
         Custom,
         Foliage,
         ZOnly,
-        Glass
+        Glass,
+        FurStencil,
+        Fur,
+        Mux,
     }
 
     public enum ChudShader

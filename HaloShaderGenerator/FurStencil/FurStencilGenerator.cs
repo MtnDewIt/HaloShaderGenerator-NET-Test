@@ -5,30 +5,30 @@ using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
 using HaloShaderGenerator.Shared;
 
-namespace HaloShaderGenerator.ZOnly
+namespace HaloShaderGenerator.FurStencil
 {
-    public class ZOnlyGenerator : IShaderGenerator
+    public class FurStencilGenerator : IShaderGenerator
     {
         private bool TemplateGenerationValid;
         private bool ApplyFixes;
 
-        Test test;
+        Alpha_Test alpha_test;
 
-        public ZOnlyGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
+        public FurStencilGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
 
-        public ZOnlyGenerator(Test test, bool applyFixes = false)
+        public FurStencilGenerator(Alpha_Test alpha_test, bool applyFixes = false)
         {
-            this.test = test;
+            this.alpha_test = alpha_test;
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
         }
 
-        public ZOnlyGenerator(byte[] options, bool applyFixes = false)
+        public FurStencilGenerator(byte[] options, bool applyFixes = false)
         {
             options = ValidateOptions(options);
 
-            this.test = (Test)options[0];
+            this.alpha_test = (Alpha_Test)options[0];
 
             ApplyFixes = applyFixes;
             TemplateGenerationValid = true;
@@ -41,15 +41,23 @@ namespace HaloShaderGenerator.ZOnly
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.ZOnly, entryPoint, Shared.Blend_Mode.Opaque,
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
+            Shared.Alpha_Test sAlphaTest = (Shared.Alpha_Test)Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
 
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Test>());
+            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.FurStencil, entryPoint, Shared.Blend_Mode.Opaque,
+                Shader.Misc.First_Person_Never, sAlphaTest, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
 
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("test", test.ToString().ToLower()));
+            switch (alpha_test)
+            {
+                case Alpha_Test.Off:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_off_ps"));
+                    break;
+                case Alpha_Test.On:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_on_ps"));
+                    break;
+            }
 
             string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.ZOnly);
+            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.FurStencil);
             byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "ps_3_0");
 
             return new ShaderGeneratorResult(bytecode);
@@ -62,15 +70,23 @@ namespace HaloShaderGenerator.ZOnly
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.ZOnly, entryPoint, Shared.Blend_Mode.Opaque,
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
+            Shared.Alpha_Test sAlphaTest = (Shared.Alpha_Test)Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
 
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Test>());
+            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.FurStencil, entryPoint, Shared.Blend_Mode.Opaque,
+                Shader.Misc.First_Person_Never, sAlphaTest, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
 
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("test", test.ToString().ToLower()));
+            switch (alpha_test)
+            {
+                case Alpha_Test.Off:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_off_ps"));
+                    break;
+                case Alpha_Test.On:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_on_ps"));
+                    break;
+            }
 
             string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.ZOnly);
+            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.FurStencil);
             byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "ps_3_0");
 
             return new ShaderGeneratorResult(bytecode);
@@ -83,15 +99,23 @@ namespace HaloShaderGenerator.ZOnly
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.ZOnly, entryPoint,
-                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes, true, vertexType);
+            Shared.Alpha_Test sAlphaTest = (Shared.Alpha_Test)Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
 
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Test>());
+            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.FurStencil, entryPoint,
+                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, sAlphaTest, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes, true, vertexType);
 
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("test", test.ToString().ToLower()));
+            switch (alpha_test)
+            {
+                case Alpha_Test.Off:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_off_ps"));
+                    break;
+                case Alpha_Test.On:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_on_ps"));
+                    break;
+            }
 
             string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.ZOnly);
+            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.FurStencil);
             byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "vs_3_0");
 
             return new ShaderGeneratorResult(bytecode);
@@ -104,15 +128,23 @@ namespace HaloShaderGenerator.ZOnly
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.ZOnly, entryPoint,
-                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes, true, vertexType);
+            Shared.Alpha_Test sAlphaTest = (Shared.Alpha_Test)Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
 
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Test>());
+            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.FurStencil, entryPoint,
+                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, sAlphaTest, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes, true, vertexType);
 
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("test", test.ToString().ToLower()));
+            switch (alpha_test)
+            {
+                case Alpha_Test.Off:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_off_ps"));
+                    break;
+                case Alpha_Test.On:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_on_ps"));
+                    break;
+            }
 
             string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.ZOnly);
+            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.FurStencil);
             byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "vs_3_0");
 
             return new ShaderGeneratorResult(bytecode);
@@ -120,15 +152,15 @@ namespace HaloShaderGenerator.ZOnly
 
         public int GetMethodCount()
         {
-            return Enum.GetValues(typeof(ZOnlyMethods)).Length;
+            return Enum.GetValues(typeof(FurStencilMethods)).Length;
         }
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((ZOnlyMethods)methodIndex)
+            switch ((FurStencilMethods)methodIndex)
             {
-                case ZOnlyMethods.Test:
-                    return Enum.GetValues(typeof(Test)).Length;
+                case FurStencilMethods.Alpha_Test:
+                    return Enum.GetValues(typeof(Alpha_Test)).Length;
             }
 
             return -1;
@@ -136,10 +168,10 @@ namespace HaloShaderGenerator.ZOnly
 
         public int GetMethodOptionValue(int methodIndex)
         {
-            switch ((ZOnlyMethods)methodIndex)
+            switch ((FurStencilMethods)methodIndex)
             {
-                case ZOnlyMethods.Test:
-                    return (int)test;
+                case FurStencilMethods.Alpha_Test:
+                    return (int)alpha_test;
             }
 
             return -1;
@@ -149,7 +181,8 @@ namespace HaloShaderGenerator.ZOnly
         {
             switch (entryPoint)
             {
-                case ShaderStage.Z_Only:
+                case ShaderStage.Default:
+                case ShaderStage.Shadow_Generate:
                     return true;
                 default:
                     return false;
@@ -160,6 +193,8 @@ namespace HaloShaderGenerator.ZOnly
         {
             switch (method_index)
             {
+                case 0:
+                    return true;
                 default:
                     return false;
             }
@@ -169,6 +204,9 @@ namespace HaloShaderGenerator.ZOnly
         {
             switch (entryPoint)
             {
+                case ShaderStage.Default:
+                case ShaderStage.Shadow_Generate:
+                    return true;
                 default:
                     return false;
             }
@@ -187,6 +225,9 @@ namespace HaloShaderGenerator.ZOnly
         {
             switch (entryPoint)
             {
+                case ShaderStage.Default:
+                case ShaderStage.Shadow_Generate:
+                    return true;
                 default:
                     return false;
             }
@@ -196,7 +237,6 @@ namespace HaloShaderGenerator.ZOnly
         {
             switch (vertexType)
             {
-                case VertexType.World:
                 case VertexType.Rigid:
                 case VertexType.Skinned:
                     return true;
@@ -209,7 +249,8 @@ namespace HaloShaderGenerator.ZOnly
         {
             switch (entryPoint)
             {
-                case ShaderStage.Z_Only:
+                case ShaderStage.Default:
+                case ShaderStage.Shadow_Generate:
                     return true;
                 default:
                     return false;
@@ -222,12 +263,12 @@ namespace HaloShaderGenerator.ZOnly
                 return null;
             var result = new ShaderParameters();
 
-            switch (test)
+            switch (alpha_test)
             {
-                case Test.Default:
-                    result.AddSamplerWithoutXFormParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("detail_map");
-                    result.AddFloat4ColorParameter("albedo_color");
+                case Alpha_Test.Off:
+                    break;
+                case Alpha_Test.On:
+                    result.AddSamplerWithoutXFormParameter("alpha_test_map");
                     break;
             }
 
@@ -240,9 +281,11 @@ namespace HaloShaderGenerator.ZOnly
                 return null;
             var result = new ShaderParameters();
 
-            switch (test)
+            switch (alpha_test)
             {
-                case Test.Default:
+                case Alpha_Test.Off:
+                    break;
+                case Alpha_Test.On:
                     break;
             }
 
@@ -254,14 +297,16 @@ namespace HaloShaderGenerator.ZOnly
             var result = new ShaderParameters();
             result.AddSamplerWithoutXFormParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
             result.AddSamplerWithoutXFormParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerWithoutXFormParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
-            result.AddSamplerWithoutXFormParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1);
             result.AddSamplerWithoutXFormParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddFloat3ColorParameter("debug_tint", RenderMethodExtern.debug_tint);
-            result.AddSamplerWithoutXFormParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
             result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
-            result.AddSamplerWithoutXFormParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
+            result.AddSamplerWithoutXFormParameter("scene_hdr_texture");
+            result.AddSamplerWithoutXFormParameter("g_sample_vmf_phong_specular");
+            result.AddSamplerWithoutXFormParameter("g_direction_lut");
+            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse");
+            result.AddSamplerWithoutXFormParameter("g_diffuse_power_specular");
+            result.AddSamplerWithoutXFormParameter("shadow_mask_texture", RenderMethodExtern.none);
+            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse_vs");
             return result;
         }
 
@@ -271,17 +316,17 @@ namespace HaloShaderGenerator.ZOnly
             rmopName = null;
             optionName = null;
 
-            if (methodName == "test")
+            if (methodName == "alpha_test")
             {
-                optionName = ((Test)option).ToString();
+                optionName = ((Alpha_Test)option).ToString();
 
-                switch ((Test)option)
+                switch ((Alpha_Test)option)
                 {
-                    case Test.Default:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("detail_map");
-                        result.AddFloat4ColorParameter("albedo_color");
-                        rmopName = @"shaders\shader_options\albedo_default";
+                    case Alpha_Test.Off:
+                        break;
+                    case Alpha_Test.On:
+                        result.AddSamplerWithoutXFormParameter("alpha_test_map");
+                        rmopName = @"shaders\shader_options\alpha_test_on";
                         break;
                 }
             }
@@ -290,15 +335,15 @@ namespace HaloShaderGenerator.ZOnly
 
         public Array GetMethodNames()
         {
-            return Enum.GetValues(typeof(ZOnlyMethods));
+            return Enum.GetValues(typeof(FurStencilMethods));
         }
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((ZOnlyMethods)methodIndex)
+            switch ((FurStencilMethods)methodIndex)
             {
-                case ZOnlyMethods.Test:
-                    return Enum.GetValues(typeof(Test));
+                case FurStencilMethods.Alpha_Test:
+                    return Enum.GetValues(typeof(Alpha_Test));
             }
 
             return null;
@@ -319,10 +364,10 @@ namespace HaloShaderGenerator.ZOnly
             vertexFunction = null;
             pixelFunction = null;
 
-            if (methodName == "test")
+            if (methodName == "alpha_test")
             {
-                vertexFunction = "test_vs";
-                pixelFunction = "test_ps";
+                vertexFunction = "invalid";
+                pixelFunction = "calc_alpha_test_ps";
             }
         }
 
@@ -331,13 +376,17 @@ namespace HaloShaderGenerator.ZOnly
             vertexFunction = null;
             pixelFunction = null;
 
-            if (methodName == "test")
+            if (methodName == "alpha_test")
             {
-                switch ((Test)option)
+                switch ((Alpha_Test)option)
                 {
-                    case Test.Default:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_default_ps";
+                    case Alpha_Test.Off:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_alpha_test_off_ps";
+                        break;
+                    case Alpha_Test.On:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_alpha_test_on_ps";
                         break;
                 }
             }
@@ -346,11 +395,13 @@ namespace HaloShaderGenerator.ZOnly
         public ShaderParameters GetParameterArguments(string methodName, int option)
         {
             ShaderParameters result = new ShaderParameters();
-            if (methodName == "test")
+            if (methodName == "alpha_test")
             {
-                switch ((Test)option)
+                switch ((Alpha_Test)option)
                 {
-                    case Test.Default:
+                    case Alpha_Test.Off:
+                        break;
+                    case Alpha_Test.On:
                         break;
                 }
             }

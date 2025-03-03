@@ -1,4 +1,3 @@
-﻿
 namespace HaloShaderGenerator.Particle
 {
     public enum ParticleMethods
@@ -42,7 +41,7 @@ namespace HaloShaderGenerator.Particle
         Add_Src_Times_Dstalpha,
         Add_Src_Times_Srcalpha,
         Inv_Alpha_Blend,
-        Pre_Multiplied_Alpha,
+        Pre_Multiplied_Alpha
     }
 
     public enum Specialized_Rendering
@@ -51,7 +50,7 @@ namespace HaloShaderGenerator.Particle
         Distortion,
         Distortion_Expensive,
         Distortion_Diffuse,
-        Distortion_Expensive_Diffuse,
+        Distortion_Expensive_Diffuse
     }
 
     public enum Lighting
@@ -61,47 +60,48 @@ namespace HaloShaderGenerator.Particle
         Per_Vertex_Ravi_Order_0,
         Per_Pixel_Smooth,
         Per_Vertex_Ambient,
-        Smoke_Lighting,
+        Smoke_Lighting
     }
 
     public enum Render_Targets
     {
         Ldr_And_Hdr,
-        Ldr_Only,
+        Ldr_Only
     }
 
     public enum Depth_Fade
     {
         Off,
         On,
+        Low_Res,
         Palette_Shift
     }
 
     public enum Black_Point
     {
         Off,
-        On,
+        On
     }
 
     public enum Fog
     {
         Off,
-        On,
+        On
     }
 
     public enum Frame_Blend
     {
         Off,
-        On,
+        On
     }
 
     public enum Self_Illumination
     {
         None,
-        Constant_Color,
+        Constant_Color
     }
 
-    public enum Warp 
+    public enum Warp
     {
         None,
         Sphere

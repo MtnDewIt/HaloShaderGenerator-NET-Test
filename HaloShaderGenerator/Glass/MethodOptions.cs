@@ -1,4 +1,3 @@
-﻿
 namespace HaloShaderGenerator.Glass
 {
     public enum GlassMethods
@@ -27,12 +26,12 @@ namespace HaloShaderGenerator.Glass
         Detail_Wrinkle
     }
 
-    public enum Material_Model 
+    public enum Material_Model
     {
-        Two_Lobe_Phong_Reach
+        Two_Lobe_Phong
     }
 
-    public enum Environment_Mapping 
+    public enum Environment_Mapping
     {
         None,
         Per_Pixel,
@@ -40,9 +39,18 @@ namespace HaloShaderGenerator.Glass
         From_Flat_Texture
     }
 
-    public enum Wetness 
+    public enum Wetness
     {
         Simple,
         Flood
+    }
+
+    public enum Alpha_Blend_Source
+    {
+        From_Albedo_Alpha_Without_Fresnel,
+        From_Albedo_Alpha,
+        From_Opacity_Map_Alpha,
+        From_Opacity_Map_Rgb,
+        From_Opacity_Map_Alpha_And_Albedo_Alpha
     }
 }

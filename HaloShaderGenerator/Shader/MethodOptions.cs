@@ -1,9 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace HaloShaderGenerator.Shader
 {
     public enum ShaderMethods
@@ -66,7 +60,7 @@ namespace HaloShaderGenerator.Shader
         Detail_Blend,
         Three_Detail_Blend,
         Standard_Wrinkle,
-        Detail_Wrinkle,
+        Detail_Wrinkle
     }
 
     public enum Alpha_Test
@@ -115,8 +109,9 @@ namespace HaloShaderGenerator.Shader
         Dynamic,
         From_Flat_Texture,
         Custom_Map,
-        From_Flat_exture_As_Cubemap,
-        Dynamic_Reach
+        From_Flat_Exture_As_Cubemap,
+        Dynamic_Reach,
+        From_Flat_Texture_As_Cubemap
     }
 
     public enum Self_Illumination
@@ -162,13 +157,25 @@ namespace HaloShaderGenerator.Shader
         First_Person_Never,
         First_Person_Sometimes,
         First_Person_Always,
-        First_Person_Never_With_rotating_Bitmaps,
+        First_Person_Never_WRotating_Bitmaps,
         Default,
         Rotating_Bitmaps_Super_Slow,
         Always_Calc_Albedo
     }
 
-    public enum Misc_Attr_Animation 
+    public enum Distortion
+    {
+        Off,
+        On
+    }
+
+    public enum Soft_Fade
+    {
+        Off,
+        On
+    }
+
+    public enum Misc_Attr_Animation
     {
         Off,
         Scrolling_Cube,
@@ -182,5 +189,14 @@ namespace HaloShaderGenerator.Shader
         Proof,
         Simple,
         Ripples
+    }
+
+    public enum Alpha_Blend_Source
+    {
+        From_Albedo_Alpha_Without_Fresnel,
+        From_Albedo_Alpha,
+        From_Opacity_Map_Alpha,
+        From_Opacity_Map_Rgb,
+        From_Opacity_Map_Alpha_And_Albedo_Alpha
     }
 }

@@ -1,4 +1,3 @@
-﻿
 namespace HaloShaderGenerator.Water
 {
     public enum WaterMethods
@@ -52,7 +51,7 @@ namespace HaloShaderGenerator.Water
 
     public enum Appearance
     {
-        Default,
+        Default
     }
 
     public enum Global_Shape
@@ -70,7 +69,7 @@ namespace HaloShaderGenerator.Water
         Both
     }
 
-    public enum Detail 
+    public enum Detail
     {
         None,
         Repeat

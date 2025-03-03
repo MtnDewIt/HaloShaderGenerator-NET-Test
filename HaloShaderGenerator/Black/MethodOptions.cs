@@ -1,4 +1,3 @@
-﻿
 namespace HaloShaderGenerator.Black
 {
     public enum BlackMethods

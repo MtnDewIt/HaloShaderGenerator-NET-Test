@@ -1,4 +1,3 @@
-﻿
 namespace HaloShaderGenerator.Foliage
 {
     public enum FoliageMethods
@@ -31,7 +30,7 @@ namespace HaloShaderGenerator.Foliage
         Translucent
     }
 
-    public enum Wetness 
+    public enum Wetness
     {
         Simple,
         Proof

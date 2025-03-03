@@ -1,4 +1,3 @@
-﻿
 namespace HaloShaderGenerator.Cortana
 {
     public enum CortanaMethods
@@ -39,7 +38,7 @@ namespace HaloShaderGenerator.Cortana
     {
         None,
         Per_Pixel,
-        Dynamic,
+        Dynamic
     }
 
     public enum Warp

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Linq;
+using System;
 using System.Collections.Generic;
 using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Terrain;
+using HaloShaderGenerator.Shared;
 
 namespace HaloShaderGenerator.Foliage
 {
@@ -18,14 +17,8 @@ namespace HaloShaderGenerator.Foliage
         Material_Model material_model;
         Wetness wetness;
 
-        /// <summary>
-        /// Generator insantiation for shared shaders. Does not require method options.
-        /// </summary>
         public FoliageGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
 
-        /// <summary>
-        /// Generator instantiation for method specific shaders.
-        /// </summary>
         public FoliageGenerator(Albedo albedo, Alpha_Test alpha_test, Material_Model material_model, Wetness wetness, bool applyFixes = false)
         {
             this.albedo = albedo;
@@ -57,43 +50,70 @@ namespace HaloShaderGenerator.Foliage
 
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
-            var sAlphaTest = Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
+            Shared.Alpha_Test sAlphaTest = (Shared.Alpha_Test)Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
 
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Foliage, entryPoint, Shared.Blend_Mode.Opaque, 
-                Shader.Misc.First_Person_Never, (Shared.Alpha_Test)sAlphaTest, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
+            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.Foliage, entryPoint, Shared.Blend_Mode.Opaque,
+                Shader.Misc.First_Person_Never, sAlphaTest, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", albedo, "calc_albedo_", "_ps"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", material_model, "calculate_material_"));
+            switch (albedo)
+            {
+                case Albedo.Default:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_default_ps"));
+                    break;
+                case Albedo.Simple:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_simple_vs"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_simple_ps"));
+                    break;
+            }
 
             switch (alpha_test)
             {
                 case Alpha_Test.None:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "off", "calc_alpha_test_", "_ps"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_off_ps"));
                     break;
                 case Alpha_Test.Simple:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "on", "calc_alpha_test_", "_ps"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_on_ps"));
                     break;
-                default:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", alpha_test, "calc_alpha_test_", "_ps"));
+                case Alpha_Test.From_Albedo_Alpha:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_from_albedo_ps"));
+                    break;
+                case Alpha_Test.From_Texture:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_texture_ps"));
                     break;
             }
 
-            string entryName = entryPoint.ToString().ToLower() + "_ps";
-            switch (entryPoint)
+            switch (material_model)
             {
-                case ShaderStage.Static_Prt_Linear:
-                case ShaderStage.Static_Prt_Quadratic:
-                case ShaderStage.Static_Prt_Ambient:
-                    entryName = "static_prt_ps";
+                case Material_Model.Default:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "calculate_material_default"));
                     break;
-                case ShaderStage.Dynamic_Light_Cinematic:
-                    entryName = "dynamic_light_cine_ps";
+                case Material_Model.Flat:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "flat"));
+                    break;
+                case Material_Model.Specular:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "specular"));
+                    break;
+                case Material_Model.Translucent:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "translucent"));
                     break;
             }
 
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"foliage.fx", macros, entryName, "ps_3_0");
+            switch (wetness)
+            {
+                case Wetness.Simple:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_wetness_ps", "calc_wetness_simple_ps"));
+                    break;
+                case Wetness.Proof:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_wetness_ps", "calc_wetness_proof_ps"));
+                    break;
+            }
 
-            return new ShaderGeneratorResult(shaderBytecode);
+            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
+            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.Foliage);
+            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "ps_3_0");
+
+            return new ShaderGeneratorResult(bytecode);
         }
 
         public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
@@ -101,41 +121,218 @@ namespace HaloShaderGenerator.Foliage
             if (!IsEntryPointSupported(entryPoint) || !IsPixelShaderShared(entryPoint))
                 return null;
 
-            Alpha_Test alphaTestOption = Alpha_Test.None;
-
-            switch ((FoliageMethods)methodIndex)
-            {
-                case FoliageMethods.Alpha_Test:
-                    alphaTestOption = (Alpha_Test)optionIndex;
-                    break;
-                default:
-                    return null;
-            }
-
             List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
 
-            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Alpha_Test>());
+            Shared.Alpha_Test sAlphaTest = (Shared.Alpha_Test)Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
 
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", alphaTestOption, "calc_alpha_test_", "_ps"));
+            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.Foliage, entryPoint, Shared.Blend_Mode.Opaque,
+                Shader.Misc.First_Person_Never, sAlphaTest, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
 
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"glps_foliage.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
+            switch (albedo)
+            {
+                case Albedo.Default:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_default_ps"));
+                    break;
+                case Albedo.Simple:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_simple_vs"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_simple_ps"));
+                    break;
+            }
 
-            return new ShaderGeneratorResult(shaderBytecode);
+            switch (alpha_test)
+            {
+                case Alpha_Test.None:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_off_ps"));
+                    break;
+                case Alpha_Test.Simple:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_on_ps"));
+                    break;
+                case Alpha_Test.From_Albedo_Alpha:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_from_albedo_ps"));
+                    break;
+                case Alpha_Test.From_Texture:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_texture_ps"));
+                    break;
+            }
+
+            switch (material_model)
+            {
+                case Material_Model.Default:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "calculate_material_default"));
+                    break;
+                case Material_Model.Flat:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "flat"));
+                    break;
+                case Material_Model.Specular:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "specular"));
+                    break;
+                case Material_Model.Translucent:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "translucent"));
+                    break;
+            }
+
+            switch (wetness)
+            {
+                case Wetness.Simple:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_wetness_ps", "calc_wetness_simple_ps"));
+                    break;
+                case Wetness.Proof:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_wetness_ps", "calc_wetness_proof_ps"));
+                    break;
+            }
+
+            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
+            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.Foliage);
+            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "ps_3_0");
+
+            return new ShaderGeneratorResult(bytecode);
         }
 
         public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)
         {
-            return null;
+            if (!IsVertexFormatSupported(vertexType) || !IsEntryPointSupported(entryPoint))
+                return null;
+
+            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
+
+            Shared.Alpha_Test sAlphaTest = (Shared.Alpha_Test)Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
+
+            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.Foliage, entryPoint,
+                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, sAlphaTest, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes, true, vertexType);
+
+            switch (albedo)
+            {
+                case Albedo.Default:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_default_ps"));
+                    break;
+                case Albedo.Simple:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_simple_vs"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_simple_ps"));
+                    break;
+            }
+
+            switch (alpha_test)
+            {
+                case Alpha_Test.None:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_off_ps"));
+                    break;
+                case Alpha_Test.Simple:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_on_ps"));
+                    break;
+                case Alpha_Test.From_Albedo_Alpha:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_from_albedo_ps"));
+                    break;
+                case Alpha_Test.From_Texture:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_texture_ps"));
+                    break;
+            }
+
+            switch (material_model)
+            {
+                case Material_Model.Default:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "calculate_material_default"));
+                    break;
+                case Material_Model.Flat:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "flat"));
+                    break;
+                case Material_Model.Specular:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "specular"));
+                    break;
+                case Material_Model.Translucent:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "translucent"));
+                    break;
+            }
+
+            switch (wetness)
+            {
+                case Wetness.Simple:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_wetness_ps", "calc_wetness_simple_ps"));
+                    break;
+                case Wetness.Proof:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_wetness_ps", "calc_wetness_proof_ps"));
+                    break;
+            }
+
+            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
+            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.Foliage);
+            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "vs_3_0");
+
+            return new ShaderGeneratorResult(bytecode);
         }
 
         public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)
         {
             if (!TemplateGenerationValid)
                 throw new Exception("Generator initialized with shared shader constructor. Use template constructor.");
-            return null;
+
+            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
+
+            Shared.Alpha_Test sAlphaTest = (Shared.Alpha_Test)Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
+
+            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.Foliage, entryPoint,
+                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, sAlphaTest, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes, true, vertexType);
+
+            switch (albedo)
+            {
+                case Albedo.Default:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_default_ps"));
+                    break;
+                case Albedo.Simple:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_simple_vs"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_simple_ps"));
+                    break;
+            }
+
+            switch (alpha_test)
+            {
+                case Alpha_Test.None:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_off_ps"));
+                    break;
+                case Alpha_Test.Simple:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_on_ps"));
+                    break;
+                case Alpha_Test.From_Albedo_Alpha:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_from_albedo_ps"));
+                    break;
+                case Alpha_Test.From_Texture:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_texture_ps"));
+                    break;
+            }
+
+            switch (material_model)
+            {
+                case Material_Model.Default:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "calculate_material_default"));
+                    break;
+                case Material_Model.Flat:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "flat"));
+                    break;
+                case Material_Model.Specular:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "specular"));
+                    break;
+                case Material_Model.Translucent:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calculate_material", "translucent"));
+                    break;
+            }
+
+            switch (wetness)
+            {
+                case Wetness.Simple:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_wetness_ps", "calc_wetness_simple_ps"));
+                    break;
+                case Wetness.Proof:
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_wetness_ps", "calc_wetness_proof_ps"));
+                    break;
+            }
+
+            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
+            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.Foliage);
+            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "vs_3_0");
+
+            return new ShaderGeneratorResult(bytecode);
         }
 
         public int GetMethodCount()
@@ -173,6 +370,7 @@ namespace HaloShaderGenerator.Foliage
                 case FoliageMethods.Wetness:
                     return (int)wetness;
             }
+
             return -1;
         }
 
@@ -181,13 +379,14 @@ namespace HaloShaderGenerator.Foliage
             switch (entryPoint)
             {
                 case ShaderStage.Albedo:
+                case ShaderStage.Static_Per_Pixel:
+                case ShaderStage.Static_Sh:
+                case ShaderStage.Static_Per_Vertex:
+                case ShaderStage.Shadow_Generate:
                 case ShaderStage.Static_Prt_Ambient:
                 case ShaderStage.Static_Prt_Linear:
                 case ShaderStage.Static_Prt_Quadratic:
-                case ShaderStage.Static_Per_Pixel:
-                case ShaderStage.Static_Per_Vertex:
-                case ShaderStage.Static_Sh:
-                case ShaderStage.Shadow_Generate:
+                case ShaderStage.Z_Only:
                     return true;
                 default:
                     return false;
@@ -196,17 +395,33 @@ namespace HaloShaderGenerator.Foliage
 
         public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
         {
-            return method_index == 1;
+            switch (method_index)
+            {
+                case 1:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
-            return entryPoint == ShaderStage.Shadow_Generate;
+            switch (entryPoint)
+            {
+                case ShaderStage.Shadow_Generate:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
         {
-            return false;
+            switch (entryPoint)
+            {
+                default:
+                    return false;
+            }
         }
 
         public bool IsPixelShaderShared(ShaderStage entryPoint)
@@ -235,7 +450,21 @@ namespace HaloShaderGenerator.Foliage
 
         public bool IsVertexShaderShared(ShaderStage entryPoint)
         {
-            return true;
+            switch (entryPoint)
+            {
+                case ShaderStage.Albedo:
+                case ShaderStage.Static_Per_Pixel:
+                case ShaderStage.Static_Per_Vertex:
+                case ShaderStage.Static_Sh:
+                case ShaderStage.Static_Prt_Ambient:
+                case ShaderStage.Static_Prt_Linear:
+                case ShaderStage.Static_Prt_Quadratic:
+                case ShaderStage.Shadow_Generate:
+                case ShaderStage.Z_Only:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public ShaderParameters GetPixelShaderParameters()
@@ -244,15 +473,67 @@ namespace HaloShaderGenerator.Foliage
                 return null;
             var result = new ShaderParameters();
 
-            List<int> optionIndices = new List<int> { (int)albedo, (int)alpha_test, (int)material_model };
-            for (int i = 0; i < Enum.GetValues(typeof(FoliageMethods)).Length; i++)
+            switch (albedo)
             {
-                string methodName = ((FoliageMethods)i).ToString().ToLower();
+                case Albedo.Default:
+                    result.AddSamplerParameter("base_map");
+                    result.AddSamplerParameter("detail_map");
+                    result.AddFloat4ColorParameter("albedo_color");
+                    break;
+                case Albedo.Simple:
+                    result.AddSamplerWithoutXFormParameter("base_map");
+                    result.AddFloat4ColorParameter("albedo_color");
+                    break;
+            }
 
-                var parameters = GetParametersInOption(methodName, optionIndices[i], out _, out _).Parameters;
-                parameters = parameters.Where(x => !x.Flags.HasFlag(ShaderParameterFlags.IsVertexShader)).ToList();
+            switch (alpha_test)
+            {
+                case Alpha_Test.None:
+                    break;
+                case Alpha_Test.Simple:
+                    result.AddSamplerParameter("alpha_test_map");
+                    break;
+                case Alpha_Test.From_Albedo_Alpha:
+                    break;
+                case Alpha_Test.From_Texture:
+                    result.AddSamplerWithoutXFormParameter("alpha_test_map");
+                    break;
+            }
 
-                result.Parameters.AddRange(parameters);
+            switch (material_model)
+            {
+                case Material_Model.Default:
+                    result.AddFloat3ColorParameter("back_light");
+                    result.AddFloatParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                    result.AddFloatParameter("animation_amplitude_horizontal");
+                    break;
+                case Material_Model.Flat:
+                    result.AddFloatParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                    result.AddFloatParameter("animation_amplitude_horizontal");
+                    break;
+                case Material_Model.Specular:
+                    result.AddFloatParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                    result.AddFloatParameter("animation_amplitude_horizontal");
+                    result.AddFloatParameter("foliage_translucency");
+                    result.AddFloat3ColorParameter("foliage_specular_color");
+                    result.AddFloatParameter("foliage_specular_intensity");
+                    result.AddFloatParameter("foliage_specular_power");
+                    break;
+                case Material_Model.Translucent:
+                    result.AddFloatParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                    result.AddFloatParameter("animation_amplitude_horizontal");
+                    result.AddFloatParameter("foliage_translucency");
+                    break;
+            }
+
+            switch (wetness)
+            {
+                case Wetness.Simple:
+                    result.AddFloatParameter("wet_material_dim_coefficient");
+                    result.AddFloat3ColorParameter("wet_material_dim_tint");
+                    break;
+                case Wetness.Proof:
+                    break;
             }
 
             return result;
@@ -260,17 +541,56 @@ namespace HaloShaderGenerator.Foliage
 
         public ShaderParameters GetVertexShaderParameters()
         {
+            if (!TemplateGenerationValid)
+                return null;
             var result = new ShaderParameters();
 
-            List<int> optionIndices = new List<int> { (int)albedo, (int)alpha_test, (int)material_model };
-            for (int i = 0; i < Enum.GetValues(typeof(FoliageMethods)).Length; i++)
+            switch (albedo)
             {
-                string methodName = ((FoliageMethods)i).ToString().ToLower();
+                case Albedo.Default:
+                    break;
+                case Albedo.Simple:
+                    break;
+            }
 
-                var parameters = GetParametersInOption(methodName, optionIndices[i], out _, out _).Parameters;
-                parameters = parameters.Where(x => x.Flags.HasFlag(ShaderParameterFlags.IsVertexShader)).ToList();
+            switch (alpha_test)
+            {
+                case Alpha_Test.None:
+                    break;
+                case Alpha_Test.Simple:
+                    break;
+                case Alpha_Test.From_Albedo_Alpha:
+                    break;
+                case Alpha_Test.From_Texture:
+                    break;
+            }
 
-                result.Parameters.AddRange(parameters);
+            switch (material_model)
+            {
+                case Material_Model.Default:
+                    result.AddFloatVertexParameter("g_tree_animation_coeff");
+                    result.AddFloatVertexParameter("animation_amplitude_horizontal");
+                    break;
+                case Material_Model.Flat:
+                    result.AddFloatVertexParameter("g_tree_animation_coeff");
+                    result.AddFloatVertexParameter("animation_amplitude_horizontal");
+                    break;
+                case Material_Model.Specular:
+                    result.AddFloatVertexParameter("g_tree_animation_coeff");
+                    result.AddFloatVertexParameter("animation_amplitude_horizontal");
+                    break;
+                case Material_Model.Translucent:
+                    result.AddFloatVertexParameter("g_tree_animation_coeff");
+                    result.AddFloatVertexParameter("animation_amplitude_horizontal");
+                    break;
+            }
+
+            switch (wetness)
+            {
+                case Wetness.Simple:
+                    break;
+                case Wetness.Proof:
+                    break;
             }
 
             return result;
@@ -284,87 +604,119 @@ namespace HaloShaderGenerator.Foliage
             result.AddSamplerWithoutXFormParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
             result.AddSamplerWithoutXFormParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1);
             result.AddSamplerWithoutXFormParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
-            result.AddFloat4Parameter("debug_tint", RenderMethodExtern.debug_tint);
+            result.AddFloat3ColorParameter("debug_tint", RenderMethodExtern.debug_tint);
             result.AddSamplerWithoutXFormParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
             result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
             result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
             result.AddSamplerWithoutXFormParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
+            result.AddSamplerWithoutXFormParameter("g_sample_vmf_phong_specular");
+            result.AddSamplerWithoutXFormParameter("g_direction_lut");
+            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse");
+            result.AddSamplerWithoutXFormParameter("g_diffuse_power_specular");
+            result.AddSamplerWithoutXFormParameter("shadow_mask_texture", RenderMethodExtern.none);
+            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse_vs");
             return result;
         }
 
         public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
         {
             ShaderParameters result = new ShaderParameters();
-            rmopName = "";
-            optionName = "";
+            rmopName = null;
+            optionName = null;
 
             if (methodName == "albedo")
             {
                 optionName = ((Albedo)option).ToString();
+
                 switch ((Albedo)option)
                 {
                     case Albedo.Default:
                         result.AddSamplerParameter("base_map");
                         result.AddSamplerParameter("detail_map");
-                        result.AddFloat4Parameter("albedo_color");
+                        result.AddFloat4ColorParameter("albedo_color");
                         rmopName = @"shaders\shader_options\albedo_default";
                         break;
                     case Albedo.Simple:
-                        result.AddSamplerParameter("base_map");
-                        result.AddFloat4Parameter("albedo_color");
+                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddFloat4ColorParameter("albedo_color");
                         rmopName = @"shaders\shader_options\albedo_simple";
                         break;
                 }
             }
+
             if (methodName == "alpha_test")
             {
                 optionName = ((Alpha_Test)option).ToString();
+
                 switch ((Alpha_Test)option)
                 {
                     case Alpha_Test.None:
-                    case Alpha_Test.From_Albedo_Alpha:
                         rmopName = @"shaders\shader_options\alpha_test_off";
                         break;
                     case Alpha_Test.Simple:
                         result.AddSamplerParameter("alpha_test_map");
                         rmopName = @"shaders\shader_options\alpha_test_on";
                         break;
-                }
-            }
-            if (methodName == "material_model")
-            {
-                optionName = ((Material_Model)option).ToString();
-                switch ((Material_Model)option)
-                {
-                    case Material_Model.Default:
-                        result.AddFloat4VertexParameter("back_light");
-                        result.AddFloat4VertexParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
-                        result.AddFloatVertexParameter("animation_amplitude_horizontal");
-                        rmopName = @"shaders\foliage_options\material_default";
+                    case Alpha_Test.From_Albedo_Alpha:
+                        rmopName = @"shaders\shader_options\alpha_test_off";
                         break;
-                    //case Material_Model.Flat:
-                    //    result.AddFloat4VertexParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
-                    //    result.AddFloatParameter("animation_amplitude_horizontal");
-                    //    rmopName = @"shaders\foliage_options\material_flat";
-                    //    break;
-                    //case Material_Model.Specular:
-                    //    result.AddFloat4VertexParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
-                    //    result.AddFloatVertexParameter("animation_amplitude_horizontal");
-                    //    result.AddFloatParameter("foliage_translucency");
-                    //    result.AddFloat4Parameter("foliage_specular_color");
-                    //    result.AddFloatParameter("foliage_specular_intensity");
-                    //    result.AddFloatParameter("foliage_specular_power");
-                    //    rmopName = @"shaders\foliage_options\material_specular";
-                    //    break;
-                    //case Material_Model.Translucent:
-                    //    result.AddFloat4VertexParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
-                    //    result.AddFloatVertexParameter("animation_amplitude_horizontal");
-                    //    result.AddFloatParameter("foliage_translucency");
-                    //    rmopName = @"shaders\foliage_options\material_translucent";
-                    //    break;
+                    case Alpha_Test.From_Texture:
+                        result.AddSamplerWithoutXFormParameter("alpha_test_map");
+                        rmopName = @"shaders\shader_options\alpha_test_on";
+                        break;
                 }
             }
 
+            if (methodName == "material_model")
+            {
+                optionName = ((Material_Model)option).ToString();
+
+                switch ((Material_Model)option)
+                {
+                    case Material_Model.Default:
+                        result.AddFloat3ColorParameter("back_light");
+                        result.AddFloatParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                        result.AddFloatParameter("animation_amplitude_horizontal");
+                        rmopName = @"shaders\foliage_options\material_default";
+                        break;
+                    case Material_Model.Flat:
+                        result.AddFloatParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                        result.AddFloatParameter("animation_amplitude_horizontal");
+                        rmopName = @"shaders\foliage_options\material_flat";
+                        break;
+                    case Material_Model.Specular:
+                        result.AddFloatParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                        result.AddFloatParameter("animation_amplitude_horizontal");
+                        result.AddFloatParameter("foliage_translucency");
+                        result.AddFloat3ColorParameter("foliage_specular_color");
+                        result.AddFloatParameter("foliage_specular_intensity");
+                        result.AddFloatParameter("foliage_specular_power");
+                        rmopName = @"shaders\foliage_options\material_specular";
+                        break;
+                    case Material_Model.Translucent:
+                        result.AddFloatParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                        result.AddFloatParameter("animation_amplitude_horizontal");
+                        result.AddFloatParameter("foliage_translucency");
+                        rmopName = @"shaders\foliage_options\material_translucent";
+                        break;
+                }
+            }
+
+            if (methodName == "wetness")
+            {
+                optionName = ((Wetness)option).ToString();
+
+                switch ((Wetness)option)
+                {
+                    case Wetness.Simple:
+                        result.AddFloatParameter("wet_material_dim_coefficient");
+                        result.AddFloat3ColorParameter("wet_material_dim_tint");
+                        rmopName = @"shaders\wetness_options\wetness_simple";
+                        break;
+                    case Wetness.Proof:
+                        break;
+                }
+            }
             return result;
         }
 
@@ -398,6 +750,175 @@ namespace HaloShaderGenerator.Foliage
                 optionList.Add(0);
 
             return optionList.ToArray();
+        }
+
+        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "albedo")
+            {
+                vertexFunction = "calc_albedo_vs";
+                pixelFunction = "calc_albedo_ps";
+            }
+
+            if (methodName == "alpha_test")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "calc_alpha_test_ps";
+            }
+
+            if (methodName == "material_model")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "calculate_material";
+            }
+
+            if (methodName == "wetness")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "calc_wetness_ps";
+            }
+        }
+
+        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "albedo")
+            {
+                switch ((Albedo)option)
+                {
+                    case Albedo.Default:
+                        vertexFunction = "calc_albedo_default_vs";
+                        pixelFunction = "calc_albedo_default_ps";
+                        break;
+                    case Albedo.Simple:
+                        vertexFunction = "calc_albedo_simple_vs";
+                        pixelFunction = "calc_albedo_simple_ps";
+                        break;
+                }
+            }
+
+            if (methodName == "alpha_test")
+            {
+                switch ((Alpha_Test)option)
+                {
+                    case Alpha_Test.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_alpha_test_off_ps";
+                        break;
+                    case Alpha_Test.Simple:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_alpha_test_on_ps";
+                        break;
+                    case Alpha_Test.From_Albedo_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_alpha_test_from_albedo_ps";
+                        break;
+                    case Alpha_Test.From_Texture:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_alpha_test_texture_ps";
+                        break;
+                }
+            }
+
+            if (methodName == "material_model")
+            {
+                switch ((Material_Model)option)
+                {
+                    case Material_Model.Default:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calculate_material_default";
+                        break;
+                    case Material_Model.Flat:
+                        vertexFunction = "invalid";
+                        pixelFunction = "flat";
+                        break;
+                    case Material_Model.Specular:
+                        vertexFunction = "invalid";
+                        pixelFunction = "specular";
+                        break;
+                    case Material_Model.Translucent:
+                        vertexFunction = "invalid";
+                        pixelFunction = "translucent";
+                        break;
+                }
+            }
+
+            if (methodName == "wetness")
+            {
+                switch ((Wetness)option)
+                {
+                    case Wetness.Simple:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_wetness_simple_ps";
+                        break;
+                    case Wetness.Proof:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_wetness_proof_ps";
+                        break;
+                }
+            }
+        }
+
+        public ShaderParameters GetParameterArguments(string methodName, int option)
+        {
+            ShaderParameters result = new ShaderParameters();
+            if (methodName == "albedo")
+            {
+                switch ((Albedo)option)
+                {
+                    case Albedo.Default:
+                        break;
+                    case Albedo.Simple:
+                        break;
+                }
+            }
+
+            if (methodName == "alpha_test")
+            {
+                switch ((Alpha_Test)option)
+                {
+                    case Alpha_Test.None:
+                        break;
+                    case Alpha_Test.Simple:
+                        break;
+                    case Alpha_Test.From_Albedo_Alpha:
+                        break;
+                    case Alpha_Test.From_Texture:
+                        break;
+                }
+            }
+
+            if (methodName == "material_model")
+            {
+                switch ((Material_Model)option)
+                {
+                    case Material_Model.Default:
+                        break;
+                    case Material_Model.Flat:
+                        break;
+                    case Material_Model.Specular:
+                        break;
+                    case Material_Model.Translucent:
+                        break;
+                }
+            }
+
+            if (methodName == "wetness")
+            {
+                switch ((Wetness)option)
+                {
+                    case Wetness.Simple:
+                        break;
+                    case Wetness.Proof:
+                        break;
+                }
+            }
+            return result;
         }
     }
 }
