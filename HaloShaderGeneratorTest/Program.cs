@@ -555,7 +555,7 @@ namespace HaloShaderGenerator
                 case ShaderType.Terrain:        return new Terrain.TerrainGenerator(bMethods);
                 //case ShaderType.Cortana:        return new Cortana.CortanaGenerator(bMethods);
                 case ShaderType.Water:          return new Water.WaterGenerator(bMethods);
-                case ShaderType.Black:          return new Black.ShaderBlackGenerator();
+                case ShaderType.Black:          return new Black.BlackGenerator();
                 case ShaderType.Screen:         return new Screen.ScreenGenerator(bMethods);
                 case ShaderType.Custom:         return new Custom.CustomGenerator(bMethods);
                 case ShaderType.Foliage:        return new Foliage.FoliageGenerator(bMethods);
@@ -579,7 +579,7 @@ namespace HaloShaderGenerator
                 case ShaderType.Terrain:        return new Terrain.TerrainGenerator();
                 //case ShaderType.Cortana:        return new Cortana.CortanaGenerator();
                 case ShaderType.Water:          return new Water.WaterGenerator();
-                case ShaderType.Black:          return new Black.ShaderBlackGenerator();
+                case ShaderType.Black:          return new Black.BlackGenerator();
                 case ShaderType.Screen:         return new Screen.ScreenGenerator();
                 case ShaderType.Custom:         return new Custom.CustomGenerator();
                 case ShaderType.Foliage:        return new Foliage.FoliageGenerator();
@@ -701,14 +701,14 @@ namespace HaloShaderGenerator
         #region test methods shader black
         static void TestPixelBlack()
         {
-            var gen = new ShaderBlackGenerator();
+            var gen = new BlackGenerator();
             var bytecode = gen.GeneratePixelShader(ShaderStage.Albedo).Bytecode;
             WriteShaderFile($"generated_shader_black_{ShaderStage.Albedo.ToString().ToLower()}_0.pixl", D3DCompiler.Disassemble(bytecode));
         }
 
         static void TestSharedVertexBlack(VertexType vertexType, ShaderStage stage)
         {
-            var gen = new ShaderBlackGenerator();
+            var gen = new BlackGenerator();
             var bytecode = gen.GenerateSharedVertexShader(vertexType, stage).Bytecode;
             WriteShaderFile($"generated_shader_black_{stage.ToString().ToLower()}_{vertexType.ToString().ToLower()}.glvs", D3DCompiler.Disassemble(bytecode));
         }

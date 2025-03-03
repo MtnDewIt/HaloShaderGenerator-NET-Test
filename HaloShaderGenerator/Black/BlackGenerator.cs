@@ -6,7 +6,7 @@ using System;
 
 namespace HaloShaderGenerator.Black
 {
-    public class ShaderBlackGenerator : IShaderGenerator
+    public class BlackGenerator : IShaderGenerator
     {
         public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
         {
