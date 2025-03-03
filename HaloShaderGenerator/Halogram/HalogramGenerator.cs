@@ -200,7 +200,7 @@ namespace HaloShaderGenerator.Halogram
                 case Misc.First_Person_Always:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "0"));
                     break;
-                case Misc.First_Person_Never_WRotating_Bitmaps:
+                case Misc.First_Person_Never_With_Rotating_Bitmaps:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "1"));
                     break;
                 case Misc.Always_Calc_Albedo:
@@ -419,7 +419,7 @@ namespace HaloShaderGenerator.Halogram
                 case Misc.First_Person_Always:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "0"));
                     break;
-                case Misc.First_Person_Never_WRotating_Bitmaps:
+                case Misc.First_Person_Never_With_Rotating_Bitmaps:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "1"));
                     break;
                 case Misc.Always_Calc_Albedo:
@@ -638,7 +638,7 @@ namespace HaloShaderGenerator.Halogram
                 case Misc.First_Person_Always:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "0"));
                     break;
-                case Misc.First_Person_Never_WRotating_Bitmaps:
+                case Misc.First_Person_Never_With_Rotating_Bitmaps:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "1"));
                     break;
                 case Misc.Always_Calc_Albedo:
@@ -857,7 +857,7 @@ namespace HaloShaderGenerator.Halogram
                 case Misc.First_Person_Always:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "0"));
                     break;
-                case Misc.First_Person_Never_WRotating_Bitmaps:
+                case Misc.First_Person_Never_With_Rotating_Bitmaps:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "1"));
                     break;
                 case Misc.Always_Calc_Albedo:
@@ -1338,7 +1338,7 @@ namespace HaloShaderGenerator.Halogram
                     break;
                 case Misc.First_Person_Always:
                     break;
-                case Misc.First_Person_Never_WRotating_Bitmaps:
+                case Misc.First_Person_Never_With_Rotating_Bitmaps:
                     break;
                 case Misc.Always_Calc_Albedo:
                     break;
@@ -1518,7 +1518,7 @@ namespace HaloShaderGenerator.Halogram
                     break;
                 case Misc.First_Person_Always:
                     break;
-                case Misc.First_Person_Never_WRotating_Bitmaps:
+                case Misc.First_Person_Never_With_Rotating_Bitmaps:
                     break;
                 case Misc.Always_Calc_Albedo:
                     break;
@@ -1889,7 +1889,7 @@ namespace HaloShaderGenerator.Halogram
                         break;
                     case Misc.First_Person_Always:
                         break;
-                    case Misc.First_Person_Never_WRotating_Bitmaps:
+                    case Misc.First_Person_Never_With_Rotating_Bitmaps:
                         break;
                     case Misc.Always_Calc_Albedo:
                         break;
@@ -2285,7 +2285,7 @@ namespace HaloShaderGenerator.Halogram
                         vertexFunction = "invalid";
                         pixelFunction = "0";
                         break;
-                    case Misc.First_Person_Never_WRotating_Bitmaps:
+                    case Misc.First_Person_Never_With_Rotating_Bitmaps:
                         vertexFunction = "invalid";
                         pixelFunction = "1";
                         break;
@@ -2486,7 +2486,7 @@ namespace HaloShaderGenerator.Halogram
                         break;
                     case Misc.First_Person_Always:
                         break;
-                    case Misc.First_Person_Never_WRotating_Bitmaps:
+                    case Misc.First_Person_Never_With_Rotating_Bitmaps:
                         break;
                     case Misc.Always_Calc_Albedo:
                         break;

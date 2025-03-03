@@ -32,7 +32,7 @@ namespace HaloShaderGenerator.TemplateGenerator
             if (miscIndex != -1)
             {
                 if (currentOptions[miscIndex].Option == @"first_person_never_w/rotating_bitmaps")
-                    return Shader.Misc.First_Person_Never_WRotating_Bitmaps;
+                    return Shader.Misc.First_Person_Never_With_Rotating_Bitmaps;
                 return (Shader.Misc)Enum.Parse(typeof(Misc), currentOptions[miscIndex].Option, true);
             }
             return Shader.Misc.First_Person_Never;
@@ -147,7 +147,7 @@ namespace HaloShaderGenerator.TemplateGenerator
 
             if (blendMode != Shared.Blend_Mode.Opaque ||
                 (misc != Shader.Misc.First_Person_Never &&
-                misc != Shader.Misc.First_Person_Never_WRotating_Bitmaps))
+                misc != Shader.Misc.First_Person_Never_With_Rotating_Bitmaps))
                 macros.Add(ShaderGeneratorBase.CreateMacro("maybe_calc_albedo", "1"));
 
             if (misc == Shader.Misc.Always_Calc_Albedo)

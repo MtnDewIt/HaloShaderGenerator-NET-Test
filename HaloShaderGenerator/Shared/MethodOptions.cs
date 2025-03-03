@@ -126,9 +126,8 @@ namespace HaloShaderGenerator.Shared
         Dynamic,
         From_Flat_Texture,
         Custom_Map,
-        From_Flat_Exture_As_Cubemap,
-        Dynamic_Reach,
         From_Flat_Texture_As_Cubemap,
+        Dynamic_Reach,
         Per_Pixel_Mip
     }
 

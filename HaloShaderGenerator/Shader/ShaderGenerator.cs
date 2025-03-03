@@ -170,19 +170,19 @@ namespace HaloShaderGenerator.Shader
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_two_color_ps"));
                     break;
                 case Albedo.Scrolling_Cube_Mask:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_scrolling_cube_mask_ps"));
                     break;
                 case Albedo.Scrolling_Cube:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_scrolling_cube_ps"));
                     break;
                 case Albedo.Scrolling_Texture_Uv:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_scrolling_texture_uv_ps"));
                     break;
                 case Albedo.Texture_From_Misc:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_texture_from_misc_ps"));
                     break;
                 case Albedo.Four_Change_Color_Applying_To_Specular:
@@ -355,14 +355,11 @@ namespace HaloShaderGenerator.Shader
                 case Environment_Mapping.Custom_Map:
                     macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "custom_map"));
                     break;
-                case Environment_Mapping.From_Flat_Exture_As_Cubemap:
+                case Environment_Mapping.From_Flat_Texture_As_Cubemap:
                     macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "from_flat_texture_as_cubemap"));
                     break;
                 case Environment_Mapping.Dynamic_Reach:
                     macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "dynamic_reach"));
-                    break;
-                case Environment_Mapping.From_Flat_Texture_As_Cubemap:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "from_flat_texture_as_cubemap"));
                     break;
             }
 
@@ -471,7 +468,7 @@ namespace HaloShaderGenerator.Shader
                 case Misc.First_Person_Always:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "0"));
                     break;
-                case Misc.First_Person_Never_WRotating_Bitmaps:
+                case Misc.First_Person_Never_With_Rotating_Bitmaps:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "1"));
                     break;
                 case Misc.Default:
@@ -659,19 +656,19 @@ namespace HaloShaderGenerator.Shader
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_two_color_ps"));
                     break;
                 case Albedo.Scrolling_Cube_Mask:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_scrolling_cube_mask_ps"));
                     break;
                 case Albedo.Scrolling_Cube:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_scrolling_cube_ps"));
                     break;
                 case Albedo.Scrolling_Texture_Uv:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_scrolling_texture_uv_ps"));
                     break;
                 case Albedo.Texture_From_Misc:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_texture_from_misc_ps"));
                     break;
                 case Albedo.Four_Change_Color_Applying_To_Specular:
@@ -844,14 +841,11 @@ namespace HaloShaderGenerator.Shader
                 case Environment_Mapping.Custom_Map:
                     macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "custom_map"));
                     break;
-                case Environment_Mapping.From_Flat_Exture_As_Cubemap:
+                case Environment_Mapping.From_Flat_Texture_As_Cubemap:
                     macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "from_flat_texture_as_cubemap"));
                     break;
                 case Environment_Mapping.Dynamic_Reach:
                     macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "dynamic_reach"));
-                    break;
-                case Environment_Mapping.From_Flat_Texture_As_Cubemap:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "from_flat_texture_as_cubemap"));
                     break;
             }
 
@@ -960,7 +954,7 @@ namespace HaloShaderGenerator.Shader
                 case Misc.First_Person_Always:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "0"));
                     break;
-                case Misc.First_Person_Never_WRotating_Bitmaps:
+                case Misc.First_Person_Never_With_Rotating_Bitmaps:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "1"));
                     break;
                 case Misc.Default:
@@ -1148,19 +1142,19 @@ namespace HaloShaderGenerator.Shader
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_two_color_ps"));
                     break;
                 case Albedo.Scrolling_Cube_Mask:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_scrolling_cube_mask_ps"));
                     break;
                 case Albedo.Scrolling_Cube:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_scrolling_cube_ps"));
                     break;
                 case Albedo.Scrolling_Texture_Uv:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_scrolling_texture_uv_ps"));
                     break;
                 case Albedo.Texture_From_Misc:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_texture_from_misc_ps"));
                     break;
                 case Albedo.Four_Change_Color_Applying_To_Specular:
@@ -1333,14 +1327,11 @@ namespace HaloShaderGenerator.Shader
                 case Environment_Mapping.Custom_Map:
                     macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "custom_map"));
                     break;
-                case Environment_Mapping.From_Flat_Exture_As_Cubemap:
+                case Environment_Mapping.From_Flat_Texture_As_Cubemap:
                     macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "from_flat_texture_as_cubemap"));
                     break;
                 case Environment_Mapping.Dynamic_Reach:
                     macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "dynamic_reach"));
-                    break;
-                case Environment_Mapping.From_Flat_Texture_As_Cubemap:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "from_flat_texture_as_cubemap"));
                     break;
             }
 
@@ -1449,7 +1440,7 @@ namespace HaloShaderGenerator.Shader
                 case Misc.First_Person_Always:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "0"));
                     break;
-                case Misc.First_Person_Never_WRotating_Bitmaps:
+                case Misc.First_Person_Never_With_Rotating_Bitmaps:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "1"));
                     break;
                 case Misc.Default:
@@ -1637,19 +1628,19 @@ namespace HaloShaderGenerator.Shader
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_two_color_ps"));
                     break;
                 case Albedo.Scrolling_Cube_Mask:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_scrolling_cube_mask_ps"));
                     break;
                 case Albedo.Scrolling_Cube:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_scrolling_cube_ps"));
                     break;
                 case Albedo.Scrolling_Texture_Uv:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_scrolling_texture_uv_ps"));
                     break;
                 case Albedo.Texture_From_Misc:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "invalid"));
+                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_vs", "calc_albedo_default_vs"));
                     macros.Add(ShaderGeneratorBase.CreateMacro("calc_albedo_ps", "calc_albedo_texture_from_misc_ps"));
                     break;
                 case Albedo.Four_Change_Color_Applying_To_Specular:
@@ -1822,14 +1813,11 @@ namespace HaloShaderGenerator.Shader
                 case Environment_Mapping.Custom_Map:
                     macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "custom_map"));
                     break;
-                case Environment_Mapping.From_Flat_Exture_As_Cubemap:
+                case Environment_Mapping.From_Flat_Texture_As_Cubemap:
                     macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "from_flat_texture_as_cubemap"));
                     break;
                 case Environment_Mapping.Dynamic_Reach:
                     macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "dynamic_reach"));
-                    break;
-                case Environment_Mapping.From_Flat_Texture_As_Cubemap:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", "from_flat_texture_as_cubemap"));
                     break;
             }
 
@@ -1938,7 +1926,7 @@ namespace HaloShaderGenerator.Shader
                 case Misc.First_Person_Always:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "0"));
                     break;
-                case Misc.First_Person_Never_WRotating_Bitmaps:
+                case Misc.First_Person_Never_With_Rotating_Bitmaps:
                     macros.Add(ShaderGeneratorBase.CreateMacro("bitmap_rotation", "1"));
                     break;
                 case Misc.Default:
@@ -2934,7 +2922,7 @@ namespace HaloShaderGenerator.Shader
                     result.AddFloat3ColorParameter("env_tint_color");
                     result.AddFloatParameter("env_roughness_scale");
                     break;
-                case Environment_Mapping.From_Flat_Exture_As_Cubemap:
+                case Environment_Mapping.From_Flat_Texture_As_Cubemap:
                     result.AddSamplerWithoutXFormParameter("flat_environment_map");
                     result.AddFloat3ColorParameter("env_tint_color");
                     result.AddFloat4ColorParameter("flat_envmap_matrix_x", RenderMethodExtern.flat_envmap_matrix_x);
@@ -2949,16 +2937,6 @@ namespace HaloShaderGenerator.Shader
                     result.AddSamplerWithoutXFormParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
                     result.AddSamplerWithoutXFormParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
                     result.AddFloatParameter("env_roughness_scale");
-                    break;
-                case Environment_Mapping.From_Flat_Texture_As_Cubemap:
-                    result.AddSamplerWithoutXFormParameter("flat_environment_map");
-                    result.AddFloat3ColorParameter("env_tint_color");
-                    result.AddFloat4ColorParameter("flat_envmap_matrix_x", RenderMethodExtern.flat_envmap_matrix_x);
-                    result.AddFloat4ColorParameter("flat_envmap_matrix_y", RenderMethodExtern.flat_envmap_matrix_y);
-                    result.AddFloat4ColorParameter("flat_envmap_matrix_z", RenderMethodExtern.flat_envmap_matrix_z);
-                    result.AddFloatParameter("hemisphere_percentage");
-                    result.AddFloat4ColorParameter("env_bloom_override");
-                    result.AddFloatParameter("env_bloom_override_intensity");
                     break;
             }
 
@@ -3116,7 +3094,7 @@ namespace HaloShaderGenerator.Shader
                     break;
                 case Misc.First_Person_Always:
                     break;
-                case Misc.First_Person_Never_WRotating_Bitmaps:
+                case Misc.First_Person_Never_With_Rotating_Bitmaps:
                     break;
                 case Misc.Default:
                     break;
@@ -3414,11 +3392,9 @@ namespace HaloShaderGenerator.Shader
                     break;
                 case Environment_Mapping.Custom_Map:
                     break;
-                case Environment_Mapping.From_Flat_Exture_As_Cubemap:
+                case Environment_Mapping.From_Flat_Texture_As_Cubemap:
                     break;
                 case Environment_Mapping.Dynamic_Reach:
-                    break;
-                case Environment_Mapping.From_Flat_Texture_As_Cubemap:
                     break;
             }
 
@@ -3494,7 +3470,7 @@ namespace HaloShaderGenerator.Shader
                     break;
                 case Misc.First_Person_Always:
                     break;
-                case Misc.First_Person_Never_WRotating_Bitmaps:
+                case Misc.First_Person_Never_With_Rotating_Bitmaps:
                     break;
                 case Misc.Default:
                     break;
@@ -4408,7 +4384,7 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("env_roughness_scale");
                         rmopName = @"shaders\shader_options\env_map_per_pixel";
                         break;
-                    case Environment_Mapping.From_Flat_Exture_As_Cubemap:
+                    case Environment_Mapping.From_Flat_Texture_As_Cubemap:
                         result.AddSamplerWithoutXFormParameter("flat_environment_map");
                         result.AddFloat3ColorParameter("env_tint_color");
                         result.AddFloat4ColorParameter("flat_envmap_matrix_x", RenderMethodExtern.flat_envmap_matrix_x);
@@ -4425,17 +4401,6 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerWithoutXFormParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
                         result.AddFloatParameter("env_roughness_scale");
                         rmopName = @"shaders\shader_options\env_map_dynamic";
-                        break;
-                    case Environment_Mapping.From_Flat_Texture_As_Cubemap:
-                        result.AddSamplerWithoutXFormParameter("flat_environment_map");
-                        result.AddFloat3ColorParameter("env_tint_color");
-                        result.AddFloat4ColorParameter("flat_envmap_matrix_x", RenderMethodExtern.flat_envmap_matrix_x);
-                        result.AddFloat4ColorParameter("flat_envmap_matrix_y", RenderMethodExtern.flat_envmap_matrix_y);
-                        result.AddFloat4ColorParameter("flat_envmap_matrix_z", RenderMethodExtern.flat_envmap_matrix_z);
-                        result.AddFloatParameter("hemisphere_percentage");
-                        result.AddFloat4ColorParameter("env_bloom_override");
-                        result.AddFloatParameter("env_bloom_override_intensity");
-                        rmopName = @"shaders\shader_options\env_map_from_flat_texture";
                         break;
                 }
             }
@@ -4631,7 +4596,7 @@ namespace HaloShaderGenerator.Shader
                         break;
                     case Misc.First_Person_Always:
                         break;
-                    case Misc.First_Person_Never_WRotating_Bitmaps:
+                    case Misc.First_Person_Never_With_Rotating_Bitmaps:
                         break;
                     case Misc.Default:
                         break;
@@ -5038,19 +5003,19 @@ namespace HaloShaderGenerator.Shader
                         pixelFunction = "calc_albedo_two_color_ps";
                         break;
                     case Albedo.Scrolling_Cube_Mask:
-                        vertexFunction = "invalid";
+                        vertexFunction = "calc_albedo_default_vs";
                         pixelFunction = "calc_albedo_scrolling_cube_mask_ps";
                         break;
                     case Albedo.Scrolling_Cube:
-                        vertexFunction = "invalid";
+                        vertexFunction = "calc_albedo_default_vs";
                         pixelFunction = "calc_albedo_scrolling_cube_ps";
                         break;
                     case Albedo.Scrolling_Texture_Uv:
-                        vertexFunction = "invalid";
+                        vertexFunction = "calc_albedo_default_vs";
                         pixelFunction = "calc_albedo_scrolling_texture_uv_ps";
                         break;
                     case Albedo.Texture_From_Misc:
-                        vertexFunction = "invalid";
+                        vertexFunction = "calc_albedo_default_vs";
                         pixelFunction = "calc_albedo_texture_from_misc_ps";
                         break;
                     case Albedo.Four_Change_Color_Applying_To_Specular:
@@ -5268,17 +5233,13 @@ namespace HaloShaderGenerator.Shader
                         vertexFunction = "invalid";
                         pixelFunction = "custom_map";
                         break;
-                    case Environment_Mapping.From_Flat_Exture_As_Cubemap:
+                    case Environment_Mapping.From_Flat_Texture_As_Cubemap:
                         vertexFunction = "invalid";
                         pixelFunction = "from_flat_texture_as_cubemap";
                         break;
                     case Environment_Mapping.Dynamic_Reach:
                         vertexFunction = "invalid";
                         pixelFunction = "dynamic_reach";
-                        break;
-                    case Environment_Mapping.From_Flat_Texture_As_Cubemap:
-                        vertexFunction = "invalid";
-                        pixelFunction = "from_flat_texture_as_cubemap";
                         break;
                 }
             }
@@ -5424,7 +5385,7 @@ namespace HaloShaderGenerator.Shader
                         vertexFunction = "invalid";
                         pixelFunction = "0";
                         break;
-                    case Misc.First_Person_Never_WRotating_Bitmaps:
+                    case Misc.First_Person_Never_With_Rotating_Bitmaps:
                         vertexFunction = "invalid";
                         pixelFunction = "1";
                         break;
@@ -5725,11 +5686,9 @@ namespace HaloShaderGenerator.Shader
                         break;
                     case Environment_Mapping.Custom_Map:
                         break;
-                    case Environment_Mapping.From_Flat_Exture_As_Cubemap:
+                    case Environment_Mapping.From_Flat_Texture_As_Cubemap:
                         break;
                     case Environment_Mapping.Dynamic_Reach:
-                        break;
-                    case Environment_Mapping.From_Flat_Texture_As_Cubemap:
                         break;
                 }
             }
@@ -5817,7 +5776,7 @@ namespace HaloShaderGenerator.Shader
                         break;
                     case Misc.First_Person_Always:
                         break;
-                    case Misc.First_Person_Never_WRotating_Bitmaps:
+                    case Misc.First_Person_Never_With_Rotating_Bitmaps:
                         break;
                     case Misc.Default:
                         break;

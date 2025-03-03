@@ -109,9 +109,8 @@ namespace HaloShaderGenerator.Shader
         Dynamic,
         From_Flat_Texture,
         Custom_Map,
-        From_Flat_Exture_As_Cubemap,
-        Dynamic_Reach,
-        From_Flat_Texture_As_Cubemap
+        From_Flat_Texture_As_Cubemap,
+        Dynamic_Reach
     }
 
     public enum Self_Illumination
@@ -157,7 +156,7 @@ namespace HaloShaderGenerator.Shader
         First_Person_Never,
         First_Person_Sometimes,
         First_Person_Always,
-        First_Person_Never_WRotating_Bitmaps,
+        First_Person_Never_With_Rotating_Bitmaps,
         Default,
         Rotating_Bitmaps_Super_Slow,
         Always_Calc_Albedo
