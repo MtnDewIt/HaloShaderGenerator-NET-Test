@@ -53,3 +53,4 @@ CATEGORY_PARAM(category_self_illumination);
 PARAM(float, depth_fade_range);
 
 #include "particle_render.hlsl"
+#include "particle_render_fast.fx"
