@@ -706,7 +706,9 @@ namespace HaloShaderGenerator.Terrain
                 case ShaderStage.Static_Prt_Quadratic:
                 case ShaderStage.Static_Prt_Linear:
                 case ShaderStage.Static_Prt_Ambient:
-                case ShaderStage.Z_Only:
+                case ShaderStage.Stipple:
+                //case ShaderStage.Imposter_Static_Sh:
+                //case ShaderStage.Imposter_Static_Prt_Ambient:
                     return true;
                 default:
                     return false;

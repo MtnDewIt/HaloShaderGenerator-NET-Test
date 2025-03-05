@@ -2120,8 +2120,13 @@ namespace HaloShaderGenerator.Shader
                 case ShaderStage.Static_Per_Vertex_Color:
                 case ShaderStage.Lightmap_Debug_Mode:
                 case ShaderStage.Dynamic_Light_Cinematic:
-                case ShaderStage.Z_Only:
-                case ShaderStage.Sfx_Distort:
+                case ShaderStage.Stipple:
+                //case ShaderStage.Single_Pass_Per_Pixel:
+                //case ShaderStage.Single_Pass_Per_Vertex:
+                //case ShaderStage.Single_Pass_Single_Probe:
+                //case ShaderStage.Single_Pass_Single_Probe_Ambient:
+                //case ShaderStage.Imposter_Static_Sh:
+                //case ShaderStage.Imposter_Static_Prt_Ambient:
                     return true;
                 default:
                     return false;
@@ -4900,7 +4905,7 @@ namespace HaloShaderGenerator.Shader
 
             if (methodName == "misc_attr_animation")
             {
-                vertexFunction = "misc_attr_define";
+                vertexFunction = "invalid"; // misc_attr_define (Has issues compiling)
                 pixelFunction = "invalid";
             }
 
@@ -5443,11 +5448,11 @@ namespace HaloShaderGenerator.Shader
                         pixelFunction = "invalid";
                         break;
                     case Misc_Attr_Animation.Scrolling_Cube:
-                        vertexFunction = "misc_attr_exist";
+                        vertexFunction = "invalid"; // misc_attr_exist (Has issues compiling)
                         pixelFunction = "invalid";
                         break;
                     case Misc_Attr_Animation.Scrolling_Projected:
-                        vertexFunction = "misc_attr_exist";
+                        vertexFunction = "invalid"; // misc_attr_exist (Has issues compiling)
                         pixelFunction = "invalid";
                         break;
                 }

@@ -287,10 +287,12 @@ namespace HaloShaderGenerator.Water
                 case ShaderStage.Water_Tessellation:
                 case ShaderStage.Static_Per_Pixel:
                 case ShaderStage.Static_Per_Vertex:
-                case ShaderStage.Static_Sh:
-                case ShaderStage.Lightmap_Debug_Mode:
-                case ShaderStage.Static_Default:
-                case ShaderStage.Albedo:
+                //case ShaderStage.Static_Sh:
+                //case ShaderStage.Lightmap_Debug_Mode:
+                //case ShaderStage.Single_Pass_Per_Vertex:
+                //case ShaderStage.Single_Pass_Per_Pixel:
+                //case ShaderStage.Static_Default:
+                //case ShaderStage.Albedo:
                     return true;
                 default:
                     return false;

@@ -105,7 +105,7 @@ namespace HaloShaderGenerator.Black
             switch (entryPoint)
             {
                 case ShaderStage.Albedo:
-                case ShaderStage.Z_Only:
+                case ShaderStage.Stipple:
                     return true;
                 default:
                     return false;

@@ -308,7 +308,7 @@ namespace HaloShaderGenerator.Particle
             switch (entryPoint)
             {
                 case ShaderStage.Default:
-                case ShaderStage.Static_Default:
+                //case ShaderStage.Static_Default:
                     return true;
                 default:
                     return false;

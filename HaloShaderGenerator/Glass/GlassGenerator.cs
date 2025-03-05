@@ -544,10 +544,12 @@ namespace HaloShaderGenerator.Glass
         {
             switch (entryPoint)
             {
-                case ShaderStage.Default:
+                //case ShaderStage.Default:
                 case ShaderStage.Static_Sh:
                 case ShaderStage.Static_Per_Vertex:
                 case ShaderStage.Static_Prt_Ambient:
+                //case ShaderStage.Imposter_Static_Sh:
+                //case ShaderStage.Imposter_Static_Prt_Ambient:
                     return true;
                 default:
                     return false;

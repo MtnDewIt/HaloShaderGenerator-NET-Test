@@ -386,7 +386,13 @@ namespace HaloShaderGenerator.Foliage
                 case ShaderStage.Static_Prt_Ambient:
                 case ShaderStage.Static_Prt_Linear:
                 case ShaderStage.Static_Prt_Quadratic:
-                case ShaderStage.Z_Only:
+                case ShaderStage.Stipple:
+                //case ShaderStage.Single_Pass_Per_Pixel:
+                //case ShaderStage.Single_Pass_Per_Vertex:
+                //case ShaderStage.Single_Pass_Single_Probe:
+                //case ShaderStage.Single_Pass_Single_Probe_Ambient:
+                //case ShaderStage.Imposter_Static_Sh:
+                //case ShaderStage.Imposter_Static_Prt_Ambient:
                     return true;
                 default:
                     return false;

@@ -158,13 +158,6 @@ namespace HaloShaderGenerator.TemplateGenerator
 
             if (applyFixes)
                 macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_FIXES", "1"));
-
-            if (shaderType != ShaderType.Glass)
-            {
-                // TODO: remove this once alpha_blend_source integrated into all shaders
-                string blendSourceMacro = alphaBlendSource.ToString().ToLower().Remove(0, 5); // remove "from_"
-                macros.Add(ShaderGeneratorBase.CreateMacro("alpha_blend_source", blendSourceMacro));
-            }
         }
 
         private static List<OptionInfo> ValidateOptionInfo(List<OptionInfo> options, bool ps)

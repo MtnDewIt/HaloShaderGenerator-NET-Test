@@ -23,6 +23,7 @@
 
 #include "lightmap_sampling.fx"
 #include "dynamic_light_clip.fx"
+#include "stipple.fx"
 
 #define DETAIL_MULTIPLIER 4.59479f
 
@@ -1829,3 +1830,26 @@ accum_pixel lightmap_debug_mode_ps(
 }
 
 #endif //PIXEL_SHADER
+
+void stipple_vs(
+	in vertex_type vertex,
+	out float4 position : SV_Position,
+	//CLIP_OUTPUT
+	uniform float dummy = 0)
+{
+	float4 local_to_world_transform[3];
+		
+	//output to pixel shader
+	always_local_to_view(vertex, local_to_world_transform, position);
+
+	//CALC_CLIP(position);
+}
+
+float4 stipple_ps(
+	SCREEN_POSITION_INPUT(screen_position),
+	//CLIP_INPUT
+	uniform float dummy = 0) : SV_Target
+{
+	stipple_test(screen_position);
+	return 0;
+}
