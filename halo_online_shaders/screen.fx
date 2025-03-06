@@ -102,13 +102,24 @@ float4		base_map_xform;
 sampler2D	detail_map;
 float4		detail_map_xform;
 
-float4 calc_base_single_screen_space(in float4 texcoord)
+float2 inv_transform_texcoord(in float2 texcoord, in float4 xform)
 {
-	float4	base=	tex2D(base_map, transform_texcoord(texcoord.xy, base_map_xform));
+	return (texcoord - xform.zw) / xform.xy;
+}
+
+float4 calc_base_single_screen_space(in float4 texcoord, in bool is_screenshot)
+{
+	float2 uv = transform_texcoord(texcoord.xy, base_map_xform);
+	if (is_screenshot)
+	{
+		uv = inv_transform_texcoord(uv, screenspace_xform);
+	}
+
+	float4	base=	tex2D(base_map, uv);
 	return	base;
 }
 
-float4 calc_base_single_pixel_space(in float4 texcoord)
+float4 calc_base_single_pixel_space(in float4 texcoord, in bool is_screenshot)
 {
 	float4	base=	tex2D(base_map,   transform_texcoord(texcoord.zw, base_map_xform));
 	return	base;
@@ -193,36 +204,32 @@ float4 calc_fade_out(in float4 color)
 	return color;
 }
 
-// TODO: Maybe add the is_screenshot input from the ODST source?
-
-// Would require adding the pixel_shader function
-
-// Also might require adding some additional code for the default entry point
-
-accum_pixel default_ps(
-	in float4 original_texcoord : TEXCOORD0)
+accum_pixel pixel_shader(
+	SCREEN_POSITION_INPUT(screen_position),
+	in float4 original_texcoord,
+	in bool is_screenshot)
 {
-	float4 texcoord=	CALC_WARP(warp_type)(original_texcoord);
-
-	float4 color=		CALC_BASE(base_type)(texcoord);
-	color=				CALC_OVERLAY(overlay_a_type, a);
-	color=				CALC_OVERLAY(overlay_b_type, b);
+	float4 texcoord= CALC_WARP(warp_type)(original_texcoord);
 	
-	color=				calc_fade_out(color);
-		
+	float4 color =   CALC_BASE(base_type)(texcoord, is_screenshot);
+	color=			 CALC_OVERLAY(overlay_a_type, a);
+	color=			 CALC_OVERLAY(overlay_b_type, b);
+	
+	color=			 calc_fade_out(color);
+	
 	return CONVERT_TO_RENDER_TARGET_FOR_BLEND(color, false, false);
 }
 
-accum_pixel albedo_ps(
+accum_pixel default_ps(
+	SCREEN_POSITION_INPUT(screen_position),
 	in float4 original_texcoord : TEXCOORD0)
 {
-	float4 texcoord=	CALC_WARP(warp_type)(original_texcoord);
+	return pixel_shader(screen_position, original_texcoord, false);
+}
 
-	float4 color=		CALC_BASE(base_type)(texcoord);
-	color=				CALC_OVERLAY(overlay_a_type, a);
-	color=				CALC_OVERLAY(overlay_b_type, b);
-	
-	color=				calc_fade_out(color);
-		
-	return CONVERT_TO_RENDER_TARGET_FOR_BLEND(color, false, false);
+accum_pixel albedo_ps(
+	SCREEN_POSITION_INPUT(screen_position),
+	in float4 original_texcoord : TEXCOORD0)
+{
+	return pixel_shader(screen_position, original_texcoord, true);
 }
