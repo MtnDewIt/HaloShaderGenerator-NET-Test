@@ -514,7 +514,7 @@ namespace HaloShaderGenerator.Screen
             switch (entryPoint)
             {
                 case ShaderStage.Default:
-                //case ShaderStage.Albedo:
+                case ShaderStage.Albedo:
                     return true;
                 default:
                     return false;

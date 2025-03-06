@@ -49,6 +49,14 @@ void default_vs(
 	texcoord.zw= vertex.texcoord; 
 }
 
+void albedo_vs(
+	in vertex_type vertex,
+	out float4 position : SV_Position,
+	out float4 texcoord : TEXCOORD0)
+{
+	default_vs(vertex, position, texcoord);
+}
+
 #define CALC_WARP(type) calc_warp_##type
 
 sampler2D	warp_map;
@@ -185,17 +193,36 @@ float4 calc_fade_out(in float4 color)
 	return color;
 }
 
+// TODO: Maybe add the is_screenshot input from the ODST source?
+
+// Would require adding the pixel_shader function
+
+// Also might require adding some additional code for the default entry point
 
 accum_pixel default_ps(
 	in float4 original_texcoord : TEXCOORD0)
 {
-	float4 texcoord= CALC_WARP(warp_type)(original_texcoord);
+	float4 texcoord=	CALC_WARP(warp_type)(original_texcoord);
+
+	float4 color=		CALC_BASE(base_type)(texcoord);
+	color=				CALC_OVERLAY(overlay_a_type, a);
+	color=				CALC_OVERLAY(overlay_b_type, b);
 	
-	float4 color =   CALC_BASE(base_type)(texcoord);
-	color=			 CALC_OVERLAY(overlay_a_type, a);
-	color=			 CALC_OVERLAY(overlay_b_type, b);
+	color=				calc_fade_out(color);
+		
+	return CONVERT_TO_RENDER_TARGET_FOR_BLEND(color, false, false);
+}
+
+accum_pixel albedo_ps(
+	in float4 original_texcoord : TEXCOORD0)
+{
+	float4 texcoord=	CALC_WARP(warp_type)(original_texcoord);
+
+	float4 color=		CALC_BASE(base_type)(texcoord);
+	color=				CALC_OVERLAY(overlay_a_type, a);
+	color=				CALC_OVERLAY(overlay_b_type, b);
 	
-	color=			 calc_fade_out(color);
-	
+	color=				calc_fade_out(color);
+		
 	return CONVERT_TO_RENDER_TARGET_FOR_BLEND(color, false, false);
 }
