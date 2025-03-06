@@ -544,7 +544,6 @@ namespace HaloShaderGenerator.Glass
         {
             switch (entryPoint)
             {
-                //case ShaderStage.Default: // No default pass in render method (We could add the pass any way :/)
                 case ShaderStage.Static_Sh:
                 case ShaderStage.Static_Per_Vertex:
                 case ShaderStage.Static_Prt_Ambient:

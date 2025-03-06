@@ -1230,6 +1230,20 @@ float4 water_depth_only_ps( in float4 position : SV_Position ) : SV_Target
 #endif
 
 #ifdef VERTEX_SHADER
+s_water_interpolators water_flat_per_pixel_vs( s_vertex_type_water_shading IN )
+{
+	s_water_render_vertex vertex= get_vertex( IN ); // get_vertex( IN, false)
+	return transform_vertex( vertex ); // transform_vertex( vertex, false )
+}
+
+s_water_interpolators water_flat_per_vertex_vs( s_vertex_type_water_shading IN )
+{
+	s_water_render_vertex vertex= get_vertex( IN ); // get_vertex( IN, true )
+	return transform_vertex( vertex ); // transform_vertex( vertex, true )
+}
+#endif
+
+#ifdef VERTEX_SHADER
 s_water_interpolators water_flat_blend_per_pixel_vs(s_vertex_type_water_shading IN)
 {
 	s_water_render_vertex vertex= get_vertex( IN ); // get_vertex( IN, false )
@@ -1248,6 +1262,18 @@ s_water_interpolators lightmap_debug_mode_vs( s_vertex_type_water_shading IN )
 {
 	s_water_render_vertex vertex= get_vertex( IN ); // get_vertex( IN, false )
 	return transform_vertex( vertex ); // transform_vertex( vertex, false )
+}
+#endif
+
+#ifdef PIXEL_SHADER
+accum_pixel water_flat_per_pixel_ps(s_water_interpolators INTERPOLATORS)
+{
+	return water_shading(INTERPOLATORS); // water_shading(INTERPOLATORS, false, false)
+}
+
+accum_pixel water_flat_per_vertex_ps(s_water_interpolators INTERPOLATORS)
+{
+	return water_shading(INTERPOLATORS); // water_shading(INTERPOLATORS, true, false)
 }
 #endif
 

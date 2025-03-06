@@ -22,6 +22,13 @@ struct accum_pixel
    #endif
 #endif
 };
+
+// our output format for single pass rendering
+struct accum_pixel_and_normal
+{
+	float4 color : SV_Target0;			// LDR buffer output -> render target 0
+	float4 normal: SV_Target1;			// Normal -> render target 1
+};
 	
 // convert a color to the render target format
 #ifdef PC_CPU
@@ -67,6 +74,25 @@ struct accum_pixel
 	//	result.dark_color.rgb= safe_sqrt(result.dark_color.rgb);
 	//}
 #endif
+
+	return result;
+}
+
+// convert a color and normal to the render target formats. Note that this explicitly doesn't support HDR channels
+accum_pixel_and_normal convert_to_render_target(in float4 color, in float3 normal, in float normal_alpha_spec_type,
+												bool clamp_positive, bool ignore_bloom_override)
+{
+	if (clamp_positive)
+	{
+		color.rgb= max(color.rgb, float3(0.0f, 0.0f, 0.0f));
+	}
+	accum_pixel_and_normal result;
+	result.color.rgb= color.rgb;
+	result.color.a= color.a * LDR_ALPHA_ADJUST;
+
+	// Convert normal:
+	result.normal.xyz= normal * 0.5f + 0.5f;		// bias and offset to all positive
+	result.normal.w= normal_alpha_spec_type;		// alpha channel for normal buffer (either blend factor, or specular type)
 
 	return result;
 }

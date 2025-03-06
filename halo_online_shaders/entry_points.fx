@@ -12,6 +12,26 @@
 #define APPLY_OVERLAYS(color, texcoord, view_dot_normal)
 #endif // APPLY_OVERLAYS
 
+#if ENTRY_POINT(entry_point) == ENTRY_POINT_single_pass_per_pixel
+	#define SINGLE_PASS_LIGHTING_ENTRY_POINT
+	#define SINGLE_PASS_LIGHTING
+	#define static_per_pixel_ps single_pass_per_pixel_ps
+	#define static_per_pixel_vs single_pass_per_pixel_vs
+#elif ENTRY_POINT(entry_point) == ENTRY_POINT_single_pass_per_vertex
+	#define	SINGLE_PASS_LIGHTING_ENTRY_POINT
+	#define SINGLE_PASS_LIGHTING
+	#define static_per_vertex_ps single_pass_per_vertex_ps
+	#define static_per_vertex_vs single_pass_per_vertex_vs
+#else
+
+#endif
+
+#ifdef SINGLE_PASS_LIGHTING_ENTRY_POINT
+#define ACCUM_PIXEL accum_pixel_and_normal
+#else
+#define ACCUM_PIXEL accum_pixel
+#endif // SINGLE_PASS_LIGHTING_ENTRY_POINT
+
 PARAM_SAMPLER_2D(radiance_map);
 
 PARAM_SAMPLER_2D(dynamic_light_gel_texture);
@@ -600,12 +620,15 @@ accum_pixel static_per_pixel_ps(
     out_color.rgb = cross(vsout.binormal.xyz, vsout.tangent.xyz);
 	#endif
 
+#ifdef SINGLE_PASS_LIGHTING_ENTRY_POINT
+	return convert_to_render_target(out_color, float3(0.0f, 0.0f, 0.0f), 1.0f, false, false);
+#else
 	return CONVERT_TO_RENDER_TARGET_FOR_BLEND(out_color, true, false
 #ifdef SSR_ENABLE
 		, ssr_color
 #endif
 	);
-	
+#endif
 }
 
 ///constant to do order 2 SH convolution
@@ -730,11 +753,15 @@ accum_pixel static_sh_ps(
     out_color.rgb = cross(vsout.binormal.xyz, vsout.tangent.xyz);
 	#endif
 
+#ifdef SINGLE_PASS_LIGHTING_ENTRY_POINT
+	return convert_to_render_target(out_color, float3(0.0f, 0.0f, 0.0f), 1.0f, false, false);
+#else
     return CONVERT_TO_RENDER_TARGET_FOR_BLEND(out_color, true, false
 #ifdef SSR_ENABLE
 		, ssr_color
 #endif
 	);
+#endif
 }
 
 ///constant to do order 2 SH convolution
@@ -895,12 +922,16 @@ accum_pixel static_per_vertex_ps(
 	#ifdef NORMAL_DEBUG
     out_color.rgb = cross(vsout.binormal.xyz, vsout.tangent.xyz);
 	#endif
-		
+
+#ifdef SINGLE_PASS_LIGHTING_ENTRY_POINT
+	return convert_to_render_target(out_color, float3(0.0f, 0.0f, 0.0f), 1.0f, false, false);
+#else
     return CONVERT_TO_RENDER_TARGET_FOR_BLEND(out_color, true, false
 #ifdef SSR_ENABLE
 		, ssr_color
 #endif
 	);
+#endif
 }
 
 //straight vert color
@@ -1392,12 +1423,16 @@ accum_pixel static_prt_ps(
 	#ifdef NORMAL_DEBUG
     out_color.rgb = cross(vsout.binormal.xyz, vsout.tangent.xyz);
 	#endif
-				
+
+#ifdef SINGLE_PASS_LIGHTING_ENTRY_POINT
+	return convert_to_render_target(out_color, float3(0.0f, 0.0f, 0.0f), 1.0f, false, false);
+#else		
 	return CONVERT_TO_RENDER_TARGET_FOR_BLEND(out_color, true, false
 #ifdef SSR_ENABLE
 		, ssr_color
 #endif
 	);	
+#endif // SINGLE_PASS_LIGHTING
 }
 
 struct dynamic_light_vsout

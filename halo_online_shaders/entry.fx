@@ -39,8 +39,8 @@
 #define ENTRY_POINT_water_shading 16
 #define ENTRY_POINT_dynamic_light_cinematic 17
 #define ENTRY_POINT_stipple 18
-//#define ENTRY_POINT_single_pass_per_pixel 19
-//#define ENTRY_POINT_single_pass_per_vertex 20
+#define ENTRY_POINT_single_pass_per_pixel 19
+#define ENTRY_POINT_single_pass_per_vertex 20
 //#define ENTRY_POINT_single_pass_single_probe 21
 //#define ENTRY_POINT_single_pass_single_probe_ambient 22
 //#define ENTRY_POINT_imposter_static_sh 23
@@ -51,5 +51,5 @@
 //#define ENTRY_POINT_kernel5_non_xenon_output 28
 //#define ENTRY_POINT_depth_to_rgba_pack 29
 //#define ENTRY_POINT_linear_depth_downsample 30
-#define ENTRY_POINT_z_only 19
-#define ENTRY_POINT_sfx_distort 20
+#define ENTRY_POINT_z_only 21
+#define ENTRY_POINT_sfx_distort 22

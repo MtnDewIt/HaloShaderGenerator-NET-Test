@@ -2121,8 +2121,8 @@ namespace HaloShaderGenerator.Shader
                 case ShaderStage.Lightmap_Debug_Mode:
                 case ShaderStage.Dynamic_Light_Cinematic:
                 case ShaderStage.Stipple:
-                //case ShaderStage.Single_Pass_Per_Pixel:
-                //case ShaderStage.Single_Pass_Per_Vertex:
+                case ShaderStage.Single_Pass_Per_Pixel:
+                case ShaderStage.Single_Pass_Per_Vertex:
                 //case ShaderStage.Single_Pass_Single_Probe:
                 //case ShaderStage.Single_Pass_Single_Probe_Ambient:
                 //case ShaderStage.Imposter_Static_Sh:
