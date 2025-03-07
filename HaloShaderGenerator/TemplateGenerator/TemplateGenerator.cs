@@ -76,6 +76,8 @@ namespace HaloShaderGenerator.TemplateGenerator
             {
                 case ShaderType.LightVolume:
                     return "light_volume.fx";
+                case ShaderType.FurStencil:
+                    return "fur_stencil.fx";
                 default:
                     return shaderType.ToString().ToLower() + ".fx";
             }
