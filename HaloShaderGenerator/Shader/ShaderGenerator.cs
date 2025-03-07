@@ -4905,7 +4905,7 @@ namespace HaloShaderGenerator.Shader
 
             if (methodName == "misc_attr_animation")
             {
-                vertexFunction = "invalid"; // misc_attr_define (Has issues compiling)
+                vertexFunction = "misc_attr_define"; // misc_attr_define (Has issues compiling)
                 pixelFunction = "invalid";
             }
 
@@ -5448,11 +5448,11 @@ namespace HaloShaderGenerator.Shader
                         pixelFunction = "invalid";
                         break;
                     case Misc_Attr_Animation.Scrolling_Cube:
-                        vertexFunction = "invalid"; // misc_attr_exist (Has issues compiling)
+                        vertexFunction = "misc_attr_exist"; // misc_attr_exist (Has issues compiling)
                         pixelFunction = "invalid";
                         break;
                     case Misc_Attr_Animation.Scrolling_Projected:
-                        vertexFunction = "invalid"; // misc_attr_exist (Has issues compiling)
+                        vertexFunction = "misc_attr_exist"; // misc_attr_exist (Has issues compiling)
                         pixelFunction = "invalid";
                         break;
                 }
