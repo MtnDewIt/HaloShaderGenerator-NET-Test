@@ -488,7 +488,6 @@ namespace HaloShaderGenerator.Mux
                 case ShaderStage.Shadow_Generate:
                 case ShaderStage.Dynamic_Light_Cinematic:
                 //case ShaderStage.Imposter_Static_Prt_Ambient:
-                case ShaderStage.Default:
                     return true;
                 default:
                     return false;
