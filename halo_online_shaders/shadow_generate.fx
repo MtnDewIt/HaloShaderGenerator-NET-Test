@@ -6,6 +6,7 @@
 		sampler shadow_depth_map_1;
 #endif
 
+#ifndef NO_SHADOW_GENERATE_PASS
 
 void shadow_generate_vs(
 	in vertex_type vertex,
@@ -78,7 +79,7 @@ void shadow_generate_ps(
 }
 #endif
 
-
+#endif // NO_SHADOW_GENERATE_PASS
 
 #define PCF_WIDTH 4
 #define PCF_HEIGHT 4
@@ -256,6 +257,10 @@ float sample_percentage_closer_PCF_5x5_block_predicated(float3 fragment_shadow_p
 // #define DEBUG_CLIP
 
 void shadow_apply_vs(
+#ifdef FUR_SHADOW_APPLY
+	in vertex_type vertex,
+	out float4 screen_position : SV_Position)
+#else
 	in vertex_type vertex,
 	out float4 screen_position : SV_Position,
 	out float3 world_position : TEXCOORD0,
@@ -265,7 +270,13 @@ void shadow_apply_vs(
 	out float3 fragment_shadow_position : TEXCOORD4,
 	out float3 extinction : COLOR0,
 	out float3 inscatter : COLOR1)
+#endif
 {
+#ifdef FUR_SHADOW_APPLY
+	float4 local_to_world_transform[3];
+	//output to pixel shader
+	always_local_to_view(vertex, local_to_world_transform, screen_position);
+#else
 	float4 local_to_world_transform[3];
 	//output to pixel shader
 	always_local_to_view(vertex, local_to_world_transform, screen_position);
@@ -280,9 +291,13 @@ void shadow_apply_vs(
 	fragment_shadow_position.x= dot(float4(world_position, 1.0), v_lighting_constant_0);
 	fragment_shadow_position.y= dot(float4(world_position, 1.0), v_lighting_constant_1);
 	fragment_shadow_position.z= dot(float4(world_position, 1.0), v_lighting_constant_2);
+#endif
 }
 
 accum_pixel shadow_apply_ps(
+#ifdef FUR_SHADOW_APPLY
+	SCREEN_POSITION_INPUT(screen_position))
+#else
 	SCREEN_POSITION_INPUT(screen_position),
 	in float3 world_position : TEXCOORD0,
 	in float2 texcoord : TEXCOORD1,
@@ -291,7 +306,11 @@ accum_pixel shadow_apply_ps(
 	in float3 fragment_shadow_position : TEXCOORD4,
 	in float3 extinction : COLOR0,
 	in float3 inscatter : COLOR1)
+#endif
 {
+#ifdef FUR_SHADOW_APPLY
+	return convert_to_render_target(float4(0.0f, 0.0f, 0.0f, 1.0f), false, false);
+#else
 	float output_alpha;
 	// do alpha test
 	calc_alpha_test_ps(texcoord, output_alpha);
@@ -343,4 +362,5 @@ accum_pixel shadow_apply_ps(
 		, 0.0f
 #endif
 	);
+#endif
 }
