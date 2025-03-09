@@ -4905,7 +4905,7 @@ namespace HaloShaderGenerator.Shader
 
             if (methodName == "misc_attr_animation")
             {
-                vertexFunction = "misc_attr_define"; // misc_attr_define (Has issues compiling)
+                vertexFunction = "invalid"; // misc_attr_define (We ran out of output registers :/)
                 pixelFunction = "invalid";
             }
 
@@ -5444,15 +5444,15 @@ namespace HaloShaderGenerator.Shader
                 switch ((Misc_Attr_Animation)option)
                 {
                     case Misc_Attr_Animation.Off:
-                        vertexFunction = "invalid";
+                        vertexFunction = "invalid"; // off (We ran out of output registers :/)
                         pixelFunction = "invalid";
                         break;
                     case Misc_Attr_Animation.Scrolling_Cube:
-                        vertexFunction = "misc_attr_exist"; // misc_attr_exist (Has issues compiling)
+                        vertexFunction = "invalid"; // misc_attr_exist (We ran out of output registers :/)
                         pixelFunction = "invalid";
                         break;
                     case Misc_Attr_Animation.Scrolling_Projected:
-                        vertexFunction = "misc_attr_exist"; // misc_attr_exist (Has issues compiling)
+                        vertexFunction = "invalid"; // misc_attr_exist (We ran out of output registers :/)
                         pixelFunction = "invalid";
                         break;
                 }
