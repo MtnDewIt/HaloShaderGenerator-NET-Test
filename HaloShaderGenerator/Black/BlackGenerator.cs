@@ -9,79 +9,6 @@ namespace HaloShaderGenerator.Black
 {
     public class BlackGenerator : IShaderGenerator
     {
-        private bool TemplateGenerationValid;
-        private bool ApplyFixes;
-
-        public BlackGenerator(bool applyFixes = false) { TemplateGenerationValid = true; ApplyFixes = applyFixes; }
-
-        public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.Black, entryPoint, Shared.Blend_Mode.Opaque,
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
-
-            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.Black);
-            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "ps_3_0");
-
-            return new ShaderGeneratorResult(bytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
-        {
-            if (!IsEntryPointSupported(entryPoint) || !IsPixelShaderShared(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.Black, entryPoint, Shared.Blend_Mode.Opaque,
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
-
-            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.Black);
-            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "ps_3_0");
-
-            return new ShaderGeneratorResult(bytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!IsVertexFormatSupported(vertexType) || !IsEntryPointSupported(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.Black, entryPoint,
-                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes, true, vertexType);
-
-            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.Black);
-            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "vs_3_0");
-
-            return new ShaderGeneratorResult(bytecode);
-        }
-
-        public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new Exception("Generator initialized with shared shader constructor. Use template constructor.");
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.Black, entryPoint,
-                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes, true, vertexType);
-
-            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.Black);
-            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "vs_3_0");
-
-            return new ShaderGeneratorResult(bytecode);
-        }
-
         public int GetMethodCount()
         {
             return Enum.GetValues(typeof(BlackMethods)).Length;
@@ -90,14 +17,6 @@ namespace HaloShaderGenerator.Black
         public int GetMethodOptionCount(int methodIndex)
         {
             return 1;
-        }
-
-        public int GetMethodOptionValue(int methodIndex)
-        {
-            if (methodIndex == 0)
-                return 0;
-
-            return -1;
         }
 
         public bool IsEntryPointSupported(ShaderStage entryPoint)
@@ -173,24 +92,6 @@ namespace HaloShaderGenerator.Black
             }
         }
 
-        public ShaderParameters GetPixelShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            return result;
-        }
-
-        public ShaderParameters GetVertexShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            return result;
-        }
-
         public ShaderParameters GetGlobalParameters()
         {
             var result = new ShaderParameters();
@@ -223,16 +124,6 @@ namespace HaloShaderGenerator.Black
         public Array GetMethodOptionNames(int methodIndex)
         {
             return null;
-        }
-
-        public byte[] ValidateOptions(byte[] options)
-        {
-            List<byte> optionList = new List<byte>(options);
-
-            while (optionList.Count < GetMethodCount())
-                optionList.Add(0);
-
-            return optionList.ToArray();
         }
 
         public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)

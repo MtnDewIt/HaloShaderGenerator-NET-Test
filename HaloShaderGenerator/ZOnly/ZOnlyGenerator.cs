@@ -9,115 +9,6 @@ namespace HaloShaderGenerator.ZOnly
 {
     public class ZOnlyGenerator : IShaderGenerator
     {
-        private bool TemplateGenerationValid;
-        private bool ApplyFixes;
-
-        Test test;
-
-        public ZOnlyGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
-
-        public ZOnlyGenerator(Test test, bool applyFixes = false)
-        {
-            this.test = test;
-
-            ApplyFixes = applyFixes;
-            TemplateGenerationValid = true;
-        }
-
-        public ZOnlyGenerator(byte[] options, bool applyFixes = false)
-        {
-            options = ValidateOptions(options);
-
-            this.test = (Test)options[0];
-
-            ApplyFixes = applyFixes;
-            TemplateGenerationValid = true;
-        }
-
-        public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.ZOnly, entryPoint, Shared.Blend_Mode.Opaque,
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
-
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Test>());
-
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("test", test.ToString().ToLower()));
-
-            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.ZOnly);
-            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "ps_3_0");
-
-            return new ShaderGeneratorResult(bytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
-        {
-            if (!IsEntryPointSupported(entryPoint) || !IsPixelShaderShared(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.ZOnly, entryPoint, Shared.Blend_Mode.Opaque,
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
-
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Test>());
-
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("test", test.ToString().ToLower()));
-
-            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.ZOnly);
-            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "ps_3_0");
-
-            return new ShaderGeneratorResult(bytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!IsVertexFormatSupported(vertexType) || !IsEntryPointSupported(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.ZOnly, entryPoint,
-                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes, true, vertexType);
-
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Test>());
-
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("test", test.ToString().ToLower()));
-
-            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.ZOnly);
-            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "vs_3_0");
-
-            return new ShaderGeneratorResult(bytecode);
-        }
-
-        public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new Exception("Generator initialized with shared shader constructor. Use template constructor.");
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.ZOnly, entryPoint,
-                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes, true, vertexType);
-
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Test>());
-
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("test", test.ToString().ToLower()));
-
-            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.ZOnly);
-            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "vs_3_0");
-
-            return new ShaderGeneratorResult(bytecode);
-        }
-
         public int GetMethodCount()
         {
             return Enum.GetValues(typeof(ZOnlyMethods)).Length;
@@ -129,17 +20,6 @@ namespace HaloShaderGenerator.ZOnly
             {
                 case ZOnlyMethods.Test:
                     return Enum.GetValues(typeof(Test)).Length;
-            }
-
-            return -1;
-        }
-
-        public int GetMethodOptionValue(int methodIndex)
-        {
-            switch ((ZOnlyMethods)methodIndex)
-            {
-                case ZOnlyMethods.Test:
-                    return (int)test;
             }
 
             return -1;
@@ -216,39 +96,6 @@ namespace HaloShaderGenerator.ZOnly
             }
         }
 
-        public ShaderParameters GetPixelShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            switch (test)
-            {
-                case Test.Default:
-                    result.AddSamplerWithoutXFormParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("detail_map");
-                    result.AddFloat4ColorParameter("albedo_color");
-                    break;
-            }
-
-            return result;
-        }
-
-        public ShaderParameters GetVertexShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            switch (test)
-            {
-                case Test.Default:
-                    break;
-            }
-
-            return result;
-        }
-
         public ShaderParameters GetGlobalParameters()
         {
             var result = new ShaderParameters();
@@ -302,16 +149,6 @@ namespace HaloShaderGenerator.ZOnly
             }
 
             return null;
-        }
-
-        public byte[] ValidateOptions(byte[] options)
-        {
-            List<byte> optionList = new List<byte>(options);
-
-            while (optionList.Count < GetMethodCount())
-                optionList.Add(0);
-
-            return optionList.ToArray();
         }
 
         public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)

@@ -9,147 +9,6 @@ namespace HaloShaderGenerator.FurStencil
 {
     public class FurStencilGenerator : IShaderGenerator
     {
-        private bool TemplateGenerationValid;
-        private bool ApplyFixes;
-
-        Alpha_Test alpha_test;
-
-        public FurStencilGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
-
-        public FurStencilGenerator(Alpha_Test alpha_test, bool applyFixes = false)
-        {
-            this.alpha_test = alpha_test;
-
-            ApplyFixes = applyFixes;
-            TemplateGenerationValid = true;
-        }
-
-        public FurStencilGenerator(byte[] options, bool applyFixes = false)
-        {
-            options = ValidateOptions(options);
-
-            this.alpha_test = (Alpha_Test)options[0];
-
-            ApplyFixes = applyFixes;
-            TemplateGenerationValid = true;
-        }
-
-        public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            Shared.Alpha_Test sAlphaTest = (Shared.Alpha_Test)Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.FurStencil, entryPoint, Shared.Blend_Mode.Opaque,
-                Shader.Misc.First_Person_Never, sAlphaTest, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
-
-            switch (alpha_test)
-            {
-                case Alpha_Test.Off:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_off_ps"));
-                    break;
-                case Alpha_Test.On:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_on_ps"));
-                    break;
-            }
-
-            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.FurStencil);
-            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "ps_3_0");
-
-            return new ShaderGeneratorResult(bytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
-        {
-            if (!IsEntryPointSupported(entryPoint) || !IsPixelShaderShared(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            Shared.Alpha_Test sAlphaTest = (Shared.Alpha_Test)Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.FurStencil, entryPoint, Shared.Blend_Mode.Opaque,
-                Shader.Misc.First_Person_Never, sAlphaTest, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
-
-            switch (alpha_test)
-            {
-                case Alpha_Test.Off:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_off_ps"));
-                    break;
-                case Alpha_Test.On:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_on_ps"));
-                    break;
-            }
-
-            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.FurStencil);
-            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "ps_3_0");
-
-            return new ShaderGeneratorResult(bytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!IsVertexFormatSupported(vertexType) || !IsEntryPointSupported(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            Shared.Alpha_Test sAlphaTest = (Shared.Alpha_Test)Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.FurStencil, entryPoint,
-                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, sAlphaTest, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes, true, vertexType);
-
-            switch (alpha_test)
-            {
-                case Alpha_Test.Off:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_off_ps"));
-                    break;
-                case Alpha_Test.On:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_on_ps"));
-                    break;
-            }
-
-            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.FurStencil);
-            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "vs_3_0");
-
-            return new ShaderGeneratorResult(bytecode);
-        }
-
-        public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new Exception("Generator initialized with shared shader constructor. Use template constructor.");
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            Shared.Alpha_Test sAlphaTest = (Shared.Alpha_Test)Enum.Parse(typeof(Shared.Alpha_Test), alpha_test.ToString());
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, Globals.ShaderType.FurStencil, entryPoint,
-                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, sAlphaTest, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes, true, vertexType);
-
-            switch (alpha_test)
-            {
-                case Alpha_Test.Off:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_off_ps"));
-                    break;
-                case Alpha_Test.On:
-                    macros.Add(ShaderGeneratorBase.CreateMacro("calc_alpha_test_ps", "calc_alpha_test_on_ps"));
-                    break;
-            }
-
-            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.FurStencil);
-            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "vs_3_0");
-
-            return new ShaderGeneratorResult(bytecode);
-        }
-
         public int GetMethodCount()
         {
             return Enum.GetValues(typeof(FurStencilMethods)).Length;
@@ -161,17 +20,6 @@ namespace HaloShaderGenerator.FurStencil
             {
                 case FurStencilMethods.Alpha_Test:
                     return Enum.GetValues(typeof(Alpha_Test)).Length;
-            }
-
-            return -1;
-        }
-
-        public int GetMethodOptionValue(int methodIndex)
-        {
-            switch ((FurStencilMethods)methodIndex)
-            {
-                case FurStencilMethods.Alpha_Test:
-                    return (int)alpha_test;
             }
 
             return -1;
@@ -257,41 +105,6 @@ namespace HaloShaderGenerator.FurStencil
             }
         }
 
-        public ShaderParameters GetPixelShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            switch (alpha_test)
-            {
-                case Alpha_Test.Off:
-                    break;
-                case Alpha_Test.On:
-                    result.AddSamplerWithoutXFormParameter("alpha_test_map");
-                    break;
-            }
-
-            return result;
-        }
-
-        public ShaderParameters GetVertexShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            switch (alpha_test)
-            {
-                case Alpha_Test.Off:
-                    break;
-                case Alpha_Test.On:
-                    break;
-            }
-
-            return result;
-        }
-
         public ShaderParameters GetGlobalParameters()
         {
             var result = new ShaderParameters();
@@ -347,16 +160,6 @@ namespace HaloShaderGenerator.FurStencil
             }
 
             return null;
-        }
-
-        public byte[] ValidateOptions(byte[] options)
-        {
-            List<byte> optionList = new List<byte>(options);
-
-            while (optionList.Count < GetMethodCount())
-                optionList.Add(0);
-
-            return optionList.ToArray();
         }
 
         public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
