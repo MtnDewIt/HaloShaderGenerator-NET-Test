@@ -1,12 +1,9 @@
 ﻿using HaloShaderGenerator.DirectX;
-using HaloShaderGenerator.Globals;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HaloShaderGenerator.Generator
 {
@@ -125,72 +122,14 @@ namespace HaloShaderGenerator.Generator
             return $"{prefix.ToLower()}{method_name}{suffix.ToLower()}";
         }
 
-        public static string CreateMethodDefinitionFromArgs<MethodType>(IEnumerable<object> args, string prefix = "", string suffix = "") where MethodType : struct, IConvertible
-        {
-            var method = args.Where(arg => arg.GetType() == typeof(MethodType)).Cast<MethodType>().FirstOrDefault();
-            var method_type_name = method.GetType().Name.ToLower();
-            var method_name = method.ToString().ToLower();
-
-            return $"{prefix.ToLower()}{method_name}{suffix.ToLower()}";
-        }
-
         public static D3D.SHADER_MACRO CreateMacro(string name, string definition)
         {
             return new D3D.SHADER_MACRO { Name = name, Definition = definition };
         }
 
-        public static D3D.SHADER_MACRO CreateAutoMacro(string name, string definition)
-        {
-            return new D3D.SHADER_MACRO { Name = "category_" + name, Definition = "category_" + name + "_option_" + definition };
-        }
-
         public static D3D.SHADER_MACRO CreateMacro(string name, object method, string prefix = "", string suffix = "")
         {
             return new D3D.SHADER_MACRO { Name = name, Definition = CreateMethodDefinition(method, prefix, suffix) };
-        }
-
-        public static D3D.SHADER_MACRO CreateVertexMacro(string name, VertexType type)
-        {
-            return new D3D.SHADER_MACRO { Name = name, Definition = $"{type.ToString().ToUpper()}_VERTEX" };
-        }
-
-        public static D3D.SHADER_MACRO CreateMacroFromArgs<MethodType>(string name, IEnumerable<object> args, string prefix = "", string suffix = "") where MethodType : struct, IConvertible
-        {
-            return new D3D.SHADER_MACRO { Name = name, Definition = CreateMethodDefinitionFromArgs<MethodType>(args, prefix, suffix) };
-        }
-
-        public static IEnumerable<D3D.SHADER_MACRO> CreateMethodEnumDefinitions<MethodType>() where MethodType : struct, IConvertible
-        {
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            var method_type_name = typeof(MethodType).Name.ToLower();
-
-            var values = Enum.GetValues(typeof(MethodType));
-            foreach (var method in values)
-            {
-                var method_name = method.ToString().ToLower();
-
-                macros.Add(new D3D.SHADER_MACRO { Name = $"k_{method_type_name}_{method_name}", Definition = ((int)method).ToString() });
-            }
-
-            return macros;
-        }
-
-        public static IEnumerable<D3D.SHADER_MACRO> CreateAutoMacroMethodEnumDefinitions<MethodType>() where MethodType : struct, IConvertible
-        {
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>(); 
-
-            var method_type_name = typeof(MethodType).Name.ToLower();
-
-            var values = Enum.GetValues(typeof(MethodType));
-            foreach (var method in values)
-            {
-                var method_name = method.ToString().ToLower();
-
-                macros.Add(new D3D.SHADER_MACRO { Name = $"category_{method_type_name}_option_{method_name}", Definition = ((int)method).ToString() });
-            }
-
-            return macros;
         }
     }
 }

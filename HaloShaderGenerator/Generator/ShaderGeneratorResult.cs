@@ -2,21 +2,20 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HaloShaderGenerator
 {
     public class ShaderGeneratorResult
     {
+        public List<ShaderRegister> Registers = new List<ShaderRegister>();
+        public byte[] Bytecode = null;
 
         public class ShaderRegister
         {
-            public ShaderRegister(string name, RegisterType type, int register, int size)
+            public ShaderRegister(string name, ShaderRegisterType type, int register, int size)
             {
                 Name = name;
-                registerType = type;
+                RegisterType = type;
                 Size = size;
                 Register = register;
             }
@@ -24,10 +23,9 @@ namespace HaloShaderGenerator
             public int Size { get; }
             public int Register { get; }
             public string Name { get; }
-            public RegisterType registerType { get; }
-            public bool IsXFormArgument => Name.ToLower().Contains("_xform");
+            public ShaderRegisterType RegisterType { get; }
             public ShaderRegisterScope Scope => GetScope();
-
+            public bool IsXFormArgument => Name.ToLower().Contains("_xform");
 
             public enum ShaderRegisterScope
             {
@@ -48,7 +46,7 @@ namespace HaloShaderGenerator
                 Indirect
             }
 
-            public enum RegisterType
+            public enum ShaderRegisterType
             {
                 Vector,
                 Boolean,
@@ -251,15 +249,15 @@ namespace HaloShaderGenerator
                         return ShaderRegisterScope.Indirect;
                     default:
                         Console.WriteLine($"Warning: Unknown ShaderRegisterScope for {this.Name}");
-                        switch(registerType)
+                        switch(RegisterType)
                         {
-                            case RegisterType.Boolean:
+                            case ShaderRegisterType.Boolean:
                                 return ShaderRegisterScope.Global_Arguments;
-                            case RegisterType.Sampler:
+                            case ShaderRegisterType.Sampler:
                                 return ShaderRegisterScope.TextureSampler_Arguments;
-                            case RegisterType.Vector:
+                            case ShaderRegisterType.Vector:
                                 return ShaderRegisterScope.Vector_Arguments;
-                            case RegisterType.Integer:
+                            case ShaderRegisterType.Integer:
                                 return ShaderRegisterScope.Integer_Arguments;
                             default:
                                 throw new NotImplementedException();
@@ -296,21 +294,21 @@ namespace HaloShaderGenerator
 
                         var register_components = register_line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                        ShaderRegister.RegisterType register_type = ShaderRegister.RegisterType.Vector;
+                        ShaderRegister.ShaderRegisterType register_type = ShaderRegister.ShaderRegisterType.Vector;
 
                         switch (register_components[1][0])
                         {
                             case 'b':
-                                register_type = ShaderRegister.RegisterType.Boolean;
+                                register_type = ShaderRegister.ShaderRegisterType.Boolean;
                                 break;
                             case 'i':
-                                register_type = ShaderRegister.RegisterType.Integer;
+                                register_type = ShaderRegister.ShaderRegisterType.Integer;
                                 break;
                             case 'c':
-                                register_type = ShaderRegister.RegisterType.Vector;
+                                register_type = ShaderRegister.ShaderRegisterType.Vector;
                                 break;
                             case 's':
-                                register_type = ShaderRegister.RegisterType.Sampler;
+                                register_type = ShaderRegister.ShaderRegisterType.Sampler;
                                 break;
                         }
 
@@ -356,9 +354,6 @@ namespace HaloShaderGenerator
             }
             return result;
         }
-
-        public List<ShaderRegister> Registers = new List<ShaderRegister>();
-        public byte[] Bytecode = null;
 
         public ShaderGeneratorResult(byte[] bytecode)
         {
