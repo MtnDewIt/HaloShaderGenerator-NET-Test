@@ -108,18 +108,18 @@ namespace HaloShaderGenerator.FurStencil
         public ShaderParameters GetGlobalParameters()
         {
             var result = new ShaderParameters();
-            result.AddSamplerWithoutXFormParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
-            result.AddSamplerWithoutXFormParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerWithoutXFormParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
+            result.AddSamplerParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
+            result.AddSamplerParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddFloat3ColorParameter("debug_tint", RenderMethodExtern.debug_tint);
-            result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerWithoutXFormParameter("scene_hdr_texture");
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_phong_specular");
-            result.AddSamplerWithoutXFormParameter("g_direction_lut");
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse");
-            result.AddSamplerWithoutXFormParameter("g_diffuse_power_specular");
-            result.AddSamplerWithoutXFormParameter("shadow_mask_texture", RenderMethodExtern.none);
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse_vs");
+            result.AddSamplerParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerParameter("scene_hdr_texture");
+            result.AddSamplerParameter("g_sample_vmf_phong_specular");
+            result.AddSamplerParameter("g_direction_lut");
+            result.AddSamplerParameter("g_sample_vmf_diffuse");
+            result.AddSamplerParameter("g_diffuse_power_specular");
+            result.AddSamplerParameter("shadow_mask_texture", RenderMethodExtern.none);
+            result.AddSamplerParameter("g_sample_vmf_diffuse_vs");
             return result;
         }
 
@@ -138,7 +138,7 @@ namespace HaloShaderGenerator.FurStencil
                     case Alpha_Test.Off:
                         break;
                     case Alpha_Test.On:
-                        result.AddSamplerWithoutXFormParameter("alpha_test_map");
+                        result.AddSamplerParameter("alpha_test_map");
                         rmopName = @"shaders\shader_options\alpha_test_on";
                         break;
                 }

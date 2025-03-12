@@ -119,7 +119,7 @@ namespace HaloShaderGenerator.LightVolume
                 switch ((Albedo)option)
                 {
                     case Albedo.Diffuse_Only:
-                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddSamplerParameter("base_map");
                         rmopName = @"shaders\light_volume_options\albedo_diffuse_only";
                         break;
                     case Albedo.Circular:

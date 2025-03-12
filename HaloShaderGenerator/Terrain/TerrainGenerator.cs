@@ -139,22 +139,22 @@ namespace HaloShaderGenerator.Terrain
         public ShaderParameters GetGlobalParameters()
         {
             var result = new ShaderParameters();
-            result.AddSamplerWithoutXFormParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
-            result.AddSamplerWithoutXFormParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerWithoutXFormParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
-            result.AddSamplerWithoutXFormParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1);
-            result.AddSamplerWithoutXFormParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
+            result.AddSamplerParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
+            result.AddSamplerParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
+            result.AddSamplerParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1);
+            result.AddSamplerParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddFloat3ColorParameter("debug_tint", RenderMethodExtern.debug_tint);
-            result.AddSamplerWithoutXFormParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
-            result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
-            result.AddSamplerWithoutXFormParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_phong_specular");
-            result.AddSamplerWithoutXFormParameter("g_direction_lut");
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse");
-            result.AddSamplerWithoutXFormParameter("g_diffuse_power_specular");
-            result.AddSamplerWithoutXFormParameter("shadow_mask_texture", RenderMethodExtern.none);
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse_vs");
+            result.AddSamplerParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
+            result.AddSamplerParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
+            result.AddSamplerParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
+            result.AddSamplerParameter("g_sample_vmf_phong_specular");
+            result.AddSamplerParameter("g_direction_lut");
+            result.AddSamplerParameter("g_sample_vmf_diffuse");
+            result.AddSamplerParameter("g_diffuse_power_specular");
+            result.AddSamplerParameter("shadow_mask_texture", RenderMethodExtern.none);
+            result.AddSamplerParameter("g_sample_vmf_diffuse_vs");
             return result;
         }
 
@@ -184,7 +184,7 @@ namespace HaloShaderGenerator.Terrain
                         rmopName = @"shaders\terrain_options\dynamic_blending";
                         break;
                     case Blending.Distance_Blend_Base:
-                        result.AddSamplerWithoutXFormParameter("blend_map");
+                        result.AddSamplerParameter("blend_map");
                         result.AddFloatParameter("global_albedo_tint");
                         result.AddFloat4ColorParameter("blend_target_0");
                         result.AddFloat4ColorParameter("blend_target_1");
@@ -210,7 +210,7 @@ namespace HaloShaderGenerator.Terrain
                     case Environment_Map.None:
                         break;
                     case Environment_Map.Per_Pixel:
-                        result.AddSamplerWithoutXFormParameter("environment_map");
+                        result.AddSamplerParameter("environment_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloat3ColorParameter("env_tint_color");
                         result.AddFloatParameter("env_roughness_offset");
                         result.AddFloatParameter("env_roughness_scale");
@@ -218,8 +218,8 @@ namespace HaloShaderGenerator.Terrain
                         break;
                     case Environment_Map.Dynamic:
                         result.AddFloat3ColorParameter("env_tint_color");
-                        result.AddSamplerWithoutXFormParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
-                        result.AddSamplerWithoutXFormParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
+                        result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("env_roughness_scale");
                         result.AddFloatParameter("env_roughness_offset");
                         rmopName = @"shaders\shader_options\env_map_dynamic";
@@ -261,19 +261,19 @@ namespace HaloShaderGenerator.Terrain
                     case Material_0.Off:
                         break;
                     case Material_0.Diffuse_Only_Plus_Self_Illum:
-                        result.AddSamplerWithoutXFormParameter("base_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("bump_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("self_illum_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("self_illum_detail_map_m_0");
+                        result.AddSamplerParameter("base_map_m_0");
+                        result.AddSamplerParameter("bump_map_m_0");
+                        result.AddSamplerParameter("self_illum_map_m_0");
+                        result.AddSamplerParameter("self_illum_detail_map_m_0");
                         result.AddFloat3ColorParameter("self_illum_color_m_0");
                         result.AddFloatParameter("self_illum_intensity_m_0");
                         rmopName = @"shaders\terrain_options\diffuse_only_plus_sefl_illum_m_0";
                         break;
                     case Material_0.Diffuse_Plus_Specular_Plus_Self_Illum:
-                        result.AddSamplerWithoutXFormParameter("base_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("bump_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("self_illum_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("self_illum_detail_map_m_0");
+                        result.AddSamplerParameter("base_map_m_0");
+                        result.AddSamplerParameter("bump_map_m_0");
+                        result.AddSamplerParameter("self_illum_map_m_0");
+                        result.AddSamplerParameter("self_illum_detail_map_m_0");
                         result.AddFloat3ColorParameter("self_illum_color_m_0");
                         result.AddFloatParameter("self_illum_intensity_m_0");
                         result.AddFloatParameter("diffuse_coefficient_m_0");
@@ -288,11 +288,11 @@ namespace HaloShaderGenerator.Terrain
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_plus_self_illumm_0";
                         break;
                     case Material_0.Diffuse_Plus_Specular_Plus_Heightmap:
-                        result.AddSamplerWithoutXFormParameter("base_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("detail_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("bump_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("detail_bump_m_0");
-                        result.AddSamplerWithoutXFormParameter("heightmap_m_0");
+                        result.AddSamplerParameter("base_map_m_0");
+                        result.AddSamplerParameter("detail_map_m_0");
+                        result.AddSamplerParameter("bump_map_m_0");
+                        result.AddSamplerParameter("detail_bump_m_0");
+                        result.AddSamplerParameter("heightmap_m_0");
                         result.AddBooleanParameter("heightmap_invert_m_0");
                         result.AddFloatParameter("diffuse_coefficient_m_0");
                         result.AddFloatParameter("specular_coefficient_m_0");
@@ -307,19 +307,19 @@ namespace HaloShaderGenerator.Terrain
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_plus_heightmap_m_0";
                         break;
                     case Material_0.Diffuse_Plus_Two_Detail:
-                        result.AddSamplerWithoutXFormParameter("base_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("detail_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("detail_map2_m_0");
-                        result.AddSamplerWithoutXFormParameter("bump_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("detail_bump_m_0");
+                        result.AddSamplerParameter("base_map_m_0");
+                        result.AddSamplerParameter("detail_map_m_0");
+                        result.AddSamplerParameter("detail_map2_m_0");
+                        result.AddSamplerParameter("bump_map_m_0");
+                        result.AddSamplerParameter("detail_bump_m_0");
                         rmopName = @"shaders\terrain_options\diffuse_plus_two_detail_m_0";
                         break;
                     case Material_0.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
-                        result.AddSamplerWithoutXFormParameter("base_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("detail_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("bump_map_m_0");
-                        result.AddSamplerWithoutXFormParameter("detail_bump_m_0");
-                        result.AddSamplerWithoutXFormParameter("heightmap_m_0");
+                        result.AddSamplerParameter("base_map_m_0");
+                        result.AddSamplerParameter("detail_map_m_0");
+                        result.AddSamplerParameter("bump_map_m_0");
+                        result.AddSamplerParameter("detail_bump_m_0");
+                        result.AddSamplerParameter("heightmap_m_0");
                         result.AddBooleanParameter("heightmap_invert_m_0");
                         result.AddFloatParameter("diffuse_coefficient_m_0");
                         result.AddFloatParameter("specular_coefficient_m_0");
@@ -370,10 +370,10 @@ namespace HaloShaderGenerator.Terrain
                     case Material_1.Off:
                         break;
                     case Material_1.Diffuse_Only_Plus_Self_Illum:
-                        result.AddSamplerWithoutXFormParameter("base_map_m_1");
-                        result.AddSamplerWithoutXFormParameter("bump_map_m_1");
-                        result.AddSamplerWithoutXFormParameter("self_illum_map_m_1");
-                        result.AddSamplerWithoutXFormParameter("self_illum_detail_map_m_1");
+                        result.AddSamplerParameter("base_map_m_1");
+                        result.AddSamplerParameter("bump_map_m_1");
+                        result.AddSamplerParameter("self_illum_map_m_1");
+                        result.AddSamplerParameter("self_illum_detail_map_m_1");
                         result.AddFloat3ColorParameter("self_illum_color_m_1");
                         result.AddFloatParameter("self_illum_intensity_m_1");
                         rmopName = @"shaders\terrain_options\diffuse_only_plus_sefl_illum_m_1";
@@ -397,11 +397,11 @@ namespace HaloShaderGenerator.Terrain
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_plus_self_illumm_1";
                         break;
                     case Material_1.Diffuse_Plus_Specular_Plus_Heightmap:
-                        result.AddSamplerWithoutXFormParameter("base_map_m_1");
-                        result.AddSamplerWithoutXFormParameter("detail_map_m_1");
-                        result.AddSamplerWithoutXFormParameter("bump_map_m_1");
-                        result.AddSamplerWithoutXFormParameter("detail_bump_m_1");
-                        result.AddSamplerWithoutXFormParameter("heightmap_m_1");
+                        result.AddSamplerParameter("base_map_m_1");
+                        result.AddSamplerParameter("detail_map_m_1");
+                        result.AddSamplerParameter("bump_map_m_1");
+                        result.AddSamplerParameter("detail_bump_m_1");
+                        result.AddSamplerParameter("heightmap_m_1");
                         result.AddBooleanParameter("heightmap_invert_m_1");
                         result.AddFloatParameter("diffuse_coefficient_m_1");
                         result.AddFloatParameter("specular_coefficient_m_1");
@@ -416,11 +416,11 @@ namespace HaloShaderGenerator.Terrain
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_plus_heightmap_m_1";
                         break;
                     case Material_1.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
-                        result.AddSamplerWithoutXFormParameter("base_map_m_1");
-                        result.AddSamplerWithoutXFormParameter("detail_map_m_1");
-                        result.AddSamplerWithoutXFormParameter("bump_map_m_1");
-                        result.AddSamplerWithoutXFormParameter("detail_bump_m_1");
-                        result.AddSamplerWithoutXFormParameter("heightmap_m_1");
+                        result.AddSamplerParameter("base_map_m_1");
+                        result.AddSamplerParameter("detail_map_m_1");
+                        result.AddSamplerParameter("bump_map_m_1");
+                        result.AddSamplerParameter("detail_bump_m_1");
+                        result.AddSamplerParameter("heightmap_m_1");
                         result.AddBooleanParameter("heightmap_invert_m_1");
                         result.AddFloatParameter("diffuse_coefficient_m_1");
                         result.AddFloatParameter("specular_coefficient_m_1");
@@ -471,19 +471,19 @@ namespace HaloShaderGenerator.Terrain
                     case Material_2.Off:
                         break;
                     case Material_2.Diffuse_Only_Plus_Self_Illum:
-                        result.AddSamplerWithoutXFormParameter("base_map_m_2");
-                        result.AddSamplerWithoutXFormParameter("bump_map_m_2");
-                        result.AddSamplerWithoutXFormParameter("self_illum_map_m_2");
-                        result.AddSamplerWithoutXFormParameter("self_illum_detail_map_m_2");
+                        result.AddSamplerParameter("base_map_m_2");
+                        result.AddSamplerParameter("bump_map_m_2");
+                        result.AddSamplerParameter("self_illum_map_m_2");
+                        result.AddSamplerParameter("self_illum_detail_map_m_2");
                         result.AddFloat3ColorParameter("self_illum_color_m_2");
                         result.AddFloatParameter("self_illum_intensity_m_2");
                         rmopName = @"shaders\terrain_options\diffuse_only_plus_sefl_illum_m_2";
                         break;
                     case Material_2.Diffuse_Plus_Specular_Plus_Self_Illum:
-                        result.AddSamplerWithoutXFormParameter("base_map_m_2");
-                        result.AddSamplerWithoutXFormParameter("bump_map_m_2");
-                        result.AddSamplerWithoutXFormParameter("self_illum_map_m_2");
-                        result.AddSamplerWithoutXFormParameter("self_illum_detail_map_m_2");
+                        result.AddSamplerParameter("base_map_m_2");
+                        result.AddSamplerParameter("bump_map_m_2");
+                        result.AddSamplerParameter("self_illum_map_m_2");
+                        result.AddSamplerParameter("self_illum_detail_map_m_2");
                         result.AddFloat3ColorParameter("self_illum_color_m_2");
                         result.AddFloatParameter("self_illum_intensity_m_2");
                         result.AddFloatParameter("diffuse_coefficient_m_2");
@@ -553,8 +553,8 @@ namespace HaloShaderGenerator.Terrain
                         result.AddFloatParameter("wet_sheen_reflection_contribution");
                         result.AddFloat3ColorParameter("wet_sheen_reflection_tint");
                         result.AddFloatParameter("wet_sheen_thickness");
-                        result.AddSamplerWithoutXFormParameter("wet_flood_slope_map");
-                        result.AddSamplerWithoutXFormParameter("wet_noise_boundary_map");
+                        result.AddSamplerParameter("wet_flood_slope_map");
+                        result.AddSamplerParameter("wet_noise_boundary_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         result.AddFloatParameter("specular_mask_tweak_weight");
                         result.AddFloatParameter("surface_tilt_tweak_weight");
                         rmopName = @"shaders\wetness_options\wetness_flood";
@@ -565,7 +565,7 @@ namespace HaloShaderGenerator.Terrain
                         result.AddFloatParameter("wet_sheen_reflection_contribution");
                         result.AddFloat3ColorParameter("wet_sheen_reflection_tint");
                         result.AddFloatParameter("wet_sheen_thickness");
-                        result.AddSamplerWithoutXFormParameter("wet_noise_boundary_map");
+                        result.AddSamplerParameter("wet_noise_boundary_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         result.AddFloatParameter("specular_mask_tweak_weight");
                         result.AddFloatParameter("surface_tilt_tweak_weight");
                         rmopName = @"shaders\wetness_options\wetness_ripples";

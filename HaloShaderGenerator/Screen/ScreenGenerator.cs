@@ -125,12 +125,12 @@ namespace HaloShaderGenerator.Screen
                     case Warp.None:
                         break;
                     case Warp.Pixel_Space:
-                        result.AddSamplerWithoutXFormParameter("warp_map");
+                        result.AddSamplerParameter("warp_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         result.AddFloatParameter("warp_amount");
                         rmopName = @"shaders\screen_options\warp_simple";
                         break;
                     case Warp.Screen_Space:
-                        result.AddSamplerParameter("warp_map");
+                        result.AddSamplerParameter("warp_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         result.AddFloatParameter("warp_amount");
                         rmopName = @"shaders\screen_options\warp_simple";
                         break;
@@ -144,28 +144,28 @@ namespace HaloShaderGenerator.Screen
                 switch ((Base)option)
                 {
                     case Base.Single_Screen_Space:
-                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("base_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         rmopName = @"shaders\screen_options\base_single";
                         break;
                     case Base.Single_Pixel_Space:
-                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("base_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         rmopName = @"shaders\screen_options\base_single";
                         break;
                     case Base.Normal_Map_Edge_Shade:
-                        result.AddSamplerWithoutXFormParameter("normal_map");
-                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddSamplerParameter("normal_map", default, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("palette_v");
                         rmopName = @"shaders\screen_options\base_normal_map_edge_shade";
                         break;
                     case Base.Single_Target_Space:
-                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddSamplerParameter("base_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         rmopName = @"shaders\screen_options\base_single";
                         break;
                     case Base.Normal_Map_Edge_Stencil:
-                        result.AddSamplerWithoutXFormParameter("normal_map");
-                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddSamplerParameter("normal_map", default, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("palette_v");
-                        result.AddSamplerWithoutXFormParameter("stencil_map");
+                        result.AddSamplerParameter("stencil_map", default, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         rmopName = @"shaders\screen_options\base_normal_map_edge_stencil";
                         break;
                 }
@@ -185,26 +185,26 @@ namespace HaloShaderGenerator.Screen
                         rmopName = @"shaders\screen_options\overlay_tint_add_color";
                         break;
                     case Overlay_A.Detail_Screen_Space:
-                        result.AddSamplerParameter("detail_map_a");
+                        result.AddSamplerParameter("detail_map_a", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         result.AddFloatParameter("detail_fade_a");
                         result.AddFloatParameter("detail_multiplier_a");
                         rmopName = @"shaders\screen_options\detail_a";
                         break;
                     case Overlay_A.Detail_Pixel_Space:
-                        result.AddSamplerWithoutXFormParameter("detail_map_a");
+                        result.AddSamplerParameter("detail_map_a", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         result.AddFloatParameter("detail_fade_a");
                         result.AddFloatParameter("detail_multiplier_a");
                         rmopName = @"shaders\screen_options\detail_a";
                         break;
                     case Overlay_A.Detail_Masked_Screen_Space:
-                        result.AddSamplerParameter("detail_map_a");
+                        result.AddSamplerParameter("detail_map_a", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         result.AddSamplerParameter("detail_mask_a");
                         result.AddFloatParameter("detail_fade_a");
                         result.AddFloatParameter("detail_multiplier_a");
                         rmopName = @"shaders\screen_options\detail_mask_a";
                         break;
                     case Overlay_A.Palette_Lookup:
-                        result.AddSamplerWithoutXFormParameter("detail_map_a");
+                        result.AddSamplerParameter("detail_map_a", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         result.AddFloatParameter("detail_fade_a");
                         result.AddFloat3ColorParameter("intensity_color_u");
                         result.AddFloat3ColorParameter("intensity_color_v");

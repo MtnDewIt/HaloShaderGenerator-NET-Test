@@ -115,18 +115,18 @@ namespace HaloShaderGenerator.Glass
         public ShaderParameters GetGlobalParameters()
         {
             var result = new ShaderParameters();
-            result.AddSamplerWithoutXFormParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
-            result.AddSamplerWithoutXFormParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerWithoutXFormParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
+            result.AddSamplerParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
+            result.AddSamplerParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddFloat3ColorParameter("debug_tint", RenderMethodExtern.debug_tint);
-            result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerWithoutXFormParameter("scene_hdr_texture");
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_phong_specular");
-            result.AddSamplerWithoutXFormParameter("g_direction_lut");
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse");
-            result.AddSamplerWithoutXFormParameter("g_diffuse_power_specular");
-            result.AddSamplerWithoutXFormParameter("shadow_mask_texture", RenderMethodExtern.none);
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse_vs");
+            result.AddSamplerParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerParameter("scene_hdr_texture");
+            result.AddSamplerParameter("g_sample_vmf_phong_specular");
+            result.AddSamplerParameter("g_direction_lut");
+            result.AddSamplerParameter("g_sample_vmf_diffuse");
+            result.AddSamplerParameter("g_diffuse_power_specular");
+            result.AddSamplerParameter("shadow_mask_texture", RenderMethodExtern.none);
+            result.AddSamplerParameter("g_sample_vmf_diffuse_vs");
             return result;
         }
 
@@ -143,8 +143,8 @@ namespace HaloShaderGenerator.Glass
                 switch ((Albedo)option)
                 {
                     case Albedo.Map:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("detail_map");
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
                         result.AddFloat4ColorParameter("albedo_color");
                         rmopName = @"shaders\shader_options\albedo_default";
                         break;
@@ -161,44 +161,44 @@ namespace HaloShaderGenerator.Glass
                         rmopName = @"shaders\shader_options\bump_off";
                         break;
                     case Bump_Mapping.Standard:
-                        result.AddSamplerWithoutXFormParameter("bump_map");
+                        result.AddSamplerParameter("bump_map");
                         rmopName = @"shaders\shader_options\bump_default";
                         break;
                     case Bump_Mapping.Detail:
-                        result.AddSamplerWithoutXFormParameter("bump_map");
-                        result.AddSamplerWithoutXFormParameter("bump_detail_map");
+                        result.AddSamplerParameter("bump_map");
+                        result.AddSamplerParameter("bump_detail_map");
                         rmopName = @"shaders\shader_options\bump_detail";
                         break;
                     case Bump_Mapping.Detail_Blend:
-                        result.AddSamplerWithoutXFormParameter("bump_map");
-                        result.AddSamplerWithoutXFormParameter("bump_detail_map");
-                        result.AddSamplerWithoutXFormParameter("bump_detail_map2");
+                        result.AddSamplerParameter("bump_map");
+                        result.AddSamplerParameter("bump_detail_map");
+                        result.AddSamplerParameter("bump_detail_map2");
                         result.AddFloatParameter("blend_alpha");
                         rmopName = @"shaders\shader_options\bump_detail_blend";
                         break;
                     case Bump_Mapping.Three_Detail_Blend:
-                        result.AddSamplerWithoutXFormParameter("bump_map");
-                        result.AddSamplerWithoutXFormParameter("bump_detail_map");
-                        result.AddSamplerWithoutXFormParameter("bump_detail_map2");
-                        result.AddSamplerWithoutXFormParameter("bump_detail_map3");
+                        result.AddSamplerParameter("bump_map");
+                        result.AddSamplerParameter("bump_detail_map");
+                        result.AddSamplerParameter("bump_detail_map2");
+                        result.AddSamplerParameter("bump_detail_map3");
                         result.AddFloatParameter("blend_alpha");
                         rmopName = @"shaders\shader_options\bump_three_detail_blend";
                         break;
                     case Bump_Mapping.Standard_Wrinkle:
-                        result.AddSamplerWithoutXFormParameter("bump_map");
-                        result.AddSamplerWithoutXFormParameter("wrinkle_normal");
-                        result.AddSamplerWithoutXFormParameter("wrinkle_mask_a");
-                        result.AddSamplerWithoutXFormParameter("wrinkle_mask_b");
+                        result.AddSamplerParameter("bump_map");
+                        result.AddSamplerParameter("wrinkle_normal");
+                        result.AddSamplerParameter("wrinkle_mask_a");
+                        result.AddSamplerParameter("wrinkle_mask_b");
                         result.AddFloat4ColorParameter("wrinkle_weights_a", RenderMethodExtern.none);
                         result.AddFloat4ColorParameter("wrinkle_weights_b", RenderMethodExtern.none);
                         rmopName = @"shaders\shader_options\bump_default_wrinkle";
                         break;
                     case Bump_Mapping.Detail_Wrinkle:
-                        result.AddSamplerWithoutXFormParameter("bump_map");
-                        result.AddSamplerWithoutXFormParameter("bump_detail_map");
-                        result.AddSamplerWithoutXFormParameter("wrinkle_normal");
-                        result.AddSamplerWithoutXFormParameter("wrinkle_mask_a");
-                        result.AddSamplerWithoutXFormParameter("wrinkle_mask_b");
+                        result.AddSamplerParameter("bump_map");
+                        result.AddSamplerParameter("bump_detail_map");
+                        result.AddSamplerParameter("wrinkle_normal");
+                        result.AddSamplerParameter("wrinkle_mask_a");
+                        result.AddSamplerParameter("wrinkle_mask_b");
                         result.AddFloat4ColorParameter("wrinkle_weights_a", RenderMethodExtern.none);
                         result.AddFloat4ColorParameter("wrinkle_weights_b", RenderMethodExtern.none);
                         rmopName = @"shaders\shader_options\bump_detail_wrinkle";
@@ -241,7 +241,7 @@ namespace HaloShaderGenerator.Glass
                     case Environment_Mapping.None:
                         break;
                     case Environment_Mapping.Per_Pixel:
-                        result.AddSamplerWithoutXFormParameter("environment_map");
+                        result.AddSamplerParameter("environment_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloat3ColorParameter("env_tint_color");
                         result.AddFloatParameter("env_roughness_offset");
                         rmopName = @"shaders\shader_options\env_map_per_pixel";
@@ -253,7 +253,7 @@ namespace HaloShaderGenerator.Glass
                         rmopName = @"shaders\shader_options\env_map_dynamic";
                         break;
                     case Environment_Mapping.From_Flat_Texture:
-                        result.AddSamplerWithoutXFormParameter("flat_environment_map");
+                        result.AddSamplerParameter("flat_environment_map", default, default, ShaderOptionParameter.ShaderAddressMode.BlackBorder);
                         result.AddFloat3ColorParameter("env_tint_color");
                         result.AddFloat4ColorParameter("flat_envmap_matrix_x", RenderMethodExtern.flat_envmap_matrix_x);
                         result.AddFloat4ColorParameter("flat_envmap_matrix_y", RenderMethodExtern.flat_envmap_matrix_y);
@@ -283,8 +283,8 @@ namespace HaloShaderGenerator.Glass
                         result.AddFloatParameter("wet_sheen_reflection_contribution");
                         result.AddFloat3ColorParameter("wet_sheen_reflection_tint");
                         result.AddFloatParameter("wet_sheen_thickness");
-                        result.AddSamplerWithoutXFormParameter("wet_flood_slope_map");
-                        result.AddSamplerWithoutXFormParameter("wet_noise_boundary_map");
+                        result.AddSamplerParameter("wet_flood_slope_map");
+                        result.AddSamplerParameter("wet_noise_boundary_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         result.AddFloatParameter("specular_mask_tweak_weight");
                         result.AddFloatParameter("surface_tilt_tweak_weight");
                         rmopName = @"shaders\wetness_options\wetness_flood";
@@ -307,21 +307,21 @@ namespace HaloShaderGenerator.Glass
                         rmopName = @"shaders\shader_options\blend_source_from_albedo_alpha";
                         break;
                     case Alpha_Blend_Source.From_Opacity_Map_Alpha:
-                        result.AddSamplerWithoutXFormParameter("opacity_texture");
+                        result.AddSamplerParameter("opacity_texture");
                         result.AddFloatParameter("opacity_fresnel_coefficient");
                         result.AddFloatParameter("opacity_fresnel_curve_steepness");
                         result.AddFloatParameter("opacity_fresnel_curve_bias");
                         rmopName = @"shaders\shader_options\blend_source_from_opacity_map";
                         break;
                     case Alpha_Blend_Source.From_Opacity_Map_Rgb:
-                        result.AddSamplerWithoutXFormParameter("opacity_texture");
+                        result.AddSamplerParameter("opacity_texture");
                         result.AddFloatParameter("opacity_fresnel_coefficient");
                         result.AddFloatParameter("opacity_fresnel_curve_steepness");
                         result.AddFloatParameter("opacity_fresnel_curve_bias");
                         rmopName = @"shaders\shader_options\blend_source_from_opacity_map";
                         break;
                     case Alpha_Blend_Source.From_Opacity_Map_Alpha_And_Albedo_Alpha:
-                        result.AddSamplerWithoutXFormParameter("opacity_texture");
+                        result.AddSamplerParameter("opacity_texture");
                         result.AddFloatParameter("opacity_fresnel_coefficient");
                         result.AddFloatParameter("opacity_fresnel_curve_steepness");
                         result.AddFloatParameter("opacity_fresnel_curve_bias");

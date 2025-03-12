@@ -121,16 +121,16 @@ namespace HaloShaderGenerator.Cortana
         public ShaderParameters GetGlobalParameters()
         {
             var result = new ShaderParameters();
-            result.AddSamplerWithoutXFormParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
-            result.AddSamplerWithoutXFormParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerWithoutXFormParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
-            result.AddSamplerWithoutXFormParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1);
-            result.AddSamplerWithoutXFormParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
+            result.AddSamplerParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
+            result.AddSamplerParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
+            result.AddSamplerParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1);
+            result.AddSamplerParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddFloat3ColorParameter("debug_tint", RenderMethodExtern.debug_tint);
-            result.AddSamplerWithoutXFormParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
-            result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
-            result.AddSamplerWithoutXFormParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
+            result.AddSamplerParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
+            result.AddSamplerParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
+            result.AddSamplerParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
             return result;
         }
 
@@ -210,9 +210,9 @@ namespace HaloShaderGenerator.Cortana
                         result.AddBooleanParameter("use_material_texture");
                         result.AddSamplerParameter("material_texture");
                         result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddSamplerWithoutXFormParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
-                        result.AddSamplerWithoutXFormParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerWithoutXFormParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
+                        result.AddSamplerParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
+                        result.AddSamplerParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
                         result.AddFloatParameter("albedo_blend");
                         result.AddFloatParameter("analytical_anti_shadow_control");
                         rmopName = @"shaders\shader_options\material_cook_torrance_option";
@@ -229,15 +229,15 @@ namespace HaloShaderGenerator.Cortana
                     case Environment_Mapping.None:
                         break;
                     case Environment_Mapping.Per_Pixel:
-                        result.AddSamplerWithoutXFormParameter("environment_map");
+                        result.AddSamplerParameter("environment_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloat3ColorParameter("env_tint_color");
                         result.AddFloatParameter("env_roughness_scale");
                         rmopName = @"shaders\shader_options\env_map_per_pixel";
                         break;
                     case Environment_Mapping.Dynamic:
                         result.AddFloat3ColorParameter("env_tint_color");
-                        result.AddSamplerWithoutXFormParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
-                        result.AddSamplerWithoutXFormParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
+                        result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("env_roughness_scale");
                         rmopName = @"shaders\shader_options\env_map_dynamic";
                         break;
@@ -293,7 +293,7 @@ namespace HaloShaderGenerator.Cortana
                         result.AddSamplerParameter("fade_gradient_map");
                         result.AddFloatParameter("fade_gradient_scale");
                         result.AddFloatParameter("noise_amount");
-                        result.AddSamplerWithoutXFormParameter("fade_noise_map");
+                        result.AddSamplerParameter("fade_noise_map");
                         result.AddFloatParameter("fade_offset");
                         result.AddFloatParameter("warp_fade_offset");
                         rmopName = @"shaders\shader_options\cortana_transparency";

@@ -128,11 +128,11 @@ namespace HaloShaderGenerator.Water
         {
             var result = new ShaderParameters();
             result.AddFloat3ColorParameter("water_memory_export_addr", RenderMethodExtern.water_memory_export_address);
-            result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
-            result.AddSamplerWithoutXFormParameter("depth_buffer", RenderMethodExtern.texture_global_target_z);
-            result.AddSamplerWithoutXFormParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
-            result.AddSamplerWithoutXFormParameter("g_direction_lut");
+            result.AddSamplerParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
+            result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
+            result.AddSamplerParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
+            result.AddSamplerParameter("g_direction_lut", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             return result;
         }
 
@@ -195,7 +195,7 @@ namespace HaloShaderGenerator.Water
                         rmopName = @"shaders\water_options\watercolor_pure";
                         break;
                     case Watercolor.Texture:
-                        result.AddSamplerWithoutXFormParameter("watercolor_texture");
+                        result.AddSamplerParameter("watercolor_texture");
                         result.AddFloatParameter("watercolor_coefficient");
                         rmopName = @"shaders\water_options\watercolor_texture";
                         break;
@@ -211,7 +211,7 @@ namespace HaloShaderGenerator.Water
                     case Reflection.None:
                         break;
                     case Reflection.Static:
-                        result.AddSamplerWithoutXFormParameter("environment_map");
+                        result.AddSamplerParameter("environment_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("reflection_coefficient");
                         result.AddFloatParameter("sunspot_cut");
                         result.AddFloatParameter("shadow_intensity_mark");
@@ -226,7 +226,7 @@ namespace HaloShaderGenerator.Water
                         rmopName = @"shaders\water_options\reflection_dynamic";
                         break;
                     case Reflection.Static_Ssr:
-                        result.AddSamplerWithoutXFormParameter("environment_map");
+                        result.AddSamplerParameter("environment_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("reflection_coefficient");
                         result.AddFloatParameter("sunspot_cut");
                         result.AddFloatParameter("shadow_intensity_mark");
@@ -269,11 +269,11 @@ namespace HaloShaderGenerator.Water
                         rmopName = @"shaders\water_options\bankalpha_depth";
                         break;
                     case Bankalpha.Paint:
-                        result.AddSamplerWithoutXFormParameter("watercolor_texture");
+                        result.AddSamplerParameter("watercolor_texture");
                         rmopName = @"shaders\water_options\bankalpha_paint";
                         break;
                     case Bankalpha.From_Shape_Texture_Alpha:
-                        result.AddSamplerWithoutXFormParameter("global_shape_texture");
+                        result.AddSamplerParameter("global_shape_texture");
                         rmopName = @"shaders\water_options\bankalpha_from_shape_texture_alpha";
                         break;
                 }
@@ -302,11 +302,11 @@ namespace HaloShaderGenerator.Water
                 switch ((Global_Shape)option)
                 {
                     case Global_Shape.None:
-                        result.AddSamplerWithoutXFormParameter("global_shape_texture");
+                        result.AddSamplerParameter("global_shape_texture");
                         rmopName = @"shaders\water_options\globalshape_none";
                         break;
                     case Global_Shape.Paint:
-                        result.AddSamplerWithoutXFormParameter("global_shape_texture");
+                        result.AddSamplerParameter("global_shape_texture");
                         rmopName = @"shaders\water_options\globalshape_paint";
                         break;
                     case Global_Shape.Depth:
@@ -340,14 +340,14 @@ namespace HaloShaderGenerator.Water
                     case Foam.Paint:
                         result.AddSamplerParameter("foam_texture");
                         result.AddSamplerParameter("foam_texture_detail");
-                        result.AddSamplerWithoutXFormParameter("global_shape_texture");
+                        result.AddSamplerParameter("global_shape_texture");
                         result.AddFloatParameter("foam_coefficient");
                         rmopName = @"shaders\water_options\foam_paint";
                         break;
                     case Foam.Both:
                         result.AddSamplerParameter("foam_texture");
                         result.AddSamplerParameter("foam_texture_detail");
-                        result.AddSamplerWithoutXFormParameter("global_shape_texture");
+                        result.AddSamplerParameter("global_shape_texture");
                         result.AddFloatParameter("foam_height");
                         result.AddFloatParameter("foam_pow");
                         result.AddFloatParameter("foam_cut");
@@ -390,7 +390,7 @@ namespace HaloShaderGenerator.Water
                         result.AddFloatParameter("fresnel_dark_spot");
                         result.AddFloatParameter("foam_coefficient");
                         result.AddFloatParameter("foam_cut");
-                        result.AddSamplerWithoutXFormParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
+                        result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
                         result.AddFloatParameter("detail_slope_scale_x");
                         result.AddFloatParameter("detail_slope_scale_y");
                         result.AddFloatParameter("detail_slope_scale_z");
@@ -403,7 +403,7 @@ namespace HaloShaderGenerator.Water
                         result.AddFloatParameter("fresnel_dark_spot");
                         result.AddFloatParameter("foam_coefficient");
                         result.AddFloatParameter("foam_cut");
-                        result.AddSamplerWithoutXFormParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
+                        result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
                         result.AddFloatParameter("detail_slope_scale_x");
                         result.AddFloatParameter("detail_slope_scale_y");
                         result.AddFloatParameter("detail_slope_scale_z");

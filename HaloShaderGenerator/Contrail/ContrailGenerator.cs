@@ -119,18 +119,18 @@ namespace HaloShaderGenerator.Contrail
                 switch ((Albedo)option)
                 {
                     case Albedo.Diffuse_Only:
-                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddSamplerParameter("base_map");
                         rmopName = @"shaders\contrail_options\albedo_diffuse_only";
                         break;
                     case Albedo.Palettized:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("palette", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         rmopName = @"shaders\contrail_options\albedo_palettized";
                         break;
                     case Albedo.Palettized_Plus_Alpha:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("palette");
-                        result.AddSamplerWithoutXFormParameter("alpha_map");
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("palette", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerParameter("alpha_map");
                         rmopName = @"shaders\contrail_options\albedo_palettized_plus_alpha";
                         break;
                 }

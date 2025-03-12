@@ -130,18 +130,18 @@ namespace HaloShaderGenerator.Mux
         public ShaderParameters GetGlobalParameters()
         {
             var result = new ShaderParameters();
-            result.AddSamplerWithoutXFormParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
-            result.AddSamplerWithoutXFormParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerWithoutXFormParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
+            result.AddSamplerParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
+            result.AddSamplerParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddFloat3ColorParameter("debug_tint", RenderMethodExtern.debug_tint);
-            result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerWithoutXFormParameter("scene_hdr_texture");
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_phong_specular");
-            result.AddSamplerWithoutXFormParameter("g_direction_lut");
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse");
-            result.AddSamplerWithoutXFormParameter("g_diffuse_power_specular");
-            result.AddSamplerWithoutXFormParameter("shadow_mask_texture", RenderMethodExtern.none);
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse_vs");
+            result.AddSamplerParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerParameter("scene_hdr_texture");
+            result.AddSamplerParameter("g_sample_vmf_phong_specular");
+            result.AddSamplerParameter("g_direction_lut");
+            result.AddSamplerParameter("g_sample_vmf_diffuse");
+            result.AddSamplerParameter("g_diffuse_power_specular");
+            result.AddSamplerParameter("shadow_mask_texture", RenderMethodExtern.none);
+            result.AddSamplerParameter("g_sample_vmf_diffuse_vs");
             return result;
         }
 
@@ -158,7 +158,7 @@ namespace HaloShaderGenerator.Mux
                 switch ((Blending)option)
                 {
                     case Blending.Standard:
-                        result.AddSamplerWithoutXFormParameter("material_map");
+                        result.AddSamplerParameter("material_map");
                         result.AddFloatParameter("blend_material_scale");
                         result.AddFloatParameter("blend_material_offset");
                         result.AddFloatParameter("pc_atlas_scale_x");
@@ -178,12 +178,12 @@ namespace HaloShaderGenerator.Mux
                 switch ((Albedo)option)
                 {
                     case Albedo.Base_Only:
-                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddSamplerParameter("base_map");
                         rmopName = @"shaders\shader_options\mux_albedo_base_only";
                         break;
                     case Albedo.Base_And_Detail:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("detail_map");
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
                         rmopName = @"shaders\shader_options\mux_albedo";
                         break;
                 }
@@ -196,12 +196,12 @@ namespace HaloShaderGenerator.Mux
                 switch ((Bump)option)
                 {
                     case Bump.Base_Only:
-                        result.AddSamplerWithoutXFormParameter("bump_map");
+                        result.AddSamplerParameter("bump_map");
                         rmopName = @"shaders\shader_options\bump_default";
                         break;
                     case Bump.Base_And_Detail:
-                        result.AddSamplerWithoutXFormParameter("bump_map");
-                        result.AddSamplerWithoutXFormParameter("bump_detail_map");
+                        result.AddSamplerParameter("bump_map");
+                        result.AddSamplerParameter("bump_detail_map");
                         rmopName = @"shaders\shader_options\bump_detail";
                         break;
                 }
@@ -219,8 +219,8 @@ namespace HaloShaderGenerator.Mux
                         rmopName = @"shaders\shader_options\material_diffuse_only";
                         break;
                     case Materials.Single_Lobe_Phong:
-                        result.AddSamplerWithoutXFormParameter("material_property0_map");
-                        result.AddSamplerWithoutXFormParameter("material_property1_map");
+                        result.AddSamplerParameter("material_property0_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
+                        result.AddSamplerParameter("material_property1_map");
                         result.AddBooleanParameter("no_dynamic_lights");
                         rmopName = @"shaders\shader_options\mux_single_lobe_phong";
                         break;
@@ -236,7 +236,7 @@ namespace HaloShaderGenerator.Mux
                     case Environment_Mapping.None:
                         break;
                     case Environment_Mapping.Per_Pixel:
-                        result.AddSamplerWithoutXFormParameter("environment_map");
+                        result.AddSamplerParameter("environment_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloat3ColorParameter("env_tint_color");
                         result.AddFloatParameter("env_roughness_offset");
                         rmopName = @"shaders\shader_options\env_map_per_pixel";
@@ -259,7 +259,7 @@ namespace HaloShaderGenerator.Mux
                     case Parallax.Off:
                         break;
                     case Parallax.Simple:
-                        result.AddSamplerWithoutXFormParameter("height_map");
+                        result.AddSamplerParameter("height_map");
                         result.AddFloatParameter("height_scale");
                         rmopName = @"shaders\shader_options\parallax_simple";
                         break;
@@ -283,8 +283,8 @@ namespace HaloShaderGenerator.Mux
                         result.AddFloatParameter("wet_sheen_reflection_contribution");
                         result.AddFloat3ColorParameter("wet_sheen_reflection_tint");
                         result.AddFloatParameter("wet_sheen_thickness");
-                        result.AddSamplerWithoutXFormParameter("wet_flood_slope_map");
-                        result.AddSamplerWithoutXFormParameter("wet_noise_boundary_map");
+                        result.AddSamplerParameter("wet_flood_slope_map");
+                        result.AddSamplerParameter("wet_noise_boundary_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         result.AddFloatParameter("specular_mask_tweak_weight");
                         result.AddFloatParameter("surface_tilt_tweak_weight");
                         rmopName = @"shaders\wetness_options\wetness_flood";
@@ -297,7 +297,7 @@ namespace HaloShaderGenerator.Mux
                         result.AddFloatParameter("wet_sheen_reflection_contribution");
                         result.AddFloat3ColorParameter("wet_sheen_reflection_tint");
                         result.AddFloatParameter("wet_sheen_thickness");
-                        result.AddSamplerWithoutXFormParameter("wet_noise_boundary_map");
+                        result.AddSamplerParameter("wet_noise_boundary_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
                         result.AddFloatParameter("specular_mask_tweak_weight");
                         result.AddFloatParameter("surface_tilt_tweak_weight");
                         rmopName = @"shaders\wetness_options\wetness_ripples";

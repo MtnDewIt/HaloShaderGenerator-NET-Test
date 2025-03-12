@@ -142,22 +142,22 @@ namespace HaloShaderGenerator.Halogram
         public ShaderParameters GetGlobalParameters()
         {
             var result = new ShaderParameters();
-            result.AddSamplerWithoutXFormParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
-            result.AddSamplerWithoutXFormParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerWithoutXFormParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
-            result.AddSamplerWithoutXFormParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1);
-            result.AddSamplerWithoutXFormParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
+            result.AddSamplerParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
+            result.AddSamplerParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
+            result.AddSamplerParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1);
+            result.AddSamplerParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddFloat3ColorParameter("debug_tint", RenderMethodExtern.debug_tint);
-            result.AddSamplerWithoutXFormParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
-            result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
-            result.AddSamplerWithoutXFormParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_phong_specular");
-            result.AddSamplerWithoutXFormParameter("g_direction_lut");
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse");
-            result.AddSamplerWithoutXFormParameter("g_diffuse_power_specular");
-            result.AddSamplerWithoutXFormParameter("shadow_mask_texture", RenderMethodExtern.none);
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse_vs");
+            result.AddSamplerParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
+            result.AddSamplerParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
+            result.AddSamplerParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
+            result.AddSamplerParameter("g_sample_vmf_phong_specular");
+            result.AddSamplerParameter("g_direction_lut");
+            result.AddSamplerParameter("g_sample_vmf_diffuse");
+            result.AddSamplerParameter("g_diffuse_power_specular");
+            result.AddSamplerParameter("shadow_mask_texture", RenderMethodExtern.none);
+            result.AddSamplerParameter("g_sample_vmf_diffuse_vs");
             return result;
         }
 
@@ -191,32 +191,32 @@ namespace HaloShaderGenerator.Halogram
                         rmopName = @"shaders\shader_options\albedo_constant";
                         break;
                     case Albedo.Two_Change_Color:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("detail_map");
-                        result.AddSamplerWithoutXFormParameter("change_color_map");
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddSamplerParameter("change_color_map");
                         result.AddFloat3ColorParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
                         result.AddFloat3ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
-                        result.AddSamplerWithoutXFormParameter("camouflage_change_color_map");
+                        result.AddSamplerParameter("camouflage_change_color_map");
                         result.AddFloatParameter("camouflage_scale");
                         rmopName = @"shaders\shader_options\albedo_two_change_color";
                         break;
                     case Albedo.Four_Change_Color:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("detail_map");
-                        result.AddSamplerWithoutXFormParameter("change_color_map");
-                        result.AddFloat3ColorParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
-                        result.AddFloat3ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
-                        result.AddFloat3ColorParameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary);
-                        result.AddFloat3ColorParameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary);
-                        result.AddSamplerWithoutXFormParameter("camouflage_change_color_map");
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddSamplerParameter("change_color_map");
+                        result.AddFloat4ColorParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
+                        result.AddFloat4ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
+                        result.AddFloat4ColorParameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary);
+                        result.AddFloat4ColorParameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary);
+                        result.AddSamplerParameter("camouflage_change_color_map");
                         result.AddFloatParameter("camouflage_scale");
                         rmopName = @"shaders\shader_options\albedo_four_change_color";
                         break;
                     case Albedo.Three_Detail_Blend:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("detail_map");
-                        result.AddSamplerWithoutXFormParameter("detail_map2");
-                        result.AddSamplerWithoutXFormParameter("detail_map3");
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddSamplerParameter("detail_map2");
+                        result.AddSamplerParameter("detail_map3");
                         result.AddFloatParameter("blend_alpha");
                         rmopName = @"shaders\shader_options\albedo_three_detail_blend";
                         break;
@@ -228,19 +228,19 @@ namespace HaloShaderGenerator.Halogram
                         rmopName = @"shaders\shader_options\albedo_two_detail_overlay";
                         break;
                     case Albedo.Two_Detail:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("detail_map");
-                        result.AddSamplerWithoutXFormParameter("detail_map2");
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddSamplerParameter("detail_map2");
                         rmopName = @"shaders\shader_options\albedo_two_detail";
                         break;
                     case Albedo.Color_Mask:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("detail_map");
-                        result.AddSamplerWithoutXFormParameter("color_mask_map");
+                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("detail_map");
+                        result.AddSamplerParameter("color_mask_map");
                         result.AddFloat4ColorParameter("albedo_color");
                         result.AddFloat4ColorParameter("albedo_color2");
                         result.AddFloat4ColorParameter("albedo_color3");
-                        result.AddFloat3ColorParameter("neutral_gray");
+                        result.AddFloat4ColorParameter("neutral_gray");
                         rmopName = @"shaders\shader_options\albedo_color_mask";
                         break;
                     case Albedo.Two_Detail_Black_Point:
@@ -300,7 +300,7 @@ namespace HaloShaderGenerator.Halogram
                         rmopName = @"shaders\shader_options\illum_detail";
                         break;
                     case Self_Illumination.Meter:
-                        result.AddSamplerWithoutXFormParameter("meter_map");
+                        result.AddSamplerParameter("meter_map");
                         result.AddFloat3ColorParameter("meter_color_off");
                         result.AddFloat3ColorParameter("meter_color_on");
                         result.AddFloatParameter("meter_value");
@@ -333,7 +333,7 @@ namespace HaloShaderGenerator.Halogram
                         rmopName = @"shaders\shader_options\illum_scope_blur";
                         break;
                     case Self_Illumination.Ml_Add_Four_Change_Color:
-                        result.AddSamplerWithoutXFormParameter("self_illum_map");
+                        result.AddSamplerParameter("self_illum_map");
                         result.AddFloat3ColorParameter("self_illum_color", RenderMethodExtern.object_change_color_quaternary);
                         result.AddFloatParameter("self_illum_intensity");
                         result.AddFloatParameter("layer_depth");
@@ -344,7 +344,7 @@ namespace HaloShaderGenerator.Halogram
                         rmopName = @"shaders\shader_options\illum_multilayer_four_change_color";
                         break;
                     case Self_Illumination.Ml_Add_Five_Change_Color:
-                        result.AddSamplerWithoutXFormParameter("self_illum_map");
+                        result.AddSamplerParameter("self_illum_map");
                         result.AddFloat3ColorParameter("self_illum_color", RenderMethodExtern.object_change_color_quinary);
                         result.AddFloatParameter("self_illum_intensity");
                         result.AddFloatParameter("layer_depth");
@@ -355,15 +355,15 @@ namespace HaloShaderGenerator.Halogram
                         rmopName = @"shaders\shader_options\illum_multilayer_five_change_color";
                         break;
                     case Self_Illumination.Plasma_Wide_And_Sharp_Five_Change_Color:
-                        result.AddSamplerWithoutXFormParameter("noise_map_a");
-                        result.AddSamplerWithoutXFormParameter("noise_map_b");
+                        result.AddSamplerParameter("noise_map_a");
+                        result.AddSamplerParameter("noise_map_b");
                         result.AddFloat4ColorParameter("color_medium");
                         result.AddFloat3ColorParameter("color_wide", RenderMethodExtern.object_change_color_quinary);
                         result.AddFloatParameter("color_wide_alpha");
                         result.AddFloat3ColorParameter("color_sharp", RenderMethodExtern.object_change_color_quinary);
                         result.AddFloatParameter("color_sharp_alpha");
                         result.AddFloatParameter("self_illum_intensity");
-                        result.AddSamplerWithoutXFormParameter("alpha_mask_map");
+                        result.AddSamplerParameter("alpha_mask_map");
                         result.AddFloatParameter("thinness_medium");
                         result.AddFloatParameter("thinness_wide");
                         result.AddFloatParameter("thinness_sharp");
@@ -378,25 +378,25 @@ namespace HaloShaderGenerator.Halogram
                     case Self_Illumination.Palettized_Plasma:
                         result.AddSamplerParameter("noise_map_a");
                         result.AddSamplerParameter("noise_map_b");
-                        result.AddSamplerWithoutXFormParameter("palette");
-                        result.AddSamplerParameter("alpha_mask_map");
+                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerParameter("alpha_mask_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("alpha_modulation_factor");
-                        result.AddSamplerWithoutXFormParameter("depth_buffer", RenderMethodExtern.texture_global_target_z);
+                        result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("depth_fade_range");
                         result.AddFloat3ColorParameter("self_illum_color");
                         result.AddFloatParameter("self_illum_intensity");
                         result.AddFloatParameter("v_coordinate");
-                        result.AddFloatParameter("global_depth_constants", RenderMethodExtern.tree_animation_timer);
-                        result.AddFloatParameter("global_camera_forward", RenderMethodExtern.global_depth_constants);
+                        result.AddFloatParameter("global_depth_constants", RenderMethodExtern.global_depth_constants);
+                        result.AddFloatParameter("global_camera_forward", RenderMethodExtern.global_camera_forward);
                         rmopName = @"shaders\shader_options\illum_palettized_plasma";
                         break;
                     case Self_Illumination.Palettized_Plasma_Change_Color:
-                        result.AddSamplerWithoutXFormParameter("noise_map_a");
-                        result.AddSamplerWithoutXFormParameter("noise_map_b");
-                        result.AddSamplerWithoutXFormParameter("palette");
-                        result.AddSamplerWithoutXFormParameter("alpha_mask_map");
+                        result.AddSamplerParameter("noise_map_a");
+                        result.AddSamplerParameter("noise_map_b");
+                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerParameter("alpha_mask_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("alpha_modulation_factor");
-                        result.AddSamplerWithoutXFormParameter("depth_buffer", RenderMethodExtern.texture_global_target_z);
+                        result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("depth_fade_range");
                         result.AddFloat3ColorParameter("self_illum_color", RenderMethodExtern.object_change_color_primary);
                         result.AddFloatParameter("self_illum_intensity");
@@ -406,11 +406,11 @@ namespace HaloShaderGenerator.Halogram
                         rmopName = @"shaders\screen_options\illum_palettized_plasma_change_color";
                         break;
                     case Self_Illumination.Palettized_Depth_Fade:
-                        result.AddSamplerWithoutXFormParameter("noise_map_a");
-                        result.AddSamplerWithoutXFormParameter("palette");
-                        result.AddSamplerWithoutXFormParameter("alpha_mask_map");
+                        result.AddSamplerParameter("noise_map_a");
+                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerParameter("alpha_mask_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("alpha_modulation_factor");
-                        result.AddSamplerWithoutXFormParameter("depth_buffer", RenderMethodExtern.texture_global_target_z);
+                        result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("depth_fade_range");
                         result.AddFloat3ColorParameter("self_illum_color");
                         result.AddFloatParameter("self_illum_intensity");
@@ -475,7 +475,7 @@ namespace HaloShaderGenerator.Halogram
                         rmopName = @"shaders\shader_options\warp_from_texture";
                         break;
                     case Warp.Parallax_Simple:
-                        result.AddSamplerWithoutXFormParameter("height_map");
+                        result.AddSamplerParameter("height_map");
                         result.AddFloatParameter("height_scale");
                         rmopName = @"shaders\shader_options\parallax_simple";
                         break;
@@ -546,7 +546,7 @@ namespace HaloShaderGenerator.Halogram
                     case Distortion.Off:
                         break;
                     case Distortion.On:
-                        result.AddSamplerWithoutXFormParameter("distort_map");
+                        result.AddSamplerParameter("distort_map");
                         result.AddFloatParameter("distort_scale");
                         result.AddFloatParameter("distort_fadeoff");
                         result.AddBooleanParameter("distort_selfonly");
@@ -564,7 +564,7 @@ namespace HaloShaderGenerator.Halogram
                     case Soft_Fade.Off:
                         break;
                     case Soft_Fade.On:
-                        result.AddSamplerWithoutXFormParameter("depth_map", RenderMethodExtern.texture_global_target_z);
+                        result.AddSamplerParameter("depth_map", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, default);
                         result.AddBooleanParameter("use_soft_fresnel");
                         result.AddFloatParameter("soft_fresnel_power");
                         result.AddBooleanParameter("use_soft_z");

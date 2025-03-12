@@ -114,18 +114,18 @@ namespace HaloShaderGenerator.Fur
         public ShaderParameters GetGlobalParameters()
         {
             var result = new ShaderParameters();
-            result.AddSamplerWithoutXFormParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
-            result.AddSamplerWithoutXFormParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerWithoutXFormParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
+            result.AddSamplerParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
+            result.AddSamplerParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddFloat3ColorParameter("debug_tint", RenderMethodExtern.debug_tint);
-            result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerWithoutXFormParameter("scene_hdr_texture");
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_phong_specular");
-            result.AddSamplerWithoutXFormParameter("g_direction_lut");
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse");
-            result.AddSamplerWithoutXFormParameter("g_diffuse_power_specular");
-            result.AddSamplerWithoutXFormParameter("shadow_mask_texture", RenderMethodExtern.none);
-            result.AddSamplerWithoutXFormParameter("g_sample_vmf_diffuse_vs");
+            result.AddSamplerParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerParameter("scene_hdr_texture");
+            result.AddSamplerParameter("g_sample_vmf_phong_specular");
+            result.AddSamplerParameter("g_direction_lut");
+            result.AddSamplerParameter("g_sample_vmf_diffuse");
+            result.AddSamplerParameter("g_diffuse_power_specular");
+            result.AddSamplerParameter("shadow_mask_texture", RenderMethodExtern.none);
+            result.AddSamplerParameter("g_sample_vmf_diffuse_vs");
             return result;
         }
 
@@ -142,8 +142,8 @@ namespace HaloShaderGenerator.Fur
                 switch ((Albedo)option)
                 {
                     case Albedo.Fur_Multilayer:
-                        result.AddSamplerWithoutXFormParameter("fur_hairs_map");
-                        result.AddSamplerWithoutXFormParameter("fur_tint_map");
+                        result.AddSamplerParameter("fur_hairs_map");
+                        result.AddSamplerParameter("fur_tint_map");
                         result.AddFloat3ColorParameter("fur_deep_color");
                         result.AddFloat3ColorParameter("fur_tint_color");
                         result.AddFloatParameter("fur_intensity");
@@ -169,7 +169,7 @@ namespace HaloShaderGenerator.Fur
                     case Warp.None:
                         break;
                     case Warp.From_Texture:
-                        result.AddSamplerWithoutXFormParameter("warp_map");
+                        result.AddSamplerParameter("warp_map");
                         result.AddFloatParameter("warp_amount_x");
                         result.AddFloatParameter("warp_amount_y");
                         rmopName = @"shaders\shader_options\warp_from_texture";
@@ -188,28 +188,28 @@ namespace HaloShaderGenerator.Fur
                     case Overlay.None:
                         break;
                     case Overlay.Additive:
-                        result.AddSamplerWithoutXFormParameter("overlay_map");
+                        result.AddSamplerParameter("overlay_map");
                         result.AddFloat3ColorParameter("overlay_tint");
                         result.AddFloatParameter("overlay_intensity");
                         rmopName = @"shaders\shader_options\overlay_additive";
                         break;
                     case Overlay.Additive_Detail:
-                        result.AddSamplerWithoutXFormParameter("overlay_map");
-                        result.AddSamplerWithoutXFormParameter("overlay_detail_map");
+                        result.AddSamplerParameter("overlay_map");
+                        result.AddSamplerParameter("overlay_detail_map");
                         result.AddFloat3ColorParameter("overlay_tint");
                         result.AddFloatParameter("overlay_intensity");
                         rmopName = @"shaders\shader_options\overlay_additive_detail";
                         break;
                     case Overlay.Multiply:
-                        result.AddSamplerWithoutXFormParameter("overlay_map");
+                        result.AddSamplerParameter("overlay_map");
                         result.AddFloat3ColorParameter("overlay_tint");
                         result.AddFloatParameter("overlay_intensity");
                         rmopName = @"shaders\shader_options\overlay_additive";
                         break;
                     case Overlay.Multiply_And_Additive_Detail:
-                        result.AddSamplerWithoutXFormParameter("overlay_multiply_map");
-                        result.AddSamplerWithoutXFormParameter("overlay_map");
-                        result.AddSamplerWithoutXFormParameter("overlay_detail_map");
+                        result.AddSamplerParameter("overlay_multiply_map");
+                        result.AddSamplerParameter("overlay_map");
+                        result.AddSamplerParameter("overlay_detail_map");
                         result.AddFloat3ColorParameter("overlay_tint");
                         result.AddFloatParameter("overlay_intensity");
                         rmopName = @"shaders\shader_options\overlay_multiply_additive_detail";
