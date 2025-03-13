@@ -132,94 +132,94 @@ namespace HaloShaderGenerator.Decal
                 switch ((Albedo)option)
                 {
                     case Albedo.Diffuse_Only:
-                        result.AddSamplerParameter("base_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddFloatParameter("u_tiles");
-                        result.AddFloatParameter("v_tiles");
+                        result.AddFloatParameter("u_tiles", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("v_tiles", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("base_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\decal_options\albedo_diffuse_only";
                         break;
                     case Albedo.Palettized:
-                        result.AddSamplerParameter("base_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerParameter("palette", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddFloatParameter("u_tiles");
-                        result.AddFloatParameter("v_tiles");
+                        result.AddFloatParameter("u_tiles", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("v_tiles", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("base_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("palette", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\decal_options\albedo_palettized";
                         break;
                     case Albedo.Palettized_Plus_Alpha:
-                        result.AddSamplerParameter("base_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerParameter("palette", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerParameter("alpha_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddFloatParameter("u_tiles");
-                        result.AddFloatParameter("v_tiles");
+                        result.AddFloatParameter("u_tiles", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("v_tiles", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("alpha_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddSamplerParameter("base_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("palette", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\decal_options\albedo_palettized_plus_alpha";
                         break;
                     case Albedo.Diffuse_Plus_Alpha:
-                        result.AddSamplerParameter("base_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerParameter("alpha_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddFloatParameter("u_tiles");
-                        result.AddFloatParameter("v_tiles");
+                        result.AddFloatParameter("u_tiles", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("v_tiles", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("alpha_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddSamplerParameter("base_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\decal_options\albedo_diffuse_plus_alpha";
                         break;
                     case Albedo.Emblem_Change_Color:
-                        result.AddSamplerParameter("tex0_sampler", default, default, ShaderOptionParameter.ShaderAddressMode.BlackBorder);
-                        result.AddSamplerParameter("tex1_sampler", default, default, ShaderOptionParameter.ShaderAddressMode.BlackBorder);
-                        result.AddFloat4ColorParameter("emblem_color_background_argb", RenderMethodExtern.none);
-                        result.AddFloat4ColorParameter("emblem_color_icon1_argb", RenderMethodExtern.none);
-                        result.AddFloat4ColorParameter("emblem_color_icon2_argb", RenderMethodExtern.none);
-                        result.AddFloatParameter("u_tiles");
-                        result.AddFloatParameter("v_tiles");
-                        result.AddSamplerParameter("foreground0_sampler", RenderMethodExtern.none);
+                        result.AddFloat4ColorParameter("emblem_color_background_argb", default, default, default, default, default, default); // rmExtern - object_emblem_color_background
+                        result.AddFloat4ColorParameter("emblem_color_icon1_argb", default, default, default, default, default, default); // rmExtern - object_emblem_color_primary
+                        result.AddFloat4ColorParameter("emblem_color_icon2_argb", default, default, default, default, default, default); // rmExtern - object_emblem_color_secondary
+                        result.AddFloatParameter("u_tiles", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("v_tiles", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("foreground0_sampler", default, default, default, default, default, default); // rmExtern - object_emblem_bitmap_and_data
+                        result.AddSamplerParameter("tex0_sampler", default, default, ShaderOptionParameter.ShaderAddressMode.BlackBorder, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("tex1_sampler", default, default, ShaderOptionParameter.ShaderAddressMode.BlackBorder, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\decal_options\albedo_emblem_change_color";
                         break;
                     case Albedo.Change_Color:
-                        result.AddSamplerParameter("change_color_map", default, default, ShaderOptionParameter.ShaderAddressMode.BlackBorder);
-                        result.AddFloat3ColorParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
-                        result.AddFloat3ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
-                        result.AddFloat3ColorParameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary);
-                        result.AddFloatParameter("u_tiles");
-                        result.AddFloatParameter("v_tiles");
+                        result.AddFloat3ColorParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, default, default, default, default, default);
+                        result.AddFloat3ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary, default, default, default, default, default);
+                        result.AddFloat3ColorParameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary, default, default, default, default, default);
+                        result.AddFloatParameter("u_tiles", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("v_tiles", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("change_color_map", default, default, ShaderOptionParameter.ShaderAddressMode.BlackBorder, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\decal_options\albedo_change_color";
                         break;
                     case Albedo.Diffuse_Plus_Alpha_Mask:
-                        result.AddSamplerParameter("base_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerParameter("alpha_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddFloatParameter("u_tiles");
-                        result.AddFloatParameter("v_tiles");
+                        result.AddFloatParameter("u_tiles", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("v_tiles", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("alpha_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddSamplerParameter("base_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\decal_options\albedo_diffuse_plus_alpha_mask";
                         break;
                     case Albedo.Palettized_Plus_Alpha_Mask:
-                        result.AddSamplerParameter("base_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerParameter("palette", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerParameter("alpha_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerParameter("u_tiles");
-                        result.AddSamplerParameter("v_tiles");
+                        result.AddSamplerParameter("alpha_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddSamplerParameter("base_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("palette", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("u_tiles", default, default, default, default, default, default);
+                        result.AddSamplerParameter("v_tiles", default, default, default, default, default, default);
                         rmopName = @"shaders\decal_options\albedo_palettized_plus_alpha_mask";
                         break;
                     case Albedo.Vector_Alpha:
-                        result.AddSamplerParameter("base_map");
-                        result.AddFloatParameter("u_tiles");
-                        result.AddFloatParameter("v_tiles");
-                        result.AddSamplerParameter("vector_map");
-                        result.AddFloatParameter("vector_sharpness");
-                        result.AddFloatParameter("antialias_tweak");
+                        result.AddFloatParameter("antialias_tweak", default, default, default, default, default, 0.025f);
+                        result.AddFloatParameter("u_tiles", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("v_tiles", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("vector_sharpness", default, default, default, default, default, 1000f);
+                        result.AddSamplerParameter("base_map", default, default, default, default, default, default);
+                        result.AddSamplerParameter("vector_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\reference_grids");
                         rmopName = @"shaders\decal_options\albedo_vector_alpha";
                         break;
                     case Albedo.Vector_Alpha_Drop_Shadow:
-                        result.AddSamplerParameter("base_map");
-                        result.AddFloatParameter("u_tiles");
-                        result.AddFloatParameter("v_tiles");
-                        result.AddSamplerParameter("vector_map");
-                        result.AddFloatParameter("vector_sharpness");
-                        result.AddSamplerParameter("shadow_vector_map");
-                        result.AddFloatParameter("shadow_darkness");
-                        result.AddFloatParameter("shadow_sharpness");
-                        result.AddFloatParameter("antialias_tweak");
+                        result.AddFloatParameter("antialias_tweak", default, default, default, default, default, 0.025f);
+                        result.AddFloatParameter("shadow_darkness", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("shadow_sharpness", default, default, default, default, default, 2f);
+                        result.AddFloatParameter("u_tiles", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("v_tiles", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("vector_sharpness", default, default, default, default, default, 1000f);
+                        result.AddSamplerParameter("base_map", default, default, default, default, default, default);
+                        result.AddSamplerParameter("shadow_vector_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\reference_grids");
+                        result.AddSamplerParameter("vector_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\reference_grids");
                         rmopName = @"shaders\decal_options\albedo_vector_alpha_drop_shadow";
                         break;
                     case Albedo.Patchy_Emblem:
-                        result.AddSamplerParameter("foreground0_sampler", RenderMethodExtern.none);
-                        result.AddSamplerParameter("alpha_map");
-                        result.AddFloatParameter("alpha_min");
-                        result.AddFloatParameter("alpha_max");
+                        result.AddFloatParameter("alpha_max", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("alpha_min", default, default, default, default, default, default);
+                        result.AddSamplerParameter("alpha_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\clouds_256");
+                        result.AddSamplerParameter("foreground0_sampler", default, default, default, default, default, default); // rmExtern - object_emblem_bitmap_and_data
                         rmopName = @"shaders\decal_options\albedo_patchy_emblem";
                         break;
                 }
@@ -295,11 +295,11 @@ namespace HaloShaderGenerator.Decal
                     case Bump_Mapping.Leave:
                         break;
                     case Bump_Mapping.Standard:
-                        result.AddSamplerParameter("bump_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerParameter("bump_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\default_vector");
                         rmopName = @"shaders\decal_options\bump_mapping_standard";
                         break;
                     case Bump_Mapping.Standard_Mask:
-                        result.AddSamplerParameter("bump_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerParameter("bump_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\default_vector");
                         rmopName = @"shaders\decal_options\bump_mapping_standard_mask";
                         break;
                 }
@@ -314,19 +314,19 @@ namespace HaloShaderGenerator.Decal
                     case Tinting.None:
                         break;
                     case Tinting.Unmodulated:
-                        result.AddFloat3ColorParameter("tint_color");
-                        result.AddFloatParameter("intensity");
+                        result.AddFloat3ColorParameter("tint_color", default, default, default, default, default, default);
+                        result.AddFloatParameter("intensity", default, default, default, default, default, 1f);
                         rmopName = @"shaders\decal_options\tinting_unmodulated";
                         break;
                     case Tinting.Partially_Modulated:
-                        result.AddFloat3ColorParameter("tint_color");
-                        result.AddFloatParameter("intensity");
-                        result.AddFloatParameter("modulation_factor");
+                        result.AddFloat3ColorParameter("tint_color", default, default, default, default, default, default);
+                        result.AddFloatParameter("intensity", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("modulation_factor", default, default, default, default, default, 1f);
                         rmopName = @"shaders\decal_options\tinting_partially_modulated";
                         break;
                     case Tinting.Fully_Modulated:
-                        result.AddFloat3ColorParameter("tint_color");
-                        result.AddFloatParameter("intensity");
+                        result.AddFloat3ColorParameter("tint_color", default, default, default, default, default, default);
+                        result.AddFloatParameter("intensity", default, default, default, default, default, 1f);
                         rmopName = @"shaders\decal_options\tinting_fully_modulated";
                         break;
                 }
@@ -341,13 +341,13 @@ namespace HaloShaderGenerator.Decal
                     case Parallax.Off:
                         break;
                     case Parallax.Simple:
-                        result.AddSamplerParameter("height_map");
-                        result.AddFloatParameter("height_scale");
+                        result.AddFloatParameter("height_scale", default, default, default, default, default, 0.1f);
+                        result.AddSamplerParameter("height_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
                         rmopName = @"shaders\decal_options\parallax_simple";
                         break;
                     case Parallax.Sphere:
-                        result.AddFloatParameter("sphere_radius");
-                        result.AddFloatParameter("sphere_height");
+                        result.AddFloatParameter("sphere_height", default, default, default, default, default, 0.2f);
+                        result.AddFloatParameter("sphere_radius", default, default, default, default, default, 0.5f);
                         rmopName = @"shaders\decal_options\parallax_sphere";
                         break;
                 }
@@ -362,36 +362,36 @@ namespace HaloShaderGenerator.Decal
                     case Interier.Off:
                         break;
                     case Interier.Simple:
-                        result.AddSamplerParameter("interier");
-                        result.AddFloatParameter("mask_threshold");
+                        result.AddFloatParameter("mask_threshold", default, default, default, default, default, 0.5f);
+                        result.AddSamplerParameter("interier", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\checker_board");
                         rmopName = @"shaders\decal_options\interier_shell";
                         break;
                     case Interier.Floor:
-                        result.AddSamplerParameter("interier");
-                        result.AddFloatParameter("mask_threshold");
-                        result.AddFloatParameter("thin_shell_height");
+                        result.AddFloatParameter("mask_threshold", default, default, default, default, default, 0.5f);
+                        result.AddFloatParameter("thin_shell_height", default, default, default, default, default, 0.5f);
+                        result.AddSamplerParameter("interier", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\checker_board");
                         rmopName = @"shaders\decal_options\interier_thin_shell";
                         break;
                     case Interier.Hole:
-                        result.AddSamplerParameter("interier");
-                        result.AddFloatParameter("mask_threshold");
-                        result.AddFloatParameter("thin_shell_height");
-                        result.AddSamplerParameter("wall_map");
-                        result.AddFloatParameter("hole_radius");
-                        result.AddFloatParameter("fog_factor");
-                        result.AddFloat3ColorParameter("fog_top_color");
-                        result.AddFloat3ColorParameter("fog_bottom_color");
+                        result.AddFloat3ColorParameter("fog_bottom_color", default, default, default, default, default, default);
+                        result.AddFloat3ColorParameter("fog_top_color", default, default, default, default, default, default);
+                        result.AddFloatParameter("fog_factor", default, default, default, default, default, 0.5f);
+                        result.AddFloatParameter("hole_radius", default, default, default, default, default, 0.5f);
+                        result.AddFloatParameter("mask_threshold", default, default, default, default, default, 0.5f);
+                        result.AddFloatParameter("thin_shell_height", default, default, default, default, default, 0.5f);
+                        result.AddSamplerParameter("interier", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\checker_board");
+                        result.AddSamplerParameter("wall_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\checker_board");
                         rmopName = @"shaders\decal_options\interier_hole";
                         break;
                     case Interier.Box:
-                        result.AddSamplerParameter("interier");
-                        result.AddFloatParameter("mask_threshold");
-                        result.AddFloatParameter("thin_shell_height");
-                        result.AddSamplerParameter("wall_map");
-                        result.AddFloatParameter("box_size");
-                        result.AddFloatParameter("fog_factor");
-                        result.AddFloat3ColorParameter("fog_top_color");
-                        result.AddFloat3ColorParameter("fog_bottom_color");
+                        result.AddFloat3ColorParameter("fog_bottom_color", default, default, default, default, default, default);
+                        result.AddFloat3ColorParameter("fog_top_color", default, default, default, default, default, default);
+                        result.AddFloatParameter("box_size", default, default, default, default, default, 0.5f);
+                        result.AddFloatParameter("fog_factor", default, default, default, default, default, 0.5f);
+                        result.AddFloatParameter("mask_threshold", default, default, default, default, default, 0.5f);
+                        result.AddFloatParameter("thin_shell_height", default, default, default, default, default, 0.5f);
+                        result.AddSamplerParameter("interier", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\random");
+                        result.AddSamplerParameter("wall_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\random");
                         rmopName = @"shaders\decal_options\interier_box";
                         break;
                 }

@@ -108,18 +108,22 @@ namespace HaloShaderGenerator.FurStencil
         public ShaderParameters GetGlobalParameters()
         {
             var result = new ShaderParameters();
-            result.AddSamplerParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
-            result.AddSamplerParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
-            result.AddFloat3ColorParameter("debug_tint", RenderMethodExtern.debug_tint);
-            result.AddSamplerParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerParameter("scene_hdr_texture");
-            result.AddSamplerParameter("g_sample_vmf_phong_specular");
-            result.AddSamplerParameter("g_direction_lut");
-            result.AddSamplerParameter("g_sample_vmf_diffuse");
-            result.AddSamplerParameter("g_diffuse_power_specular");
-            result.AddSamplerParameter("shadow_mask_texture", RenderMethodExtern.none);
-            result.AddSamplerParameter("g_sample_vmf_diffuse_vs");
+            result.AddFloat3ColorParameter("debug_tint", RenderMethodExtern.debug_tint, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+            result.AddSamplerParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture, default, default, default, default, default);
+            result.AddSamplerParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum, default, default, default, default, default);
+            result.AddSamplerParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map, default, default, default, default, default);
+            result.AddSamplerParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0, default, default, default, default, default);
+            result.AddSamplerParameter("g_diffuse_power_specular", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"rasterizer\diffuse_power_specular\diffuse_power");
+            result.AddSamplerParameter("g_direction_lut", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"rasterizer\direction_lut_1002");
+            result.AddSamplerParameter("g_sample_vmf_diffuse_vs", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"rasterizer\diffusetable");
+            result.AddSamplerParameter("g_sample_vmf_diffuse", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"rasterizer\diffusetable");
+            result.AddSamplerParameter("g_sample_vmf_phong_specular", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"rasterizer\diffuse_power_specular\diffuse_power");
+            result.AddSamplerParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture, ShaderOptionParameter.ShaderFilterMode.Bilinear, default, default, default, default);
+            result.AddSamplerParameter("normal_texture", RenderMethodExtern.texture_global_target_normal, default, default, default, default, default);
+            result.AddSamplerParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture, default, default, default, default, default);
+            result.AddSamplerParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture, default, default, default, default, default);
+            result.AddSamplerParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, default);
+            result.AddSamplerParameter("shadow_mask_texture", default, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, default); // rmExtern - texture_global_target_shadow_mask
             return result;
         }
 
@@ -138,7 +142,7 @@ namespace HaloShaderGenerator.FurStencil
                     case Alpha_Test.Off:
                         break;
                     case Alpha_Test.On:
-                        result.AddSamplerParameter("alpha_test_map");
+                        result.AddSamplerParameter("alpha_test_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\default_alpha_test");
                         rmopName = @"shaders\shader_options\alpha_test_on";
                         break;
                 }

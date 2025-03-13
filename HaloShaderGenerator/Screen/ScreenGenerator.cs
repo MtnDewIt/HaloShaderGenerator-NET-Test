@@ -125,13 +125,13 @@ namespace HaloShaderGenerator.Screen
                     case Warp.None:
                         break;
                     case Warp.Pixel_Space:
-                        result.AddSamplerParameter("warp_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
-                        result.AddFloatParameter("warp_amount");
+                        result.AddFloatParameter("warp_amount", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("warp_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default, default, default, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         rmopName = @"shaders\screen_options\warp_simple";
                         break;
                     case Warp.Screen_Space:
-                        result.AddSamplerParameter("warp_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
-                        result.AddFloatParameter("warp_amount");
+                        result.AddFloatParameter("warp_amount", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("warp_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default, default, default, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         rmopName = @"shaders\screen_options\warp_simple";
                         break;
                 }
@@ -144,28 +144,28 @@ namespace HaloShaderGenerator.Screen
                 switch ((Base)option)
                 {
                     case Base.Single_Screen_Space:
-                        result.AddSamplerParameter("base_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
+                        result.AddSamplerParameter("base_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default, default, default, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         rmopName = @"shaders\screen_options\base_single";
                         break;
                     case Base.Single_Pixel_Space:
-                        result.AddSamplerParameter("base_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
+                        result.AddSamplerParameter("base_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default, default, default, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         rmopName = @"shaders\screen_options\base_single";
                         break;
                     case Base.Normal_Map_Edge_Shade:
-                        result.AddSamplerParameter("normal_map", default, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddFloatParameter("palette_v");
+                        result.AddFloatParameter("palette_v", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("normal_map", default, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, default);
+                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         rmopName = @"shaders\screen_options\base_normal_map_edge_shade";
                         break;
                     case Base.Single_Target_Space:
-                        result.AddSamplerParameter("base_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
+                        result.AddSamplerParameter("base_map", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default, default, default, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         rmopName = @"shaders\screen_options\base_single";
                         break;
                     case Base.Normal_Map_Edge_Stencil:
-                        result.AddSamplerParameter("normal_map", default, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddFloatParameter("palette_v");
-                        result.AddSamplerParameter("stencil_map", default, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddFloatParameter("palette_v", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("normal_map", default, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, default);
+                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
+                        result.AddSamplerParameter("stencil_map", default, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, default);
                         rmopName = @"shaders\screen_options\base_normal_map_edge_stencil";
                         break;
                 }
@@ -180,34 +180,34 @@ namespace HaloShaderGenerator.Screen
                     case Overlay_A.None:
                         break;
                     case Overlay_A.Tint_Add_Color:
-                        result.AddFloat4ColorParameter("tint_color");
-                        result.AddFloat4ColorParameter("add_color");
+                        result.AddFloat4ColorParameter("add_color", default, default, default, default, default, default);
+                        result.AddFloat4ColorParameter("tint_color", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
                         rmopName = @"shaders\screen_options\overlay_tint_add_color";
                         break;
                     case Overlay_A.Detail_Screen_Space:
-                        result.AddSamplerParameter("detail_map_a", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
-                        result.AddFloatParameter("detail_fade_a");
-                        result.AddFloatParameter("detail_multiplier_a");
+                        result.AddFloatParameter("detail_fade_a", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("detail_multiplier_a", default, default, default, default, default, 4.59479f);
+                        result.AddSamplerParameter("detail_map_a", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default, default, default, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         rmopName = @"shaders\screen_options\detail_a";
                         break;
                     case Overlay_A.Detail_Pixel_Space:
-                        result.AddSamplerParameter("detail_map_a", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
-                        result.AddFloatParameter("detail_fade_a");
-                        result.AddFloatParameter("detail_multiplier_a");
+                        result.AddFloatParameter("detail_fade_a", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("detail_multiplier_a", default, default, default, default, default, 4.59479f);
+                        result.AddSamplerParameter("detail_map_a", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default, default, default, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         rmopName = @"shaders\screen_options\detail_a";
                         break;
                     case Overlay_A.Detail_Masked_Screen_Space:
-                        result.AddSamplerParameter("detail_map_a", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
-                        result.AddSamplerParameter("detail_mask_a");
-                        result.AddFloatParameter("detail_fade_a");
-                        result.AddFloatParameter("detail_multiplier_a");
+                        result.AddFloatParameter("detail_fade_a", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("detail_multiplier_a", default, default, default, default, default, 4.59479f);
+                        result.AddSamplerParameter("detail_map_a", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default, default, default, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
+                        result.AddSamplerParameter("detail_mask_a", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\color_red");
                         rmopName = @"shaders\screen_options\detail_mask_a";
                         break;
                     case Overlay_A.Palette_Lookup:
-                        result.AddSamplerParameter("detail_map_a", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default);
-                        result.AddFloatParameter("detail_fade_a");
-                        result.AddFloat3ColorParameter("intensity_color_u");
-                        result.AddFloat3ColorParameter("intensity_color_v");
+                        result.AddFloat3ColorParameter("intensity_color_u", default, default, default, default, default, default);
+                        result.AddFloat3ColorParameter("intensity_color_v", default, default, default, default, default, default);
+                        result.AddFloatParameter("detail_fade_a", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("detail_map_a", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, default, default, default, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         rmopName = @"shaders\screen_options\palette_lookup_a";
                         break;
                 }
@@ -222,8 +222,8 @@ namespace HaloShaderGenerator.Screen
                     case Overlay_B.None:
                         break;
                     case Overlay_B.Tint_Add_Color:
-                        result.AddFloat4ColorParameter("tint_color");
-                        result.AddFloat4ColorParameter("add_color");
+                        result.AddFloat4ColorParameter("add_color", default, default, default, default, default, default);
+                        result.AddFloat4ColorParameter("tint_color", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
                         rmopName = @"shaders\screen_options\overlay_tint_add_color";
                         break;
                 }
@@ -238,23 +238,23 @@ namespace HaloShaderGenerator.Screen
                     case Blend_Mode.Opaque:
                         break;
                     case Blend_Mode.Additive:
-                        result.AddFloatParameter("fade");
+                        result.AddFloatParameter("fade", default, default, default, default, default, 1f);
                         rmopName = @"shaders\screen_options\blend";
                         break;
                     case Blend_Mode.Multiply:
-                        result.AddFloatParameter("fade");
+                        result.AddFloatParameter("fade", default, default, default, default, default, 1f);
                         rmopName = @"shaders\screen_options\blend";
                         break;
                     case Blend_Mode.Alpha_Blend:
-                        result.AddFloatParameter("fade");
+                        result.AddFloatParameter("fade", default, default, default, default, default, 1f);
                         rmopName = @"shaders\screen_options\blend";
                         break;
                     case Blend_Mode.Double_Multiply:
-                        result.AddFloatParameter("fade");
+                        result.AddFloatParameter("fade", default, default, default, default, default, 1f);
                         rmopName = @"shaders\screen_options\blend";
                         break;
                     case Blend_Mode.Pre_Multiplied_Alpha:
-                        result.AddFloatParameter("fade");
+                        result.AddFloatParameter("fade", default, default, default, default, default, 1f);
                         rmopName = @"shaders\screen_options\blend";
                         break;
                 }

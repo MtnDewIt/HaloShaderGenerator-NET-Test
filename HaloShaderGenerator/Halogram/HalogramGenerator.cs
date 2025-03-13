@@ -142,22 +142,22 @@ namespace HaloShaderGenerator.Halogram
         public ShaderParameters GetGlobalParameters()
         {
             var result = new ShaderParameters();
-            result.AddSamplerParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
-            result.AddSamplerParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
-            result.AddSamplerParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1);
-            result.AddSamplerParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
-            result.AddFloat3ColorParameter("debug_tint", RenderMethodExtern.debug_tint);
-            result.AddSamplerParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
-            result.AddSamplerParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
-            result.AddSamplerParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
-            result.AddSamplerParameter("g_sample_vmf_phong_specular");
-            result.AddSamplerParameter("g_direction_lut");
-            result.AddSamplerParameter("g_sample_vmf_diffuse");
-            result.AddSamplerParameter("g_diffuse_power_specular");
-            result.AddSamplerParameter("shadow_mask_texture", RenderMethodExtern.none);
-            result.AddSamplerParameter("g_sample_vmf_diffuse_vs");
+            result.AddFloat3ColorParameter("debug_tint", RenderMethodExtern.debug_tint, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+            result.AddSamplerParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture, default, default, default, default, default);
+            result.AddSamplerParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum, default, default, default, default, default);
+            result.AddSamplerParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map, default, default, default, default, default);
+            result.AddSamplerParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0, default, default, default, default, default);
+            result.AddSamplerParameter("g_diffuse_power_specular", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"rasterizer\diffuse_power_specular\diffuse_power");
+            result.AddSamplerParameter("g_direction_lut", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"rasterizer\direction_lut_1002");
+            result.AddSamplerParameter("g_sample_vmf_diffuse_vs", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"rasterizer\diffusetable");
+            result.AddSamplerParameter("g_sample_vmf_diffuse", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"rasterizer\diffusetable");
+            result.AddSamplerParameter("g_sample_vmf_phong_specular", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"rasterizer\diffuse_power_specular\diffuse_power");
+            result.AddSamplerParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture, ShaderOptionParameter.ShaderFilterMode.Bilinear, default, default, default, default);
+            result.AddSamplerParameter("normal_texture", RenderMethodExtern.texture_global_target_normal, default, default, default, default, default);
+            result.AddSamplerParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture, default, default, default, default, default);
+            result.AddSamplerParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture, default, default, default, default, default);
+            result.AddSamplerParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, default);
+            result.AddSamplerParameter("shadow_mask_texture", default, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, default); // rmExtern - texture_global_target_shadow_mask
             return result;
         }
 
@@ -174,16 +174,16 @@ namespace HaloShaderGenerator.Halogram
                 switch ((Albedo)option)
                 {
                     case Albedo.Default:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerParameter("detail_map");
-                        result.AddFloat4ColorParameter("albedo_color");
+                        result.AddFloat4ColorParameter("albedo_color", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddSamplerParameter("base_map", default, default, default, default, 1, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map", default, default, default, default, 16, @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_default";
                         break;
                     case Albedo.Detail_Blend:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerParameter("detail_map");
-                        result.AddSamplerParameter("detail_map2");
-                        result.AddFloatParameter("blend_alpha");
+                        result.AddFloatParameter("blend_alpha", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map", default, default, default, default, 16, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("detail_map2", default, default, default, default, 16, @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_detail_blend";
                         break;
                     case Albedo.Constant_Color:
@@ -191,56 +191,56 @@ namespace HaloShaderGenerator.Halogram
                         rmopName = @"shaders\shader_options\albedo_constant";
                         break;
                     case Albedo.Two_Change_Color:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerParameter("detail_map");
-                        result.AddSamplerParameter("change_color_map");
-                        result.AddFloat3ColorParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
-                        result.AddFloat3ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
-                        result.AddSamplerParameter("camouflage_change_color_map");
-                        result.AddFloatParameter("camouflage_scale");
+                        result.AddFloat3ColorParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, default, default, default, default, default);
+                        result.AddFloat3ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary, default, default, default, default, default);
+                        result.AddFloatParameter("camouflage_scale", default, default, default, default, default, default);
+                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("camouflage_change_color_map", default, default, default, default, default, @"rasterizer\invalid");
+                        result.AddSamplerParameter("change_color_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_two_change_color";
                         break;
                     case Albedo.Four_Change_Color:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerParameter("detail_map");
-                        result.AddSamplerParameter("change_color_map");
-                        result.AddFloat4ColorParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
-                        result.AddFloat4ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
-                        result.AddFloat4ColorParameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary);
-                        result.AddFloat4ColorParameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary);
-                        result.AddSamplerParameter("camouflage_change_color_map");
-                        result.AddFloatParameter("camouflage_scale");
+                        result.AddFloat3ColorParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, default, default, default, default, default);
+                        result.AddFloat3ColorParameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary, default, default, default, default, default);
+                        result.AddFloat3ColorParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary, default, default, default, default, default);
+                        result.AddFloat3ColorParameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary, default, default, default, default, default);
+                        result.AddFloatParameter("camouflage_scale", default, default, default, default, default, default);
+                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("camouflage_change_color_map", default, default, default, default, default, default);
+                        result.AddSamplerParameter("change_color_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map", default, default, default, default, 16, @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_four_change_color";
                         break;
                     case Albedo.Three_Detail_Blend:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerParameter("detail_map");
-                        result.AddSamplerParameter("detail_map2");
-                        result.AddSamplerParameter("detail_map3");
-                        result.AddFloatParameter("blend_alpha");
+                        result.AddFloatParameter("blend_alpha", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map", default, default, default, default, 16, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("detail_map2", default, default, default, default, 16, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("detail_map3", default, default, default, default, 16, @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_three_detail_blend";
                         break;
                     case Albedo.Two_Detail_Overlay:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerParameter("detail_map");
-                        result.AddSamplerParameter("detail_map2");
-                        result.AddSamplerParameter("detail_map_overlay");
+                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_overlay", default, default, default, default, 16, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("detail_map", default, default, default, default, 16, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("detail_map2", default, default, default, default, 16, @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_two_detail_overlay";
                         break;
                     case Albedo.Two_Detail:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerParameter("detail_map");
-                        result.AddSamplerParameter("detail_map2");
+                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map", default, default, default, default, 16, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("detail_map2", default, default, default, default, 16, @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_two_detail";
                         break;
                     case Albedo.Color_Mask:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerParameter("detail_map");
-                        result.AddSamplerParameter("color_mask_map");
-                        result.AddFloat4ColorParameter("albedo_color");
-                        result.AddFloat4ColorParameter("albedo_color2");
-                        result.AddFloat4ColorParameter("albedo_color3");
-                        result.AddFloat4ColorParameter("neutral_gray");
+                        result.AddFloat3ColorParameter("neutral_gray", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorParameter("albedo_color", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorParameter("albedo_color2", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorParameter("albedo_color3", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddSamplerParameter("base_map", default, default, default, default, 1, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("color_mask_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\reference_grids");
+                        result.AddSamplerParameter("detail_map", default, default, default, default, 16, @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_color_mask";
                         break;
                     case Albedo.Two_Detail_Black_Point:
@@ -261,162 +261,162 @@ namespace HaloShaderGenerator.Halogram
                     case Self_Illumination.Off:
                         break;
                     case Self_Illumination.Simple:
-                        result.AddSamplerParameter("self_illum_map");
-                        result.AddFloat3ColorParameter("self_illum_color");
-                        result.AddFloatParameter("self_illum_intensity");
+                        result.AddFloat3ColorParameter("self_illum_color", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("self_illum_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_simple";
                         break;
                     case Self_Illumination._3_Channel_Self_Illum:
-                        result.AddSamplerParameter("self_illum_map");
-                        result.AddFloat4ColorParameter("channel_a");
-                        result.AddFloat4ColorParameter("channel_b");
-                        result.AddFloat4ColorParameter("channel_c");
-                        result.AddFloatParameter("self_illum_intensity");
+                        result.AddFloat4ColorParameter("channel_a", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorParameter("channel_b", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorParameter("channel_c", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("self_illum_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_3_channel";
                         break;
                     case Self_Illumination.Plasma:
-                        result.AddSamplerParameter("noise_map_a");
-                        result.AddSamplerParameter("noise_map_b");
-                        result.AddFloat4ColorParameter("color_medium");
-                        result.AddFloat4ColorParameter("color_wide");
-                        result.AddFloat4ColorParameter("color_sharp");
-                        result.AddFloatParameter("self_illum_intensity");
-                        result.AddSamplerParameter("alpha_mask_map");
-                        result.AddFloatParameter("thinness_medium");
-                        result.AddFloatParameter("thinness_wide");
-                        result.AddFloatParameter("thinness_sharp");
+                        result.AddFloat4ColorParameter("color_medium", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorParameter("color_sharp", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorParameter("color_wide", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("thinness_medium", default, default, default, default, default, 16f);
+                        result.AddFloatParameter("thinness_sharp", default, default, default, default, default, 32f);
+                        result.AddFloatParameter("thinness_wide", default, default, default, default, default, 4f);
+                        result.AddSamplerParameter("alpha_mask_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\alpha_white");
+                        result.AddSamplerParameter("noise_map_a", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("noise_map_b", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_plasma";
                         break;
                     case Self_Illumination.From_Diffuse:
-                        result.AddFloat3ColorParameter("self_illum_color");
-                        result.AddFloatParameter("self_illum_intensity");
+                        result.AddFloat3ColorParameter("self_illum_color", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
                         rmopName = @"shaders\shader_options\illum_from_diffuse";
                         break;
                     case Self_Illumination.Illum_Detail:
-                        result.AddSamplerParameter("self_illum_map");
-                        result.AddSamplerParameter("self_illum_detail_map");
-                        result.AddFloat3ColorParameter("self_illum_color");
-                        result.AddFloatParameter("self_illum_intensity");
+                        result.AddFloat3ColorParameter("self_illum_color", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("self_illum_detail_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("self_illum_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_detail";
                         break;
                     case Self_Illumination.Meter:
-                        result.AddSamplerParameter("meter_map");
-                        result.AddFloat3ColorParameter("meter_color_off");
-                        result.AddFloat3ColorParameter("meter_color_on");
-                        result.AddFloatParameter("meter_value");
+                        result.AddFloat3ColorParameter("meter_color_off", default, default, default, default, default, default);
+                        result.AddFloat3ColorParameter("meter_color_on", default, default, default, default, default, default);
+                        result.AddFloatParameter("meter_value", default, default, default, default, default, 0.5f);
+                        result.AddSamplerParameter("meter_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\monochrome_alpha_grid");
                         rmopName = @"shaders\shader_options\illum_meter";
                         break;
                     case Self_Illumination.Self_Illum_Times_Diffuse:
-                        result.AddSamplerParameter("self_illum_map");
-                        result.AddFloat3ColorParameter("self_illum_color");
-                        result.AddFloatParameter("self_illum_intensity");
-                        result.AddFloatParameter("primary_change_color_blend");
+                        result.AddFloat3ColorParameter("self_illum_color", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("primary_change_color_blend", default, default, default, default, default, default);
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("self_illum_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_times_diffuse";
                         break;
                     case Self_Illumination.Multilayer_Additive:
-                        result.AddSamplerParameter("self_illum_map");
-                        result.AddFloat3ColorParameter("self_illum_color");
-                        result.AddFloatParameter("self_illum_intensity");
-                        result.AddFloatParameter("layer_depth");
-                        result.AddFloatParameter("layer_contrast");
-                        result.AddIntegerParameter("layers_of_4");
-                        result.AddFloatParameter("texcoord_aspect_ratio");
-                        result.AddFloatParameter("depth_darken");
+                        result.AddFloat3ColorParameter("self_illum_color", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("depth_darken", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("layer_contrast", default, default, default, default, default, 4f);
+                        result.AddFloatParameter("layer_depth", default, default, default, default, default, 0.1f);
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("texcoord_aspect_ratio", default, default, default, default, default, 1f);
+                        result.AddIntegerParameter("layers_of_4", default, default, default, default, default, 4);
+                        result.AddSamplerParameter("self_illum_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_multilayer";
                         break;
                     case Self_Illumination.Scope_Blur:
-                        result.AddSamplerParameter("self_illum_map");
-                        result.AddFloat3ColorParameter("self_illum_color");
-                        result.AddFloatParameter("self_illum_intensity");
-                        result.AddFloat3ColorParameter("self_illum_heat_color");
+                        result.AddFloat3ColorParameter("self_illum_color", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat3ColorParameter("self_illum_heat_color", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("self_illum_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloatParameter("z_camera_pixel_size", RenderMethodExtern.z_camera_pixel_size);
                         rmopName = @"shaders\shader_options\illum_scope_blur";
                         break;
                     case Self_Illumination.Ml_Add_Four_Change_Color:
-                        result.AddSamplerParameter("self_illum_map");
-                        result.AddFloat3ColorParameter("self_illum_color", RenderMethodExtern.object_change_color_quaternary);
-                        result.AddFloatParameter("self_illum_intensity");
-                        result.AddFloatParameter("layer_depth");
-                        result.AddFloatParameter("layer_contrast");
-                        result.AddIntegerParameter("layers_of_4");
-                        result.AddFloatParameter("texcoord_aspect_ratio");
-                        result.AddFloatParameter("depth_darken");
+                        result.AddFloat3ColorParameter("self_illum_color", RenderMethodExtern.object_change_color_quaternary, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("depth_darken", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("layer_contrast", default, default, default, default, default, 4f);
+                        result.AddFloatParameter("layer_depth", default, default, default, default, default, 0.1f);
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("texcoord_aspect_ratio", default, default, default, default, default, 1f);
+                        result.AddIntegerParameter("layers_of_4", default, default, default, default, default, 4);
+                        result.AddSamplerParameter("self_illum_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_multilayer_four_change_color";
                         break;
                     case Self_Illumination.Ml_Add_Five_Change_Color:
-                        result.AddSamplerParameter("self_illum_map");
-                        result.AddFloat3ColorParameter("self_illum_color", RenderMethodExtern.object_change_color_quinary);
-                        result.AddFloatParameter("self_illum_intensity");
-                        result.AddFloatParameter("layer_depth");
-                        result.AddFloatParameter("layer_contrast");
-                        result.AddIntegerParameter("layers_of_4");
-                        result.AddFloatParameter("texcoord_aspect_ratio");
-                        result.AddFloatParameter("depth_darken");
+                        result.AddFloat3ColorParameter("self_illum_color", RenderMethodExtern.object_change_color_quinary, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("depth_darken", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("layer_contrast", default, default, default, default, default, 4f);
+                        result.AddFloatParameter("layer_depth", default, default, default, default, default, 0.1f);
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("texcoord_aspect_ratio", default, default, default, default, default, 1f);
+                        result.AddIntegerParameter("layers_of_4", default, default, default, default, default, 4);
+                        result.AddSamplerParameter("self_illum_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_multilayer_five_change_color";
                         break;
                     case Self_Illumination.Plasma_Wide_And_Sharp_Five_Change_Color:
-                        result.AddSamplerParameter("noise_map_a");
-                        result.AddSamplerParameter("noise_map_b");
-                        result.AddFloat4ColorParameter("color_medium");
-                        result.AddFloat3ColorParameter("color_wide", RenderMethodExtern.object_change_color_quinary);
-                        result.AddFloatParameter("color_wide_alpha");
-                        result.AddFloat3ColorParameter("color_sharp", RenderMethodExtern.object_change_color_quinary);
-                        result.AddFloatParameter("color_sharp_alpha");
-                        result.AddFloatParameter("self_illum_intensity");
-                        result.AddSamplerParameter("alpha_mask_map");
-                        result.AddFloatParameter("thinness_medium");
-                        result.AddFloatParameter("thinness_wide");
-                        result.AddFloatParameter("thinness_sharp");
+                        result.AddFloat3ColorParameter("color_sharp", RenderMethodExtern.object_change_color_quinary, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat3ColorParameter("color_wide", RenderMethodExtern.object_change_color_quinary, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorParameter("color_medium", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("color_sharp_alpha", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("color_wide_alpha", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("thinness_medium", default, default, default, default, default, 16f);
+                        result.AddFloatParameter("thinness_sharp", default, default, default, default, default, 32f);
+                        result.AddFloatParameter("thinness_wide", default, default, default, default, default, 4f);
+                        result.AddSamplerParameter("alpha_mask_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\alpha_white");
+                        result.AddSamplerParameter("noise_map_a", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("noise_map_b", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_plasma_wide_and_sharp_five_change_color";
                         break;
                     case Self_Illumination.Self_Illum_Holograms:
-                        result.AddSamplerParameter("self_illum_map");
-                        result.AddFloat3ColorParameter("self_illum_color");
-                        result.AddFloatParameter("self_illum_intensity");
+                        result.AddFloat3ColorParameter("self_illum_color", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("self_illum_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_holograms";
                         break;
                     case Self_Illumination.Palettized_Plasma:
-                        result.AddSamplerParameter("noise_map_a");
-                        result.AddSamplerParameter("noise_map_b");
-                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerParameter("alpha_mask_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddFloatParameter("alpha_modulation_factor");
-                        result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddFloatParameter("depth_fade_range");
-                        result.AddFloat3ColorParameter("self_illum_color");
-                        result.AddFloatParameter("self_illum_intensity");
-                        result.AddFloatParameter("v_coordinate");
-                        result.AddFloatParameter("global_depth_constants", RenderMethodExtern.global_depth_constants);
-                        result.AddFloatParameter("global_camera_forward", RenderMethodExtern.global_camera_forward);
+                        result.AddFloat3ColorParameter("self_illum_color", default, default, default, default, default, new ShaderColor(1, 255, 255, 255));
+                        result.AddFloatParameter("alpha_modulation_factor", default, default, default, default, default, 0.1f);
+                        result.AddFloatParameter("depth_fade_range", default, default, default, default, default, 0.1f);
+                        result.AddFloatParameter("global_camera_forward", RenderMethodExtern.global_camera_forward, default, default, default, default, default);
+                        result.AddFloatParameter("global_depth_constants", RenderMethodExtern.global_depth_constants, default, default, default, default, default);
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("v_coordinate", default, default, default, default, default, 0.5f);
+                        result.AddSamplerParameter("alpha_mask_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, default);
+                        result.AddSamplerParameter("noise_map_a", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("noise_map_b", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_palettized_plasma";
                         break;
                     case Self_Illumination.Palettized_Plasma_Change_Color:
-                        result.AddSamplerParameter("noise_map_a");
-                        result.AddSamplerParameter("noise_map_b");
-                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerParameter("alpha_mask_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddFloatParameter("alpha_modulation_factor");
-                        result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddFloatParameter("depth_fade_range");
-                        result.AddFloat3ColorParameter("self_illum_color", RenderMethodExtern.object_change_color_primary);
-                        result.AddFloatParameter("self_illum_intensity");
-                        result.AddFloatParameter("v_coordinate");
-                        result.AddFloatParameter("global_depth_constants", RenderMethodExtern.global_depth_constants);
-                        result.AddFloatParameter("global_camera_forward", RenderMethodExtern.global_camera_forward);
+                        result.AddFloat3ColorParameter("self_illum_color", RenderMethodExtern.object_change_color_primary, default, default, default, default, new ShaderColor(1, 255, 255, 255));
+                        result.AddFloatParameter("alpha_modulation_factor", default, default, default, default, default, 0.1f);
+                        result.AddFloatParameter("depth_fade_range", default, default, default, default, default, 0.1f);
+                        result.AddFloatParameter("global_camera_forward", RenderMethodExtern.global_camera_forward, default, default, default, default, default);
+                        result.AddFloatParameter("global_depth_constants", RenderMethodExtern.global_depth_constants, default, default, default, default, default);
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("v_coordinate", default, default, default, default, default, 0.5f);
+                        result.AddSamplerParameter("alpha_mask_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, default);
+                        result.AddSamplerParameter("noise_map_a", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("noise_map_b", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\screen_options\illum_palettized_plasma_change_color";
                         break;
                     case Self_Illumination.Palettized_Depth_Fade:
-                        result.AddSamplerParameter("noise_map_a");
-                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerParameter("alpha_mask_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddFloatParameter("alpha_modulation_factor");
-                        result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddFloatParameter("depth_fade_range");
-                        result.AddFloat3ColorParameter("self_illum_color");
-                        result.AddFloatParameter("self_illum_intensity");
-                        result.AddFloatParameter("v_coordinate");
-                        result.AddFloatParameter("global_depth_constants", RenderMethodExtern.global_depth_constants);
-                        result.AddFloatParameter("global_camera_forward", RenderMethodExtern.global_camera_forward);
+                        result.AddFloat3ColorParameter("self_illum_color", default, default, default, default, default, new ShaderColor(1, 255, 255, 255));
+                        result.AddFloatParameter("alpha_modulation_factor", default, default, default, default, default, 0.1f);
+                        result.AddFloatParameter("depth_fade_range", default, default, default, default, default, 0.1f);
+                        result.AddFloatParameter("global_camera_forward", RenderMethodExtern.global_camera_forward, default, default, default, default, default);
+                        result.AddFloatParameter("global_depth_constants", RenderMethodExtern.global_depth_constants, default, default, default, default, default);
+                        result.AddFloatParameter("self_illum_intensity", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("v_coordinate", default, default, default, default, default, 0.5f);
+                        result.AddSamplerParameter("alpha_mask_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, default);
+                        result.AddSamplerParameter("noise_map_a", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\screen_options\illum_palettized_depth_fade";
                         break;
                 }
@@ -469,14 +469,14 @@ namespace HaloShaderGenerator.Halogram
                     case Warp.None:
                         break;
                     case Warp.From_Texture:
-                        result.AddSamplerParameter("warp_map");
-                        result.AddFloatParameter("warp_amount_x");
-                        result.AddFloatParameter("warp_amount_y");
+                        result.AddFloatParameter("warp_amount_x", default, default, default, default, default, 1f);
+                        result.AddFloatParameter("warp_amount_y", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("warp_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         rmopName = @"shaders\shader_options\warp_from_texture";
                         break;
                     case Warp.Parallax_Simple:
-                        result.AddSamplerParameter("height_map");
-                        result.AddFloatParameter("height_scale");
+                        result.AddFloatParameter("height_scale", default, default, default, default, default, 0.1f);
+                        result.AddSamplerParameter("height_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
                         rmopName = @"shaders\shader_options\parallax_simple";
                         break;
                 }
@@ -491,30 +491,30 @@ namespace HaloShaderGenerator.Halogram
                     case Overlay.None:
                         break;
                     case Overlay.Additive:
-                        result.AddSamplerParameter("overlay_map");
-                        result.AddFloat3ColorParameter("overlay_tint");
-                        result.AddFloatParameter("overlay_intensity");
+                        result.AddFloat3ColorParameter("overlay_tint", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("overlay_intensity", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("overlay_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\dither_pattern");
                         rmopName = @"shaders\shader_options\overlay_additive";
                         break;
                     case Overlay.Additive_Detail:
-                        result.AddSamplerParameter("overlay_map");
-                        result.AddSamplerParameter("overlay_detail_map");
-                        result.AddFloat3ColorParameter("overlay_tint");
-                        result.AddFloatParameter("overlay_intensity");
+                        result.AddFloat3ColorParameter("overlay_tint", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("overlay_intensity", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("overlay_detail_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\dither_pattern");
+                        result.AddSamplerParameter("overlay_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\dither_pattern");
                         rmopName = @"shaders\shader_options\overlay_additive_detail";
                         break;
                     case Overlay.Multiply:
-                        result.AddSamplerParameter("overlay_map");
-                        result.AddFloat3ColorParameter("overlay_tint");
-                        result.AddFloatParameter("overlay_intensity");
+                        result.AddFloat3ColorParameter("overlay_tint", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("overlay_intensity", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("overlay_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\dither_pattern");
                         rmopName = @"shaders\shader_options\overlay_additive";
                         break;
                     case Overlay.Multiply_And_Additive_Detail:
-                        result.AddSamplerParameter("overlay_multiply_map");
-                        result.AddSamplerParameter("overlay_map");
-                        result.AddSamplerParameter("overlay_detail_map");
-                        result.AddFloat3ColorParameter("overlay_tint");
-                        result.AddFloatParameter("overlay_intensity");
+                        result.AddFloat3ColorParameter("overlay_tint", default, default, default, default, default, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("overlay_intensity", default, default, default, default, default, 1f);
+                        result.AddSamplerParameter("overlay_detail_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\dither_pattern");
+                        result.AddSamplerParameter("overlay_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\dither_pattern");
+                        result.AddSamplerParameter("overlay_multiply_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\reference_grids");
                         rmopName = @"shaders\shader_options\overlay_multiply_additive_detail";
                         break;
                 }
@@ -529,9 +529,9 @@ namespace HaloShaderGenerator.Halogram
                     case Edge_Fade.None:
                         break;
                     case Edge_Fade.Simple:
-                        result.AddFloat3ColorParameter("edge_fade_edge_tint");
-                        result.AddFloat3ColorParameter("edge_fade_center_tint");
-                        result.AddFloatParameter("edge_fade_power");
+                        result.AddFloat3ColorParameter("edge_fade_center_tint", default, default, default, default, default, default);
+                        result.AddFloat3ColorParameter("edge_fade_edge_tint", default, default, default, default, default, default);
+                        result.AddFloatParameter("edge_fade_power", default, default, default, default, default, 1f);
                         rmopName = @"shaders\shader_options\edge_fade_simple";
                         break;
                 }
@@ -546,10 +546,10 @@ namespace HaloShaderGenerator.Halogram
                     case Distortion.Off:
                         break;
                     case Distortion.On:
-                        result.AddSamplerParameter("distort_map");
-                        result.AddFloatParameter("distort_scale");
-                        result.AddFloatParameter("distort_fadeoff");
-                        result.AddBooleanParameter("distort_selfonly");
+                        result.AddBooleanParameter("distort_selfonly", default, default, default, default, default, default);
+                        result.AddFloatParameter("distort_fadeoff", default, default, default, default, default, 10f);
+                        result.AddFloatParameter("distort_scale", default, default, default, default, default, 0.1f);
+                        result.AddSamplerParameter("distort_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\default_vector");
                         rmopName = @"shaders\shader_options\sfx_distort";
                         break;
                 }
