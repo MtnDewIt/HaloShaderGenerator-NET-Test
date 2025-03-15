@@ -11,107 +11,404 @@ namespace HaloShaderGenerator.Globals
             Parameters = new List<ShaderOptionParameter>();
         }
 
-        public void AddSamplerParameter
-        (
-            string parameterName, 
-            RenderMethodExtern rmExtern = RenderMethodExtern.none, 
-            ShaderOptionParameter.ShaderFilterMode filterMode = ShaderOptionParameter.ShaderFilterMode.Trilinear, 
-            ShaderOptionParameter.ShaderAddressMode addressMode = ShaderOptionParameter.ShaderAddressMode.Wrap,
-            short anisotropyAmount = 0,
-            float bitmapScale = 0.0f,
-            string SamplerBitmap = null
-        )
+        #region Sampler Functions
+        public void AddSamplerParameter(string parameterName, string samplerBitmap = null) 
         {
-            Parameters.Add(new ShaderOptionParameter(parameterName, HLSLType.sampler2D, rmExtern, filterMode, addressMode, anisotropyAmount, bitmapScale, SamplerBitmap));
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                SamplerBitmap = samplerBitmap
+            });
         }
 
-        public void AddFloat4ColorParameter
-        (
-            string parameterName, 
-            RenderMethodExtern rmExtern = RenderMethodExtern.none,
-            ShaderOptionParameter.ShaderFilterMode filterMode = ShaderOptionParameter.ShaderFilterMode.Trilinear,
-            ShaderOptionParameter.ShaderAddressMode addressMode = ShaderOptionParameter.ShaderAddressMode.Wrap,
-            short anisotropyAmount = 0,
-            float bitmapScale = 0.0f,
-            ShaderColor colorArgument = new ShaderColor()
-        )
+        public void AddSamplerExternParameter(string parameterName, RenderMethodExtern rmExtern, string samplerBitmap = null)
         {
-            Parameters.Add(new ShaderOptionParameter(parameterName, HLSLType.Float4, rmExtern, filterMode, addressMode, anisotropyAmount, bitmapScale, colorArgument, ShaderOptionParameter.ShaderParameterFlags.IsColor));
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                RenderMethodExtern = rmExtern,
+                SamplerBitmap = samplerBitmap
+            });
         }
 
-        public void AddFloat3ColorParameter
-        (
-            string parameterName,
-            RenderMethodExtern rmExtern = RenderMethodExtern.none,
-            ShaderOptionParameter.ShaderFilterMode filterMode = ShaderOptionParameter.ShaderFilterMode.Trilinear,
-            ShaderOptionParameter.ShaderAddressMode addressMode = ShaderOptionParameter.ShaderAddressMode.Wrap,
-            short anisotropyAmount = 0,
-            float bitmapScale = 0.0f,
-            ShaderColor colorArgument = new ShaderColor()
-        )
+        public void AddSamplerExternAddressParameter(string parameterName, RenderMethodExtern rmExtern, ShaderOptionParameter.ShaderAddressMode addressMode, string samplerBitmap = null)
         {
-            Parameters.Add(new ShaderOptionParameter(parameterName, HLSLType.Float3, rmExtern, filterMode, addressMode, anisotropyAmount, bitmapScale, colorArgument, ShaderOptionParameter.ShaderParameterFlags.IsColor));
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                RenderMethodExtern = rmExtern,
+                AddressMode = addressMode,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        public void AddFloatParameter
-        (
-            string parameterName,
-            RenderMethodExtern rmExtern = RenderMethodExtern.none,
-            ShaderOptionParameter.ShaderFilterMode filterMode = ShaderOptionParameter.ShaderFilterMode.Trilinear,
-            ShaderOptionParameter.ShaderAddressMode addressMode = ShaderOptionParameter.ShaderAddressMode.Wrap,
-            short anisotropyAmount = 0,
-            float bitmapScale = 0.0f,
-            float floatArgument = 0.0f
-        )
+        public void AddSamplerExternFilterParameter(string parameterName, RenderMethodExtern rmExtern, ShaderOptionParameter.ShaderFilterMode filterMode, string samplerBitmap = null)
         {
-            Parameters.Add(new ShaderOptionParameter(parameterName, HLSLType.Float, rmExtern, filterMode, addressMode, anisotropyAmount, bitmapScale, floatArgument));
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                RenderMethodExtern = rmExtern,
+                FilterMode = filterMode,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        public void AddBooleanParameter
-        (
-            string parameterName,
-            RenderMethodExtern rmExtern = RenderMethodExtern.none,
-            ShaderOptionParameter.ShaderFilterMode filterMode = ShaderOptionParameter.ShaderFilterMode.Trilinear,
-            ShaderOptionParameter.ShaderAddressMode addressMode = ShaderOptionParameter.ShaderAddressMode.Wrap,
-            short anisotropyAmount = 0,
-            float bitmapScale = 0.0f,
-            uint intBoolArgument = 0
-        )
+        public void AddSamplerExternFilterAddressParameter(string parameterName, RenderMethodExtern rmExtern, ShaderOptionParameter.ShaderFilterMode filterMode, ShaderOptionParameter.ShaderAddressMode addressMode, string samplerBitmap = null)
         {
-            Parameters.Add(new ShaderOptionParameter(parameterName, HLSLType.Bool, rmExtern, filterMode, addressMode, anisotropyAmount, bitmapScale, intBoolArgument));
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                RenderMethodExtern = rmExtern,
+                FilterMode = filterMode,
+                AddressMode = addressMode,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        public void AddIntegerParameter
-        (
-            string parameterName,
-            RenderMethodExtern rmExtern = RenderMethodExtern.none,
-            ShaderOptionParameter.ShaderFilterMode filterMode = ShaderOptionParameter.ShaderFilterMode.Trilinear,
-            ShaderOptionParameter.ShaderAddressMode addressMode = ShaderOptionParameter.ShaderAddressMode.Wrap,
-            short anisotropyAmount = 0,
-            float bitmapScale = 0.0f,
-            uint intBoolArgument = 0
-        )
+        public void AddSamplerExternWithColorParameter(string parameterName, RenderMethodExtern rmExtern, ShaderColor colorArgument, string samplerBitmap = null) 
         {
-            Parameters.Add(new ShaderOptionParameter(parameterName, HLSLType.Int, rmExtern, filterMode, addressMode, anisotropyAmount, bitmapScale, intBoolArgument));
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                RenderMethodExtern = rmExtern,
+                SamplerBitmap = samplerBitmap,
+                ColorArgument = colorArgument,
+            });
         }
+
+        public void AddSamplerFilterParameter(string parameterName, ShaderOptionParameter.ShaderFilterMode filterMode, string samplerBitmap = null) 
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                FilterMode = filterMode,
+                SamplerBitmap = samplerBitmap,
+            });
+        }
+
+        public void AddSamplerFilterWithFloatParameter(string parameterName, ShaderOptionParameter.ShaderFilterMode filterMode, float floatArgument, string samplerBitmap = null)
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                FilterMode = filterMode,
+                FloatArgument = floatArgument,
+                SamplerBitmap = samplerBitmap,
+            });
+        }
+
+        public void AddSamplerAddressParameter(string parameterName, ShaderOptionParameter.ShaderAddressMode addressMode, string samplerBitmap = null)
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                AddressMode = addressMode,
+                SamplerBitmap = samplerBitmap,
+            });
+        }
+
+        public void AddSamplerAddressWithColorParameter(string parameterName, ShaderOptionParameter.ShaderAddressMode addressMode, ShaderColor colorArgument, string samplerBitmap = null) 
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                AddressMode = addressMode,
+                ColorArgument = colorArgument,
+                SamplerBitmap = samplerBitmap,
+            });
+        }
+
+        public void AddSamplerFilterAddressParameter(string parameterName, ShaderOptionParameter.ShaderFilterMode filterMode, ShaderOptionParameter.ShaderAddressMode addressMode, string samplerBitmap = null) 
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                FilterMode = filterMode,
+                AddressMode = addressMode,
+                SamplerBitmap = samplerBitmap,
+            });
+        }
+
+        public void AddSamplerWithFloatParameter(string parameterName, float floatArgument, string samplerBitmap = null) 
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                FloatArgument = floatArgument,
+                SamplerBitmap = samplerBitmap,
+            });
+        }
+
+        public void AddSamplerWithScaleParameter(string parameterName, float bitmapScale, string samplerBitmap = null)
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                BitmapScale = bitmapScale,
+                SamplerBitmap = samplerBitmap,
+            });
+        }
+
+        public void AddSamplerWithFloatAndColorParameter(string parameterName, float floatArgument, ShaderColor colorArgument, string samplerBitmap = null) 
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                FloatArgument = floatArgument,
+                ColorArgument = colorArgument,
+                SamplerBitmap = samplerBitmap,
+            });
+        }
+
+        public void AddSamplerFilterWithScaleParameter(string parameterName, ShaderOptionParameter.ShaderFilterMode filterMode, float bitmapScale, string samplerBitmap = null)
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                FilterMode = filterMode,
+                BitmapScale = bitmapScale,
+                SamplerBitmap = samplerBitmap,
+            });
+        }
+        #endregion
+
+        #region Float Functions
+        public void AddFloatParameter(string parameterName, float floatArgument = 0.0f)
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float,
+                FloatArgument = floatArgument,
+            });
+        }
+
+        public void AddFloatExternParameter(string parameterName, RenderMethodExtern rmExtern, float floatArgument = 0.0f) 
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float,
+                RenderMethodExtern = rmExtern,
+                FloatArgument = floatArgument,
+            });
+        }
+
+        public void AddFloatWithColorParameter(string parameterName, ShaderColor colorArgument, float floatArgument = 0.0f)
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float,
+                FloatArgument = floatArgument,
+                ColorArgument = colorArgument,
+            });
+        }
+        #endregion
+
+        #region Boolean Functions
+        public void AddBooleanParameter(string parameterName, uint intBoolArgument = 0) 
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Bool,
+                IntBoolArgument = intBoolArgument,
+            });
+        }
+
+        public void AddBooleanWithFloatParameter(string parameterName, float floatArgument, uint intBoolArgument = 0) 
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Bool,
+                FloatArgument = floatArgument,
+                IntBoolArgument = intBoolArgument,
+            });
+        }
+        #endregion
+
+        #region Integer Functions
+        public void AddIntegerParameter(string parameterName, uint intBoolArgument = 0) 
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Int,
+                IntBoolArgument = intBoolArgument,
+            });
+        }
+
+        public void AddIntegerWithFloatParameter(string parameterName, float floatArgument, uint intBoolArgument = 0) 
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Int,
+                FloatArgument = floatArgument,
+                IntBoolArgument = intBoolArgument,
+            });
+        }
+        #endregion
+
+        #region ARGB Color Functions
+        public void AddFloat4ColorParameter(string parameterName, ShaderColor colorArgument = new ShaderColor()) 
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float4,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat4ColorExternParameter(string parameterName, RenderMethodExtern rmExtern, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float4,
+                RenderMethodExtern = rmExtern,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat4ColorWithFloatParameter(string parameterName, float floatArgument, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float4,
+                FloatArgument = floatArgument,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat4ColorWithFloatAndIntegerParameter(string parameterName, float floatArgument, uint intBoolArgument, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float4,
+                FloatArgument = floatArgument,
+                IntBoolArgument = intBoolArgument,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+        #endregion
+
+        #region RGB Color Functions
+        public void AddFloat3ColorParameter(string parameterName, ShaderColor colorArgument = new ShaderColor()) 
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float3,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat3ColorExternParameter(string parameterName, RenderMethodExtern rmExtern, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float3,
+                RenderMethodExtern = rmExtern,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat3ColorExternWithSamplerParameter(string parameterName, RenderMethodExtern rmExtern, string samplerBitmap, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float3,
+                RenderMethodExtern = rmExtern,
+                SamplerBitmap = samplerBitmap,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat3ColorExternWithFloatParameter(string parameterName, RenderMethodExtern rmExtern, float floatArgument, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float3,
+                RenderMethodExtern = rmExtern,
+                FloatArgument = floatArgument,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat3ColorExternWithFloatAndIntegerParameter(string parameterName, RenderMethodExtern rmExtern, float floatArgument, uint intBoolArgument, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float3,
+                RenderMethodExtern = rmExtern,
+                FloatArgument = floatArgument,
+                IntBoolArgument = intBoolArgument,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat3ColorWithFloatParameter(string parameterName, float floatArgument, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float3,
+                FloatArgument = floatArgument,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+        #endregion
     }
 
     public class ShaderOptionParameter
     {
         public string ParameterName;
-        public string RegisterName;
-        public RegisterType RegisterType;
         public HLSLType CodeType;
-        public RenderMethodExtern RenderMethodExtern;
-        public ShaderFilterMode FilterMode;
-        public ShaderAddressMode AddressMode;
-        public short AnisotropyAmount;
-        public float BitmapScale;
-        public string SamplerBitmap;
-        public float FloatArgument;
-        public uint IntBoolArgument;
-        public ShaderColor ColorArgument;
-        public ShaderParameterFlags Flags;
+        public RegisterType RegisterType => GetRegisterType(CodeType);
+        public RenderMethodExtern RenderMethodExtern = RenderMethodExtern.none;
+        public ShaderFilterMode FilterMode = ShaderFilterMode.Trilinear;
+        public ShaderAddressMode AddressMode = ShaderAddressMode.Wrap;
+        public float BitmapScale = 0.0f;
+        public string SamplerBitmap = null;
+        public float FloatArgument = 0.0f;
+        public uint IntBoolArgument = 0;
+        public ShaderColor ColorArgument = new ShaderColor(0, 0, 0, 0);
+        public ShaderParameterFlags Flags = ShaderParameterFlags.None;
 
         public enum ShaderParameterFlags
         {
@@ -143,129 +440,6 @@ namespace HaloShaderGenerator.Globals
             BlackBorder = 3,
             MirrorOnce = 4,
             MirrorOnceBorder = 5
-        }
-
-        public ShaderOptionParameter
-        (
-            string parameterName,
-            HLSLType type,
-            RenderMethodExtern renderMethodExtern = RenderMethodExtern.none,
-            ShaderFilterMode filterMode = ShaderFilterMode.Trilinear,
-            ShaderAddressMode addressMode = ShaderAddressMode.Wrap,
-            short anisotropyAmount = 0,
-            float bitmapScale = 0.0f,
-            ShaderParameterFlags flags = ShaderParameterFlags.None
-        )
-        {
-            ParameterName = parameterName;
-            CodeType = type;
-            RegisterType = GetRegisterType(type);
-            RenderMethodExtern = renderMethodExtern;
-            FilterMode = filterMode;
-            AddressMode = addressMode;
-            AnisotropyAmount = anisotropyAmount;
-            BitmapScale = bitmapScale;
-            Flags = flags;
-        }
-
-        public ShaderOptionParameter
-        (
-            string parameterName,
-            HLSLType type,
-            RenderMethodExtern renderMethodExtern = RenderMethodExtern.none,
-            ShaderFilterMode filterMode = ShaderFilterMode.Trilinear,
-            ShaderAddressMode addressMode = ShaderAddressMode.Wrap,
-            short anisotropyAmount = 0,
-            float bitmapScale = 0.0f,
-            string samplerBitmap = null,
-            ShaderParameterFlags flags = ShaderParameterFlags.None
-        ) 
-        {
-            ParameterName = parameterName;
-            CodeType = type;
-            RegisterType = GetRegisterType(type);
-            RenderMethodExtern = renderMethodExtern;
-            FilterMode = filterMode;
-            AddressMode = addressMode;
-            AnisotropyAmount = anisotropyAmount;
-            BitmapScale = bitmapScale;
-            SamplerBitmap = samplerBitmap;
-            Flags = flags;
-        }
-
-        public ShaderOptionParameter
-        (
-            string parameterName,
-            HLSLType type,
-            RenderMethodExtern renderMethodExtern = RenderMethodExtern.none,
-            ShaderFilterMode filterMode = ShaderFilterMode.Trilinear,
-            ShaderAddressMode addressMode = ShaderAddressMode.Wrap,
-            short anisotropyAmount = 0,
-            float bitmapScale = 0.0f,
-            float floatArgument = 0.0f,
-            ShaderParameterFlags flags = ShaderParameterFlags.None
-        )
-        {
-            ParameterName = parameterName;
-            CodeType = type;
-            RegisterType = GetRegisterType(type);
-            RenderMethodExtern = renderMethodExtern;
-            FilterMode = filterMode;
-            AddressMode = addressMode;
-            AnisotropyAmount = anisotropyAmount;
-            BitmapScale = bitmapScale;
-            FloatArgument = floatArgument;
-            Flags = flags;
-        }
-
-        public ShaderOptionParameter
-        (
-            string parameterName,
-            HLSLType type,
-            RenderMethodExtern renderMethodExtern = RenderMethodExtern.none,
-            ShaderFilterMode filterMode = ShaderFilterMode.Trilinear,
-            ShaderAddressMode addressMode = ShaderAddressMode.Wrap,
-            short anisotropyAmount = 0,
-            float bitmapScale = 0.0f,
-            uint intBoolArgument = 0,
-            ShaderParameterFlags flags = ShaderParameterFlags.None
-        )
-        {
-            ParameterName = parameterName;
-            CodeType = type;
-            RegisterType = GetRegisterType(type);
-            RenderMethodExtern = renderMethodExtern;
-            FilterMode = filterMode;
-            AddressMode = addressMode;
-            AnisotropyAmount = anisotropyAmount;
-            BitmapScale = bitmapScale;
-            IntBoolArgument = intBoolArgument;
-            Flags = flags;
-        }
-
-        public ShaderOptionParameter
-        (
-            string parameterName,
-            HLSLType type,
-            RenderMethodExtern renderMethodExtern = RenderMethodExtern.none,
-            ShaderFilterMode filterMode = ShaderFilterMode.Trilinear,
-            ShaderAddressMode addressMode = ShaderAddressMode.Wrap,
-            short anisotropyAmount = 0,
-            float bitmapScale = 0.0f,
-            ShaderColor colorArgument = new ShaderColor(),
-            ShaderParameterFlags flags = ShaderParameterFlags.None
-        )
-        {
-            ParameterName = parameterName;
-            CodeType = type;
-            RegisterType = GetRegisterType(type);
-            RenderMethodExtern = renderMethodExtern;
-            FilterMode = filterMode;
-            AddressMode = addressMode;
-            AnisotropyAmount = anisotropyAmount;
-            BitmapScale = bitmapScale;
-            ColorArgument = colorArgument;
-            Flags = flags;
         }
 
         public static RegisterType GetRegisterType(HLSLType codeType)

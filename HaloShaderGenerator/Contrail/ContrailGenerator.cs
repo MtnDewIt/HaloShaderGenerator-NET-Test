@@ -119,18 +119,18 @@ namespace HaloShaderGenerator.Contrail
                 switch ((Albedo)option)
                 {
                     case Albedo.Diffuse_Only:
-                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\contrail_options\albedo_diffuse_only";
                         break;
                     case Albedo.Palettized:
-                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("palette", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\contrail_options\albedo_palettized";
                         break;
                     case Albedo.Palettized_Plus_Alpha:
-                        result.AddSamplerParameter("alpha_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
-                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("palette", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("alpha_map", @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\contrail_options\albedo_palettized_plus_alpha";
                         break;
                 }

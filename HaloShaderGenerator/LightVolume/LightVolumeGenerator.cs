@@ -119,12 +119,12 @@ namespace HaloShaderGenerator.LightVolume
                 switch ((Albedo)option)
                 {
                     case Albedo.Diffuse_Only:
-                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\light_volume_options\albedo_diffuse_only";
                         break;
                     case Albedo.Circular:
-                        result.AddFloatParameter("center_offset", default, default, default, default, default, 1.1f);
-                        result.AddFloatParameter("falloff", default, default, default, default, default, 2f);
+                        result.AddFloatParameter("center_offset", 1.1f);
+                        result.AddFloatParameter("falloff", 2f);
                         rmopName = @"shaders\light_volume_options\albedo_circular";
                         break;
                 }
@@ -183,7 +183,7 @@ namespace HaloShaderGenerator.LightVolume
                     case Depth_Fade.Off:
                         break;
                     case Depth_Fade.On:
-                        result.AddFloatParameter("depth_fade_range", default, default, default, default, default, 0.1f);
+                        result.AddFloatParameter("depth_fade_range", 0.1f);
                         rmopName = @"shaders\particle_options\depth_fade_on";
                         break;
                     case Depth_Fade.Biased:

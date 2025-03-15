@@ -105,7 +105,7 @@ namespace HaloShaderGenerator.Beam
         public ShaderParameters GetGlobalParameters()
         {
             var result = new ShaderParameters();
-            result.AddSamplerParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            result.AddSamplerExternFilterAddressParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
             return result;
         }
 
@@ -122,34 +122,34 @@ namespace HaloShaderGenerator.Beam
                 switch ((Albedo)option)
                 {
                     case Albedo.Diffuse_Only:
-                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\beam_options\albedo_diffuse_only";
                         break;
                     case Albedo.Palettized:
-                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("palette", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\beam_options\albedo_palettized";
                         break;
                     case Albedo.Palettized_Plus_Alpha:
-                        result.AddSamplerParameter("alpha_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
-                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("palette", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("alpha_map", @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\beam_options\albedo_palettized_plus_alpha";
                         break;
                     case Albedo.Palettized_Plasma:
-                        result.AddFloatParameter("alpha_modulation_factor", default, default, default, default, default, 0.1f);
-                        result.AddSamplerParameter("alpha_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
-                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("base_map2", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("alpha_modulation_factor", 0.1f);
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("base_map2", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerFilterAddressParameter("palette", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\particle_options\albedo_palettized_plasma";
                         break;
                     case Albedo.Palettized_2d_Plasma:
-                        result.AddFloatParameter("alpha_modulation_factor", default, default, default, default, default, 0.1f);
-                        result.AddSamplerParameter("alpha_map", default, default, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
-                        result.AddSamplerParameter("base_map", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("base_map2", default, default, default, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("palette", default, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, default, default, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("alpha_modulation_factor", 0.1f);
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("base_map2", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerFilterAddressParameter("palette", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\particle_options\albedo_palettized_plasma";
                         break;
                 }
@@ -221,12 +221,12 @@ namespace HaloShaderGenerator.Beam
                     case Depth_Fade.Off:
                         break;
                     case Depth_Fade.On:
-                        result.AddFloatParameter("depth_fade_range", default, default, default, default, default, 0.1f);
+                        result.AddFloatParameter("depth_fade_range", 0.1f);
                         rmopName = @"shaders\particle_options\depth_fade_on";
                         break;
                     case Depth_Fade.Palette_Shift:
-                        result.AddFloatParameter("depth_fade_range", default, default, default, default, default, 0.1f);
-                        result.AddFloatParameter("palette_shift_amount", default, default, default, default, default, 0.5f);
+                        result.AddFloatParameter("depth_fade_range", 0.1f);
+                        result.AddFloatParameter("palette_shift_amount", 0.5f);
                         rmopName = @"shaders\particle_options\depth_fade_palette_shift";
                         break;
                 }
