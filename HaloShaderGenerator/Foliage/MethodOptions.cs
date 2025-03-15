@@ -10,8 +10,8 @@ namespace HaloShaderGenerator.Foliage
 
     public enum Albedo
     {
-        Default,
-        Simple
+        Simple,
+        Default
     }
 
     public enum Alpha_Test

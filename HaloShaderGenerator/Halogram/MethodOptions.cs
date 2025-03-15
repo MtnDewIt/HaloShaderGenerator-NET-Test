@@ -38,14 +38,14 @@ namespace HaloShaderGenerator.Halogram
         Meter,
         Self_Illum_Times_Diffuse,
         Multilayer_Additive,
-        Scope_Blur,
         Ml_Add_Four_Change_Color,
         Ml_Add_Five_Change_Color,
-        Plasma_Wide_And_Sharp_Five_Change_Color,
-        Self_Illum_Holograms,
+        Scope_Blur,
         Palettized_Plasma,
         Palettized_Plasma_Change_Color,
-        Palettized_Depth_Fade
+        Palettized_Depth_Fade,
+        Plasma_Wide_And_Sharp_Five_Change_Color,
+        Self_Illum_Holograms
     }
 
     public enum Blend_Mode

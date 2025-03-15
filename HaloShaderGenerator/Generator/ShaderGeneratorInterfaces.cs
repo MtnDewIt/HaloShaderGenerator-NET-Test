@@ -73,8 +73,6 @@ namespace HaloShaderGenerator.Generator
         void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction);
 
         void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction);
-
-        ShaderParameters GetParameterArguments(string methodName, int option);
     }
 
 }

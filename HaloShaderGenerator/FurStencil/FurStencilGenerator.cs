@@ -198,21 +198,5 @@ namespace HaloShaderGenerator.FurStencil
                 }
             }
         }
-
-        public ShaderParameters GetParameterArguments(string methodName, int option)
-        {
-            ShaderParameters result = new ShaderParameters();
-            if (methodName == "alpha_test")
-            {
-                switch ((Alpha_Test)option)
-                {
-                    case Alpha_Test.Off:
-                        break;
-                    case Alpha_Test.On:
-                        break;
-                }
-            }
-            return result;
-        }
     }
 }

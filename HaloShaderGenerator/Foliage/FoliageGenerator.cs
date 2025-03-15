@@ -164,16 +164,16 @@ namespace HaloShaderGenerator.Foliage
 
                 switch ((Albedo)option)
                 {
+                    case Albedo.Simple:
+                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
+                        result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        rmopName = @"shaders\shader_options\albedo_simple";
+                        break;
                     case Albedo.Default:
                         result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_default";
-                        break;
-                    case Albedo.Simple:
-                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
-                        result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        rmopName = @"shaders\shader_options\albedo_simple";
                         break;
                 }
             }
@@ -315,13 +315,13 @@ namespace HaloShaderGenerator.Foliage
             {
                 switch ((Albedo)option)
                 {
-                    case Albedo.Default:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_default_ps";
-                        break;
                     case Albedo.Simple:
                         vertexFunction = "calc_albedo_simple_vs";
                         pixelFunction = "calc_albedo_simple_ps";
+                        break;
+                    case Albedo.Default:
+                        vertexFunction = "calc_albedo_default_vs";
+                        pixelFunction = "calc_albedo_default_ps";
                         break;
                 }
             }
@@ -386,63 +386,6 @@ namespace HaloShaderGenerator.Foliage
                         break;
                 }
             }
-        }
-
-        public ShaderParameters GetParameterArguments(string methodName, int option)
-        {
-            ShaderParameters result = new ShaderParameters();
-            if (methodName == "albedo")
-            {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Default:
-                        break;
-                    case Albedo.Simple:
-                        break;
-                }
-            }
-
-            if (methodName == "alpha_test")
-            {
-                switch ((Alpha_Test)option)
-                {
-                    case Alpha_Test.None:
-                        break;
-                    case Alpha_Test.Simple:
-                        break;
-                    case Alpha_Test.From_Albedo_Alpha:
-                        break;
-                    case Alpha_Test.From_Texture:
-                        break;
-                }
-            }
-
-            if (methodName == "material_model")
-            {
-                switch ((Material_Model)option)
-                {
-                    case Material_Model.Default:
-                        break;
-                    case Material_Model.Flat:
-                        break;
-                    case Material_Model.Specular:
-                        break;
-                    case Material_Model.Translucent:
-                        break;
-                }
-            }
-
-            if (methodName == "wetness")
-            {
-                switch ((Wetness)option)
-                {
-                    case Wetness.Simple:
-                        break;
-                    case Wetness.Proof:
-                        break;
-                }
-            }
-            return result;
         }
     }
 }

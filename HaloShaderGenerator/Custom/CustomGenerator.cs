@@ -337,11 +337,11 @@ namespace HaloShaderGenerator.Custom
                         result.AddSamplerWithFloatParameter("specular_mask_texture", 25.0f, @"shaders\default_bitmaps\bitmaps\color_white");
                         rmopName = @"shaders\shader_options\specular_mask_from_texture";
                         break;
+                    case Specular_Mask.Specular_Mask_From_Color_Texture:
+                        break;
                     case Specular_Mask.Specular_Mask_Mult_Diffuse:
                         result.AddSamplerWithFloatParameter("specular_mask_texture", 25.0f, @"shaders\default_bitmaps\bitmaps\color_white");
                         rmopName = @"shaders\shader_options\specular_mask_mult_diffuse";
-                        break;
-                    case Specular_Mask.Specular_Mask_From_Color_Texture:
                         break;
                 }
             }
@@ -580,11 +580,11 @@ namespace HaloShaderGenerator.Custom
                         break;
                     case Misc.First_Person_Never_With_Rotating_Bitmaps:
                         break;
+                    case Misc.Always_Calc_Albedo:
+                        break;
                     case Misc.Default:
                         break;
                     case Misc.Rotating_Bitmaps_Super_Slow:
-                        break;
-                    case Misc.Always_Calc_Albedo:
                         break;
                 }
             }
@@ -856,13 +856,13 @@ namespace HaloShaderGenerator.Custom
                         vertexFunction = "invalid";
                         pixelFunction = "calc_specular_mask_texture_ps";
                         break;
-                    case Specular_Mask.Specular_Mask_Mult_Diffuse:
-                        vertexFunction = "invalid";
-                        pixelFunction = "calc_specular_mask_mult_texture_ps";
-                        break;
                     case Specular_Mask.Specular_Mask_From_Color_Texture:
                         vertexFunction = "invalid";
                         pixelFunction = "calc_specular_mask_color_texture_ps";
+                        break;
+                    case Specular_Mask.Specular_Mask_Mult_Diffuse:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_specular_mask_mult_texture_ps";
                         break;
                 }
             }
@@ -1038,6 +1038,10 @@ namespace HaloShaderGenerator.Custom
                         vertexFunction = "invalid";
                         pixelFunction = "1";
                         break;
+                    case Misc.Always_Calc_Albedo:
+                        vertexFunction = "invalid";
+                        pixelFunction = "2";
+                        break;
                     case Misc.Default:
                         vertexFunction = "invalid";
                         pixelFunction = "0";
@@ -1045,10 +1049,6 @@ namespace HaloShaderGenerator.Custom
                     case Misc.Rotating_Bitmaps_Super_Slow:
                         vertexFunction = "invalid";
                         pixelFunction = "1";
-                        break;
-                    case Misc.Always_Calc_Albedo:
-                        vertexFunction = "invalid";
-                        pixelFunction = "2";
                         break;
                 }
             }
@@ -1075,216 +1075,6 @@ namespace HaloShaderGenerator.Custom
                         break;
                 }
             }
-        }
-
-        public ShaderParameters GetParameterArguments(string methodName, int option)
-        {
-            ShaderParameters result = new ShaderParameters();
-            if (methodName == "albedo")
-            {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Default:
-                        break;
-                    case Albedo.Detail_Blend:
-                        break;
-                    case Albedo.Constant_Color:
-                        break;
-                    case Albedo.Two_Change_Color:
-                        break;
-                    case Albedo.Four_Change_Color:
-                        break;
-                    case Albedo.Three_Detail_Blend:
-                        break;
-                    case Albedo.Two_Detail_Overlay:
-                        break;
-                    case Albedo.Two_Detail:
-                        break;
-                    case Albedo.Color_Mask:
-                        break;
-                    case Albedo.Two_Detail_Black_Point:
-                        break;
-                    case Albedo.Waterfall:
-                        break;
-                    case Albedo.Multiply_Map:
-                        break;
-                    case Albedo.Simple:
-                        break;
-                }
-            }
-
-            if (methodName == "bump_mapping")
-            {
-                switch ((Bump_Mapping)option)
-                {
-                    case Bump_Mapping.Off:
-                        break;
-                    case Bump_Mapping.Standard:
-                        break;
-                    case Bump_Mapping.Detail:
-                        break;
-                }
-            }
-
-            if (methodName == "alpha_test")
-            {
-                switch ((Alpha_Test)option)
-                {
-                    case Alpha_Test.None:
-                        break;
-                    case Alpha_Test.Simple:
-                        break;
-                    case Alpha_Test.Multiply_Map:
-                        break;
-                }
-            }
-
-            if (methodName == "specular_mask")
-            {
-                switch ((Specular_Mask)option)
-                {
-                    case Specular_Mask.No_Specular_Mask:
-                        break;
-                    case Specular_Mask.Specular_Mask_From_Diffuse:
-                        break;
-                    case Specular_Mask.Specular_Mask_From_Texture:
-                        break;
-                    case Specular_Mask.Specular_Mask_Mult_Diffuse:
-                        break;
-                    case Specular_Mask.Specular_Mask_From_Color_Texture:
-                        break;
-                }
-            }
-
-            if (methodName == "material_model")
-            {
-                switch ((Material_Model)option)
-                {
-                    case Material_Model.Diffuse_Only:
-                        break;
-                    case Material_Model.Two_Lobe_Phong:
-                        break;
-                    case Material_Model.Foliage:
-                        break;
-                    case Material_Model.None:
-                        break;
-                    case Material_Model.Custom_Specular:
-                        break;
-                }
-            }
-
-            if (methodName == "environment_mapping")
-            {
-                switch ((Environment_Mapping)option)
-                {
-                    case Environment_Mapping.None:
-                        break;
-                    case Environment_Mapping.Per_Pixel:
-                        break;
-                    case Environment_Mapping.Dynamic:
-                        break;
-                    case Environment_Mapping.From_Flat_Texture:
-                        break;
-                    case Environment_Mapping.Per_Pixel_Mip:
-                        break;
-                    case Environment_Mapping.Dynamic_Reach:
-                        break;
-                }
-            }
-
-            if (methodName == "self_illumination")
-            {
-                switch ((Self_Illumination)option)
-                {
-                    case Self_Illumination.Off:
-                        break;
-                    case Self_Illumination.Simple:
-                        break;
-                    case Self_Illumination._3_Channel_Self_Illum:
-                        break;
-                    case Self_Illumination.Plasma:
-                        break;
-                    case Self_Illumination.From_Diffuse:
-                        break;
-                    case Self_Illumination.Illum_Detail:
-                        break;
-                    case Self_Illumination.Meter:
-                        break;
-                    case Self_Illumination.Self_Illum_Times_Diffuse:
-                        break;
-                    case Self_Illumination.Window_Room:
-                        break;
-                }
-            }
-
-            if (methodName == "blend_mode")
-            {
-                switch ((Blend_Mode)option)
-                {
-                    case Blend_Mode.Opaque:
-                        break;
-                    case Blend_Mode.Additive:
-                        break;
-                    case Blend_Mode.Multiply:
-                        break;
-                    case Blend_Mode.Alpha_Blend:
-                        break;
-                    case Blend_Mode.Double_Multiply:
-                        break;
-                }
-            }
-
-            if (methodName == "parallax")
-            {
-                switch ((Parallax)option)
-                {
-                    case Parallax.Off:
-                        break;
-                    case Parallax.Simple:
-                        break;
-                    case Parallax.Interpolated:
-                        break;
-                    case Parallax.Simple_Detail:
-                        break;
-                }
-            }
-
-            if (methodName == "misc")
-            {
-                switch ((Misc)option)
-                {
-                    case Misc.First_Person_Never:
-                        break;
-                    case Misc.First_Person_Sometimes:
-                        break;
-                    case Misc.First_Person_Always:
-                        break;
-                    case Misc.First_Person_Never_With_Rotating_Bitmaps:
-                        break;
-                    case Misc.Default:
-                        break;
-                    case Misc.Rotating_Bitmaps_Super_Slow:
-                        break;
-                    case Misc.Always_Calc_Albedo:
-                        break;
-                }
-            }
-
-            if (methodName == "wetness")
-            {
-                switch ((Wetness)option)
-                {
-                    case Wetness.Default:
-                        break;
-                    case Wetness.Flood:
-                        break;
-                    case Wetness.Proof:
-                        break;
-                    case Wetness.Ripples:
-                        break;
-                }
-            }
-            return result;
         }
     }
 }

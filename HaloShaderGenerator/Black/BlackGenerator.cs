@@ -143,11 +143,5 @@ namespace HaloShaderGenerator.Black
             vertexFunction = null;
             pixelFunction = null;
         }
-
-        public ShaderParameters GetParameterArguments(string methodName, int option)
-        {
-            ShaderParameters result = new ShaderParameters();
-            return result;
-        }
     }
 }

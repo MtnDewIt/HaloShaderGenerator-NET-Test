@@ -308,14 +308,14 @@ namespace HaloShaderGenerator.Particle
                         result.AddFloatParameter("depth_fade_range", 0.1f);
                         rmopName = @"shaders\particle_options\depth_fade_on";
                         break;
-                    case Depth_Fade.Low_Res:
-                        result.AddFloatParameter("depth_fade_range", 0.1f);
-                        rmopName = @"shaders\particle_options\depth_fade_on";
-                        break;
                     case Depth_Fade.Palette_Shift:
                         result.AddFloatParameter("depth_fade_range", 0.1f);
                         result.AddFloatParameter("palette_shift_amount", 0.5f);
                         rmopName = @"shaders\particle_options\depth_fade_palette_shift";
+                        break;
+                    case Depth_Fade.Low_Res:
+                        result.AddFloatParameter("depth_fade_range", 0.1f);
+                        rmopName = @"shaders\particle_options\depth_fade_on";
                         break;
                 }
             }
@@ -690,11 +690,11 @@ namespace HaloShaderGenerator.Particle
                         vertexFunction = "invalid";
                         pixelFunction = "invalid";
                         break;
-                    case Depth_Fade.Low_Res:
+                    case Depth_Fade.Palette_Shift:
                         vertexFunction = "invalid";
                         pixelFunction = "invalid";
                         break;
-                    case Depth_Fade.Palette_Shift:
+                    case Depth_Fade.Low_Res:
                         vertexFunction = "invalid";
                         pixelFunction = "invalid";
                         break;
@@ -775,184 +775,6 @@ namespace HaloShaderGenerator.Particle
                         break;
                 }
             }
-        }
-
-        public ShaderParameters GetParameterArguments(string methodName, int option)
-        {
-            ShaderParameters result = new ShaderParameters();
-            if (methodName == "albedo")
-            {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Diffuse_Only:
-                        break;
-                    case Albedo.Diffuse_Plus_Billboard_Alpha:
-                        break;
-                    case Albedo.Palettized:
-                        break;
-                    case Albedo.Palettized_Plus_Billboard_Alpha:
-                        break;
-                    case Albedo.Diffuse_Plus_Sprite_Alpha:
-                        break;
-                    case Albedo.Palettized_Plus_Sprite_Alpha:
-                        break;
-                    case Albedo.Diffuse_Modulated:
-                        break;
-                    case Albedo.Palettized_Glow:
-                        break;
-                    case Albedo.Palettized_Plasma:
-                        break;
-                    case Albedo.Palettized_2d_Plasma:
-                        break;
-                }
-            }
-
-            if (methodName == "blend_mode")
-            {
-                switch ((Blend_Mode)option)
-                {
-                    case Blend_Mode.Opaque:
-                        break;
-                    case Blend_Mode.Additive:
-                        break;
-                    case Blend_Mode.Multiply:
-                        break;
-                    case Blend_Mode.Alpha_Blend:
-                        break;
-                    case Blend_Mode.Double_Multiply:
-                        break;
-                    case Blend_Mode.Maximum:
-                        break;
-                    case Blend_Mode.Multiply_Add:
-                        break;
-                    case Blend_Mode.Add_Src_Times_Dstalpha:
-                        break;
-                    case Blend_Mode.Add_Src_Times_Srcalpha:
-                        break;
-                    case Blend_Mode.Inv_Alpha_Blend:
-                        break;
-                    case Blend_Mode.Pre_Multiplied_Alpha:
-                        break;
-                }
-            }
-
-            if (methodName == "specialized_rendering")
-            {
-                switch ((Specialized_Rendering)option)
-                {
-                    case Specialized_Rendering.None:
-                        break;
-                    case Specialized_Rendering.Distortion:
-                        break;
-                    case Specialized_Rendering.Distortion_Expensive:
-                        break;
-                    case Specialized_Rendering.Distortion_Diffuse:
-                        break;
-                    case Specialized_Rendering.Distortion_Expensive_Diffuse:
-                        break;
-                }
-            }
-
-            if (methodName == "lighting")
-            {
-                switch ((Lighting)option)
-                {
-                    case Lighting.None:
-                        break;
-                    case Lighting.Per_Pixel_Ravi_Order_3:
-                        break;
-                    case Lighting.Per_Vertex_Ravi_Order_0:
-                        break;
-                    case Lighting.Per_Pixel_Smooth:
-                        break;
-                    case Lighting.Per_Vertex_Ambient:
-                        break;
-                    case Lighting.Smoke_Lighting:
-                        break;
-                }
-            }
-
-            if (methodName == "render_targets")
-            {
-                switch ((Render_Targets)option)
-                {
-                    case Render_Targets.Ldr_And_Hdr:
-                        break;
-                    case Render_Targets.Ldr_Only:
-                        break;
-                }
-            }
-
-            if (methodName == "depth_fade")
-            {
-                switch ((Depth_Fade)option)
-                {
-                    case Depth_Fade.Off:
-                        break;
-                    case Depth_Fade.On:
-                        break;
-                    case Depth_Fade.Low_Res:
-                        break;
-                    case Depth_Fade.Palette_Shift:
-                        break;
-                }
-            }
-
-            if (methodName == "black_point")
-            {
-                switch ((Black_Point)option)
-                {
-                    case Black_Point.Off:
-                        break;
-                    case Black_Point.On:
-                        break;
-                }
-            }
-
-            if (methodName == "fog")
-            {
-                switch ((Fog)option)
-                {
-                    case Fog.Off:
-                        break;
-                    case Fog.On:
-                        break;
-                }
-            }
-
-            if (methodName == "frame_blend")
-            {
-                switch ((Frame_Blend)option)
-                {
-                    case Frame_Blend.Off:
-                        break;
-                    case Frame_Blend.On:
-                        break;
-                }
-            }
-
-            if (methodName == "self_illumination")
-            {
-                switch ((Self_Illumination)option)
-                {
-                    case Self_Illumination.None:
-                        break;
-                    case Self_Illumination.Constant_Color:
-                        break;
-                }
-            }
-
-            if (methodName == "warp")
-            {
-                switch ((Warp)option)
-                {
-                    case Warp.None:
-                        break;
-                    case Warp.Sphere:
-                        break;
-                }
-            }
-            return result;
         }
     }
 }

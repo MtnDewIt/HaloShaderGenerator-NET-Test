@@ -335,6 +335,23 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_color_mask_hard_light";
                         break;
+                    case Albedo.Four_Change_Color_Applying_To_Specular:
+                        result.AddFloat3ColorExternWithSamplerParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorExternWithSamplerParameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorExternWithSamplerParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorExternWithSamplerParameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("camouflage_scale");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("camouflage_change_color_map");
+                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        rmopName = @"shaders\shader_options\albedo_four_change_color";
+                        break;
+                    case Albedo.Simple:
+                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
+                        result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        rmopName = @"shaders\shader_options\albedo_simple";
+                        break;
                     case Albedo.Two_Change_Color_Tex_Overlay:
                         result.AddFloat3ColorExternWithSamplerParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
@@ -372,6 +389,10 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_two_color";
                         break;
+                    case Albedo.Emblem:
+                        result.AddSamplerExternParameter("emblem_map", RenderMethodExtern.emblem_player_shoulder_texture);
+                        rmopName = @"shaders\shader_options\albedo_emblem";
+                        break;
                     case Albedo.Scrolling_Cube_Mask:
                         result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_second_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
@@ -397,27 +418,6 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerWithScaleParameter("color_texture", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\albedo_texture_from_misc";
-                        break;
-                    case Albedo.Four_Change_Color_Applying_To_Specular:
-                        result.AddFloat3ColorExternWithSamplerParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddFloat3ColorExternWithSamplerParameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddFloat3ColorExternWithSamplerParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddFloat3ColorExternWithSamplerParameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddFloatParameter("camouflage_scale");
-                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("camouflage_change_color_map");
-                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
-                        rmopName = @"shaders\shader_options\albedo_four_change_color";
-                        break;
-                    case Albedo.Simple:
-                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
-                        result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        rmopName = @"shaders\shader_options\albedo_simple";
-                        break;
-                    case Albedo.Emblem:
-                        result.AddSamplerExternParameter("emblem_map", RenderMethodExtern.emblem_player_shoulder_texture);
-                        rmopName = @"shaders\shader_options\albedo_emblem";
                         break;
                 }
             }
@@ -553,31 +553,33 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("approximate_specular_type");
                         rmopName = @"shaders\shader_options\material_diffuse_only";
                         break;
-                    case Material_Model.Cook_Torrance:
+                    case Material_Model.Cook_Torrance_Rim_Fresnel:
+                        result.AddBooleanParameter("albedo_blend_with_specular_tint");
                         result.AddBooleanParameter("no_dynamic_lights");
                         result.AddBooleanParameter("order3_area_specular");
+                        result.AddBooleanParameter("use_fresnel_color_environment");
                         result.AddBooleanParameter("use_material_texture");
+                        result.AddFloat3ColorParameter("fresnel_color_environment", new ShaderColor(0, 128, 128, 128));
                         result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloat3ColorParameter("specular_color_by_angle", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("rim_fresnel_color", new ShaderColor(0, 255, 255, 255));
                         result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
                         result.AddFloatParameter("albedo_blend");
                         result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_roughness", 0.5f);
                         result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("approximate_specular_type");
-                        result.AddFloatParameter("area_specular_contribution");
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
                         result.AddFloatParameter("diffuse_coefficient", 1.0f);
                         result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
-                        result.AddFloatParameter("material_texture_black_roughness", 1.0f);
-                        result.AddFloatParameter("material_texture_black_specular_multiplier", 1.0f);
-                        result.AddFloatParameter("roughness", 0.04f);
-                        result.AddFloatParameter("specular_coefficient", 1.0f);
+                        result.AddFloatParameter("fresnel_power", 1.0f);
+                        result.AddFloatParameter("rim_fresnel_albedo_blend");
+                        result.AddFloatParameter("rim_fresnel_coefficient");
+                        result.AddFloatParameter("rim_fresnel_power", 2.0f);
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("specular_coefficient");
                         result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
                         result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
                         result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
                         result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        rmopName = @"shaders\shader_options\material_cook_torrance_option";
+                        rmopName = @"shaders\shader_options\material_cook_torrance_rim_fresnel";
                         break;
                     case Material_Model.Two_Lobe_Phong:
                         result.AddBooleanParameter("no_dynamic_lights");
@@ -719,26 +721,48 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\material_car_paint_option";
                         break;
-                    case Material_Model.Cook_Torrance_Custom_Cube:
+                    case Material_Model.Hair:
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloat3ColorParameter("diffuse_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("environment_map_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("final_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("analytical_specular_coefficient");
+                        result.AddFloatParameter("area_specular_coefficient");
+                        result.AddFloatParameter("diffuse_coefficient");
+                        result.AddFloatParameter("environment_map_coefficient");
+                        result.AddFloatParameter("roughness", 0.5f);
+                        result.AddFloatParameter("specular_power", 10.0f);
+                        result.AddSamplerParameter("specular_map", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddSamplerParameter("specular_noise_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
+                        result.AddSamplerParameter("specular_shift_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
+                        rmopName = @"shaders\shader_options\material_hair_option";
+                        break;
+                    case Material_Model.Cook_Torrance:
                         result.AddBooleanParameter("no_dynamic_lights");
                         result.AddBooleanParameter("order3_area_specular");
                         result.AddBooleanParameter("use_material_texture");
                         result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloat3ColorParameter("specular_color_by_angle", new ShaderColor(0, 255, 255, 255));
                         result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
                         result.AddFloatParameter("albedo_blend");
                         result.AddFloatParameter("analytical_anti_shadow_control");
+                        result.AddFloatParameter("analytical_roughness", 0.5f);
                         result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("approximate_specular_type");
+                        result.AddFloatParameter("area_specular_contribution");
                         result.AddFloatParameter("diffuse_coefficient", 1.0f);
                         result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("roughness", 0.4f);
-                        result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerParameter("custom_cube", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
+                        result.AddFloatParameter("material_texture_black_roughness", 1.0f);
+                        result.AddFloatParameter("material_texture_black_specular_multiplier", 1.0f);
+                        result.AddFloatParameter("roughness", 0.04f);
+                        result.AddFloatParameter("specular_coefficient", 1.0f);
                         result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
                         result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
                         result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
                         result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        rmopName = @"shaders\shader_options\material_cook_torrance_custom_cube_option";
+                        rmopName = @"shaders\shader_options\material_cook_torrance_option";
                         break;
                     case Material_Model.Cook_Torrance_Pbr_Maps:
                         result.AddBooleanParameter("no_dynamic_lights");
@@ -761,28 +785,6 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerParameter("spec_tint_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\material_cook_torrance_pbr_maps_option";
                         break;
-                    case Material_Model.Cook_Torrance_Two_Color_Spec_Tint:
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddBooleanParameter("order3_area_specular");
-                        result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloat3ColorParameter("specular_second_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("roughness", 0.4f);
-                        result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
-                        result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
-                        result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("spec_blend_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        rmopName = @"shaders\shader_options\material_cook_torrance_two_color_spec_tint";
-                        break;
                     case Material_Model.Two_Lobe_Phong_Tint_Map:
                         result.AddBooleanParameter("no_dynamic_lights");
                         result.AddBooleanParameter("order3_area_specular");
@@ -801,112 +803,6 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerParameter("glancing_specular_tint_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("normal_specular_tint_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\material_two_lobe_phong_tint_map_option";
-                        break;
-                    case Material_Model.Cook_Torrance_Scrolling_Cube_Mask:
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddBooleanParameter("order3_area_specular");
-                        result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloat3ColorParameter("specular_second_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("roughness", 0.4f);
-                        result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
-                        result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
-                        result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("tint_blend_mask_cubemap", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        rmopName = @"shaders\shader_options\material_cook_torrance_scrolling_cube_mask";
-                        break;
-                    case Material_Model.Cook_Torrance_Rim_Fresnel:
-                        result.AddBooleanParameter("albedo_blend_with_specular_tint");
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddBooleanParameter("order3_area_specular");
-                        result.AddBooleanParameter("use_fresnel_color_environment");
-                        result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color_environment", new ShaderColor(0, 128, 128, 128));
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloat3ColorParameter("rim_fresnel_color", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("fresnel_power", 1.0f);
-                        result.AddFloatParameter("rim_fresnel_albedo_blend");
-                        result.AddFloatParameter("rim_fresnel_coefficient");
-                        result.AddFloatParameter("rim_fresnel_power", 2.0f);
-                        result.AddFloatParameter("roughness", 0.4f);
-                        result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
-                        result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
-                        result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        rmopName = @"shaders\shader_options\material_cook_torrance_rim_fresnel";
-                        break;
-                    case Material_Model.Cook_Torrance_Scrolling_Cube:
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddBooleanParameter("order3_area_specular");
-                        result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("roughness", 0.4f);
-                        result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
-                        result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
-                        result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("spec_tint_cubemap", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        rmopName = @"shaders\shader_options\material_cook_torrance_scrolling_cube";
-                        break;
-                    case Material_Model.Cook_Torrance_From_Albedo:
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddBooleanParameter("order3_area_specular");
-                        result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("roughness", 0.4f);
-                        result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
-                        result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
-                        result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        rmopName = @"shaders\shader_options\material_cook_torrance_from_albedo";
-                        break;
-                    case Material_Model.Hair:
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddFloat3ColorParameter("diffuse_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("environment_map_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("final_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("analytical_specular_coefficient");
-                        result.AddFloatParameter("area_specular_coefficient");
-                        result.AddFloatParameter("diffuse_coefficient");
-                        result.AddFloatParameter("environment_map_coefficient");
-                        result.AddFloatParameter("roughness", 0.5f);
-                        result.AddFloatParameter("specular_power", 10.0f);
-                        result.AddSamplerParameter("specular_map", @"shaders\default_bitmaps\bitmaps\color_white");
-                        result.AddSamplerParameter("specular_noise_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
-                        result.AddSamplerParameter("specular_shift_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
-                        rmopName = @"shaders\shader_options\material_hair_option";
                         break;
                     case Material_Model.Cook_Torrance_Reach:
                         result.AddBooleanParameter("no_dynamic_lights");
@@ -948,6 +844,110 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("roughness");
                         result.AddFloatParameter("specular_coefficient", 1.0f);
                         rmopName = @"shaders\shader_options\material_two_lobe_phong_option_reach";
+                        break;
+                    case Material_Model.Cook_Torrance_Custom_Cube:
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddBooleanParameter("order3_area_specular");
+                        result.AddBooleanParameter("use_material_texture");
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddSamplerParameter("custom_cube", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
+                        result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        rmopName = @"shaders\shader_options\material_cook_torrance_custom_cube_option";
+                        break;
+                    case Material_Model.Cook_Torrance_Two_Color_Spec_Tint:
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddBooleanParameter("order3_area_specular");
+                        result.AddBooleanParameter("use_material_texture");
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloat3ColorParameter("specular_second_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
+                        result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("spec_blend_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        rmopName = @"shaders\shader_options\material_cook_torrance_two_color_spec_tint";
+                        break;
+                    case Material_Model.Cook_Torrance_Scrolling_Cube_Mask:
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddBooleanParameter("order3_area_specular");
+                        result.AddBooleanParameter("use_material_texture");
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloat3ColorParameter("specular_second_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
+                        result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("tint_blend_mask_cubemap", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        rmopName = @"shaders\shader_options\material_cook_torrance_scrolling_cube_mask";
+                        break;
+                    case Material_Model.Cook_Torrance_Scrolling_Cube:
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddBooleanParameter("order3_area_specular");
+                        result.AddBooleanParameter("use_material_texture");
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
+                        result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("spec_tint_cubemap", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        rmopName = @"shaders\shader_options\material_cook_torrance_scrolling_cube";
+                        break;
+                    case Material_Model.Cook_Torrance_From_Albedo:
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddBooleanParameter("order3_area_specular");
+                        result.AddBooleanParameter("use_material_texture");
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
+                        result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        rmopName = @"shaders\shader_options\material_cook_torrance_from_albedo";
                         break;
                 }
             }
@@ -991,6 +991,14 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerAddressWithColorParameter("environment_map", ShaderOptionParameter.ShaderAddressMode.Clamp, new ShaderColor(0, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\default_dynamic_cube_map");
                         rmopName = @"shaders\shader_options\env_map_per_pixel";
                         break;
+                    case Environment_Mapping.Dynamic_Reach:
+                        result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("env_roughness_offset", 0.5f);
+                        result.AddFloatParameter("env_roughness_scale", 1.0f);
+                        result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerExternAddressParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        rmopName = @"shaders\shader_options\env_map_dynamic";
+                        break;
                     case Environment_Mapping.From_Flat_Texture_As_Cubemap:
                         result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
                         result.AddFloat4ColorParameter("env_bloom_override", new ShaderColor(255, 0, 0, 0));
@@ -1001,14 +1009,6 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("hemisphere_percentage", 1.0f);
                         result.AddSamplerAddressWithColorParameter("flat_environment_map", ShaderOptionParameter.ShaderAddressMode.BlackBorder, new ShaderColor(0, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\color_red");
                         rmopName = @"shaders\shader_options\env_map_from_flat_texture";
-                        break;
-                    case Environment_Mapping.Dynamic_Reach:
-                        result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("env_roughness_offset", 0.5f);
-                        result.AddFloatParameter("env_roughness_scale", 1.0f);
-                        result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        result.AddSamplerExternAddressParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, ShaderOptionParameter.ShaderAddressMode.Clamp);
-                        rmopName = @"shaders\shader_options\env_map_dynamic";
                         break;
                 }
             }
@@ -1086,14 +1086,6 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_simple_four_change_color";
                         break;
-                    case Self_Illumination.Illum_Detail_World_Space_Four_Cc:
-                        result.AddFloat3ColorExternParameter("self_illum_color", RenderMethodExtern.object_change_color_quaternary, new ShaderColor(255, 255, 255, 255));
-                        result.AddFloat4ColorWithFloatParameter("self_illum_obj_bounding_sphere", 1.0f);
-                        result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddSamplerParameter("self_illum_detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
-                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        rmopName = @"shaders\shader_options\illum_detail_world_space_four_cc";
-                        break;
                     case Self_Illumination.Illum_Change_Color:
                         result.AddFloat3ColorExternParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
                         result.AddFloat3ColorExternParameter("self_illum_color", RenderMethodExtern.object_change_color_primary, new ShaderColor(255, 255, 255, 255));
@@ -1128,6 +1120,21 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerFilterAddressParameter("palette", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_palettized_plasma";
                         break;
+                    case Self_Illumination.Change_Color_Detail:
+                        result.AddFloat3ColorExternParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
+                        result.AddFloatParameter("self_illum_intensity", 1.0f);
+                        result.AddSamplerParameter("self_illum_detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        rmopName = @"shaders\shader_options\illum_change_color_detail";
+                        break;
+                    case Self_Illumination.Illum_Detail_World_Space_Four_Cc:
+                        result.AddFloat3ColorExternParameter("self_illum_color", RenderMethodExtern.object_change_color_quaternary, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorWithFloatParameter("self_illum_obj_bounding_sphere", 1.0f);
+                        result.AddFloatParameter("self_illum_intensity", 1.0f);
+                        result.AddSamplerParameter("self_illum_detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        rmopName = @"shaders\shader_options\illum_detail_world_space_four_cc";
+                        break;
                     case Self_Illumination.Change_Color:
                         result.AddFloat3ColorExternParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
                         result.AddFloat3ColorExternParameter("self_illum_color", RenderMethodExtern.object_change_color_primary, new ShaderColor(255, 255, 255, 255));
@@ -1135,13 +1142,6 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("self_illum_intensity", 1.0f);
                         result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_change_color";
-                        break;
-                    case Self_Illumination.Change_Color_Detail:
-                        result.AddFloat3ColorExternParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
-                        result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddSamplerParameter("self_illum_detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
-                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        rmopName = @"shaders\shader_options\illum_change_color_detail";
                         break;
                 }
             }
@@ -1208,11 +1208,11 @@ namespace HaloShaderGenerator.Shader
                         break;
                     case Misc.First_Person_Never_With_Rotating_Bitmaps:
                         break;
+                    case Misc.Always_Calc_Albedo:
+                        break;
                     case Misc.Default:
                         break;
                     case Misc.Rotating_Bitmaps_Super_Slow:
-                        break;
-                    case Misc.Always_Calc_Albedo:
                         break;
                 }
             }
@@ -1596,6 +1596,14 @@ namespace HaloShaderGenerator.Shader
                         vertexFunction = "calc_albedo_default_vs";
                         pixelFunction = "calc_albedo_color_mask_hard_light_ps";
                         break;
+                    case Albedo.Four_Change_Color_Applying_To_Specular:
+                        vertexFunction = "calc_albedo_default_vs";
+                        pixelFunction = "calc_albedo_four_change_color_applying_to_specular_ps";
+                        break;
+                    case Albedo.Simple:
+                        vertexFunction = "calc_albedo_default_vs";
+                        pixelFunction = "calc_albedo_simple_ps";
+                        break;
                     case Albedo.Two_Change_Color_Tex_Overlay:
                         vertexFunction = "calc_albedo_default_vs";
                         pixelFunction = "calc_albedo_two_change_color_tex_overlay_ps";
@@ -1612,6 +1620,10 @@ namespace HaloShaderGenerator.Shader
                         vertexFunction = "calc_albedo_default_vs";
                         pixelFunction = "calc_albedo_two_color_ps";
                         break;
+                    case Albedo.Emblem:
+                        vertexFunction = "calc_albedo_default_vs";
+                        pixelFunction = "calc_albedo_emblem_ps";
+                        break;
                     case Albedo.Scrolling_Cube_Mask:
                         vertexFunction = "calc_albedo_default_vs";
                         pixelFunction = "calc_albedo_scrolling_cube_mask_ps";
@@ -1627,18 +1639,6 @@ namespace HaloShaderGenerator.Shader
                     case Albedo.Texture_From_Misc:
                         vertexFunction = "calc_albedo_default_vs";
                         pixelFunction = "calc_albedo_texture_from_misc_ps";
-                        break;
-                    case Albedo.Four_Change_Color_Applying_To_Specular:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_four_change_color_applying_to_specular_ps";
-                        break;
-                    case Albedo.Simple:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_simple_ps";
-                        break;
-                    case Albedo.Emblem:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_emblem_ps";
                         break;
                 }
             }
@@ -1740,9 +1740,9 @@ namespace HaloShaderGenerator.Shader
                         vertexFunction = "invalid";
                         pixelFunction = "diffuse_only";
                         break;
-                    case Material_Model.Cook_Torrance:
+                    case Material_Model.Cook_Torrance_Rim_Fresnel:
                         vertexFunction = "invalid";
-                        pixelFunction = "cook_torrance";
+                        pixelFunction = "cook_torrance_rim_fresnel";
                         break;
                     case Material_Model.Two_Lobe_Phong:
                         vertexFunction = "invalid";
@@ -1772,41 +1772,21 @@ namespace HaloShaderGenerator.Shader
                         vertexFunction = "invalid";
                         pixelFunction = "car_paint";
                         break;
-                    case Material_Model.Cook_Torrance_Custom_Cube:
+                    case Material_Model.Hair:
                         vertexFunction = "invalid";
-                        pixelFunction = "cook_torrance_custom_cube";
+                        pixelFunction = "hair";
+                        break;
+                    case Material_Model.Cook_Torrance:
+                        vertexFunction = "invalid";
+                        pixelFunction = "cook_torrance";
                         break;
                     case Material_Model.Cook_Torrance_Pbr_Maps:
                         vertexFunction = "invalid";
                         pixelFunction = "cook_torrance_pbr_maps";
                         break;
-                    case Material_Model.Cook_Torrance_Two_Color_Spec_Tint:
-                        vertexFunction = "invalid";
-                        pixelFunction = "cook_torrance_two_color_spec_tint";
-                        break;
                     case Material_Model.Two_Lobe_Phong_Tint_Map:
                         vertexFunction = "invalid";
                         pixelFunction = "two_lobe_phong_tint_map";
-                        break;
-                    case Material_Model.Cook_Torrance_Scrolling_Cube_Mask:
-                        vertexFunction = "invalid";
-                        pixelFunction = "cook_torrance_scrolling_cube_mask";
-                        break;
-                    case Material_Model.Cook_Torrance_Rim_Fresnel:
-                        vertexFunction = "invalid";
-                        pixelFunction = "cook_torrance_rim_fresnel";
-                        break;
-                    case Material_Model.Cook_Torrance_Scrolling_Cube:
-                        vertexFunction = "invalid";
-                        pixelFunction = "cook_torrance_scrolling_cube";
-                        break;
-                    case Material_Model.Cook_Torrance_From_Albedo:
-                        vertexFunction = "invalid";
-                        pixelFunction = "cook_torrance_from_albedo";
-                        break;
-                    case Material_Model.Hair:
-                        vertexFunction = "invalid";
-                        pixelFunction = "hair";
                         break;
                     case Material_Model.Cook_Torrance_Reach:
                         vertexFunction = "invalid";
@@ -1815,6 +1795,26 @@ namespace HaloShaderGenerator.Shader
                     case Material_Model.Two_Lobe_Phong_Reach:
                         vertexFunction = "invalid";
                         pixelFunction = "two_lobe_phong_reach";
+                        break;
+                    case Material_Model.Cook_Torrance_Custom_Cube:
+                        vertexFunction = "invalid";
+                        pixelFunction = "cook_torrance_custom_cube";
+                        break;
+                    case Material_Model.Cook_Torrance_Two_Color_Spec_Tint:
+                        vertexFunction = "invalid";
+                        pixelFunction = "cook_torrance_two_color_spec_tint";
+                        break;
+                    case Material_Model.Cook_Torrance_Scrolling_Cube_Mask:
+                        vertexFunction = "invalid";
+                        pixelFunction = "cook_torrance_scrolling_cube_mask";
+                        break;
+                    case Material_Model.Cook_Torrance_Scrolling_Cube:
+                        vertexFunction = "invalid";
+                        pixelFunction = "cook_torrance_scrolling_cube";
+                        break;
+                    case Material_Model.Cook_Torrance_From_Albedo:
+                        vertexFunction = "invalid";
+                        pixelFunction = "cook_torrance_from_albedo";
                         break;
                 }
             }
@@ -1843,13 +1843,13 @@ namespace HaloShaderGenerator.Shader
                         vertexFunction = "invalid";
                         pixelFunction = "custom_map";
                         break;
-                    case Environment_Mapping.From_Flat_Texture_As_Cubemap:
-                        vertexFunction = "invalid";
-                        pixelFunction = "from_flat_texture_as_cubemap";
-                        break;
                     case Environment_Mapping.Dynamic_Reach:
                         vertexFunction = "invalid";
                         pixelFunction = "dynamic_reach";
+                        break;
+                    case Environment_Mapping.From_Flat_Texture_As_Cubemap:
+                        vertexFunction = "invalid";
+                        pixelFunction = "from_flat_texture_as_cubemap";
                         break;
                 }
             }
@@ -1898,10 +1898,6 @@ namespace HaloShaderGenerator.Shader
                         vertexFunction = "invalid";
                         pixelFunction = "calc_self_illumination_simple_ps";
                         break;
-                    case Self_Illumination.Illum_Detail_World_Space_Four_Cc:
-                        vertexFunction = "invalid";
-                        pixelFunction = "calc_self_illumination_detail_world_space_ps";
-                        break;
                     case Self_Illumination.Illum_Change_Color:
                         vertexFunction = "invalid";
                         pixelFunction = "calc_self_illumination_change_color_ps";
@@ -1914,13 +1910,17 @@ namespace HaloShaderGenerator.Shader
                         vertexFunction = "invalid";
                         pixelFunction = "calc_self_illumination_palettized_plasma_ps";
                         break;
-                    case Self_Illumination.Change_Color:
-                        vertexFunction = "invalid";
-                        pixelFunction = "calc_self_illumination_change_color_ps";
-                        break;
                     case Self_Illumination.Change_Color_Detail:
                         vertexFunction = "invalid";
                         pixelFunction = "calc_self_illumination_change_color_detail_ps";
+                        break;
+                    case Self_Illumination.Illum_Detail_World_Space_Four_Cc:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_self_illumination_detail_world_space_ps";
+                        break;
+                    case Self_Illumination.Change_Color:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_self_illumination_change_color_ps";
                         break;
                 }
             }
@@ -1999,6 +1999,10 @@ namespace HaloShaderGenerator.Shader
                         vertexFunction = "invalid";
                         pixelFunction = "1";
                         break;
+                    case Misc.Always_Calc_Albedo:
+                        vertexFunction = "invalid";
+                        pixelFunction = "0";
+                        break;
                     case Misc.Default:
                         vertexFunction = "invalid";
                         pixelFunction = "0";
@@ -2006,10 +2010,6 @@ namespace HaloShaderGenerator.Shader
                     case Misc.Rotating_Bitmaps_Super_Slow:
                         vertexFunction = "invalid";
                         pixelFunction = "1";
-                        break;
-                    case Misc.Always_Calc_Albedo:
-                        vertexFunction = "invalid";
-                        pixelFunction = "0";
                         break;
                 }
             }
@@ -2116,356 +2116,6 @@ namespace HaloShaderGenerator.Shader
                         break;
                 }
             }
-        }
-
-        public ShaderParameters GetParameterArguments(string methodName, int option)
-        {
-            ShaderParameters result = new ShaderParameters();
-            if (methodName == "albedo")
-            {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Default:
-                        break;
-                    case Albedo.Detail_Blend:
-                        break;
-                    case Albedo.Constant_Color:
-                        break;
-                    case Albedo.Two_Change_Color:
-                        break;
-                    case Albedo.Four_Change_Color:
-                        break;
-                    case Albedo.Three_Detail_Blend:
-                        break;
-                    case Albedo.Two_Detail_Overlay:
-                        break;
-                    case Albedo.Two_Detail:
-                        break;
-                    case Albedo.Color_Mask:
-                        break;
-                    case Albedo.Two_Detail_Black_Point:
-                        break;
-                    case Albedo.Two_Change_Color_Anim_Overlay:
-                        break;
-                    case Albedo.Chameleon:
-                        break;
-                    case Albedo.Two_Change_Color_Chameleon:
-                        break;
-                    case Albedo.Chameleon_Masked:
-                        break;
-                    case Albedo.Color_Mask_Hard_Light:
-                        break;
-                    case Albedo.Two_Change_Color_Tex_Overlay:
-                        break;
-                    case Albedo.Chameleon_Albedo_Masked:
-                        break;
-                    case Albedo.Custom_Cube:
-                        break;
-                    case Albedo.Two_Color:
-                        break;
-                    case Albedo.Scrolling_Cube_Mask:
-                        break;
-                    case Albedo.Scrolling_Cube:
-                        break;
-                    case Albedo.Scrolling_Texture_Uv:
-                        break;
-                    case Albedo.Texture_From_Misc:
-                        break;
-                    case Albedo.Four_Change_Color_Applying_To_Specular:
-                        break;
-                    case Albedo.Simple:
-                        break;
-                    case Albedo.Emblem:
-                        break;
-                }
-            }
-
-            if (methodName == "bump_mapping")
-            {
-                switch ((Bump_Mapping)option)
-                {
-                    case Bump_Mapping.Off:
-                        break;
-                    case Bump_Mapping.Standard:
-                        break;
-                    case Bump_Mapping.Detail:
-                        break;
-                    case Bump_Mapping.Detail_Masked:
-                        break;
-                    case Bump_Mapping.Detail_Plus_Detail_Masked:
-                        break;
-                    case Bump_Mapping.Detail_Unorm:
-                        break;
-                    case Bump_Mapping.Detail_Blend:
-                        break;
-                    case Bump_Mapping.Three_Detail_Blend:
-                        break;
-                    case Bump_Mapping.Standard_Wrinkle:
-                        break;
-                    case Bump_Mapping.Detail_Wrinkle:
-                        break;
-                }
-            }
-
-            if (methodName == "alpha_test")
-            {
-                switch ((Alpha_Test)option)
-                {
-                    case Alpha_Test.None:
-                        break;
-                    case Alpha_Test.Simple:
-                        break;
-                }
-            }
-
-            if (methodName == "specular_mask")
-            {
-                switch ((Specular_Mask)option)
-                {
-                    case Specular_Mask.No_Specular_Mask:
-                        break;
-                    case Specular_Mask.Specular_Mask_From_Diffuse:
-                        break;
-                    case Specular_Mask.Specular_Mask_From_Texture:
-                        break;
-                    case Specular_Mask.Specular_Mask_From_Color_Texture:
-                        break;
-                    case Specular_Mask.Specular_Mask_Mult_Diffuse:
-                        break;
-                }
-            }
-
-            if (methodName == "material_model")
-            {
-                switch ((Material_Model)option)
-                {
-                    case Material_Model.Diffuse_Only:
-                        break;
-                    case Material_Model.Cook_Torrance:
-                        break;
-                    case Material_Model.Two_Lobe_Phong:
-                        break;
-                    case Material_Model.Foliage:
-                        break;
-                    case Material_Model.None:
-                        break;
-                    case Material_Model.Glass:
-                        break;
-                    case Material_Model.Organism:
-                        break;
-                    case Material_Model.Single_Lobe_Phong:
-                        break;
-                    case Material_Model.Car_Paint:
-                        break;
-                    case Material_Model.Cook_Torrance_Custom_Cube:
-                        break;
-                    case Material_Model.Cook_Torrance_Pbr_Maps:
-                        break;
-                    case Material_Model.Cook_Torrance_Two_Color_Spec_Tint:
-                        break;
-                    case Material_Model.Two_Lobe_Phong_Tint_Map:
-                        break;
-                    case Material_Model.Cook_Torrance_Scrolling_Cube_Mask:
-                        break;
-                    case Material_Model.Cook_Torrance_Rim_Fresnel:
-                        break;
-                    case Material_Model.Cook_Torrance_Scrolling_Cube:
-                        break;
-                    case Material_Model.Cook_Torrance_From_Albedo:
-                        break;
-                    case Material_Model.Hair:
-                        break;
-                    case Material_Model.Cook_Torrance_Reach:
-                        break;
-                    case Material_Model.Two_Lobe_Phong_Reach:
-                        break;
-                }
-            }
-
-            if (methodName == "environment_mapping")
-            {
-                switch ((Environment_Mapping)option)
-                {
-                    case Environment_Mapping.None:
-                        break;
-                    case Environment_Mapping.Per_Pixel:
-                        break;
-                    case Environment_Mapping.Dynamic:
-                        break;
-                    case Environment_Mapping.From_Flat_Texture:
-                        break;
-                    case Environment_Mapping.Custom_Map:
-                        break;
-                    case Environment_Mapping.From_Flat_Texture_As_Cubemap:
-                        break;
-                    case Environment_Mapping.Dynamic_Reach:
-                        break;
-                }
-            }
-
-            if (methodName == "self_illumination")
-            {
-                switch ((Self_Illumination)option)
-                {
-                    case Self_Illumination.Off:
-                        break;
-                    case Self_Illumination.Simple:
-                        break;
-                    case Self_Illumination._3_Channel_Self_Illum:
-                        break;
-                    case Self_Illumination.Plasma:
-                        break;
-                    case Self_Illumination.From_Diffuse:
-                        break;
-                    case Self_Illumination.Illum_Detail:
-                        break;
-                    case Self_Illumination.Meter:
-                        break;
-                    case Self_Illumination.Self_Illum_Times_Diffuse:
-                        break;
-                    case Self_Illumination.Simple_With_Alpha_Mask:
-                        break;
-                    case Self_Illumination.Simple_Four_Change_Color:
-                        break;
-                    case Self_Illumination.Illum_Detail_World_Space_Four_Cc:
-                        break;
-                    case Self_Illumination.Illum_Change_Color:
-                        break;
-                    case Self_Illumination.Multilayer_Additive:
-                        break;
-                    case Self_Illumination.Palettized_Plasma:
-                        break;
-                    case Self_Illumination.Change_Color:
-                        break;
-                    case Self_Illumination.Change_Color_Detail:
-                        break;
-                }
-            }
-
-            if (methodName == "blend_mode")
-            {
-                switch ((Blend_Mode)option)
-                {
-                    case Blend_Mode.Opaque:
-                        break;
-                    case Blend_Mode.Additive:
-                        break;
-                    case Blend_Mode.Multiply:
-                        break;
-                    case Blend_Mode.Alpha_Blend:
-                        break;
-                    case Blend_Mode.Double_Multiply:
-                        break;
-                    case Blend_Mode.Pre_Multiplied_Alpha:
-                        break;
-                }
-            }
-
-            if (methodName == "parallax")
-            {
-                switch ((Parallax)option)
-                {
-                    case Parallax.Off:
-                        break;
-                    case Parallax.Simple:
-                        break;
-                    case Parallax.Interpolated:
-                        break;
-                    case Parallax.Simple_Detail:
-                        break;
-                }
-            }
-
-            if (methodName == "misc")
-            {
-                switch ((Misc)option)
-                {
-                    case Misc.First_Person_Never:
-                        break;
-                    case Misc.First_Person_Sometimes:
-                        break;
-                    case Misc.First_Person_Always:
-                        break;
-                    case Misc.First_Person_Never_With_Rotating_Bitmaps:
-                        break;
-                    case Misc.Default:
-                        break;
-                    case Misc.Rotating_Bitmaps_Super_Slow:
-                        break;
-                    case Misc.Always_Calc_Albedo:
-                        break;
-                }
-            }
-
-            if (methodName == "distortion")
-            {
-                switch ((Distortion)option)
-                {
-                    case Distortion.Off:
-                        break;
-                    case Distortion.On:
-                        break;
-                }
-            }
-
-            if (methodName == "soft_fade")
-            {
-                switch ((Soft_Fade)option)
-                {
-                    case Soft_Fade.Off:
-                        break;
-                    case Soft_Fade.On:
-                        break;
-                }
-            }
-
-            if (methodName == "misc_attr_animation")
-            {
-                switch ((Misc_Attr_Animation)option)
-                {
-                    case Misc_Attr_Animation.Off:
-                        break;
-                    case Misc_Attr_Animation.Scrolling_Cube:
-                        break;
-                    case Misc_Attr_Animation.Scrolling_Projected:
-                        break;
-                }
-            }
-
-            if (methodName == "wetness")
-            {
-                switch ((Wetness)option)
-                {
-                    case Wetness.Default:
-                        break;
-                    case Wetness.Flood:
-                        break;
-                    case Wetness.Proof:
-                        break;
-                    case Wetness.Simple:
-                        break;
-                    case Wetness.Ripples:
-                        break;
-                }
-            }
-
-            if (methodName == "alpha_blend_source")
-            {
-                switch ((Alpha_Blend_Source)option)
-                {
-                    case Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel:
-                        break;
-                    case Alpha_Blend_Source.From_Albedo_Alpha:
-                        break;
-                    case Alpha_Blend_Source.From_Opacity_Map_Alpha:
-                        break;
-                    case Alpha_Blend_Source.From_Opacity_Map_Rgb:
-                        break;
-                    case Alpha_Blend_Source.From_Opacity_Map_Alpha_And_Albedo_Alpha:
-                        break;
-                }
-            }
-            return result;
         }
     }
 }

@@ -185,19 +185,5 @@ namespace HaloShaderGenerator.ZOnly
                 }
             }
         }
-
-        public ShaderParameters GetParameterArguments(string methodName, int option)
-        {
-            ShaderParameters result = new ShaderParameters();
-            if (methodName == "test")
-            {
-                switch ((Test)option)
-                {
-                    case Test.Default:
-                        break;
-                }
-            }
-            return result;
-        }
     }
 }

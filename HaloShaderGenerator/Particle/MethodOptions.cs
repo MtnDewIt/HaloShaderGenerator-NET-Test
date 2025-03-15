@@ -73,8 +73,8 @@ namespace HaloShaderGenerator.Particle
     {
         Off,
         On,
-        Low_Res,
-        Palette_Shift
+        Palette_Shift,
+        Low_Res
     }
 
     public enum Black_Point

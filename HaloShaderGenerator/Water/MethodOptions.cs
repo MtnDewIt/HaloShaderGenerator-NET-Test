@@ -10,8 +10,8 @@ namespace HaloShaderGenerator.Water
         Appearance,
         Global_Shape,
         Foam,
-        Detail,
-        Reach_Compatibility
+        Reach_Compatibility,
+        Detail
     }
 
     public enum Waveshape

@@ -324,14 +324,6 @@ namespace HaloShaderGenerator.Halogram
                         result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_multilayer";
                         break;
-                    case Self_Illumination.Scope_Blur:
-                        result.AddFloat3ColorParameter("self_illum_color", new ShaderColor(255, 255, 255, 255));
-                        result.AddFloat3ColorParameter("self_illum_heat_color", new ShaderColor(255, 255, 255, 255));
-                        result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddFloatExternParameter("z_camera_pixel_size", RenderMethodExtern.z_camera_pixel_size);
-                        rmopName = @"shaders\shader_options\illum_scope_blur";
-                        break;
                     case Self_Illumination.Ml_Add_Four_Change_Color:
                         result.AddFloat3ColorExternParameter("self_illum_color", RenderMethodExtern.object_change_color_quaternary, new ShaderColor(255, 255, 255, 255));
                         result.AddFloatParameter("depth_darken", 1.0f);
@@ -354,26 +346,13 @@ namespace HaloShaderGenerator.Halogram
                         result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_multilayer_five_change_color";
                         break;
-                    case Self_Illumination.Plasma_Wide_And_Sharp_Five_Change_Color:
-                        result.AddFloat3ColorExternWithFloatParameter("color_sharp", RenderMethodExtern.object_change_color_quinary, 1.0f, new ShaderColor(255, 255, 255, 255));
-                        result.AddFloat3ColorExternWithFloatParameter("color_wide", RenderMethodExtern.object_change_color_quinary, 1.0f, new ShaderColor(255, 255, 255, 255));
-                        result.AddFloat4ColorWithFloatParameter("color_medium", 1.0f, new ShaderColor(255, 255, 255, 255));
-                        result.AddFloatParameter("color_sharp_alpha", 1.0f);
-                        result.AddFloatParameter("color_wide_alpha", 1.0f);
-                        result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddFloatParameter("thinness_medium", 16.0f);
-                        result.AddFloatParameter("thinness_sharp", 32.0f);
-                        result.AddFloatParameter("thinness_wide", 4.0f);
-                        result.AddSamplerParameter("alpha_mask_map", @"shaders\default_bitmaps\bitmaps\alpha_white");
-                        result.AddSamplerParameter("noise_map_a", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("noise_map_b", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        rmopName = @"shaders\shader_options\illum_plasma_wide_and_sharp_five_change_color";
-                        break;
-                    case Self_Illumination.Self_Illum_Holograms:
+                    case Self_Illumination.Scope_Blur:
                         result.AddFloat3ColorParameter("self_illum_color", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat3ColorParameter("self_illum_heat_color", new ShaderColor(255, 255, 255, 255));
                         result.AddFloatParameter("self_illum_intensity", 1.0f);
                         result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        rmopName = @"shaders\shader_options\illum_holograms";
+                        result.AddFloatExternParameter("z_camera_pixel_size", RenderMethodExtern.z_camera_pixel_size);
+                        rmopName = @"shaders\shader_options\illum_scope_blur";
                         break;
                     case Self_Illumination.Palettized_Plasma:
                         result.AddFloat3ColorParameter("self_illum_color", new ShaderColor(1, 255, 255, 255));
@@ -418,6 +397,27 @@ namespace HaloShaderGenerator.Halogram
                         result.AddSamplerParameter("noise_map_a", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerFilterAddressParameter("palette", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\screen_options\illum_palettized_depth_fade";
+                        break;
+                    case Self_Illumination.Plasma_Wide_And_Sharp_Five_Change_Color:
+                        result.AddFloat3ColorExternWithFloatParameter("color_sharp", RenderMethodExtern.object_change_color_quinary, 1.0f, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat3ColorExternWithFloatParameter("color_wide", RenderMethodExtern.object_change_color_quinary, 1.0f, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorWithFloatParameter("color_medium", 1.0f, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("color_sharp_alpha", 1.0f);
+                        result.AddFloatParameter("color_wide_alpha", 1.0f);
+                        result.AddFloatParameter("self_illum_intensity", 1.0f);
+                        result.AddFloatParameter("thinness_medium", 16.0f);
+                        result.AddFloatParameter("thinness_sharp", 32.0f);
+                        result.AddFloatParameter("thinness_wide", 4.0f);
+                        result.AddSamplerParameter("alpha_mask_map", @"shaders\default_bitmaps\bitmaps\alpha_white");
+                        result.AddSamplerParameter("noise_map_a", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("noise_map_b", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        rmopName = @"shaders\shader_options\illum_plasma_wide_and_sharp_five_change_color";
+                        break;
+                    case Self_Illumination.Self_Illum_Holograms:
+                        result.AddFloat3ColorParameter("self_illum_color", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", 1.0f);
+                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        rmopName = @"shaders\shader_options\illum_holograms";
                         break;
                 }
             }
@@ -761,10 +761,6 @@ namespace HaloShaderGenerator.Halogram
                         vertexFunction = "invalid";
                         pixelFunction = "calc_self_illumination_multilayer_ps";
                         break;
-                    case Self_Illumination.Scope_Blur:
-                        vertexFunction = "invalid";
-                        pixelFunction = "calc_self_illumination_scope_blur_ps";
-                        break;
                     case Self_Illumination.Ml_Add_Four_Change_Color:
                         vertexFunction = "invalid";
                         pixelFunction = "calc_self_illumination_multilayer_ps";
@@ -773,13 +769,9 @@ namespace HaloShaderGenerator.Halogram
                         vertexFunction = "invalid";
                         pixelFunction = "calc_self_illumination_multilayer_ps";
                         break;
-                    case Self_Illumination.Plasma_Wide_And_Sharp_Five_Change_Color:
+                    case Self_Illumination.Scope_Blur:
                         vertexFunction = "invalid";
-                        pixelFunction = "calc_self_illumination_plasma_wide_and_sharp_five_change_color_ps";
-                        break;
-                    case Self_Illumination.Self_Illum_Holograms:
-                        vertexFunction = "invalid";
-                        pixelFunction = "calc_self_illumination_holograms_ps";
+                        pixelFunction = "calc_self_illumination_scope_blur_ps";
                         break;
                     case Self_Illumination.Palettized_Plasma:
                         vertexFunction = "invalid";
@@ -792,6 +784,14 @@ namespace HaloShaderGenerator.Halogram
                     case Self_Illumination.Palettized_Depth_Fade:
                         vertexFunction = "invalid";
                         pixelFunction = "calc_self_illumination_palettized_depth_fade_ps";
+                        break;
+                    case Self_Illumination.Plasma_Wide_And_Sharp_Five_Change_Color:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_self_illumination_plasma_wide_and_sharp_five_change_color_ps";
+                        break;
+                    case Self_Illumination.Self_Illum_Holograms:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_self_illumination_holograms_ps";
                         break;
                 }
             }
@@ -940,176 +940,6 @@ namespace HaloShaderGenerator.Halogram
                         break;
                 }
             }
-        }
-
-        public ShaderParameters GetParameterArguments(string methodName, int option)
-        {
-            ShaderParameters result = new ShaderParameters();
-            if (methodName == "albedo")
-            {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Default:
-                        break;
-                    case Albedo.Detail_Blend:
-                        break;
-                    case Albedo.Constant_Color:
-                        break;
-                    case Albedo.Two_Change_Color:
-                        break;
-                    case Albedo.Four_Change_Color:
-                        break;
-                    case Albedo.Three_Detail_Blend:
-                        break;
-                    case Albedo.Two_Detail_Overlay:
-                        break;
-                    case Albedo.Two_Detail:
-                        break;
-                    case Albedo.Color_Mask:
-                        break;
-                    case Albedo.Two_Detail_Black_Point:
-                        break;
-                }
-            }
-
-            if (methodName == "self_illumination")
-            {
-                switch ((Self_Illumination)option)
-                {
-                    case Self_Illumination.Off:
-                        break;
-                    case Self_Illumination.Simple:
-                        break;
-                    case Self_Illumination._3_Channel_Self_Illum:
-                        break;
-                    case Self_Illumination.Plasma:
-                        break;
-                    case Self_Illumination.From_Diffuse:
-                        break;
-                    case Self_Illumination.Illum_Detail:
-                        break;
-                    case Self_Illumination.Meter:
-                        break;
-                    case Self_Illumination.Self_Illum_Times_Diffuse:
-                        break;
-                    case Self_Illumination.Multilayer_Additive:
-                        break;
-                    case Self_Illumination.Scope_Blur:
-                        break;
-                    case Self_Illumination.Ml_Add_Four_Change_Color:
-                        break;
-                    case Self_Illumination.Ml_Add_Five_Change_Color:
-                        break;
-                    case Self_Illumination.Plasma_Wide_And_Sharp_Five_Change_Color:
-                        break;
-                    case Self_Illumination.Self_Illum_Holograms:
-                        break;
-                    case Self_Illumination.Palettized_Plasma:
-                        break;
-                    case Self_Illumination.Palettized_Plasma_Change_Color:
-                        break;
-                    case Self_Illumination.Palettized_Depth_Fade:
-                        break;
-                }
-            }
-
-            if (methodName == "blend_mode")
-            {
-                switch ((Blend_Mode)option)
-                {
-                    case Blend_Mode.Opaque:
-                        break;
-                    case Blend_Mode.Additive:
-                        break;
-                    case Blend_Mode.Multiply:
-                        break;
-                    case Blend_Mode.Alpha_Blend:
-                        break;
-                    case Blend_Mode.Double_Multiply:
-                        break;
-                }
-            }
-
-            if (methodName == "misc")
-            {
-                switch ((Misc)option)
-                {
-                    case Misc.First_Person_Never:
-                        break;
-                    case Misc.First_Person_Sometimes:
-                        break;
-                    case Misc.First_Person_Always:
-                        break;
-                    case Misc.First_Person_Never_With_Rotating_Bitmaps:
-                        break;
-                    case Misc.Always_Calc_Albedo:
-                        break;
-                }
-            }
-
-            if (methodName == "warp")
-            {
-                switch ((Warp)option)
-                {
-                    case Warp.None:
-                        break;
-                    case Warp.From_Texture:
-                        break;
-                    case Warp.Parallax_Simple:
-                        break;
-                }
-            }
-
-            if (methodName == "overlay")
-            {
-                switch ((Overlay)option)
-                {
-                    case Overlay.None:
-                        break;
-                    case Overlay.Additive:
-                        break;
-                    case Overlay.Additive_Detail:
-                        break;
-                    case Overlay.Multiply:
-                        break;
-                    case Overlay.Multiply_And_Additive_Detail:
-                        break;
-                }
-            }
-
-            if (methodName == "edge_fade")
-            {
-                switch ((Edge_Fade)option)
-                {
-                    case Edge_Fade.None:
-                        break;
-                    case Edge_Fade.Simple:
-                        break;
-                }
-            }
-
-            if (methodName == "distortion")
-            {
-                switch ((Distortion)option)
-                {
-                    case Distortion.Off:
-                        break;
-                    case Distortion.On:
-                        break;
-                }
-            }
-
-            if (methodName == "soft_fade")
-            {
-                switch ((Soft_Fade)option)
-                {
-                    case Soft_Fade.Off:
-                        break;
-                    case Soft_Fade.On:
-                        break;
-                }
-            }
-            return result;
         }
     }
 }

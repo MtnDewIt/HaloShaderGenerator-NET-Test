@@ -360,24 +360,6 @@ namespace HaloShaderGenerator.Water
                 }
             }
 
-            if (methodName == "detail")
-            {
-                optionName = ((Detail)option).ToString();
-
-                switch ((Detail)option)
-                {
-                    case Detail.None:
-                        break;
-                    case Detail.Repeat:
-                        result.AddFloatParameter("detail_slope_scale_x", 10.0f);
-                        result.AddFloatParameter("detail_slope_scale_y", 5.0f);
-                        result.AddFloatParameter("detail_slope_scale_z", 2.0f);
-                        result.AddFloatParameter("detail_slope_steepness", 0.5f);
-                        rmopName = @"shaders\water_options\detail_repeat";
-                        break;
-                }
-            }
-
             if (methodName == "reach_compatibility")
             {
                 optionName = ((Reach_Compatibility)option).ToString();
@@ -411,6 +393,24 @@ namespace HaloShaderGenerator.Water
                         result.AddFloatParameter("slope_scaler");
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         rmopName = @"shaders\water_options\reach_compatibility_enabled";
+                        break;
+                }
+            }
+
+            if (methodName == "detail")
+            {
+                optionName = ((Detail)option).ToString();
+
+                switch ((Detail)option)
+                {
+                    case Detail.None:
+                        break;
+                    case Detail.Repeat:
+                        result.AddFloatParameter("detail_slope_scale_x", 10.0f);
+                        result.AddFloatParameter("detail_slope_scale_y", 5.0f);
+                        result.AddFloatParameter("detail_slope_scale_z", 2.0f);
+                        result.AddFloatParameter("detail_slope_steepness", 0.5f);
+                        rmopName = @"shaders\water_options\detail_repeat";
                         break;
                 }
             }
@@ -504,13 +504,13 @@ namespace HaloShaderGenerator.Water
                 pixelFunction = "invalid";
             }
 
-            if (methodName == "detail")
+            if (methodName == "reach_compatibility")
             {
                 vertexFunction = "invalid";
                 pixelFunction = "invalid";
             }
 
-            if (methodName == "reach_compatibility")
+            if (methodName == "detail")
             {
                 vertexFunction = "invalid";
                 pixelFunction = "invalid";
@@ -670,21 +670,6 @@ namespace HaloShaderGenerator.Water
                 }
             }
 
-            if (methodName == "detail")
-            {
-                switch ((Detail)option)
-                {
-                    case Detail.None:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
-                        break;
-                    case Detail.Repeat:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
-                        break;
-                }
-            }
-
             if (methodName == "reach_compatibility")
             {
                 switch ((Reach_Compatibility)option)
@@ -703,137 +688,21 @@ namespace HaloShaderGenerator.Water
                         break;
                 }
             }
-        }
-
-        public ShaderParameters GetParameterArguments(string methodName, int option)
-        {
-            ShaderParameters result = new ShaderParameters();
-            if (methodName == "waveshape")
-            {
-                switch ((Waveshape)option)
-                {
-                    case Waveshape.Default:
-                        break;
-                    case Waveshape.None:
-                        break;
-                    case Waveshape.Bump:
-                        break;
-                }
-            }
-
-            if (methodName == "watercolor")
-            {
-                switch ((Watercolor)option)
-                {
-                    case Watercolor.Pure:
-                        break;
-                    case Watercolor.Texture:
-                        break;
-                }
-            }
-
-            if (methodName == "reflection")
-            {
-                switch ((Reflection)option)
-                {
-                    case Reflection.None:
-                        break;
-                    case Reflection.Static:
-                        break;
-                    case Reflection.Dynamic:
-                        break;
-                    case Reflection.Static_Ssr:
-                        break;
-                }
-            }
-
-            if (methodName == "refraction")
-            {
-                switch ((Refraction)option)
-                {
-                    case Refraction.None:
-                        break;
-                    case Refraction.Dynamic:
-                        break;
-                }
-            }
-
-            if (methodName == "bankalpha")
-            {
-                switch ((Bankalpha)option)
-                {
-                    case Bankalpha.None:
-                        break;
-                    case Bankalpha.Depth:
-                        break;
-                    case Bankalpha.Paint:
-                        break;
-                    case Bankalpha.From_Shape_Texture_Alpha:
-                        break;
-                }
-            }
-
-            if (methodName == "appearance")
-            {
-                switch ((Appearance)option)
-                {
-                    case Appearance.Default:
-                        break;
-                }
-            }
-
-            if (methodName == "global_shape")
-            {
-                switch ((Global_Shape)option)
-                {
-                    case Global_Shape.None:
-                        break;
-                    case Global_Shape.Paint:
-                        break;
-                    case Global_Shape.Depth:
-                        break;
-                }
-            }
-
-            if (methodName == "foam")
-            {
-                switch ((Foam)option)
-                {
-                    case Foam.None:
-                        break;
-                    case Foam.Auto:
-                        break;
-                    case Foam.Paint:
-                        break;
-                    case Foam.Both:
-                        break;
-                }
-            }
 
             if (methodName == "detail")
             {
                 switch ((Detail)option)
                 {
                     case Detail.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
                         break;
                     case Detail.Repeat:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
                         break;
                 }
             }
-
-            if (methodName == "reach_compatibility")
-            {
-                switch ((Reach_Compatibility)option)
-                {
-                    case Reach_Compatibility.Disabled:
-                        break;
-                    case Reach_Compatibility.Enabled:
-                        break;
-                    case Reach_Compatibility.Enabled_Detail_Repeat:
-                        break;
-                }
-            }
-            return result;
         }
     }
 }

@@ -36,17 +36,17 @@ namespace HaloShaderGenerator.Shader
         Two_Change_Color_Chameleon,
         Chameleon_Masked,
         Color_Mask_Hard_Light,
+        Four_Change_Color_Applying_To_Specular,
+        Simple,
         Two_Change_Color_Tex_Overlay,
         Chameleon_Albedo_Masked,
         Custom_Cube,
         Two_Color,
+        Emblem,
         Scrolling_Cube_Mask,
         Scrolling_Cube,
         Scrolling_Texture_Uv,
-        Texture_From_Misc,
-        Four_Change_Color_Applying_To_Specular,
-        Simple,
-        Emblem
+        Texture_From_Misc
     }
 
     public enum Bump_Mapping
@@ -81,7 +81,7 @@ namespace HaloShaderGenerator.Shader
     public enum Material_Model
     {
         Diffuse_Only,
-        Cook_Torrance,
+        Cook_Torrance_Rim_Fresnel,
         Two_Lobe_Phong,
         Foliage,
         None,
@@ -89,17 +89,17 @@ namespace HaloShaderGenerator.Shader
         Organism,
         Single_Lobe_Phong,
         Car_Paint,
-        Cook_Torrance_Custom_Cube,
-        Cook_Torrance_Pbr_Maps,
-        Cook_Torrance_Two_Color_Spec_Tint,
-        Two_Lobe_Phong_Tint_Map,
-        Cook_Torrance_Scrolling_Cube_Mask,
-        Cook_Torrance_Rim_Fresnel,
-        Cook_Torrance_Scrolling_Cube,
-        Cook_Torrance_From_Albedo,
         Hair,
+        Cook_Torrance,
+        Cook_Torrance_Pbr_Maps,
+        Two_Lobe_Phong_Tint_Map,
         Cook_Torrance_Reach,
-        Two_Lobe_Phong_Reach
+        Two_Lobe_Phong_Reach,
+        Cook_Torrance_Custom_Cube,
+        Cook_Torrance_Two_Color_Spec_Tint,
+        Cook_Torrance_Scrolling_Cube_Mask,
+        Cook_Torrance_Scrolling_Cube,
+        Cook_Torrance_From_Albedo
     }
 
     public enum Environment_Mapping
@@ -109,8 +109,8 @@ namespace HaloShaderGenerator.Shader
         Dynamic,
         From_Flat_Texture,
         Custom_Map,
-        From_Flat_Texture_As_Cubemap,
-        Dynamic_Reach
+        Dynamic_Reach,
+        From_Flat_Texture_As_Cubemap
     }
 
     public enum Self_Illumination
@@ -125,12 +125,12 @@ namespace HaloShaderGenerator.Shader
         Self_Illum_Times_Diffuse,
         Simple_With_Alpha_Mask,
         Simple_Four_Change_Color,
-        Illum_Detail_World_Space_Four_Cc,
         Illum_Change_Color,
         Multilayer_Additive,
         Palettized_Plasma,
-        Change_Color,
-        Change_Color_Detail
+        Change_Color_Detail,
+        Illum_Detail_World_Space_Four_Cc,
+        Change_Color
     }
 
     public enum Blend_Mode
@@ -157,9 +157,9 @@ namespace HaloShaderGenerator.Shader
         First_Person_Sometimes,
         First_Person_Always,
         First_Person_Never_With_Rotating_Bitmaps,
+        Always_Calc_Albedo,
         Default,
-        Rotating_Bitmaps_Super_Slow,
-        Always_Calc_Albedo
+        Rotating_Bitmaps_Super_Slow
     }
 
     public enum Distortion

@@ -51,8 +51,8 @@ namespace HaloShaderGenerator.Custom
         No_Specular_Mask,
         Specular_Mask_From_Diffuse,
         Specular_Mask_From_Texture,
-        Specular_Mask_Mult_Diffuse,
-        Specular_Mask_From_Color_Texture
+        Specular_Mask_From_Color_Texture,
+        Specular_Mask_Mult_Diffuse
     }
 
     public enum Material_Model
@@ -110,9 +110,9 @@ namespace HaloShaderGenerator.Custom
         First_Person_Sometimes,
         First_Person_Always,
         First_Person_Never_With_Rotating_Bitmaps,
+        Always_Calc_Albedo,
         Default,
-        Rotating_Bitmaps_Super_Slow,
-        Always_Calc_Albedo
+        Rotating_Bitmaps_Super_Slow
     }
 
     public enum Wetness
