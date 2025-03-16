@@ -121,6 +121,24 @@ void calc_albedo_simple_ps(
     apply_pc_albedo_modifier(albedo, normal);
 }
 
+void calc_albedo_two_change_color_tex_overlay_ps(
+	in float2 texcoord,
+	out float4 albedo,
+	in float3 normal,
+	in float4 misc,
+	in float3 view_dir,
+	in float2 vPos)
+{
+	// For the time being we will just use the default function, as this function does not have any implementation by default
+	float4	base=	sample2D(base_map,   transform_texcoord(texcoord, base_map_xform));
+	float4	detail=	sample2D(detail_map, transform_texcoord(texcoord, detail_map_xform));
+
+	albedo.rgb= base.rgb * (detail.rgb * DETAIL_MULTIPLIER) * albedo_color.rgb;
+	albedo.w= base.w*detail.w*albedo_color.w;
+
+	apply_pc_albedo_modifier(albedo, normal);
+}
+
 void calc_albedo_base_ps(
 	in float2 texcoord,
 	out float4 albedo,

@@ -504,5 +504,9 @@ accum_pixel water_shading_reach(s_water_interpolators INTERPOLATORS)
 	output_color.rgb *= g_exposure.rrr;
 		
 	// this may not match reach, but we need to replicate rt write
-	return convert_to_render_target(output_color, true, true, 0.0f);		
+	return convert_to_render_target(output_color, true, true
+#ifdef SSR_ENABLE
+		, 0.0f
+#endif
+    );		
 }

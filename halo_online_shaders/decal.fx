@@ -235,6 +235,18 @@ float4 sample_diffuse(float2 texcoord_tile, float2 texcoord, float palette_v)
         return sample2D(tex0_sampler, texcoord);
 	}
 
+	IF_CATEGORY_OPTION(albedo, patchy_emblem)
+	{
+		/*
+		float4 emblem=	calc_emblem(texcoord_tile, true);
+		float alpha=	sample2D(alpha_map, transform_texcoord(texcoord_tile, alpha_map_xform)).a;
+		alpha=	saturate(lerp(alpha_min, alpha_max, alpha));
+
+		return float4(emblem.rgb, (1.0f - emblem.a)*alpha);
+		*/
+		return sample2D(tex0_sampler, texcoord);
+	}
+
 	IF_CATEGORY_OPTION(albedo, change_color)
 	{
 		float4 change_color= sample2D(change_color_map, texcoord);

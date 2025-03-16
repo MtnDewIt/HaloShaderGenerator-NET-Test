@@ -10,6 +10,7 @@ Copyright (c) Microsoft Corporation, 2005. all rights reserved.
 #include "bump_mapping.fx"
 #include "simple_lights.fx"
 #include "utilities.fx"
+#include "debug_modes.fx"
 
 // we have separate reach ps
 #ifdef PIXEL_SHADER
@@ -1174,7 +1175,11 @@ accum_pixel water_shading(s_water_interpolators INTERPOLATORS)
 #endif
 */
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-	return convert_to_render_target(float4(output_color, 1.0f), true, true, 0.0f);		
+	return convert_to_render_target(float4(output_color, 1.0f), true, true
+#ifdef SSR_ENABLE
+		, 0.0f
+#endif
+    );			
 }
 
 #endif //PIXEL_SHADER
@@ -1302,15 +1307,19 @@ accum_pixel lightmap_debug_mode_ps(s_water_interpolators IN)
 
 	out_color= display_debug_modes(
 		IN.lm_tex,
-		IN.normal,
+		0.0f, // IN.normal // Not enough output registers on PC
 		IN.texcoord,
 		IN.tangent,
 		IN.binormal,
-		IN.normal,
+		0.0f, // IN.normal // Not enough output registers on PC
 		ambient_only,
 		linear_only,
 		quadratic);
 		
-	return convert_to_render_target(out_color, true, false);	
+	return convert_to_render_target(out_color, true, false
+#ifdef SSR_ENABLE
+		, 0.0f
+#endif
+    );	
 }
 #endif

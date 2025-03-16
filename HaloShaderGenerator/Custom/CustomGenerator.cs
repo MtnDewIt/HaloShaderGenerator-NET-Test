@@ -271,6 +271,7 @@ namespace HaloShaderGenerator.Custom
                         rmopName = @"shaders\custom_options\albedo_waterfall";
                         break;
                     case Albedo.Multiply_Map:
+                        rmopName = @"shaders\custom_options\albedo_multiply_map";
                         break;
                     case Albedo.Simple:
                         result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));

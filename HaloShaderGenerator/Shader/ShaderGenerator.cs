@@ -1664,11 +1664,11 @@ namespace HaloShaderGenerator.Shader
                         pixelFunction = "calc_bumpmap_detail_masked_ps";
                         break;
                     case Bump_Mapping.Detail_Plus_Detail_Masked:
-                        vertexFunction = "invalid";
+                        vertexFunction = "calc_bumpmap_default_vs";
                         pixelFunction = "calc_bumpmap_detail_plus_detail_masked_ps";
                         break;
                     case Bump_Mapping.Detail_Unorm:
-                        vertexFunction = "invalid";
+                        vertexFunction = "calc_bumpmap_default_vs";
                         pixelFunction = "calc_bumpmap_detail_unorm_ps";
                         break;
                     case Bump_Mapping.Detail_Blend:

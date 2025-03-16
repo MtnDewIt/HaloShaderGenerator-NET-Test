@@ -1056,7 +1056,9 @@ s_particle_render_pixel_out default_ps(
 
 #ifndef LDR_ONLY
 		distorted_pixel.dark_color= float4(0.0f, 0.0f, 0.0f, 0.0f);
+#ifdef SSR_ENABLE
 		distorted_pixel.ssr_color= float4(0.0f, 0.0f, 0.0f, 0.0f);
+#endif
 #endif
 		return distorted_pixel;
 	}
@@ -1119,6 +1121,10 @@ s_particle_render_pixel_out default_ps(
 // 	float4 blended= float4(0.0f, 0.0f, 0.0f, 0.0f);
 // #endif	//#ifndef pc #else
 
-	return CONVERT_TO_RENDER_TARGET_FOR_BLEND(blended, false, false, 0.0f);
+	return CONVERT_TO_RENDER_TARGET_FOR_BLEND(blended, false, false
+#ifdef SSR_ENABLE
+		, 0.0f
+#endif
+	);
 }
 #endif	//#ifdef PIXEL_SHADER

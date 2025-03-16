@@ -6,17 +6,23 @@
 
 #define NO_WETNESS_EFFECT
 
+#define LDR_ALPHA_ADJUST g_exposure.w
+#define HDR_ALPHA_ADJUST g_exposure.b
+#define DARK_COLOR_MULTIPLIER g_exposure.g
+
+#include "blend.fx"
+#include "utilities.fx"
+
 #define DETAIL_MULTIPLIER 4.59479f
 
 #include "deform.fx"
 #include "texture_xform.fx"
 
-#define LDR_ALPHA_ADJUST g_exposure.w
-#define HDR_ALPHA_ADJUST g_exposure.b
-#define DARK_COLOR_MULTIPLIER g_exposure.g
+#include "alpha_test.fx"
 
 // any bloom overrides must be #defined before #including render_target.fx
 #include "render_target.fx"
+#include "albedo_pass.fx"
 
 #include "parallax.fx"
 #include "warp.fx"
@@ -26,7 +32,6 @@
 //#include "analytical_mask.fx"
 #include "simple_lights.fx"
 #include "overlays.fx"
-#include "albedo_pass.fx"
 
 #define FUR_SHADOW_APPLY
 #define NO_SHADOW_GENERATE_PASS

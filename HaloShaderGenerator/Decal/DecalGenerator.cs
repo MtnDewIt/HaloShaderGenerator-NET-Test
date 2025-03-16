@@ -190,8 +190,8 @@ namespace HaloShaderGenerator.Decal
                         result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerWithFloatParameter("u_tiles", 1.0f);
-                        result.AddSamplerWithFloatParameter("v_tiles", 1.0f);
+                        result.AddFloatParameter("u_tiles", 1.0f);
+                        result.AddFloatParameter("v_tiles", 1.0f);
                         rmopName = @"shaders\decal_options\albedo_palettized_plus_alpha_mask";
                         break;
                     case Albedo.Vector_Alpha:

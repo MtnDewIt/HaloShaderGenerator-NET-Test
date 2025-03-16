@@ -363,6 +363,10 @@ accum_pixel static_default_ps(s_fast_particle_interpolators IN, SCREEN_POSITION_
 #else	//#ifndef pc
 	float4 blended= float4(0.0f, 0.0f, 0.0f, 0.0f);
 #endif	//#ifndef pc #else
-	return CONVERT_TO_RENDER_TARGET_FOR_BLEND(blended, false, false);
+	return CONVERT_TO_RENDER_TARGET_FOR_BLEND(blended, false, false
+#ifdef SSR_ENABLE
+		, 0.0f
+#endif
+	);
 }
 #endif	//#ifdef PIXEL_SHADER

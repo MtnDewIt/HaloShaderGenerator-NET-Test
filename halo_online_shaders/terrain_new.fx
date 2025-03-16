@@ -98,6 +98,9 @@ PARAM(float, global_albedo_tint);
 #define ACTIVE_diffuse_plus_specular 1
 #define ACTIVE_diffuse_only_plus_self_illum 1
 #define ACTIVE_diffuse_plus_specular_plus_self_illum 1
+#define ACTIVE_diffuse_plus_specular_plus_heightmap 0
+#define ACTIVE_diffuse_plus_two_detail 0
+#define ACTIVE_diffuse_plus_specular_plus_up_vector_plus_heightmap 0
 #define ACTIVE_off 0
 #define ACTIVE_MATERIAL_COUNT (ACTIVE_MATERIAL(material_0_type) + ACTIVE_MATERIAL(material_1_type) + ACTIVE_MATERIAL(material_2_type) + ACTIVE_MATERIAL(material_3_type))
 
@@ -106,6 +109,9 @@ PARAM(float, global_albedo_tint);
 #define SPECULAR_diffuse_plus_specular 1
 #define SPECULAR_diffuse_only_plus_self_illum 0
 #define SPECULAR_diffuse_plus_specular_plus_self_illum 1
+#define SPECULAR_diffuse_plus_specular_plus_heightmap 0
+#define SPECULAR_diffuse_plus_two_detail 0
+#define SPECULAR_diffuse_plus_specular_plus_up_vector_plus_heightmap 0
 #define SPECULAR_off 0
 #define SPECULAR_MATERIAL_COUNT (SPECULAR_MATERIAL(material_0_type) + SPECULAR_MATERIAL(material_1_type) + SPECULAR_MATERIAL(material_2_type) + SPECULAR_MATERIAL(material_3_type))
 
