@@ -18,11 +18,8 @@
 #include "deform.fx"
 #include "texture_xform.fx"
 
-#include "alpha_test.fx"
-
 // any bloom overrides must be #defined before #including render_target.fx
 #include "render_target.fx"
-#include "albedo_pass.fx"
 
 #include "parallax.fx"
 #include "warp.fx"
@@ -32,6 +29,7 @@
 //#include "analytical_mask.fx"
 #include "simple_lights.fx"
 #include "overlays.fx"
+#include "albedo_pass.fx"
 
 #define FUR_SHADOW_APPLY
 #define NO_SHADOW_GENERATE_PASS
@@ -46,11 +44,11 @@
 //#include "clip_plane.fx"
 #include "dynamic_light_clip.fx"
 
-#if defined(entry_point_imposter_static_sh)
+#if ENTRY_POINT(entry_point) == ENTRY_POINT_imposter_static_sh
 	#define static_sh_vs imposter_static_sh_vs
 	#define static_sh_ps imposter_static_sh_ps
 	#define SHADER_FOR_IMPOSTER
-#elif defined(entry_point_imposter_static_prt_ambient)
+#elif ENTRY_POINT(entry_point) == ENTRY_POINT_imposter_static_prt_ambient
 	#define static_prt_ambient_vs imposter_static_prt_ambient_vs
 	#define static_prt_ps imposter_static_prt_ps
 	#define SHADER_FOR_IMPOSTER

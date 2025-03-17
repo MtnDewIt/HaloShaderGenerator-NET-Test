@@ -251,6 +251,18 @@ float3 calc_self_illumination_change_color_detail_ps(
     return result.rgb;
 }
 
+float3 calc_self_illumination_detail_world_space_ps(
+	in float2 texcoord,
+	inout float3 albedo,
+	in float3 view_dir,
+	in float2 fragment_position,
+	in float3 fragment_to_camera_world,
+	in float view_dot_normal)
+{
+	// Current function is unknown since no implementation for this function exists by default
+	return float3(0.0f, 0.0f, 0.0f);
+}
+
 PARAM_SAMPLER_2D(illum_index_map);
 PARAM(float4, illum_index_map_xform);
 PARAM(float, index_selection);

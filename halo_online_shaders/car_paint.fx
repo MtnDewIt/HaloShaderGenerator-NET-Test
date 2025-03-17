@@ -1,8 +1,6 @@
 #ifndef _CAR_PAINT_FX_
 #define _CAR_PAINT_FX_
 
-//#include "cook_torrance_textures.fx"
-
 //****************************************************************************
 // Cook Torrance Material Model parameters
 //****************************************************************************
@@ -248,12 +246,15 @@ void calc_material_analytic_specular_car_paint_ps(
 	in float3 diffuse_albedo_color,							// diffuse reflectance (ignored for cook-torrance)
 	in float2 texcoord,
 	in float vertex_n_dot_l,								// original normal dot lighting direction (used for specular masking on far side of object)
-	in float3 surface_normal,
+	in float3x3 tangent_frame,
+	in float4 misc,
 	out float4 spatially_varying_material_parameters,
 	out float3 specular_fresnel_color,						// fresnel(specular_albedo_color)
 	out float3 specular_albedo_color,						// specular reflectance at normal incidence
 	out float3 analytic_specular_radiance)					// return specular radiance from this light				<--- ONLY REQUIRED OUTPUT FOR DYNAMIC LIGHTS
 {
+	float3 surface_normal= tangent_frame[2];
+
 	/// layer0
 	float3 normal_dir0 = normal_dir;
 	float4 spatially_varying_material_parameters0;
@@ -505,6 +506,7 @@ void calc_material_car_paint_ps(
 	in float2 texcoord,
 	in float4 prt_ravi_diff,
     in float3x3 tangent_frame,
+	in float4 misc,
 	out float4 envmap_specular_reflectance_and_roughness,
 	out float3 envmap_area_specular_only,
 	out float4 specular_color,
