@@ -217,7 +217,7 @@ namespace HaloShaderGenerator.Glass
 
                 switch ((Material_Model)option)
                 {
-                    case Material_Model.Two_Lobe_Phong:
+                    case Material_Model.Two_Lobe_Phong_Reach:
                         result.AddBooleanParameter("no_dynamic_lights");
                         result.AddFloat3ColorParameter("glancing_specular_tint", new ShaderColor(0, 255, 255, 255));
                         result.AddFloat3ColorParameter("normal_specular_tint", new ShaderColor(0, 255, 255, 255));
@@ -462,9 +462,9 @@ namespace HaloShaderGenerator.Glass
             {
                 switch ((Material_Model)option)
                 {
-                    case Material_Model.Two_Lobe_Phong:
+                    case Material_Model.Two_Lobe_Phong_Reach:
                         vertexFunction = "invalid";
-                        pixelFunction = "two_lobe_phong";
+                        pixelFunction = "two_lobe_phong_reach";
                         break;
                 }
             }

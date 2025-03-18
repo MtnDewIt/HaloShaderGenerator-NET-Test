@@ -24,9 +24,8 @@
 #include "parallax.fx"
 #include "warp.fx"
 
-//#include "uber_light.fx"
 #include "spherical_harmonics.fx"
-//#include "analytical_mask.fx"
+#include "analytical_mask.fx"
 #include "simple_lights.fx"
 #include "overlays.fx"
 #include "albedo_pass.fx"
@@ -34,12 +33,12 @@
 #define FUR_SHADOW_APPLY
 #define NO_SHADOW_GENERATE_PASS
 #include "shadow_generate.fx"
-//#include "shadow_mask.fx"
+#include "shadow_mask.fx"
 
 #define shadow_intenstiy_preserve_for_vmf 1.2f
 #define shadow_intenstiy_preserve_for_ambient 1.0f
 
-//#include "velocity.fx"
+#include "velocity.fx"
 
 //#include "clip_plane.fx"
 #include "dynamic_light_clip.fx"
@@ -76,6 +75,8 @@ PARAM(float, fur_alpha_scale);
 PARAM(float, fur_shear_x);						// read from warp map
 PARAM(float, fur_shear_y);						// read from warp map
 PARAM(float, fur_fix);
+
+PARAM(bool, no_dynamic_lights);
 
 float4 calc_albedo_multilayer_ps(
 	in float2	texcoord,
@@ -281,8 +282,6 @@ albedo_pixel albedo_ps(
 	return convert_to_albedo_target(albedo, bump_normal, approximate_specular_type, float3(0.0f, 0.0f, 0.0f));
 }
 
-#ifdef SCOPE_LIGHTING
-
 float4 get_albedo(in float2 fragment_position)
 {
 	float4 albedo;
@@ -325,19 +324,15 @@ accum_pixel static_sh_ps(
 	// build lighting_coefficients
 	float4 vmf_lighting_coefficients[4]=
 	{
-		p_vmf_lighting_constant_0,
-		p_vmf_lighting_constant_1,
-		p_vmf_lighting_constant_2,
-		p_vmf_lighting_constant_3,
+		p_lighting_constant_0,
+		p_lighting_constant_1,
+		p_lighting_constant_2,
+		p_lighting_constant_3,
 	};
 
 	float4 shadow_mask;
 	get_shadow_mask(shadow_mask, fragment_position);
 	apply_shadow_mask_to_vmf_lighting_coefficients_direct_only(shadow_mask, vmf_lighting_coefficients);
-
-	float3 analytical_lighting_direction;
-	float3 analytical_lighting_intensity;
-	convert_uber_light_to_analytical_light(analytical_lighting_direction,  analytical_lighting_intensity, fragment_to_camera_world);
 
 	float3 bump_normal=		normal;
 
@@ -355,10 +350,10 @@ accum_pixel static_sh_ps(
 	float3 analytical_mask=		get_analytical_mask(fragment_position_world,	vmf_lighting_coefficients);
 
 	// analytical diffuse response
-	float cosine=				saturate(dot(analytical_lighting_direction, bump_normal) * 0.5f + 0.5f);
+	float cosine=				saturate(dot(k_ps_dominant_light_direction.xyz, bump_normal) * 0.5f + 0.5f);
 	cosine *= cosine;
 	float analytical_light_dot_product_result=		cosine*cosine;
-	diffuse_radiance +=			analytical_mask * analytical_light_dot_product_result * analytical_lighting_intensity * vmf_lighting_coefficients[0].w / pi;
+	diffuse_radiance +=			analytical_mask * analytical_light_dot_product_result * k_ps_dominant_light_intensity.xyz * vmf_lighting_coefficients[0].w / pi;
 
 
 	// bounce light
@@ -478,12 +473,12 @@ accum_pixel default_dynamic_light_ps(
 	{
 		if (dot(radiance, radiance) > 0.0f)									// ###ctchou $PERF unproven 'performance' hack
 		{
-			float cosine= dot(normal.xyz, p_vmf_lighting_constant_1.xyz);								// p_vmf_lighting_constant_1.xyz = normalized forward direction of light (along which depth values are measured)
+			float cosine= dot(normal.xyz, p_lighting_constant_1.xyz);								// p_vmf_lighting_constant_1.xyz = normalized forward direction of light (along which depth values are measured)
 
 			float slope= sqrt(1-cosine*cosine) / cosine;										// slope == tan(theta) == sin(theta)/cos(theta) == sqrt(1-cos^2(theta))/cos(theta)
 																								// ###ctchou $REVIEW could make this (4.0) a shader parameter if you have trouble with the masterchief's helmet not shadowing properly
 
-			float half_pixel_size= p_vmf_lighting_constant_1.w * fragment_position_shadow.w;		// the texture coordinate distance from the center of a pixel to the corner of the pixel - increases linearly with increasing depth
+			float half_pixel_size= p_lighting_constant_1.w * fragment_position_shadow.w;		// the texture coordinate distance from the center of a pixel to the corner of the pixel - increases linearly with increasing depth
 			float depth_bias= (slope + 0.2f) * half_pixel_size;
 
 			depth_bias= 0.0f;
@@ -562,8 +557,6 @@ accum_pixel dynamic_light_hq_shadows_ps(
 		fragment_position_shadow,
 		false);
 }
-
-#endif // SCOPE_LIGHTING
 
 
 

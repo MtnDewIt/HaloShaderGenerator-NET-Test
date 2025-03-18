@@ -28,7 +28,7 @@ namespace HaloShaderGenerator.Glass
 
     public enum Material_Model
     {
-        Two_Lobe_Phong
+        Two_Lobe_Phong_Reach
     }
 
     public enum Environment_Mapping

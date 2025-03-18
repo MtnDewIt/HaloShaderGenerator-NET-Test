@@ -137,10 +137,10 @@ float3 sample_array_bumpmap(in texture_sampler_2d_array bump_map, in float2 texc
 #define	BLEND_MODE_OFF		// no blend for mux
 
 #include "shadow_generate.fx"
-//#include "shadow_mask.fx"
+#include "shadow_mask.fx"
 
 #include "active_camo.fx"
-//#include "velocity.fx"
+#include "velocity.fx"
 
 #include "debug_modes.fx"
 

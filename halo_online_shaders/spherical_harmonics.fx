@@ -2,10 +2,17 @@
 //
 // 
 
+#ifdef VERTEX_SHADER
+sampler g_sample_vmf_diffuse_vs;
+#else
+sampler g_sample_vmf_diffuse;
+#endif
+
 #define SQRT3 1.73205080756
 
 // PRT C0 default = 1 / 2 sqrt(pi)
 #define PRT_C0_DEFAULT (0.28209479177387814347403972578039)
+#define pi 3.14159265358979323846
 
 //#define LIGHTPROBE_8BIT
 
@@ -631,3 +638,35 @@ void calculate_area_specular_new_phong_2(
 	s0= max(x0 * c_dc + x1 * c_linear,  0.0f);
 		
 }
+
+float convertBandwidth2TextureCoord(float fFandWidth)
+{
+    return fFandWidth;
+}
+
+float vmf_diffuse(in float4 Y[2],in float3 vSurfNormal_in)
+{	
+    float2 dominant_coord=float2(dot(Y[0].xyz, vSurfNormal_in)*0.5+0.5,
+        convertBandwidth2TextureCoord(Y[1].w));
+	return tex2Dlod(
+#ifdef VERTEX_SHADER
+		g_sample_vmf_diffuse_vs,
+#else
+		g_sample_vmf_diffuse,
+#endif
+		float4(dominant_coord,0,0)).a;
+}	
+
+float3 dual_vmf_diffuse(float3 normal, float4 lighting_constants[4])
+{	
+    float4 dom[2]={lighting_constants[0],lighting_constants[1]};
+    float4 fil[2]={lighting_constants[2],lighting_constants[3]};
+    float vmf_coeff_dom= vmf_diffuse(dom,normal);
+    float vmf_coeff_fil= 0.25f;  // based on spherical harmonic or numerical integration
+    
+    float3 vmf_lighting=vmf_coeff_dom*
+        lighting_constants[1].rgb+
+        vmf_coeff_fil*
+        lighting_constants[3].rgb;    
+    return vmf_lighting/pi;
+}	
