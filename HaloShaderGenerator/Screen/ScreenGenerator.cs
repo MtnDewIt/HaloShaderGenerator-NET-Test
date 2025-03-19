@@ -104,9 +104,17 @@ namespace HaloShaderGenerator.Screen
             }
         }
 
-        public ShaderParameters GetGlobalParameters()
+        public bool IsAutoMacro()
+        {
+            return false;
+        }
+
+        public ShaderParameters GetGlobalParameters(out string rmopName)
         {
             var result = new ShaderParameters();
+
+            rmopName = @"shaders\screen_options\global_screen_options";
+
             return result;
         }
 

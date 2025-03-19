@@ -58,11 +58,13 @@ namespace HaloShaderGenerator.Generator
         /// <returns></returns>
         bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint);
 
+        bool IsAutoMacro();
+
         int GetMethodCount();
 
         int GetMethodOptionCount(int methodIndex);
 
-        ShaderParameters GetGlobalParameters();
+        ShaderParameters GetGlobalParameters(out string rmopName);
 
         ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName);
 

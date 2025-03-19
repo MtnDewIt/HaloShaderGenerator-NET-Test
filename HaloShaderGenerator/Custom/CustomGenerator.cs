@@ -150,9 +150,15 @@ namespace HaloShaderGenerator.Custom
             }
         }
 
-        public ShaderParameters GetGlobalParameters()
+        public bool IsAutoMacro()
+        {
+            return false;
+        }
+
+        public ShaderParameters GetGlobalParameters(out string rmopName)
         {
             var result = new ShaderParameters();
+
             result.AddFloat3ColorExternWithFloatAndIntegerParameter("debug_tint", RenderMethodExtern.debug_tint, 1.0f, 1, new ShaderColor(255, 255, 255, 255));
             result.AddSamplerExternParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
             result.AddSamplerExternParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
@@ -169,6 +175,8 @@ namespace HaloShaderGenerator.Custom
             result.AddSamplerExternParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
             result.AddSamplerExternFilterAddressParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
             result.AddSamplerExternFilterAddressParameter("shadow_mask_texture", RenderMethodExtern.none, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp); // rmExtern - texture_global_target_shadow_mask
+            rmopName = @"shaders\shader_options\global_shader_options";
+
             return result;
         }
 

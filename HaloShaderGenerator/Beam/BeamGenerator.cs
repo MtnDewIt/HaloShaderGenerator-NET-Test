@@ -102,10 +102,18 @@ namespace HaloShaderGenerator.Beam
             }
         }
 
-        public ShaderParameters GetGlobalParameters()
+        public bool IsAutoMacro()
+        {
+            return true;
+        }
+
+        public ShaderParameters GetGlobalParameters(out string rmopName)
         {
             var result = new ShaderParameters();
+
             result.AddSamplerExternFilterAddressParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            rmopName = @"shaders\beam_options\global_beam_options";
+
             return result;
         }
 

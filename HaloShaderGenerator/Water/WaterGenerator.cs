@@ -124,15 +124,23 @@ namespace HaloShaderGenerator.Water
             }
         }
 
-        public ShaderParameters GetGlobalParameters()
+        public bool IsAutoMacro()
+        {
+            return true;
+        }
+
+        public ShaderParameters GetGlobalParameters(out string rmopName)
         {
             var result = new ShaderParameters();
+
             result.AddFloat3ColorExternParameter("water_memory_export_addr", RenderMethodExtern.water_memory_export_address);
             result.AddSamplerExternFilterParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Bilinear);
             result.AddSamplerFilterAddressParameter("g_direction_lut", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"rasterizer\direction_lut_1002");
             result.AddSamplerExternFilterParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture, ShaderOptionParameter.ShaderFilterMode.Bilinear);
             result.AddSamplerExternParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
             result.AddSamplerExternParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            rmopName = @"shaders\water_options\water_global";
+
             return result;
         }
 

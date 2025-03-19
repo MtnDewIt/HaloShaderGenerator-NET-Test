@@ -100,9 +100,17 @@ namespace HaloShaderGenerator.LightVolume
             }
         }
 
-        public ShaderParameters GetGlobalParameters()
+        public bool IsAutoMacro()
+        {
+            return true;
+        }
+
+        public ShaderParameters GetGlobalParameters(out string rmopName)
         {
             var result = new ShaderParameters();
+
+            rmopName = @"shaders\light_volume_options\global_light_volume";
+
             return result;
         }
 

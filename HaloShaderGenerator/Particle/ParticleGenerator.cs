@@ -117,11 +117,19 @@ namespace HaloShaderGenerator.Particle
             }
         }
 
-        public ShaderParameters GetGlobalParameters()
+        public bool IsAutoMacro()
+        {
+            return true;
+        }
+
+        public ShaderParameters GetGlobalParameters(out string rmopName)
         {
             var result = new ShaderParameters();
+
             result.AddSamplerExternFilterAddressParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
             result.AddFloat3ColorExternParameter("screen_constants", RenderMethodExtern.screen_constants);
+            rmopName = @"shaders\particle_options\global_particle_options";
+
             return result;
         }
 

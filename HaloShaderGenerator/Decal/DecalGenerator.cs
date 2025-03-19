@@ -113,9 +113,17 @@ namespace HaloShaderGenerator.Decal
             }
         }
 
-        public ShaderParameters GetGlobalParameters()
+        public bool IsAutoMacro()
+        {
+            return true;
+        }
+
+        public ShaderParameters GetGlobalParameters(out string rmopName)
         {
             var result = new ShaderParameters();
+
+            rmopName = @"shaders\decal_options\global_decal_options";
+
             return result;
         }
 
