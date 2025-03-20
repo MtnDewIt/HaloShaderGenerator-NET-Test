@@ -30,8 +30,6 @@ VERTEX_CONSTANT(float4, Nodes_pad0, c226);
 VERTEX_CONSTANT(float4, Nodes_pad1, c227);
 #endif // IGNORE_SKINNING_NODES
 
-VERTEX_CONSTANT(float4, k_vs_active_camo_factor, c231);
-
 PIXEL_CONSTANT( float4, k_ps_dominant_light_direction, c11);
 PIXEL_CONSTANT( float4, k_ps_constant_shadow_alpha, c11);		// overlaps with k_ps_dominant_light_direction, but they aren't used at the same time
 PIXEL_CONSTANT( float4, k_ps_dominant_light_intensity, c13);

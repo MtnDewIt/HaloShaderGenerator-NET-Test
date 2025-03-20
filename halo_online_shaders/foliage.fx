@@ -23,7 +23,6 @@
 #include "albedo.fx"
 #include "atmosphere.fx"
 #include "alpha_test.fx"
-#include "stipple.fx"
 
 // any bloom overrides must be #defined before #including render_target.fx
 #include "render_target.fx"
@@ -625,34 +624,4 @@ accum_pixel static_prt_ps(
 	in static_common_vsout vsout)
 {
 	return static_common_ps(vsout);	
-}
-
-void stipple_vs(
-	in vertex_type vertex,
-	out float4 position : SV_Position,
-	//CLIP_OUTPUT
-	out float2 texcoord : TEXCOORD0)
-{
-	float4 local_to_world_transform[3];
-		
-	//output to pixel shader
-	tree_animation_special_local_to_view(vertex, local_to_world_transform, position);
-
-	texcoord = vertex.texcoord;
-	
-	//CALC_CLIP(position);
-}
-
-float4 stipple_ps(
-	SCREEN_POSITION_INPUT(screen_position),
-	//CLIP_INPUT
-	in float2 texcoord : TEXCOORD0) : SV_Target
-{
-	stipple_test(screen_position);
-	
-	float output_alpha;
-	// do alpha test
-	calc_alpha_test_ps(texcoord, output_alpha);	
-	
-	return 0;
 }

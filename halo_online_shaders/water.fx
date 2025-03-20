@@ -56,16 +56,6 @@ Copyright (c) Microsoft Corporation, 2005. all rights reserved.
 #define water_depth_only_vs				shadow_generate_vs
 #define water_depth_only_ps				shadow_generate_ps
 
-#define water_flat_per_pixel_vs			single_pass_per_pixel_vs
-#define water_flat_per_pixel_ps			single_pass_per_pixel_ps
-#define water_flat_per_vertex_vs		single_pass_per_vertex_vs
-#define water_flat_per_vertex_ps		single_pass_per_vertex_ps
-
-#define water_flat_blend_per_pixel_vs	static_default_vs
-#define water_flat_blend_per_pixel_ps	static_default_ps
-#define water_flat_blend_per_vertex_vs	albedo_vs
-#define water_flat_blend_per_vertex_ps	albedo_ps
-
 // #ifdef pc
 // 	
 // // The following defines the protocol for passing interpolated data between the vertex shader 
@@ -302,15 +292,5 @@ struct s_underwater_vertex_input
 #undef water_shading_tessellation_ps
 #undef water_shading_non_tessellation_vs
 #undef water_shading_non_tessellation_ps
-#undef water_depth_only_vs
-#undef water_depth_only_ps
 
-#undef water_flat_per_pixel_vs
-#undef water_flat_per_pixel_ps
-#undef water_flat_per_vertex_vs
-#undef water_flat_per_vertex_ps
 
-#undef water_flat_blend_per_pixel_vs
-#undef water_flat_blend_per_pixel_ps
-#undef water_flat_blend_per_vertex_vs
-#undef water_flat_blend_per_vertex_ps

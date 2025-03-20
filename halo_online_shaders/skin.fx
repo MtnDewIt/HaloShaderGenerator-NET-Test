@@ -23,7 +23,6 @@ Copyright (c) Microsoft Corporation, 2007. all rights reserved.
 #include "shadow_generate.fx"
 #include "clip_plane.fx"
 #include "dynamic_light_clip.fx"
-#include "stipple.fx"
 
 void albedo_vs(
 	in vertex_type vertex,
@@ -214,29 +213,6 @@ accum_pixel static_sh_ps(
 {
 	float4 out_color= float4(1.0f, 1.0f, 1.0f, 1.0f);
 	return convert_to_render_target(out_color, true, true);
-}
-
-void stipple_vs(
-	in vertex_type vertex,
-	out float4 position : SV_Position,
-	//CLIP_OUTPUT
-	uniform float dummy = 0)
-{
-	float4 local_to_world_transform[3];
-		
-	//output to pixel shader
-	always_local_to_view(vertex, local_to_world_transform, position);
-
-	//CALC_CLIP(position);
-}
-
-float4 stipple_ps(
-	SCREEN_POSITION_INPUT(screen_position),
-	//CLIP_INPUT
-	uniform float dummy = 0) : SV_Target
-{
-	stipple_test(screen_position);
-	return 0;
 }
 
 #endif //__GLASS_FX_H__

@@ -183,14 +183,11 @@ PIXEL_CONSTANT(float4, p_render_debug_mode, c94);
    VERTEX_SAMPLER_CONSTANT (sampler_atmosphere_neta_table, s0);
    VERTEX_SAMPLER_CONSTANT (sampler_weather_occlusion, s1);	// can go in oneshot if necessary
 
-   PIXEL_CONSTANT(float, stipple_threshold, c19);
-   PIXEL_CONSTANT(float3, stipple_threshold_pad, c20);
 
    //pixel shader common samplers --- do not allow any collisions by explicitly declaring samplers greater than 10 elsewhere!!!
    //STATIC LIGHTING
    sampler albedo_texture;
    sampler normal_texture;
-   sampler stipple_texture;
 
    sampler lightprobe_texture_array;
    sampler dominant_light_intensity_map;

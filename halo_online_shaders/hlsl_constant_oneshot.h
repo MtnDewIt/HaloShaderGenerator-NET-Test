@@ -19,7 +19,6 @@ enum
 	k_node_per_vertex_count= 230,
 	k_node_start= 16, 
 	k_alpha_test_shader_lighting_constant= 229,
-	k_vs_active_camo_factor= 231,
 };
 COMPILE_TIME_ASSERT(k_node_start%4== 0);
 

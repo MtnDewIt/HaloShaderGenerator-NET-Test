@@ -10,7 +10,6 @@ Copyright (c) Microsoft Corporation, 2005. all rights reserved.
 #include "bump_mapping.fx"
 #include "simple_lights.fx"
 #include "utilities.fx"
-#include "debug_modes.fx"
 
 // we have separate reach ps
 #ifdef PIXEL_SHADER
@@ -1175,11 +1174,7 @@ accum_pixel water_shading(s_water_interpolators INTERPOLATORS)
 #endif
 */
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-	return convert_to_render_target(float4(output_color, 1.0f), true, true
-#ifdef SSR_ENABLE
-		, 0.0f
-#endif
-    );			
+	return convert_to_render_target(float4(output_color, 1.0f), true, true, 0.0f);		
 }
 
 #endif //PIXEL_SHADER
@@ -1231,95 +1226,5 @@ float4 water_depth_only_vs( s_vertex_type_water_shading IN ) : SV_Position
 float4 water_depth_only_ps( in float4 position : SV_Position ) : SV_Target
 {
 	return 0;
-}
-#endif
-
-#ifdef VERTEX_SHADER
-s_water_interpolators water_flat_per_pixel_vs( s_vertex_type_water_shading IN )
-{
-	s_water_render_vertex vertex= get_vertex( IN ); // get_vertex( IN, false)
-	return transform_vertex( vertex ); // transform_vertex( vertex, false )
-}
-
-s_water_interpolators water_flat_per_vertex_vs( s_vertex_type_water_shading IN )
-{
-	s_water_render_vertex vertex= get_vertex( IN ); // get_vertex( IN, true )
-	return transform_vertex( vertex ); // transform_vertex( vertex, true )
-}
-#endif
-
-#ifdef VERTEX_SHADER
-s_water_interpolators water_flat_blend_per_pixel_vs(s_vertex_type_water_shading IN)
-{
-	s_water_render_vertex vertex= get_vertex( IN ); // get_vertex( IN, false )
-	return transform_vertex( vertex ); // transform_vertex( vertex, false )
-}
-
-s_water_interpolators water_flat_blend_per_vertex_vs(s_vertex_type_water_shading IN)
-{
-	s_water_render_vertex vertex= get_vertex( IN ); // get_vertex( IN, false )
-	return transform_vertex( vertex ); // transform_vertex( vertex, true )
-}
-#endif
-
-#ifdef VERTEX_SHADER
-s_water_interpolators lightmap_debug_mode_vs( s_vertex_type_water_shading IN )
-{
-	s_water_render_vertex vertex= get_vertex( IN ); // get_vertex( IN, false )
-	return transform_vertex( vertex ); // transform_vertex( vertex, false )
-}
-#endif
-
-#ifdef PIXEL_SHADER
-accum_pixel water_flat_per_pixel_ps(s_water_interpolators INTERPOLATORS)
-{
-	return water_shading(INTERPOLATORS); // water_shading(INTERPOLATORS, false, false)
-}
-
-accum_pixel water_flat_per_vertex_ps(s_water_interpolators INTERPOLATORS)
-{
-	return water_shading(INTERPOLATORS); // water_shading(INTERPOLATORS, true, false)
-}
-#endif
-
-#ifdef PIXEL_SHADER
-accum_pixel water_flat_blend_per_pixel_ps(s_water_interpolators INTERPOLATORS)
-{
-	return water_shading(INTERPOLATORS); // water_shading(INTERPOLATORS, false, true)
-}
-
-accum_pixel water_flat_blend_per_vertex_ps(s_water_interpolators INTERPOLATORS)
-{
-	return water_shading(INTERPOLATORS); // water_shading(INTERPOLATORS, true, true)
-}
-#endif
-
-#ifdef PIXEL_SHADER
-accum_pixel lightmap_debug_mode_ps(s_water_interpolators IN)
-{   	
-	float4 out_color;
-	
-	// setup tangent frame
-	
-	float3 ambient_only= 0.0f;
-	float3 linear_only= 0.0f;
-	float3 quadratic= 0.0f;
-
-	out_color= display_debug_modes(
-		IN.lm_tex,
-		0.0f, // IN.normal // Not enough output registers on PC
-		IN.texcoord,
-		IN.tangent,
-		IN.binormal,
-		0.0f, // IN.normal // Not enough output registers on PC
-		ambient_only,
-		linear_only,
-		quadratic);
-		
-	return convert_to_render_target(out_color, true, false
-#ifdef SSR_ENABLE
-		, 0.0f
-#endif
-    );	
 }
 #endif

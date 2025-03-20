@@ -65,7 +65,5 @@
 
 #include "overlays.fx"
 
-#include "active_camo_reach.fx"
-
 #include "entry_points.fx"
 

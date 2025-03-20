@@ -40,7 +40,6 @@
 #include "render_target.fx"
 #include "albedo_pass.fx"
 #include "blend.fx"
-#include "stipple.fx"
 
 
 #ifndef APPLY_OVERLAYS
@@ -90,25 +89,3 @@ albedo_pixel albedo_ps(in float4 inscatter : COLOR1)
 		float3(0, 0, 0));
 }
 
-void stipple_vs(
-	in vertex_type vertex,
-	out float4 position : POSITION,
-	//CLIP_OUTPUT
-	uniform float dummy = 0)
-{
-	float4 local_to_world_transform[3];
-		
-	//output to pixel shader
-	always_local_to_view(vertex, local_to_world_transform, position);
-
-	//CALC_CLIP(position);
-}
-
-float4 stipple_ps(
-	SCREEN_POSITION_INPUT(screen_position),
-	//CLIP_INPUT
-	uniform float dummy = 0) : SV_Target
-{
-	stipple_test(screen_position);
-	return 0;
-}
