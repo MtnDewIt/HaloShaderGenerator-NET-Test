@@ -25,23 +25,24 @@ namespace HaloShaderGenerator.FurStencil
             return -1;
         }
 
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
+        {
+            switch (entryPoint)
+            {
+                case ShaderStage.Default:
+                case ShaderStage.Shadow_Generate:
+                    return 0;
+                default:
+                    return -1;
+            }
+        }
+
         public bool IsEntryPointSupported(ShaderStage entryPoint)
         {
             switch (entryPoint)
             {
                 case ShaderStage.Default:
                 case ShaderStage.Shadow_Generate:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            switch (method_index)
-            {
-                case 0:
                     return true;
                 default:
                     return false;
@@ -55,15 +56,6 @@ namespace HaloShaderGenerator.FurStencil
                 case ShaderStage.Default:
                 case ShaderStage.Shadow_Generate:
                     return true;
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
                 default:
                     return false;
             }
@@ -87,18 +79,6 @@ namespace HaloShaderGenerator.FurStencil
             {
                 case VertexType.Rigid:
                 case VertexType.Skinned:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Default:
-                case ShaderStage.Shadow_Generate:
                     return true;
                 default:
                     return false;

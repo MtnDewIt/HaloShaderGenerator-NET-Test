@@ -45,6 +45,17 @@ namespace HaloShaderGenerator.Custom
             return -1;
         }
 
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
+        {
+            switch (entryPoint)
+            {
+                case ShaderStage.Shadow_Generate:
+                    return 2;
+                default:
+                    return -1;
+            }
+        }
+
         public bool IsEntryPointSupported(ShaderStage entryPoint)
         {
             switch (entryPoint)
@@ -73,32 +84,12 @@ namespace HaloShaderGenerator.Custom
             }
         }
 
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            switch (method_index)
-            {
-                case 2:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
             switch (entryPoint)
             {
                 case ShaderStage.Shadow_Generate:
                     return true;
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
                 default:
                     return false;
             }
@@ -122,28 +113,6 @@ namespace HaloShaderGenerator.Custom
                 case VertexType.World:
                 case VertexType.Rigid:
                 case VertexType.Skinned:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Albedo:
-                case ShaderStage.Static_Per_Pixel:
-                case ShaderStage.Static_Per_Vertex:
-                case ShaderStage.Static_Sh:
-                case ShaderStage.Static_Prt_Ambient:
-                case ShaderStage.Static_Prt_Linear:
-                case ShaderStage.Static_Prt_Quadratic:
-                case ShaderStage.Dynamic_Light:
-                case ShaderStage.Shadow_Generate:
-                case ShaderStage.Static_Per_Vertex_Color:
-                case ShaderStage.Dynamic_Light_Cinematic:
-                case ShaderStage.Z_Only:
                     return true;
                 default:
                     return false;

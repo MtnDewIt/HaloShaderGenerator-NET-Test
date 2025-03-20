@@ -38,32 +38,23 @@ namespace HaloShaderGenerator.Screen
             switch (entryPoint)
             {
                 case ShaderStage.Default:
-                case ShaderStage.Albedo:
+                    //case ShaderStage.Albedo:
                     return true;
                 default:
                     return false;
             }
         }
 
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            switch (method_index)
-            {
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
         {
             switch (entryPoint)
             {
                 default:
-                    return false;
+                    return -1;
             }
         }
 
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
             switch (entryPoint)
             {
@@ -86,18 +77,6 @@ namespace HaloShaderGenerator.Screen
             switch (vertexType)
             {
                 case VertexType.Screen:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Default:
-                case ShaderStage.Albedo:
                     return true;
                 default:
                     return false;

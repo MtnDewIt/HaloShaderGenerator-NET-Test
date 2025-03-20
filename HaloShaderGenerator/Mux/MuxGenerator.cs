@@ -37,6 +37,15 @@ namespace HaloShaderGenerator.Mux
             return -1;
         }
 
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
+        {
+            switch (entryPoint)
+            {
+                default:
+                    return -1;
+            }
+        }
+
         public bool IsEntryPointSupported(ShaderStage entryPoint)
         {
             switch (entryPoint)
@@ -56,30 +65,10 @@ namespace HaloShaderGenerator.Mux
             }
         }
 
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            switch (method_index)
-            {
-                default:
-                    return false;
-            }
-        }
-
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
             switch (entryPoint)
             {
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Shadow_Generate:
-                    return true;
                 default:
                     return false;
             }
@@ -103,24 +92,6 @@ namespace HaloShaderGenerator.Mux
                 case VertexType.World:
                 case VertexType.Rigid:
                 case VertexType.Skinned:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Albedo:
-                case ShaderStage.Static_Per_Pixel:
-                case ShaderStage.Static_Per_Vertex:
-                case ShaderStage.Static_Sh:
-                case ShaderStage.Dynamic_Light:
-                case ShaderStage.Shadow_Generate:
-                case ShaderStage.Lightmap_Debug_Mode:
-                case ShaderStage.Dynamic_Light_Cinematic:
                     return true;
                 default:
                     return false;

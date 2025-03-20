@@ -43,6 +43,15 @@ namespace HaloShaderGenerator.Water
             return -1;
         }
 
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
+        {
+            switch (entryPoint)
+            {
+                default:
+                    return -1;
+            }
+        }
+
         public bool IsEntryPointSupported(ShaderStage entryPoint)
         {
             switch (entryPoint)
@@ -50,36 +59,18 @@ namespace HaloShaderGenerator.Water
                 case ShaderStage.Water_Tessellation:
                 case ShaderStage.Static_Per_Pixel:
                 case ShaderStage.Static_Per_Vertex:
-                case ShaderStage.Lightmap_Debug_Mode:
+                //case ShaderStage.Lightmap_Debug_Mode:
                 //case ShaderStage.Single_Pass_Per_Vertex:
                 //case ShaderStage.Single_Pass_Per_Pixel:
-                case ShaderStage.Static_Default:
-                case ShaderStage.Albedo:
+                //case ShaderStage.Static_Default:
+                //case ShaderStage.Albedo:
                     return true;
                 default:
                     return false;
             }
         }
 
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            switch (method_index)
-            {
-                default:
-                    return false;
-            }
-        }
-
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
         {
             switch (entryPoint)
             {
@@ -102,22 +93,7 @@ namespace HaloShaderGenerator.Water
             switch (vertexType)
             {
                 case VertexType.Water:
-                case VertexType.World:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Static_Per_Pixel:
-                case ShaderStage.Static_Per_Vertex:
-                case ShaderStage.Static_Sh:
-                case ShaderStage.Water_Tessellation:
-                case ShaderStage.Lightmap_Debug_Mode:
+                //case VertexType.World:
                     return true;
                 default:
                     return false;

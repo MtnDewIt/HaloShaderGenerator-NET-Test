@@ -31,6 +31,15 @@ namespace HaloShaderGenerator.Contrail
             return -1;
         }
 
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
+        {
+            switch (entryPoint)
+            {
+                default:
+                    return -1;
+            }
+        }
+
         public bool IsEntryPointSupported(ShaderStage entryPoint)
         {
             switch (entryPoint)
@@ -42,25 +51,7 @@ namespace HaloShaderGenerator.Contrail
             }
         }
 
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            switch (method_index)
-            {
-                default:
-                    return false;
-            }
-        }
-
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
         {
             switch (entryPoint)
             {
@@ -83,17 +74,6 @@ namespace HaloShaderGenerator.Contrail
             switch (vertexType)
             {
                 case VertexType.Contrail:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Default:
                     return true;
                 default:
                     return false;

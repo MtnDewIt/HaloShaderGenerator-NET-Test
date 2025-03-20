@@ -45,37 +45,28 @@ namespace HaloShaderGenerator.Particle
             return -1;
         }
 
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
+        {
+            switch (entryPoint)
+            {
+                default:
+                    return -1;
+            }
+        }
+
         public bool IsEntryPointSupported(ShaderStage entryPoint)
         {
             switch (entryPoint)
             {
                 case ShaderStage.Default:
-                case ShaderStage.Static_Default:
+                //case ShaderStage.Static_Default:
                     return true;
                 default:
                     return false;
             }
         }
 
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            switch (method_index)
-            {
-                default:
-                    return false;
-            }
-        }
-
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
         {
             switch (entryPoint)
             {
@@ -99,18 +90,6 @@ namespace HaloShaderGenerator.Particle
             {
                 case VertexType.Particle:
                 case VertexType.ParticleModel:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Default:
-                case ShaderStage.Static_Default:
                     return true;
                 default:
                     return false;

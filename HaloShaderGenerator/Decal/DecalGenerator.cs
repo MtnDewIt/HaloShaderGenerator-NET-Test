@@ -39,6 +39,17 @@ namespace HaloShaderGenerator.Decal
             return -1;
         }
 
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
+        {
+            switch (entryPoint)
+            {
+                case ShaderStage.Default:
+                    return 4;
+                default:
+                    return -1;
+            }
+        }
+
         public bool IsEntryPointSupported(ShaderStage entryPoint)
         {
             switch (entryPoint)
@@ -50,28 +61,12 @@ namespace HaloShaderGenerator.Decal
             }
         }
 
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            switch (method_index)
-            {
-                default:
-                    return false;
-            }
-        }
-
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
             switch (entryPoint)
             {
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
+                case ShaderStage.Default:
+                    return true;
                 default:
                     return false;
             }
@@ -96,17 +91,6 @@ namespace HaloShaderGenerator.Decal
                 case VertexType.FlatWorld:
                 case VertexType.FlatRigid:
                 case VertexType.FlatSkinned:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Default:
                     return true;
                 default:
                     return false;

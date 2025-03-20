@@ -24,25 +24,10 @@ namespace HaloShaderGenerator.Generator
         bool IsPixelShaderShared(ShaderStage entryPoint);
 
         /// <summary>
-        /// Returns true if the pixel shader uses the method at method_index. 
-        /// </summary>
-        /// <param name="entryPoint"></param>
-        /// <param name="method_index"></param>
-        /// <returns></returns>
-        bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int methodIndex);
-
-        /// <summary>
         /// Returns true if the vertex shader supports the vertex format
         /// </summary>
         /// <returns></returns>
         bool IsVertexFormatSupported(VertexType vertexType);
-
-        /// <summary>
-        /// Returns true if the vertex shader is in the shared vertex shader tag.
-        /// </summary>
-        /// <param name="entryPoint"></param>
-        /// <returns></returns>
-        bool IsVertexShaderShared(ShaderStage entryPoint);
 
         /// <summary>
         /// Returns true if shared pixel shader has multiple methods
@@ -51,14 +36,9 @@ namespace HaloShaderGenerator.Generator
         /// <returns></returns>
         bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint);
 
-        /// <summary>
-        /// Returns true if the entry point has a shared pixel shader independent of methods\options
-        /// </summary>
-        /// <param name="entryPoint"></param>
-        /// <returns></returns>
-        bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint);
-
         bool IsAutoMacro();
+
+        int GetSharedPixelShaderCategory(ShaderStage entryPoint);
 
         int GetMethodCount();
 

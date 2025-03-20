@@ -41,6 +41,15 @@ namespace HaloShaderGenerator.Cortana
             return -1;
         }
 
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
+        {
+            switch (entryPoint)
+            {
+                default:
+                    return -1;
+            }
+        }
+
         public bool IsEntryPointSupported(ShaderStage entryPoint)
         {
             switch (entryPoint)
@@ -55,25 +64,7 @@ namespace HaloShaderGenerator.Cortana
             }
         }
 
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            switch (method_index)
-            {
-                default:
-                    return false;
-            }
-        }
-
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
         {
             switch (entryPoint)
             {
@@ -98,20 +89,6 @@ namespace HaloShaderGenerator.Cortana
                 case VertexType.World:
                 case VertexType.Rigid:
                 case VertexType.Skinned:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Albedo:
-                case ShaderStage.Static_Sh:
-                case ShaderStage.Static_Prt_Ambient:
-                case ShaderStage.Active_Camo:
                     return true;
                 default:
                     return false;
