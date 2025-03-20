@@ -56,7 +56,7 @@ namespace HaloShaderGenerator.Halogram
                 case ShaderStage.Static_Prt_Quadratic:
                 case ShaderStage.Static_Per_Vertex_Color:
                 case ShaderStage.Dynamic_Light_Cinematic:
-                case ShaderStage.Stipple:
+                //case ShaderStage.Stipple:
                 case ShaderStage.Active_Camo:
                     return true;
                 default:
@@ -132,7 +132,7 @@ namespace HaloShaderGenerator.Halogram
                 case ShaderStage.Shadow_Generate:
                 case ShaderStage.Static_Per_Vertex_Color:
                 case ShaderStage.Dynamic_Light_Cinematic:
-                case ShaderStage.Z_Only:
+                //case ShaderStage.Stipple:
                     return true;
                 default:
                     return false;

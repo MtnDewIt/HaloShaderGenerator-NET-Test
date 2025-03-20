@@ -43,7 +43,7 @@ namespace HaloShaderGenerator.Foliage
                 case ShaderStage.Static_Prt_Ambient:
                 case ShaderStage.Static_Prt_Linear:
                 case ShaderStage.Static_Prt_Quadratic:
-                case ShaderStage.Stipple:
+                //case ShaderStage.Stipple:
                 //case ShaderStage.Single_Pass_Per_Pixel:
                 //case ShaderStage.Single_Pass_Per_Vertex:
                 //case ShaderStage.Single_Pass_Single_Probe:
@@ -123,7 +123,7 @@ namespace HaloShaderGenerator.Foliage
                 case ShaderStage.Static_Prt_Linear:
                 case ShaderStage.Static_Prt_Quadratic:
                 case ShaderStage.Shadow_Generate:
-                case ShaderStage.Z_Only:
+                //case ShaderStage.Stipple:
                     return true;
                 default:
                     return false;

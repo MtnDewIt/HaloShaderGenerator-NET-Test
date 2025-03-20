@@ -51,8 +51,8 @@ namespace HaloShaderGenerator.Water
                 case ShaderStage.Static_Per_Pixel:
                 case ShaderStage.Static_Per_Vertex:
                 case ShaderStage.Lightmap_Debug_Mode:
-                case ShaderStage.Single_Pass_Per_Vertex:
-                case ShaderStage.Single_Pass_Per_Pixel:
+                //case ShaderStage.Single_Pass_Per_Vertex:
+                //case ShaderStage.Single_Pass_Per_Pixel:
                 case ShaderStage.Static_Default:
                 case ShaderStage.Albedo:
                     return true;
