@@ -175,6 +175,7 @@ PARAM(float, bankalpha_infuence_depth);
 // global shape
 PARAM(float, globalshape_infuence_depth);
 
+#ifdef APPLY_FIXES
 // additions from reach
 PARAM(float4, global_shape_texture_xform);
 PARAM(float4, watercolor_texture_xform);
@@ -184,6 +185,7 @@ float fresnel_dark_spot;
 float foam_coefficient;
 float foam_cut;
 samplerCUBE dynamic_environment_map_0;
+#endif
 
 //	ignore the vertex_type, input vertex type defined locally
 struct s_vertex_type_water_tessellation

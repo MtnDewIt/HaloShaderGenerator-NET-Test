@@ -37,8 +37,10 @@ CATEGORY_PARAM(category_global_shape);
 CATEGORY_PARAM(category_waveshape);
 #endif
 
+#ifdef APPLY_FIXES
 #ifndef category_reach_compatibility
 CATEGORY_PARAM(category_reach_compatibility);
+#endif
 #endif
 
 float4 barycentric_interpolate(float4 a, float4 b, float4 c, float3 weights)
@@ -347,22 +349,30 @@ s_water_interpolators transform_vertex( s_water_render_vertex IN )
 	incident_ws.w= length(incident_ws.xyz);
 	incident_ws.xyz= normalize(incident_ws.xyz);
 
+#ifdef APPLY_FIXES
 	float min_mip_level = 1.0f;
 	if ( !TEST_CATEGORY_OPTION(reach_compatibility, disabled) )
 		min_mip_level = 0.0f;
 
-	float mipmap_level= max(incident_ws.w / wave_visual_damping_distance, min_mip_level); 		
+	float mipmap_level= max(incident_ws.w / wave_visual_damping_distance, min_mip_level); 
+#else
+	float mipmap_level= max(incident_ws.w / wave_visual_damping_distance, 1.0f); 		
+#endif		
 
 	// apply global shape control
 	float height_scale_global= 1.0f;
 	float choppy_scale_global= 1.0f;
 	if ( TEST_CATEGORY_OPTION(global_shape, paint) )
 	{
+#ifdef APPLY_FIXES
 		float4 shape_control;
 		if ( !TEST_CATEGORY_OPTION(reach_compatibility, disabled) )
 			shape_control= tex2Dlod(global_shape_texture, float4(transform_texcoord(IN.base_tex.xy, global_shape_texture_xform), 0, mipmap_level));
 		else
 			shape_control= sample2Dlod(global_shape_texture, IN.base_tex.xy, mipmap_level);
+#else
+		float4 shape_control= sample2Dlod(global_shape_texture, IN.base_tex.xy, mipmap_level);
+#endif
 		height_scale_global= shape_control.x;
 		choppy_scale_global= shape_control.y;
 	}
@@ -435,6 +445,7 @@ s_water_interpolators transform_vertex( s_water_render_vertex IN )
 			//float3 displacement_aux= 0.0f;
 			
 			// restore displacement
+#ifdef APPLY_FIXES
 			if ( !TEST_CATEGORY_OPTION(reach_compatibility, disabled) )
 			{
 				displacement= restore_displacement(
@@ -463,11 +474,25 @@ s_water_interpolators transform_vertex( s_water_render_vertex IN )
 									displacement_min,
 									wave_height_aux);		
 			}
+#else
+			displacement= restore_displacement(
+ 								displacement,
+ 								displacement_range,
+ 								displacement_min,
+ 								wave_height);	
+ 
+ 			displacement_aux= restore_displacement(
+ 								displacement_aux,
+ 								displacement_range,
+ 								displacement_min,
+ 								wave_height_aux);	
+#endif
 
 			float wave_scale= sqrt( wave_displacement_array_xform.x * wave_displacement_array_xform.y);
 			//float wave_scale_aux= sqrt( wave_slope_array_xform.x * wave_slope_array_xform.y);
 			float wave_scale_aux= wave_scale;	
 
+#ifdef APPLY_FIXES
 			// scale and accumulate waves	
 			if ( !TEST_CATEGORY_OPTION(reach_compatibility, disabled) )
 			{
@@ -479,6 +504,11 @@ s_water_interpolators transform_vertex( s_water_render_vertex IN )
 				displacement_aux/= wave_scale_aux;
 				displacement= displacement + displacement_aux;	
 			}
+#else
+            displacement/= wave_scale;
+ 			displacement_aux/= wave_scale_aux;
+ 			displacement= displacement + displacement_aux;	
+#endif
 
 			displacement= apply_choppiness(
 								displacement,						
@@ -486,12 +516,18 @@ s_water_interpolators transform_vertex( s_water_render_vertex IN )
 								choppiness_backward * choppy_scale_global, 
 								choppiness_side * choppy_scale_global);
 
+#ifdef APPLY_FIXES
 			if ( TEST_CATEGORY_OPTION(reach_compatibility, disabled) )
 			{
 				// convert procedure wave displacement from texture space to geometry space
 				displacement*= IN.local_info.x;	
 				max_height_relative= 0.5f * IN.local_info.x * displacement_range_z*(wave_height + wave_height_aux) / wave_scale;
 			}
+#else
+			// convert procedure wave displacement from texture space to geometry space
+			displacement*= IN.local_info.x;	
+			max_height_relative= 0.5f * IN.local_info.x * displacement_range_z*(wave_height + wave_height_aux) / wave_scale;
+#endif
 
 			// apply global height control
 			displacement.z*= height_scale_global;		
@@ -717,8 +753,10 @@ float3 decode_bpp16_luvw(
 // shade water surface
 accum_pixel water_shading(s_water_interpolators INTERPOLATORS)
 {
+#ifdef APPLY_FIXES
 	if ( !TEST_CATEGORY_OPTION(reach_compatibility, disabled) )
 		return water_shading_reach(INTERPOLATORS);
+#endif
 
 #if DX_VERSION == 11
 	// calcuate texcoord in screen space

@@ -235,6 +235,7 @@ float4 sample_diffuse(float2 texcoord_tile, float2 texcoord, float palette_v)
         return sample2D(tex0_sampler, texcoord);
 	}
 
+#ifdef category_albedo_option_patchy_emblem
 	IF_CATEGORY_OPTION(albedo, patchy_emblem)
 	{
 		/*
@@ -246,6 +247,7 @@ float4 sample_diffuse(float2 texcoord_tile, float2 texcoord, float palette_v)
 		*/
 		return sample2D(tex0_sampler, texcoord);
 	}
+#endif
 
 	IF_CATEGORY_OPTION(albedo, change_color)
 	{

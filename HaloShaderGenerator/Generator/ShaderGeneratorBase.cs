@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace HaloShaderGenerator.Generator
 {
-    static class ShaderGeneratorBase
+    public static class ShaderGeneratorBase
     {
         private class IncludeManager : Include
         {
