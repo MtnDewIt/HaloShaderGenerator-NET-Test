@@ -303,21 +303,21 @@ namespace HaloShaderGenerator.Glass
                         result.AddFloatParameter("opacity_fresnel_coefficient");
                         result.AddFloatParameter("opacity_fresnel_curve_bias");
                         result.AddFloatParameter("opacity_fresnel_curve_steepness", 3.0f);
-                        result.AddSamplerParameter("opacity_texture");
+                        result.AddSamplerParameter("opacity_texture", @"shaders\default_bitmaps\bitmaps\color_white");
                         rmopName = @"shaders\shader_options\blend_source_from_opacity_map";
                         break;
                     case Alpha_Blend_Source.From_Opacity_Map_Rgb:
                         result.AddFloatParameter("opacity_fresnel_coefficient");
                         result.AddFloatParameter("opacity_fresnel_curve_bias");
                         result.AddFloatParameter("opacity_fresnel_curve_steepness", 3.0f);
-                        result.AddSamplerParameter("opacity_texture");
+                        result.AddSamplerParameter("opacity_texture", @"shaders\default_bitmaps\bitmaps\color_white");
                         rmopName = @"shaders\shader_options\blend_source_from_opacity_map";
                         break;
                     case Alpha_Blend_Source.From_Opacity_Map_Alpha_And_Albedo_Alpha:
                         result.AddFloatParameter("opacity_fresnel_coefficient");
                         result.AddFloatParameter("opacity_fresnel_curve_bias");
                         result.AddFloatParameter("opacity_fresnel_curve_steepness", 3.0f);
-                        result.AddSamplerParameter("opacity_texture");
+                        result.AddSamplerParameter("opacity_texture", @"shaders\default_bitmaps\bitmaps\color_white");
                         rmopName = @"shaders\shader_options\blend_source_from_opacity_map";
                         break;
                 }

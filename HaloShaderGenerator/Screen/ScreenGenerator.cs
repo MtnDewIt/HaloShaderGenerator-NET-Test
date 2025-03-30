@@ -140,7 +140,7 @@ namespace HaloShaderGenerator.Screen
                         break;
                     case Base.Normal_Map_Edge_Shade:
                         result.AddFloatParameter("palette_v", 1.0f);
-                        result.AddSamplerFilterAddressParameter("normal_map", ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerFilterAddressParameter("normal_map", ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\color_white");
                         result.AddSamplerFilterAddressParameter("palette", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         rmopName = @"shaders\screen_options\base_normal_map_edge_shade";
                         break;
@@ -150,9 +150,9 @@ namespace HaloShaderGenerator.Screen
                         break;
                     case Base.Normal_Map_Edge_Stencil:
                         result.AddFloatParameter("palette_v", 1.0f);
-                        result.AddSamplerFilterAddressParameter("normal_map", ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerFilterAddressParameter("normal_map", ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\color_white");
                         result.AddSamplerFilterAddressParameter("palette", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
-                        result.AddSamplerFilterAddressParameter("stencil_map", ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerFilterAddressParameter("stencil_map", ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\color_white");
                         rmopName = @"shaders\screen_options\base_normal_map_edge_stencil";
                         break;
                 }

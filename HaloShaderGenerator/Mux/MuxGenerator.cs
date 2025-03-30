@@ -203,8 +203,8 @@ namespace HaloShaderGenerator.Mux
                         rmopName = @"shaders\shader_options\material_diffuse_only";
                         break;
                     case Materials.Single_Lobe_Phong:
-                        result.AddSamplerFilterWithFloatParameter("material_property0_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, 1.0f);
-                        result.AddSamplerParameter("material_property1_map");
+                        result.AddSamplerFilterWithFloatParameter("material_property0_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, 1.0f, @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddSamplerParameter("material_property1_map", @"shaders\default_bitmaps\bitmaps\color_white");
                         result.AddBooleanParameter("no_dynamic_lights");
                         rmopName = @"shaders\shader_options\mux_single_lobe_phong";
                         break;

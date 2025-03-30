@@ -201,7 +201,7 @@ namespace HaloShaderGenerator.Water
                         result.AddFloatParameter("reflection_coefficient", 0.4f);
                         result.AddFloatParameter("shadow_intensity_mark", 0.5f);
                         result.AddFloatParameter("sunspot_cut", 0.2f);
-                        result.AddSamplerAddressParameter("environment_map", ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerAddressParameter("environment_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\default_dynamic_cube_map");
                         rmopName = @"shaders\water_options\reflection_static";
                         break;
                     case Reflection.Dynamic:
@@ -217,7 +217,7 @@ namespace HaloShaderGenerator.Water
                         result.AddFloatParameter("ssr_smooth_factor", 5.0f);
                         result.AddFloatParameter("ssr_transparency", 1.0f);
                         result.AddFloatParameter("sunspot_cut", 0.2f);
-                        result.AddSamplerAddressParameter("environment_map", ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerAddressParameter("environment_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\default_dynamic_cube_map");
                         rmopName = @"shaders\water_options\reflection_static_ssr";
                         break;
                 }
@@ -255,11 +255,11 @@ namespace HaloShaderGenerator.Water
                         rmopName = @"shaders\water_options\bankalpha_depth";
                         break;
                     case Bankalpha.Paint:
-                        result.AddSamplerParameter("watercolor_texture");
+                        result.AddSamplerParameter("watercolor_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\water_options\bankalpha_paint";
                         break;
                     case Bankalpha.From_Shape_Texture_Alpha:
-                        result.AddSamplerParameter("global_shape_texture");
+                        result.AddSamplerParameter("global_shape_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\water_options\bankalpha_from_shape_texture_alpha";
                         break;
                 }

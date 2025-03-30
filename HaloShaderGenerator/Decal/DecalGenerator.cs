@@ -158,8 +158,8 @@ namespace HaloShaderGenerator.Decal
                         result.AddFloatParameter("u_tiles", 1.0f);
                         result.AddFloatParameter("v_tiles", 1.0f);
                         result.AddSamplerExternWithColorParameter("foreground0_sampler", RenderMethodExtern.none, new ShaderColor(0, 13, 0, 255)); // rmExtern - object_emblem_bitmap_and_data
-                        result.AddSamplerAddressParameter("tex0_sampler", ShaderOptionParameter.ShaderAddressMode.BlackBorder, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerAddressParameter("tex1_sampler", ShaderOptionParameter.ShaderAddressMode.BlackBorder, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerExternAddressParameter("tex0_sampler", RenderMethodExtern.emblem_player_shoulder_texture, ShaderOptionParameter.ShaderAddressMode.BlackBorder, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerExternAddressParameter("tex1_sampler", RenderMethodExtern.emblem_player_shoulder_texture, ShaderOptionParameter.ShaderAddressMode.BlackBorder, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\decal_options\albedo_emblem_change_color";
                         break;
                     case Albedo.Change_Color:
@@ -191,7 +191,7 @@ namespace HaloShaderGenerator.Decal
                         result.AddFloatParameter("u_tiles", 1.0f);
                         result.AddFloatParameter("v_tiles", 1.0f);
                         result.AddFloatParameter("vector_sharpness", 1000.0f);
-                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("vector_map", @"shaders\default_bitmaps\bitmaps\reference_grids");
                         rmopName = @"shaders\decal_options\albedo_vector_alpha";
                         break;
@@ -202,7 +202,7 @@ namespace HaloShaderGenerator.Decal
                         result.AddFloatParameter("u_tiles", 1.0f);
                         result.AddFloatParameter("v_tiles", 1.0f);
                         result.AddFloatParameter("vector_sharpness", 1000.0f);
-                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("shadow_vector_map", @"shaders\default_bitmaps\bitmaps\reference_grids");
                         result.AddSamplerParameter("vector_map", @"shaders\default_bitmaps\bitmaps\reference_grids");
                         rmopName = @"shaders\decal_options\albedo_vector_alpha_drop_shadow";

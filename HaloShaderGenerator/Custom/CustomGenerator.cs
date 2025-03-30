@@ -364,7 +364,7 @@ namespace HaloShaderGenerator.Custom
                         result.AddFloatParameter("diffuse_coefficient", 1.0f);
                         result.AddFloatParameter("environment_map_specular_contribution");
                         result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerFilterAddressParameter("glancing_falloff", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerFilterAddressParameter("glancing_falloff", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerFilterParameter("material_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerFilterAddressParameter("specular_lobe", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\checker_board");
                         rmopName = @"shaders\custom_options\material_custom_specular";
@@ -490,7 +490,7 @@ namespace HaloShaderGenerator.Custom
                         //result.AddSamplerParameter("ceiling_reach", @"shaders\default_bitmaps\bitmaps\color_yellow"); // reach specific (could add as an extra sampler in the HLSL)
                         result.AddSamplerParameter("floors", @"shaders\default_bitmaps\bitmaps\color_green");
                         result.AddSamplerWithScaleParameter("opacity_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("transform");
+                        result.AddSamplerParameter("transform", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("walls", @"shaders\default_bitmaps\bitmaps\color_red");
                         result.AddSamplerFilterParameter("window_property_map", ShaderOptionParameter.ShaderFilterMode.Point, @"shaders\default_bitmaps\bitmaps\color_white_alpha_black");
                         rmopName = @"shaders\custom_options\window_room_map";
