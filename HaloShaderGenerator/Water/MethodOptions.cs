@@ -10,8 +10,8 @@ namespace HaloShaderGenerator.Water
         Appearance,
         Global_Shape,
         Foam,
-        Reach_Compatibility,
-        Detail
+        Reach_Compatibility
+        //Detail
     }
 
     public enum Waveshape
@@ -69,16 +69,16 @@ namespace HaloShaderGenerator.Water
         Both
     }
 
-    public enum Detail
-    {
-        None,
-        Repeat
-    }
-
     public enum Reach_Compatibility
     {
         Disabled,
         Enabled,
         Enabled_Detail_Repeat
     }
+
+    //public enum Detail
+    //{
+    //    None,
+    //    Repeat
+    //}
 }

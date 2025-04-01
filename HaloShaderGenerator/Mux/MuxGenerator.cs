@@ -46,25 +46,6 @@ namespace HaloShaderGenerator.Mux
             }
         }
 
-        public bool IsEntryPointSupported(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Albedo:
-                case ShaderStage.Static_Per_Pixel:
-                case ShaderStage.Static_Per_Vertex:
-                case ShaderStage.Static_Sh:
-                case ShaderStage.Dynamic_Light:
-                case ShaderStage.Lightmap_Debug_Mode:
-                case ShaderStage.Shadow_Generate:
-                case ShaderStage.Dynamic_Light_Cinematic:
-                //case ShaderStage.Imposter_Static_Prt_Ambient:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
             switch (entryPoint)
@@ -85,19 +66,6 @@ namespace HaloShaderGenerator.Mux
             }
         }
 
-        public bool IsVertexFormatSupported(VertexType vertexType)
-        {
-            switch (vertexType)
-            {
-                case VertexType.World:
-                case VertexType.Rigid:
-                case VertexType.Skinned:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public bool IsAutoMacro()
         {
             return false;
@@ -107,21 +75,21 @@ namespace HaloShaderGenerator.Mux
         {
             var result = new ShaderParameters();
 
+            result.AddSamplerExternParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerExternParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
+            result.AddSamplerExternFilterParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture, ShaderOptionParameter.ShaderFilterMode.Bilinear);
+            result.AddSamplerExternFilterAddressParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            result.AddSamplerExternParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddFloat3ColorExternWithFloatAndIntegerParameter("debug_tint", RenderMethodExtern.debug_tint, 1.0f, 1, new ShaderColor(255, 255, 255, 255));
             result.AddSamplerExternParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
-            result.AddSamplerExternParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerExternParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerExternParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
             result.AddSamplerExternParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
-            result.AddSamplerExternParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddSamplerExternAddressParameter("g_diffuse_power_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_direction_lut", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse_vs", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
-            result.AddSamplerExternFilterAddressParameter("g_sample_vmf_phong_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
-            result.AddSamplerExternFilterParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture, ShaderOptionParameter.ShaderFilterMode.Bilinear);
-            result.AddSamplerExternParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerExternParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
-            result.AddSamplerExternParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerExternFilterAddressParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            //result.AddSamplerExternFilterAddressParameter("g_sample_vmf_phong_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerExternFilterAddressParameter("shadow_mask_texture", RenderMethodExtern.none, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp); // rmExtern - texture_global_target_shadow_mask
             rmopName = @"shaders\shader_options\global_shader_options";
 
@@ -141,14 +109,14 @@ namespace HaloShaderGenerator.Mux
                 switch ((Blending)option)
                 {
                     case Blending.Standard:
-                        result.AddFloatParameter("blend_material_count");
-                        result.AddFloatParameter("blend_material_offset");
+                        result.AddSamplerWithScaleParameter("material_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloatParameter("blend_material_scale", 1.0f);
+                        result.AddFloatParameter("blend_material_offset");
                         result.AddFloatParameter("pc_atlas_scale_x", 1.0f);
                         result.AddFloatParameter("pc_atlas_scale_y", 1.0f);
                         result.AddFloatParameter("pc_atlas_transform_x", 1.0f);
                         result.AddFloatParameter("pc_atlas_transform_y", 1.0f);
-                        result.AddSamplerWithScaleParameter("material_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("blend_material_count");
                         rmopName = @"shaders\shader_options\mux_blend_standard";
                         break;
                 }
@@ -183,9 +151,9 @@ namespace HaloShaderGenerator.Mux
                         rmopName = @"shaders\shader_options\bump_default";
                         break;
                     case Bump.Base_And_Detail:
-                        result.AddFloatParameter("bump_detail_coefficient", 1.0f);
-                        result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloatParameter("bump_detail_coefficient", 1.0f);
                         rmopName = @"shaders\shader_options\bump_detail";
                         break;
                 }
@@ -199,7 +167,7 @@ namespace HaloShaderGenerator.Mux
                 {
                     case Materials.Diffuse_Only:
                         result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddFloatParameter("approximate_specular_type");
+                        //result.AddFloatParameter("approximate_specular_type");
                         rmopName = @"shaders\shader_options\material_diffuse_only";
                         break;
                     case Materials.Single_Lobe_Phong:
@@ -220,17 +188,17 @@ namespace HaloShaderGenerator.Mux
                     case Environment_Mapping.None:
                         break;
                     case Environment_Mapping.Per_Pixel:
-                        result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("env_roughness_offset", 0.5f);
                         result.AddSamplerAddressWithColorParameter("environment_map", ShaderOptionParameter.ShaderAddressMode.Clamp, new ShaderColor(0, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\default_dynamic_cube_map");
+                        result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("env_roughness_scale", 1.0f);
                         rmopName = @"shaders\shader_options\env_map_per_pixel";
                         break;
                     case Environment_Mapping.Dynamic:
                         result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("env_roughness_offset", 0.5f);
-                        result.AddFloatParameter("env_roughness_scale", 1.0f);
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddFloatParameter("env_roughness_scale", 1.0f);
+                        //result.AddFloatParameter("env_roughness_offset", 0.5f);
                         rmopName = @"shaders\shader_options\env_map_dynamic";
                         break;
                 }
@@ -245,8 +213,8 @@ namespace HaloShaderGenerator.Mux
                     case Parallax.Off:
                         break;
                     case Parallax.Simple:
-                        result.AddFloatParameter("height_scale", 0.1f);
                         result.AddSamplerParameter("height_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
+                        result.AddFloatParameter("height_scale", 0.1f);
                         rmopName = @"shaders\shader_options\parallax_simple";
                         break;
                 }
@@ -264,28 +232,28 @@ namespace HaloShaderGenerator.Mux
                         rmopName = @"shaders\wetness_options\wetness_simple";
                         break;
                     case Wetness.Flood:
-                        result.AddFloat3ColorParameter("wet_material_dim_tint", new ShaderColor(0, 216, 216, 235));
-                        result.AddFloat3ColorParameter("wet_sheen_reflection_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("specular_mask_tweak_weight", 0.5f);
-                        result.AddFloatParameter("surface_tilt_tweak_weight");
                         result.AddFloatWithColorParameter("wet_material_dim_coefficient", new ShaderColor(0, 149, 149, 149), 1.0f);
+                        result.AddFloat3ColorParameter("wet_material_dim_tint", new ShaderColor(0, 216, 216, 235));
                         result.AddFloatParameter("wet_sheen_reflection_contribution", 0.3f);
+                        result.AddFloat3ColorParameter("wet_sheen_reflection_tint", new ShaderColor(0, 255, 255, 255));
                         result.AddFloatParameter("wet_sheen_thickness", 0.9f);
                         result.AddSamplerParameter("wet_flood_slope_map", @"rasterizer\water\static_wave\static_wave_slope_water");
                         result.AddSamplerFilterParameter("wet_noise_boundary_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"rasterizer\rain\rain_noise_boundary");
+                        result.AddFloatParameter("specular_mask_tweak_weight", 0.5f);
+                        result.AddFloatParameter("surface_tilt_tweak_weight");
                         rmopName = @"shaders\wetness_options\wetness_flood";
                         break;
                     case Wetness.Proof:
                         break;
                     case Wetness.Ripples:
-                        result.AddFloat3ColorParameter("wet_material_dim_tint", new ShaderColor(0, 216, 216, 235));
-                        result.AddFloat3ColorParameter("wet_sheen_reflection_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("specular_mask_tweak_weight", 0.5f);
-                        result.AddFloatParameter("surface_tilt_tweak_weight", 0.3f);
                         result.AddFloatWithColorParameter("wet_material_dim_coefficient", new ShaderColor(0, 149, 149, 149), 1.0f);
+                        result.AddFloat3ColorParameter("wet_material_dim_tint", new ShaderColor(0, 216, 216, 235));
                         result.AddFloatParameter("wet_sheen_reflection_contribution", 0.37f);
+                        result.AddFloat3ColorParameter("wet_sheen_reflection_tint", new ShaderColor(0, 255, 255, 255));
                         result.AddFloatParameter("wet_sheen_thickness", 0.4f);
                         result.AddSamplerFilterParameter("wet_noise_boundary_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"rasterizer\rain\rain_noise_boundary");
+                        result.AddFloatParameter("specular_mask_tweak_weight", 0.5f);
+                        result.AddFloatParameter("surface_tilt_tweak_weight", 0.3f);
                         rmopName = @"shaders\wetness_options\wetness_ripples";
                         break;
                 }
@@ -319,6 +287,32 @@ namespace HaloShaderGenerator.Mux
             }
 
             return null;
+        }
+
+        public Array GetEntryPointOrder()
+        {
+            return new ShaderStage[]
+            {
+                ShaderStage.Albedo,
+                ShaderStage.Static_Per_Pixel,
+                ShaderStage.Static_Per_Vertex,
+                ShaderStage.Static_Sh,
+                ShaderStage.Dynamic_Light,
+                ShaderStage.Lightmap_Debug_Mode,
+                ShaderStage.Shadow_Generate,
+                ShaderStage.Dynamic_Light_Cinematic
+                //case ShaderStage.Imposter_Static_Prt_Ambient
+            };
+        }
+
+        public Array GetVertexTypeOrder()
+        {
+            return new VertexType[]
+            {
+                VertexType.World,
+                VertexType.Rigid,
+                VertexType.Skinned,
+            };
         }
 
         public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)

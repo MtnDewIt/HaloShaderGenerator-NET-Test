@@ -40,17 +40,6 @@ namespace HaloShaderGenerator.Contrail
             }
         }
 
-        public bool IsEntryPointSupported(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Default:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
             switch (entryPoint)
@@ -64,17 +53,6 @@ namespace HaloShaderGenerator.Contrail
         {
             switch (entryPoint)
             {
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsVertexFormatSupported(VertexType vertexType)
-        {
-            switch (vertexType)
-            {
-                case VertexType.Contrail:
-                    return true;
                 default:
                     return false;
             }
@@ -116,9 +94,9 @@ namespace HaloShaderGenerator.Contrail
                         rmopName = @"shaders\contrail_options\albedo_palettized";
                         break;
                     case Albedo.Palettized_Plus_Alpha:
-                        result.AddSamplerParameter("alpha_map", @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("alpha_map", @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         rmopName = @"shaders\contrail_options\albedo_palettized_plus_alpha";
                         break;
                 }
@@ -203,6 +181,22 @@ namespace HaloShaderGenerator.Contrail
             }
 
             return null;
+        }
+
+        public Array GetEntryPointOrder()
+        {
+            return new ShaderStage[]
+            {
+                ShaderStage.Default
+            };
+        }
+
+        public Array GetVertexTypeOrder()
+        {
+            return new VertexType[]
+            {
+                VertexType.Contrail
+            };
         }
 
         public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)

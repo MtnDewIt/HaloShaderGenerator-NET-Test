@@ -54,18 +54,6 @@ namespace HaloShaderGenerator.Particle
             }
         }
 
-        public bool IsEntryPointSupported(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Default:
-                //case ShaderStage.Static_Default:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
             switch (entryPoint)
@@ -79,18 +67,6 @@ namespace HaloShaderGenerator.Particle
         {
             switch (entryPoint)
             {
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsVertexFormatSupported(VertexType vertexType)
-        {
-            switch (vertexType)
-            {
-                case VertexType.Particle:
-                case VertexType.ParticleModel:
-                    return true;
                 default:
                     return false;
             }
@@ -129,8 +105,8 @@ namespace HaloShaderGenerator.Particle
                         rmopName = @"shaders\particle_options\albedo_diffuse_only";
                         break;
                     case Albedo.Diffuse_Plus_Billboard_Alpha:
-                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         rmopName = @"shaders\particle_options\albedo_diffuse_plus_billboard_alpha";
                         break;
                     case Albedo.Palettized:
@@ -139,47 +115,47 @@ namespace HaloShaderGenerator.Particle
                         rmopName = @"shaders\particle_options\albedo_palettized";
                         break;
                     case Albedo.Palettized_Plus_Billboard_Alpha:
-                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         rmopName = @"shaders\particle_options\albedo_palettized_plus_billboard_alpha";
                         break;
                     case Albedo.Diffuse_Plus_Sprite_Alpha:
-                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         rmopName = @"shaders\particle_options\albedo_diffuse_plus_sprite_alpha";
                         break;
                     case Albedo.Palettized_Plus_Sprite_Alpha:
-                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         rmopName = @"shaders\particle_options\albedo_palettized_plus_sprite_alpha";
                         break;
                     case Albedo.Diffuse_Modulated:
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloat3ColorParameter("tint_color", new ShaderColor(0, 255, 34, 2));
                         result.AddFloatParameter("modulation_factor", 1.0f);
-                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\particle_options\albedo_diffuse_modulated";
                         break;
                     case Albedo.Palettized_Glow:
-                        result.AddFloat3ColorParameter("tint_color", new ShaderColor(0, 255, 74, 14));
                         result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorParameter("tint_color", new ShaderColor(0, 255, 74, 14));
                         rmopName = @"shaders\particle_options\albedo_palettized_glow";
                         break;
                     case Albedo.Palettized_Plasma:
-                        result.AddFloatParameter("alpha_modulation_factor", 0.1f);
-                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("base_map2", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerFilterAddressParameter("palette", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddFloatParameter("alpha_modulation_factor", 0.1f);
                         rmopName = @"shaders\particle_options\albedo_palettized_plasma";
                         break;
                     case Albedo.Palettized_2d_Plasma:
-                        result.AddFloatParameter("alpha_modulation_factor", 0.1f);
-                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("base_map2", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerFilterAddressParameter("palette", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddFloatParameter("alpha_modulation_factor", 0.1f);
                         rmopName = @"shaders\particle_options\albedo_palettized_plasma";
                         break;
                 }
@@ -256,8 +232,8 @@ namespace HaloShaderGenerator.Particle
                     case Lighting.Per_Vertex_Ravi_Order_0:
                         break;
                     case Lighting.Per_Pixel_Smooth:
-                        result.AddFloatParameter("contrast_offset", 0.5f);
                         result.AddFloatParameter("contrast_scale", 0.5f);
+                        result.AddFloatParameter("contrast_offset", 0.5f);
                         rmopName = @"shaders\particle_options\smooth_lighting";
                         break;
                     case Lighting.Per_Vertex_Ambient:
@@ -342,8 +318,8 @@ namespace HaloShaderGenerator.Particle
                     case Frame_Blend.Off:
                         break;
                     case Frame_Blend.On:
-                        result.AddFloatParameter("ending_uv_scale", 1.0f);
                         result.AddFloatParameter("starting_uv_scale", 1.0f);
+                        result.AddFloatParameter("ending_uv_scale", 1.0f);
                         rmopName = @"shaders\particle_options\frame_blend_on";
                         break;
                 }
@@ -415,6 +391,24 @@ namespace HaloShaderGenerator.Particle
             }
 
             return null;
+        }
+
+        public Array GetEntryPointOrder()
+        {
+            return new ShaderStage[]
+            {
+                ShaderStage.Default,
+                //case ShaderStage.Static_Default
+            };
+        }
+
+        public Array GetVertexTypeOrder()
+        {
+            return new VertexType[]
+            {
+                VertexType.Particle,
+                VertexType.ParticleModel
+            };
         }
 
         public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)

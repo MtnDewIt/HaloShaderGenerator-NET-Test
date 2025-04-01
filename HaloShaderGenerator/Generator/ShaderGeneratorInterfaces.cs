@@ -9,31 +9,8 @@ namespace HaloShaderGenerator.Generator
 {
     public interface IShaderGenerator
     {
-        /// <summary>
-        /// Returns true when entry point is supported in the shading pipeline. The pixel shader and vertex shader are either in the shared tag or in the pixl,vtsh.
-        /// </summary>
-        /// <param name="entryPoint"></param>
-        /// <returns></returns>
-        bool IsEntryPointSupported(ShaderStage entryPoint);
-
-        /// <summary>
-        /// Returns true if the pixel shader should be stored in the global pixel shader tag.
-        /// </summary>
-        /// <param name="entryPoint"></param>
-        /// <returns></returns>
         bool IsPixelShaderShared(ShaderStage entryPoint);
 
-        /// <summary>
-        /// Returns true if the vertex shader supports the vertex format
-        /// </summary>
-        /// <returns></returns>
-        bool IsVertexFormatSupported(VertexType vertexType);
-
-        /// <summary>
-        /// Returns true if shared pixel shader has multiple methods
-        /// </summary>
-        /// <param name="entryPoint"></param>
-        /// <returns></returns>
         bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint);
 
         bool IsAutoMacro();
@@ -51,6 +28,10 @@ namespace HaloShaderGenerator.Generator
         Array GetMethodNames();
 
         Array GetMethodOptionNames(int methodIndex);
+
+        Array GetEntryPointOrder();
+
+        Array GetVertexTypeOrder();
 
         void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction);
 

@@ -40,17 +40,6 @@ namespace HaloShaderGenerator.LightVolume
             }
         }
 
-        public bool IsEntryPointSupported(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Default:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
             switch (entryPoint)
@@ -64,17 +53,6 @@ namespace HaloShaderGenerator.LightVolume
         {
             switch (entryPoint)
             {
-                default:
-                    return false;
-            }
-        }
-
-        public bool IsVertexFormatSupported(VertexType vertexType)
-        {
-            switch (vertexType)
-            {
-                case VertexType.LightVolume:
-                    return true;
                 default:
                     return false;
             }
@@ -201,6 +179,22 @@ namespace HaloShaderGenerator.LightVolume
             }
 
             return null;
+        }
+
+        public Array GetEntryPointOrder()
+        {
+            return new ShaderStage[]
+            {
+                ShaderStage.Default
+            };
+        }
+
+        public Array GetVertexTypeOrder() 
+        {
+            return new VertexType[] 
+            {
+                VertexType.LightVolume
+            };
         }
 
         public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)

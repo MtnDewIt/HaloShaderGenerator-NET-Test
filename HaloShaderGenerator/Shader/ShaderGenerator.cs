@@ -65,37 +65,6 @@ namespace HaloShaderGenerator.Shader
             }
         }
 
-        public bool IsEntryPointSupported(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Albedo:
-                case ShaderStage.Static_Per_Pixel:
-                case ShaderStage.Static_Sh:
-                case ShaderStage.Static_Per_Vertex:
-                case ShaderStage.Dynamic_Light:
-                case ShaderStage.Shadow_Generate:
-                case ShaderStage.Static_Prt_Ambient:
-                case ShaderStage.Static_Prt_Linear:
-                case ShaderStage.Static_Prt_Quadratic:
-                case ShaderStage.Active_Camo:
-                case ShaderStage.Static_Per_Vertex_Color:
-                case ShaderStage.Lightmap_Debug_Mode:
-                case ShaderStage.Dynamic_Light_Cinematic:
-                case ShaderStage.Sfx_Distort:
-                //case ShaderStage.Stipple:
-                //case ShaderStage.Single_Pass_Per_Pixel:
-                //case ShaderStage.Single_Pass_Per_Vertex:
-                //case ShaderStage.Single_Pass_Single_Probe:
-                //case ShaderStage.Single_Pass_Single_Probe_Ambient:
-                //case ShaderStage.Imposter_Static_Sh:
-                //case ShaderStage.Imposter_Static_Prt_Ambient:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
             switch (entryPoint)
@@ -119,20 +88,6 @@ namespace HaloShaderGenerator.Shader
             }
         }
 
-        public bool IsVertexFormatSupported(VertexType vertexType)
-        {
-            switch (vertexType)
-            {
-                case VertexType.World:
-                case VertexType.Rigid:
-                case VertexType.Skinned:
-                case VertexType.DualQuat:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public bool IsAutoMacro()
         {
             return false;
@@ -142,21 +97,21 @@ namespace HaloShaderGenerator.Shader
         {
             var result = new ShaderParameters();
 
+            result.AddSamplerExternParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerExternParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
+            result.AddSamplerExternFilterParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture, ShaderOptionParameter.ShaderFilterMode.Bilinear);
+            result.AddSamplerExternFilterAddressParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            result.AddSamplerExternParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddFloat3ColorExternWithFloatAndIntegerParameter("debug_tint", RenderMethodExtern.debug_tint, 1.0f, 1, new ShaderColor(255, 255, 255, 255));
             result.AddSamplerExternParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
-            result.AddSamplerExternParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerExternParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerExternParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
             result.AddSamplerExternParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
-            result.AddSamplerExternParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddSamplerExternAddressParameter("g_diffuse_power_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_direction_lut", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse_vs", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
-            result.AddSamplerExternFilterAddressParameter("g_sample_vmf_phong_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
-            result.AddSamplerExternFilterParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture, ShaderOptionParameter.ShaderFilterMode.Bilinear);
-            result.AddSamplerExternParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerExternParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
-            result.AddSamplerExternParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerExternFilterAddressParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            //result.AddSamplerExternFilterAddressParameter("g_sample_vmf_phong_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerExternFilterAddressParameter("shadow_mask_texture", RenderMethodExtern.none, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp); // rmExtern - texture_global_target_shadow_mask
             rmopName = @"shaders\shader_options\global_shader_options";
 
@@ -176,16 +131,16 @@ namespace HaloShaderGenerator.Shader
                 switch ((Albedo)option)
                 {
                     case Albedo.Default:
-                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         rmopName = @"shaders\shader_options\albedo_default";
                         break;
                     case Albedo.Detail_Blend:
-                        result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f);
                         result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerWithScaleParameter("detail_map2", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        //result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f);
                         rmopName = @"shaders\shader_options\albedo_detail_blend";
                         break;
                     case Albedo.Constant_Color:
@@ -193,40 +148,40 @@ namespace HaloShaderGenerator.Shader
                         rmopName = @"shaders\shader_options\albedo_constant";
                         break;
                     case Albedo.Two_Change_Color:
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloat3ColorExternWithSamplerParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloat3ColorExternWithSamplerParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddFloatParameter("camouflage_scale");
-                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("camouflage_change_color_map", @"rasterizer\invalid");
-                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        //result.AddSamplerParameter("camouflage_change_color_map", @"rasterizer\invalid");
+                        //result.AddFloatParameter("camouflage_scale");
                         rmopName = @"shaders\shader_options\albedo_two_change_color";
                         break;
                     case Albedo.Four_Change_Color:
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloat3ColorExternWithSamplerParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddFloat3ColorExternWithSamplerParameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloat3ColorExternWithSamplerParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloat3ColorExternWithSamplerParameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddFloatParameter("camouflage_scale");
-                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("camouflage_change_color_map", @"rasterizer\invalid");
-                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat3ColorExternWithSamplerParameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        //result.AddSamplerParameter("camouflage_change_color_map");
+                        //result.AddFloatParameter("camouflage_scale");
                         rmopName = @"shaders\shader_options\albedo_four_change_color";
                         break;
                     case Albedo.Three_Detail_Blend:
-                        result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f);
                         result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerWithScaleParameter("detail_map2", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerWithScaleParameter("detail_map3", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        //result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f);
                         rmopName = @"shaders\shader_options\albedo_three_detail_blend";
                         break;
                     case Albedo.Two_Detail_Overlay:
                         result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerWithScaleParameter("detail_map_overlay", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerWithScaleParameter("detail_map2", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerWithScaleParameter("detail_map_overlay", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_two_detail_overlay";
                         break;
                     case Albedo.Two_Detail:
@@ -236,13 +191,13 @@ namespace HaloShaderGenerator.Shader
                         rmopName = @"shaders\shader_options\albedo_two_detail";
                         break;
                     case Albedo.Color_Mask:
-                        result.AddFloat3ColorParameter("neutral_gray", new ShaderColor(255, 255, 255, 255));
+                        result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("color_mask_map", @"shaders\default_bitmaps\bitmaps\reference_grids");
                         result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color2", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color3", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
-                        result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("color_mask_map", @"shaders\default_bitmaps\bitmaps\reference_grids");
-                        result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat3ColorParameter("neutral_gray", new ShaderColor(255, 255, 255, 255));
                         rmopName = @"shaders\shader_options\albedo_color_mask";
                         break;
                     case Albedo.Two_Detail_Black_Point:
@@ -252,16 +207,18 @@ namespace HaloShaderGenerator.Shader
                         rmopName = @"shaders\shader_options\albedo_two_detail_black_point";
                         break;
                     case Albedo.Two_Change_Color_Anim_Overlay:
-                        result.AddFloat3ColorExternParameter("primary_change_color_anim", RenderMethodExtern.object_change_color_primary_anim);
-                        result.AddFloat3ColorExternWithSamplerParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddFloat3ColorExternParameter("secondary_change_color_anim", RenderMethodExtern.object_change_color_secondary_anim);
-                        result.AddFloat3ColorExternWithSamplerParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorExternWithSamplerParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorExternWithSamplerParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorExternParameter("primary_change_color_anim", RenderMethodExtern.object_change_color_primary_anim);
+                        result.AddFloat3ColorExternParameter("secondary_change_color_anim", RenderMethodExtern.object_change_color_secondary_anim);
                         rmopName = @"shaders\shader_options\albedo_two_change_color_anim";
                         break;
                     case Albedo.Chameleon:
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddFloat3ColorParameter("chameleon_color0", new ShaderColor(0, 255, 0, 255));
                         result.AddFloat3ColorParameter("chameleon_color1", new ShaderColor(0, 0, 255, 255));
                         result.AddFloat3ColorParameter("chameleon_color2", new ShaderColor(0, 255, 255, 0));
@@ -269,28 +226,29 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("chameleon_color_offset1", 0.3333f);
                         result.AddFloatParameter("chameleon_color_offset2", 0.6666f);
                         result.AddFloatParameter("chameleon_fresnel_power", 2.0f);
-                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_chameleon";
                         break;
                     case Albedo.Two_Change_Color_Chameleon:
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorExternWithSamplerParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorExternWithSamplerParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorParameter("primary_change_color_anim");
+                        result.AddFloat3ColorParameter("secondary_change_color_anim");
                         result.AddFloat3ColorParameter("chameleon_color0", new ShaderColor(0, 255, 0, 255));
                         result.AddFloat3ColorParameter("chameleon_color1", new ShaderColor(0, 0, 255, 255));
                         result.AddFloat3ColorParameter("chameleon_color2", new ShaderColor(0, 255, 255, 0));
                         result.AddFloat3ColorParameter("chameleon_color3", new ShaderColor(0, 255, 0, 0));
-                        result.AddFloat3ColorParameter("primary_change_color_anim");
-                        result.AddFloat3ColorExternWithSamplerParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddFloat3ColorParameter("secondary_change_color_anim");
-                        result.AddFloat3ColorExternWithSamplerParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloatParameter("chameleon_color_offset1", 0.3333f);
                         result.AddFloatParameter("chameleon_color_offset2", 0.6666f);
                         result.AddFloatParameter("chameleon_fresnel_power", 2.0f);
-                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_two_change_color_chameleon";
                         break;
                     case Albedo.Chameleon_Masked:
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("chameleon_mask_map", @"shaders\default_bitmaps\bitmaps\color_white");
                         result.AddFloat3ColorParameter("chameleon_color0", new ShaderColor(0, 255, 0, 255));
                         result.AddFloat3ColorParameter("chameleon_color1", new ShaderColor(0, 0, 255, 255));
                         result.AddFloat3ColorParameter("chameleon_color2", new ShaderColor(0, 255, 255, 0));
@@ -298,70 +256,67 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("chameleon_color_offset1", 0.3333f);
                         result.AddFloatParameter("chameleon_color_offset2", 0.6666f);
                         result.AddFloatParameter("chameleon_fresnel_power", 2.0f);
-                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("chameleon_mask_map", @"shaders\default_bitmaps\bitmaps\color_white");
-                        result.AddSamplerParameter("detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
                         rmopName = @"shaders\shader_options\albedo_chameleon_masked";
                         break;
                     case Albedo.Color_Mask_Hard_Light:
-                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("color_mask_map", @"shaders\default_bitmaps\bitmaps\reference_grids");
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("color_mask_map", @"shaders\default_bitmaps\bitmaps\reference_grids");
+                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         rmopName = @"shaders\shader_options\albedo_color_mask_hard_light";
                         break;
                     case Albedo.Four_Change_Color_Applying_To_Specular:
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloat3ColorExternWithSamplerParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddFloat3ColorExternWithSamplerParameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloat3ColorExternWithSamplerParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloat3ColorExternWithSamplerParameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddFloatParameter("camouflage_scale");
-                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("camouflage_change_color_map", @"rasterizer\invalid");
-                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat3ColorExternWithSamplerParameter("quaternary_change_color", RenderMethodExtern.object_change_color_quaternary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        //result.AddSamplerParameter("camouflage_change_color_map");
+                        //result.AddFloatParameter("camouflage_scale");
                         rmopName = @"shaders\shader_options\albedo_four_change_color";
                         break;
                     case Albedo.Simple:
-                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         rmopName = @"shaders\shader_options\albedo_simple";
                         break;
                     case Albedo.Two_Change_Color_Tex_Overlay:
-                        result.AddFloat3ColorExternWithSamplerParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorExternWithSamplerParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("secondary_change_color_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\albedo_two_change_color_tex_overlay";
                         break;
                     case Albedo.Chameleon_Albedo_Masked:
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat4ColorParameter("albedo_color", new ShaderColor(255, 255, 255, 255));
+                        result.AddSamplerParameter("base_masked_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat4ColorParameter("albedo_masked_color", new ShaderColor(255, 255, 255, 255));
+                        result.AddSamplerParameter("chameleon_mask_map", @"shaders\default_bitmaps\bitmaps\color_white");
                         result.AddFloat3ColorParameter("chameleon_color0", new ShaderColor(0, 255, 0, 255));
                         result.AddFloat3ColorParameter("chameleon_color1", new ShaderColor(0, 0, 255, 255));
                         result.AddFloat3ColorParameter("chameleon_color2", new ShaderColor(0, 255, 255, 0));
                         result.AddFloat3ColorParameter("chameleon_color3", new ShaderColor(0, 255, 0, 0));
-                        result.AddFloat4ColorParameter("albedo_color", new ShaderColor(255, 255, 255, 255));
-                        result.AddFloat4ColorParameter("albedo_masked_color", new ShaderColor(255, 255, 255, 255));
                         result.AddFloatParameter("chameleon_color_offset1", 0.3333f);
                         result.AddFloatParameter("chameleon_color_offset2", 0.6666f);
                         result.AddFloatParameter("chameleon_fresnel_power", 2.0f);
-                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("base_masked_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("chameleon_mask_map", @"shaders\default_bitmaps\bitmaps\color_white");
                         rmopName = @"shaders\shader_options\albedo_chameleon_albedo_masked";
                         break;
                     case Albedo.Custom_Cube:
-                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerWithScaleParameter("custom_cube", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         rmopName = @"shaders\shader_options\albedo_custom_cube";
                         break;
                     case Albedo.Two_Color:
-                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
-                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_second_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerWithScaleParameter("blend_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
+                        result.AddSamplerWithScaleParameter("blend_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_second_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         rmopName = @"shaders\shader_options\albedo_two_color";
                         break;
                     case Albedo.Emblem:
@@ -369,24 +324,24 @@ namespace HaloShaderGenerator.Shader
                         rmopName = @"shaders\shader_options\albedo_emblem";
                         break;
                     case Albedo.Scrolling_Cube_Mask:
-                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
-                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_second_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerWithScaleParameter("color_blend_mask_cubemap", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
+                        result.AddSamplerWithScaleParameter("color_blend_mask_cubemap", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_second_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         rmopName = @"shaders\shader_options\albedo_scrolling_cube_mask";
                         break;
                     case Albedo.Scrolling_Cube:
                         result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerWithScaleParameter("color_cubemap", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerWithScaleParameter("color_cubemap", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\albedo_scrolling_cube";
                         break;
                     case Albedo.Scrolling_Texture_Uv:
-                        result.AddFloatParameter("u_speed", 1.0f);
-                        result.AddFloatParameter("v_speed");
                         result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerWithScaleParameter("color_texture", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("u_speed", 1.0f);
+                        result.AddFloatParameter("v_speed");
                         rmopName = @"shaders\shader_options\albedo_scrolling_texture_uv";
                         break;
                     case Albedo.Texture_From_Misc:
@@ -411,66 +366,66 @@ namespace HaloShaderGenerator.Shader
                         rmopName = @"shaders\shader_options\bump_default";
                         break;
                     case Bump_Mapping.Detail:
-                        result.AddFloatParameter("bump_detail_coefficient", 1.0f);
-                        result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloatParameter("bump_detail_coefficient", 1.0f);
                         rmopName = @"shaders\shader_options\bump_detail";
                         break;
                     case Bump_Mapping.Detail_Masked:
-                        result.AddBooleanParameter("invert_mask");
-                        result.AddFloatParameter("bump_detail_coefficient", 1.0f);
+                        result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerParameter("bump_detail_mask_map", @"shaders\default_bitmaps\bitmaps\color_white");
-                        result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloatParameter("bump_detail_coefficient", 1.0f);
+                        result.AddBooleanParameter("invert_mask");
                         rmopName = @"shaders\shader_options\bump_detail_masked";
                         break;
                     case Bump_Mapping.Detail_Plus_Detail_Masked:
-                        result.AddFloatParameter("bump_detail_coefficient", 1.0f);
-                        result.AddFloatParameter("bump_detail_masked_coefficient", 1.0f);
+                        result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerParameter("bump_detail_mask_map", @"shaders\default_bitmaps\bitmaps\color_white");
                         result.AddSamplerParameter("bump_detail_masked_map", @"shaders\default_bitmaps\bitmaps\default_vector");
-                        result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloatParameter("bump_detail_coefficient", 1.0f);
+                        result.AddFloatParameter("bump_detail_masked_coefficient", 1.0f);
                         rmopName = @"shaders\shader_options\bump_detail_plus_detail_masked";
                         break;
                     case Bump_Mapping.Detail_Unorm:
-                        result.AddFloatParameter("bump_detail_coefficient", 1.0f);
-                        result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloatParameter("bump_detail_coefficient", 1.0f);
                         rmopName = @"shaders\shader_options\bump_detail_unorm";
                         break;
                     case Bump_Mapping.Detail_Blend:
-                        result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f);
+                        result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerWithScaleParameter("bump_detail_map2", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
-                        result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f);
                         rmopName = @"shaders\shader_options\bump_detail_blend";
                         break;
                     case Bump_Mapping.Three_Detail_Blend:
-                        result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f);
+                        result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerWithScaleParameter("bump_detail_map2", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerWithScaleParameter("bump_detail_map3", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
-                        result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f);
                         rmopName = @"shaders\shader_options\bump_three_detail_blend";
                         break;
                     case Bump_Mapping.Standard_Wrinkle:
-                        result.AddFloat4ColorExternParameter("wrinkle_weights_a", RenderMethodExtern.none); // rmExtern - wrinkle_weights_a
-                        result.AddFloat4ColorExternParameter("wrinkle_weights_b", RenderMethodExtern.none); // rmExtern - wrinkle_weights_b
                         result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("wrinkle_normal", @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerParameter("wrinkle_mask_a", @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         result.AddSamplerParameter("wrinkle_mask_b", @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
-                        result.AddSamplerParameter("wrinkle_normal", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloat4ColorExternParameter("wrinkle_weights_a", RenderMethodExtern.none); // rmExtern - wrinkle_weights_a
+                        result.AddFloat4ColorExternParameter("wrinkle_weights_b", RenderMethodExtern.none); // rmExtern - wrinkle_weights_b
                         rmopName = @"shaders\shader_options\bump_default_wrinkle";
                         break;
                     case Bump_Mapping.Detail_Wrinkle:
-                        result.AddFloat4ColorExternParameter("wrinkle_weights_a", RenderMethodExtern.none); // rmExtern - wrinkle_weights_a
-                        result.AddFloat4ColorExternParameter("wrinkle_weights_b", RenderMethodExtern.none); // rmExtern - wrinkle_weights_b
-                        result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("wrinkle_normal", @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerParameter("wrinkle_mask_a", @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         result.AddSamplerParameter("wrinkle_mask_b", @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
-                        result.AddSamplerParameter("wrinkle_normal", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloat4ColorExternParameter("wrinkle_weights_a", RenderMethodExtern.none); // rmExtern - wrinkle_weights_a
+                        result.AddFloat4ColorExternParameter("wrinkle_weights_b", RenderMethodExtern.none); // rmExtern - wrinkle_weights_b
                         rmopName = @"shaders\shader_options\bump_detail_wrinkle";
                         break;
                 }
@@ -525,57 +480,57 @@ namespace HaloShaderGenerator.Shader
                 {
                     case Material_Model.Diffuse_Only:
                         result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddFloatParameter("approximate_specular_type");
+                        //result.AddFloatParameter("approximate_specular_type");
                         rmopName = @"shaders\shader_options\material_diffuse_only";
                         break;
                     case Material_Model.Cook_Torrance_Rim_Fresnel:
-                        result.AddBooleanParameter("albedo_blend_with_specular_tint");
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddBooleanParameter("order3_area_specular");
-                        result.AddBooleanParameter("use_fresnel_color_environment");
-                        result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color_environment", new ShaderColor(0, 128, 128, 128));
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloat3ColorParameter("rim_fresnel_color", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
                         result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("fresnel_power", 1.0f);
-                        result.AddFloatParameter("rim_fresnel_albedo_blend");
-                        result.AddFloatParameter("rim_fresnel_coefficient");
-                        result.AddFloatParameter("rim_fresnel_power", 2.0f);
-                        result.AddFloatParameter("roughness", 0.4f);
                         result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddBooleanParameter("use_fresnel_color_environment");
+                        result.AddFloat3ColorParameter("fresnel_color_environment", new ShaderColor(0, 128, 128, 128));
+                        result.AddFloatParameter("fresnel_power", 1.0f);
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddBooleanParameter("order3_area_specular");
+                        result.AddBooleanParameter("use_material_texture");
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddBooleanParameter("no_dynamic_lights");
                         result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
                         result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddBooleanParameter("albedo_blend_with_specular_tint");
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
+                        result.AddFloatParameter("rim_fresnel_coefficient");
+                        result.AddFloat3ColorParameter("rim_fresnel_color", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("rim_fresnel_power", 2.0f);
+                        result.AddFloatParameter("rim_fresnel_albedo_blend");
                         rmopName = @"shaders\shader_options\material_cook_torrance_rim_fresnel";
                         break;
                     case Material_Model.Two_Lobe_Phong:
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddBooleanParameter("order3_area_specular");
-                        result.AddFloat3ColorParameter("glancing_specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient", 1.0f);
+                        result.AddFloatParameter("normal_specular_power", 10.0f);
                         result.AddFloat3ColorParameter("normal_specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_color_by_angle", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("glancing_specular_power", 10.0f);
+                        result.AddFloat3ColorParameter("glancing_specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution");
+                        result.AddFloatParameter("analytical_specular_contribution", 0.1f);
+                        result.AddFloatParameter("environment_map_specular_contribution", 0.1f);
+                        result.AddBooleanParameter("order3_area_specular");
+                        result.AddBooleanParameter("no_dynamic_lights");
                         result.AddFloatParameter("albedo_specular_tint_blend");
                         result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_power", 25.0f);
-                        result.AddFloatParameter("analytical_roughness", 0.02f);
-                        result.AddFloatParameter("analytical_specular_contribution", 0.1f);
-                        result.AddFloatParameter("approximate_specular_type");
-                        result.AddFloatParameter("area_specular_contribution");
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution", 0.1f);
-                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
-                        result.AddFloatParameter("glancing_specular_power", 10.0f);
-                        result.AddFloatParameter("normal_specular_power", 10.0f);
-                        result.AddFloatParameter("roughness");
-                        result.AddFloatParameter("specular_coefficient", 1.0f);
+                        //result.AddFloat3ColorParameter("specular_color_by_angle", new ShaderColor(0, 255, 255, 255));
+                        //result.AddFloatParameter("roughness");
+                        //result.AddFloatParameter("analytical_roughness", 0.02f);
+                        //result.AddFloatParameter("approximate_specular_type");
+                        //result.AddFloatParameter("analytical_power", 25f);
                         rmopName = @"shaders\shader_options\material_two_lobe_phong_option";
                         break;
                     case Material_Model.Foliage:
@@ -585,343 +540,343 @@ namespace HaloShaderGenerator.Shader
                     case Material_Model.None:
                         break;
                     case Material_Model.Glass:
-                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddFloatParameter("fresnel_coefficient", 0.1f);
+                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
+                        result.AddFloatParameter("fresnel_curve_bias");
+                        result.AddFloatParameter("roughness");
                         result.AddFloatParameter("analytical_specular_contribution");
                         result.AddFloatParameter("area_specular_contribution");
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("fresnel_coefficient", 0.1f);
-                        result.AddFloatParameter("fresnel_curve_bias");
-                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
-                        result.AddFloatParameter("roughness");
-                        result.AddFloatParameter("specular_coefficient");
+                        result.AddBooleanParameter("no_dynamic_lights");
                         rmopName = @"shaders\shader_options\glass_material";
                         break;
                     case Material_Model.Organism:
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("ambient_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("diffuse_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("environment_map_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("final_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloat3ColorParameter("rim_tint");
-                        result.AddFloat3ColorParameter("specular_color_by_angle", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("subsurface_tint");
-                        result.AddFloat3ColorParameter("transparence_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("ambient_coefficient");
-                        result.AddFloatParameter("analytical_roughness", 0.5f);
-                        result.AddFloatParameter("analytical_specular_coefficient");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("approximate_specular_type");
-                        result.AddFloatParameter("area_specular_coefficient");
-                        result.AddFloatParameter("area_specular_contribution", 0.16f);
                         result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloat3ColorParameter("diffuse_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("analytical_specular_coefficient");
+                        result.AddFloatParameter("area_specular_coefficient");
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("specular_power", 10.0f);
+                        result.AddSamplerParameter("specular_map", @"shaders\default_bitmaps\bitmaps\color_white");
                         result.AddFloatParameter("environment_map_coefficient");
-                        result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddFloat3ColorParameter("environment_map_tint", new ShaderColor(0, 255, 255, 255));
                         result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
-                        result.AddFloatParameter("material_texture_black_roughness", 1.0f);
-                        result.AddFloatParameter("material_texture_black_specular_multiplier", 1.0f);
                         result.AddFloatParameter("rim_coefficient", 1.0f);
-                        result.AddFloatParameter("rim_maps_transition_ratio");
+                        result.AddFloat3ColorParameter("rim_tint");
                         result.AddFloatParameter("rim_power", 2.0f);
                         result.AddFloatParameter("rim_start", 0.7f);
-                        result.AddFloatParameter("rim_width", 0.3f);
-                        result.AddFloatParameter("roughness", 0.04f);
-                        result.AddFloatParameter("specular_coefficient", 1.0f);
-                        result.AddFloatParameter("specular_power", 10.0f);
+                        result.AddFloatParameter("rim_maps_transition_ratio");
+                        result.AddFloatParameter("ambient_coefficient");
+                        result.AddFloat3ColorParameter("ambient_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddSamplerParameter("occlusion_parameter_map", @"shaders\default_bitmaps\bitmaps\color_white");
                         result.AddFloatParameter("subsurface_coefficient");
-                        result.AddFloatParameter("subsurface_normal_detail");
+                        result.AddFloat3ColorParameter("subsurface_tint");
                         result.AddFloatParameter("subsurface_propagation_bias");
+                        result.AddFloatParameter("subsurface_normal_detail");
+                        result.AddSamplerParameter("subsurface_map", @"shaders\default_bitmaps\bitmaps\color_white");
                         result.AddFloatParameter("transparence_coefficient");
+                        result.AddFloat3ColorParameter("transparence_tint", new ShaderColor(0, 255, 255, 255));
                         result.AddFloatParameter("transparence_normal_bias");
                         result.AddFloatParameter("transparence_normal_detail");
-                        result.AddSamplerFilterAddressParameter("g_sampler_cooktorran_array", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\color_white");
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerParameter("occlusion_parameter_map", @"shaders\default_bitmaps\bitmaps\color_white");
-                        result.AddSamplerParameter("specular_map", @"shaders\default_bitmaps\bitmaps\color_white");
-                        result.AddSamplerParameter("subsurface_map", @"shaders\default_bitmaps\bitmaps\color_white");
                         result.AddSamplerParameter("transparence_map", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddFloat3ColorParameter("final_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        //result.AddFloat3ColorParameter("specular_color_by_angle", new ShaderColor(0, 255, 255, 255));
+                        //result.AddFloatParameter("specular_coefficient", 1.0f);
+                        //result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        //result.AddFloatParameter("area_specular_contribution", 0.16f);
+                        //result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        //result.AddFloatParameter("environment_map_specular_contribution");
+                        //result.AddFloatParameter("roughness", 0.04f);
+                        //result.AddFloatParameter("analytical_roughness", 0.5f);
+                        //result.AddBooleanParameter("use_material_texture");
+                        //result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        //result.AddFloatParameter("material_texture_black_specular_multiplier", 1.0f);
+                        //result.AddFloatParameter("material_texture_black_roughness", 1.0f);
+                        //result.AddFloatParameter("albedo_blend");
+                        //result.AddSamplerFilterAddressParameter("g_sampler_cooktorran_array", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\color_white");
+                        //result.AddFloatParameter("approximate_specular_type");
+                        //result.AddFloatParameter("rim_width", 0.3f);
                         rmopName = @"shaders\shader_options\material_organism_option";
                         break;
                     case Material_Model.Single_Lobe_Phong:
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddBooleanParameter("order3_area_specular");
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("analytical_anti_shadow_control");
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddFloatParameter("roughness");
                         result.AddFloatParameter("analytical_specular_contribution");
                         result.AddFloatParameter("area_specular_contribution");
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
                         result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("roughness");
-                        result.AddFloatParameter("specular_coefficient");
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddBooleanParameter("order3_area_specular");
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
                         rmopName = @"shaders\shader_options\single_lobe_phong";
                         break;
                     case Material_Model.Car_Paint:
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddBooleanParameter("order3_area_specular0");
-                        result.AddBooleanParameter("order3_area_specular1");
                         result.AddBooleanParameter("use_material_texture0");
                         result.AddBooleanParameter("use_material_texture1");
-                        result.AddFloat3ColorParameter("fresnel_color_environment1", new ShaderColor(0, 128, 128, 128));
-                        result.AddFloat3ColorParameter("fresnel_color0", new ShaderColor(0, 128, 128, 128));
-                        result.AddFloat3ColorParameter("fresnel_color1", new ShaderColor(0, 128, 128, 128));
-                        result.AddFloat3ColorParameter("rim_fresnel_color1", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_tint0", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_tint1", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("albedo_blend0");
-                        result.AddFloatParameter("albedo_blend1");
-                        result.AddFloatParameter("analytical_specular_contribution0", 0.5f);
-                        result.AddFloatParameter("analytical_specular_contribution1", 0.2f);
-                        result.AddFloatParameter("area_specular_contribution0", 0.3f);
-                        result.AddFloatParameter("area_specular_contribution1", 0.1f);
-                        result.AddFloatParameter("bump_detail_map0_blend_factor", 0.75f);
-                        result.AddFloatParameter("diffuse_coefficient0", 0.25f);
-                        result.AddFloatParameter("diffuse_coefficient1");
-                        result.AddFloatParameter("environment_map_specular_contribution1", 0.3f);
-                        result.AddFloatParameter("fresnel_power0", 1.0f);
-                        result.AddFloatParameter("fresnel_power1", 1.0f);
-                        result.AddFloatParameter("rim_fresnel_albedo_blend1");
-                        result.AddFloatParameter("rim_fresnel_coefficient1");
-                        result.AddFloatParameter("rim_fresnel_power1", 2.0f);
-                        result.AddFloatParameter("roughness0", 0.5f);
-                        result.AddFloatParameter("roughness1", 0.1f);
-                        result.AddFloatParameter("specular_coefficient0", 1.0f);
-                        result.AddFloatParameter("specular_coefficient1", 0.15f);
-                        result.AddSamplerFilterWithScaleParameter("bump_detail_map0", ShaderOptionParameter.ShaderFilterMode.Anisotropic4Expensive, 16.0f, @"shaders\default_bitmaps\bitmaps\sparklenoisemap");
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddBooleanParameter("no_dynamic_lights");
                         result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
                         result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerFilterWithScaleParameter("bump_detail_map0", ShaderOptionParameter.ShaderFilterMode.Anisotropic4Expensive, 16.0f, @"shaders\default_bitmaps\bitmaps\sparklenoisemap");
+                        result.AddFloatParameter("bump_detail_map0_blend_factor", 0.75f);
+                        result.AddFloatParameter("diffuse_coefficient0", 0.25f);
+                        result.AddFloatParameter("specular_coefficient0", 1.0f);
+                        result.AddFloat3ColorParameter("specular_tint0", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("fresnel_color0", new ShaderColor(0, 128, 128, 128));
+                        result.AddFloatParameter("fresnel_power0", 1.0f);
+                        result.AddFloatParameter("albedo_blend0");
+                        result.AddFloatParameter("roughness0", 0.5f);
+                        result.AddFloatParameter("area_specular_contribution0", 0.3f);
+                        result.AddFloatParameter("analytical_specular_contribution0", 0.5f);
+                        result.AddBooleanParameter("order3_area_specular0");
+                        result.AddFloatParameter("diffuse_coefficient1");
+                        result.AddFloatParameter("specular_coefficient1", 0.15f);
+                        result.AddFloat3ColorParameter("specular_tint1", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("fresnel_color1", new ShaderColor(0, 128, 128, 128));
+                        result.AddFloat3ColorParameter("fresnel_color_environment1", new ShaderColor(0, 128, 128, 128));
+                        result.AddFloatParameter("fresnel_power1", 1.0f);
+                        result.AddFloatParameter("albedo_blend1");
+                        result.AddFloatParameter("roughness1", 0.1f);
+                        result.AddFloatParameter("area_specular_contribution1", 0.1f);
+                        result.AddFloatParameter("analytical_specular_contribution1", 0.2f);
+                        result.AddFloatParameter("environment_map_specular_contribution1", 0.3f);
+                        result.AddBooleanParameter("order3_area_specular1");
+                        result.AddFloatParameter("rim_fresnel_coefficient1");
+                        result.AddFloat3ColorParameter("rim_fresnel_color1", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("rim_fresnel_power1", 2.0f);
+                        result.AddFloatParameter("rim_fresnel_albedo_blend1");
                         rmopName = @"shaders\shader_options\material_car_paint_option";
                         break;
                     case Material_Model.Hair:
-                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("diffuse_coefficient");
                         result.AddFloat3ColorParameter("diffuse_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("environment_map_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("final_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
                         result.AddFloatParameter("analytical_specular_coefficient");
                         result.AddFloatParameter("area_specular_coefficient");
-                        result.AddFloatParameter("diffuse_coefficient");
-                        result.AddFloatParameter("environment_map_coefficient");
-                        result.AddFloatParameter("roughness", 0.5f);
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
                         result.AddFloatParameter("specular_power", 10.0f);
                         result.AddSamplerParameter("specular_map", @"shaders\default_bitmaps\bitmaps\color_white");
-                        result.AddSamplerParameter("specular_noise_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
                         result.AddSamplerParameter("specular_shift_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
+                        result.AddSamplerParameter("specular_noise_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
+                        result.AddFloatParameter("environment_map_coefficient");
+                        result.AddFloat3ColorParameter("environment_map_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("final_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        //result.AddFloatParameter("roughness", 0.5f);
                         rmopName = @"shaders\shader_options\material_hair_option";
                         break;
                     case Material_Model.Cook_Torrance:
-                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient", 1.0f);
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloatParameter("roughness", 0.04f);
+                        result.AddFloatParameter("area_specular_contribution");
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
                         result.AddBooleanParameter("order3_area_specular");
                         result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloat3ColorParameter("specular_color_by_angle", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_roughness", 0.5f);
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("approximate_specular_type");
-                        result.AddFloatParameter("area_specular_contribution");
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
-                        result.AddFloatParameter("material_texture_black_roughness", 1.0f);
-                        result.AddFloatParameter("material_texture_black_specular_multiplier", 1.0f);
-                        result.AddFloatParameter("roughness", 0.04f);
-                        result.AddFloatParameter("specular_coefficient", 1.0f);
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddBooleanParameter("no_dynamic_lights");
                         result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
                         result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
+                        //result.AddFloat3ColorParameter("specular_color_by_angle", new ShaderColor(0, 255, 255, 255));
+                        //result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
+                        //result.AddFloatParameter("analytical_roughness", 0.5f);
+                        //result.AddFloatParameter("material_texture_black_specular_multiplier", 1.0f);
+                        //result.AddFloatParameter("material_texture_black_roughness", 1.0f);
+                        //result.AddFloatParameter("approximate_specular_type");
                         rmopName = @"shaders\shader_options\material_cook_torrance_option";
                         break;
                     case Material_Model.Cook_Torrance_Pbr_Maps:
-                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
                         result.AddBooleanParameter("order3_area_specular");
                         result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("roughness", 0.4f);
-                        result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddBooleanParameter("no_dynamic_lights");
                         result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
                         result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
                         result.AddSamplerParameter("spec_tint_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\material_cook_torrance_pbr_maps_option";
                         break;
                     case Material_Model.Two_Lobe_Phong_Tint_Map:
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddBooleanParameter("order3_area_specular");
-                        result.AddFloat3ColorParameter("glancing_specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddFloatParameter("normal_specular_power", 10.0f);
                         result.AddFloat3ColorParameter("normal_specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("glancing_specular_power", 10.0f);
+                        result.AddFloat3ColorParameter("glancing_specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddBooleanParameter("order3_area_specular");
+                        result.AddBooleanParameter("no_dynamic_lights");
                         result.AddFloatParameter("albedo_specular_tint_blend");
                         result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
-                        result.AddFloatParameter("glancing_specular_power", 10.0f);
-                        result.AddFloatParameter("normal_specular_power", 10.0f);
-                        result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerParameter("glancing_specular_tint_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("normal_specular_tint_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("glancing_specular_tint_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\material_two_lobe_phong_tint_map_option";
                         break;
                     case Material_Model.Cook_Torrance_Reach:
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloat3ColorParameter("specular_color_by_angle", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_roughness", 0.5f);
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("approximate_specular_type");
-                        result.AddFloatParameter("area_specular_contribution");
                         result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
-                        result.AddFloatParameter("material_texture_black_roughness", 1.0f);
-                        result.AddFloatParameter("material_texture_black_specular_multiplier", 1.0f);
-                        result.AddFloatParameter("roughness", 0.04f);
+                        result.AddFloat3ColorParameter("specular_color_by_angle", new ShaderColor(0, 255, 255, 255));
                         result.AddFloatParameter("specular_coefficient", 1.0f);
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution");
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddFloatParameter("roughness", 0.04f);
+                        result.AddFloatParameter("analytical_roughness", 0.5f);
+                        result.AddBooleanParameter("use_material_texture");
                         result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("material_texture_black_specular_multiplier", 1.0f);
+                        result.AddFloatParameter("material_texture_black_roughness", 1.0f);
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("approximate_specular_type");
                         rmopName = @"shaders\shader_options\material_cook_torrance_option_reach";
                         break;
                     case Material_Model.Two_Lobe_Phong_Reach:
-                        result.AddBooleanParameter("no_dynamic_lights");
-                        result.AddFloat3ColorParameter("glancing_specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("normal_specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_color_by_angle", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("albedo_specular_tint_blend");
-                        result.AddFloatParameter("analytical_power", 25.0f);
-                        result.AddFloatParameter("analytical_roughness", 0.02f);
-                        result.AddFloatParameter("analytical_specular_contribution", 0.1f);
-                        result.AddFloatParameter("approximate_specular_type");
-                        result.AddFloatParameter("area_specular_contribution");
                         result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution", 0.1f);
-                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
-                        result.AddFloatParameter("glancing_specular_power", 10.0f);
-                        result.AddFloatParameter("normal_specular_power", 10.0f);
-                        result.AddFloatParameter("roughness");
+                        result.AddFloat3ColorParameter("specular_color_by_angle", new ShaderColor(0, 255, 255, 255));
                         result.AddFloatParameter("specular_coefficient", 1.0f);
+                        result.AddFloatParameter("normal_specular_power", 10.0f);
+                        result.AddFloat3ColorParameter("normal_specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("glancing_specular_power", 10.0f);
+                        result.AddFloat3ColorParameter("glancing_specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution");
+                        result.AddFloatParameter("analytical_specular_contribution", 0.1f);
+                        result.AddFloatParameter("environment_map_specular_contribution", 0.1f);
+                        result.AddFloatParameter("roughness");
+                        result.AddFloatParameter("analytical_roughness", 0.02f);
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("albedo_specular_tint_blend");
+                        result.AddFloatParameter("approximate_specular_type");
+                        result.AddFloatParameter("analytical_power", 25.0f);
                         rmopName = @"shaders\shader_options\material_two_lobe_phong_option_reach";
                         break;
                     case Material_Model.Cook_Torrance_Custom_Cube:
-                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
                         result.AddBooleanParameter("order3_area_specular");
                         result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("roughness", 0.4f);
-                        result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerParameter("custom_cube", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddBooleanParameter("no_dynamic_lights");
                         result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
                         result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
+                        result.AddSamplerParameter("custom_cube", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\material_cook_torrance_custom_cube_option";
                         break;
                     case Material_Model.Cook_Torrance_Two_Color_Spec_Tint:
-                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
                         result.AddBooleanParameter("order3_area_specular");
                         result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloat3ColorParameter("specular_second_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("roughness", 0.4f);
-                        result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddBooleanParameter("no_dynamic_lights");
                         result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
                         result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
                         result.AddSamplerParameter("spec_blend_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorParameter("specular_second_tint", new ShaderColor(0, 255, 255, 255));
                         rmopName = @"shaders\shader_options\material_cook_torrance_two_color_spec_tint";
                         break;
                     case Material_Model.Cook_Torrance_Scrolling_Cube_Mask:
-                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
                         result.AddBooleanParameter("order3_area_specular");
                         result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloat3ColorParameter("specular_second_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("roughness", 0.4f);
-                        result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddBooleanParameter("no_dynamic_lights");
                         result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
                         result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
                         result.AddSamplerParameter("tint_blend_mask_cubemap", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorParameter("specular_second_tint", new ShaderColor(0, 255, 255, 255));
                         rmopName = @"shaders\shader_options\material_cook_torrance_scrolling_cube_mask";
                         break;
                     case Material_Model.Cook_Torrance_Scrolling_Cube:
-                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
                         result.AddBooleanParameter("order3_area_specular");
                         result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("roughness", 0.4f);
-                        result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddBooleanParameter("no_dynamic_lights");
                         result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
                         result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
                         result.AddSamplerParameter("spec_tint_cubemap", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\material_cook_torrance_scrolling_cube";
                         break;
                     case Material_Model.Cook_Torrance_From_Albedo:
-                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
                         result.AddBooleanParameter("order3_area_specular");
                         result.AddBooleanParameter("use_material_texture");
-                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 128, 128, 128));
-                        result.AddFloatParameter("albedo_blend");
-                        result.AddFloatParameter("analytical_anti_shadow_control");
-                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
-                        result.AddFloatParameter("area_specular_contribution", 0.5f);
-                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
-                        result.AddFloatParameter("environment_map_specular_contribution");
-                        result.AddFloatParameter("roughness", 0.4f);
-                        result.AddFloatParameter("specular_coefficient");
-                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddBooleanParameter("no_dynamic_lights");
                         result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
                         result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
-                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddFloatParameter("albedo_blend");
+                        result.AddFloatParameter("analytical_anti_shadow_control");
                         rmopName = @"shaders\shader_options\material_cook_torrance_from_albedo";
                         break;
                 }
@@ -936,53 +891,53 @@ namespace HaloShaderGenerator.Shader
                     case Environment_Mapping.None:
                         break;
                     case Environment_Mapping.Per_Pixel:
-                        result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("env_roughness_offset", 0.5f);
                         result.AddSamplerAddressWithColorParameter("environment_map", ShaderOptionParameter.ShaderAddressMode.Clamp, new ShaderColor(0, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\default_dynamic_cube_map");
+                        result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("env_roughness_scale", 1.0f);
                         rmopName = @"shaders\shader_options\env_map_per_pixel";
                         break;
                     case Environment_Mapping.Dynamic:
                         result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("env_roughness_offset", 0.5f);
-                        result.AddFloatParameter("env_roughness_scale", 1.0f);
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddFloatParameter("env_roughness_scale", 1.0f);
+                        //result.AddFloatParameter("env_roughness_offset", 0.5f);
                         rmopName = @"shaders\shader_options\env_map_dynamic";
                         break;
                     case Environment_Mapping.From_Flat_Texture:
+                        result.AddSamplerAddressWithColorParameter("flat_environment_map", ShaderOptionParameter.ShaderAddressMode.BlackBorder, new ShaderColor(0, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\color_red");
                         result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat4ColorParameter("env_bloom_override", new ShaderColor(255, 0, 0, 0));
                         result.AddFloat4ColorExternParameter("flat_envmap_matrix_x", RenderMethodExtern.flat_envmap_matrix_x);
                         result.AddFloat4ColorExternParameter("flat_envmap_matrix_y", RenderMethodExtern.flat_envmap_matrix_y);
                         result.AddFloat4ColorExternParameter("flat_envmap_matrix_z", RenderMethodExtern.flat_envmap_matrix_z);
-                        result.AddFloatParameter("env_bloom_override_intensity", 1.0f);
                         result.AddFloatParameter("hemisphere_percentage", 1.0f);
-                        result.AddSamplerAddressWithColorParameter("flat_environment_map", ShaderOptionParameter.ShaderAddressMode.BlackBorder, new ShaderColor(0, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\color_red");
+                        result.AddFloat4ColorParameter("env_bloom_override", new ShaderColor(255, 0, 0, 0));
+                        result.AddFloatParameter("env_bloom_override_intensity", 1.0f);
                         rmopName = @"shaders\shader_options\env_map_from_flat_texture";
                         break;
                     case Environment_Mapping.Custom_Map:
-                        result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("env_roughness_offset", 0.5f);
                         result.AddSamplerAddressWithColorParameter("environment_map", ShaderOptionParameter.ShaderAddressMode.Clamp, new ShaderColor(0, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\default_dynamic_cube_map");
+                        result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("env_roughness_scale", 1.0f);
                         rmopName = @"shaders\shader_options\env_map_per_pixel";
                         break;
                     case Environment_Mapping.Dynamic_Reach:
                         result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("env_roughness_offset", 0.5f);
-                        result.AddFloatParameter("env_roughness_scale", 1.0f);
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddFloatParameter("env_roughness_scale", 1.0f);
+                        //result.AddFloatParameter("env_roughness_offset", 0.5f);
                         rmopName = @"shaders\shader_options\env_map_dynamic";
                         break;
                     case Environment_Mapping.From_Flat_Texture_As_Cubemap:
+                        result.AddSamplerAddressWithColorParameter("flat_environment_map", ShaderOptionParameter.ShaderAddressMode.BlackBorder, new ShaderColor(0, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\color_red");
                         result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloat4ColorParameter("env_bloom_override", new ShaderColor(255, 0, 0, 0));
                         result.AddFloat4ColorExternParameter("flat_envmap_matrix_x", RenderMethodExtern.flat_envmap_matrix_x);
                         result.AddFloat4ColorExternParameter("flat_envmap_matrix_y", RenderMethodExtern.flat_envmap_matrix_y);
                         result.AddFloat4ColorExternParameter("flat_envmap_matrix_z", RenderMethodExtern.flat_envmap_matrix_z);
-                        result.AddFloatParameter("env_bloom_override_intensity", 1.0f);
                         result.AddFloatParameter("hemisphere_percentage", 1.0f);
-                        result.AddSamplerAddressWithColorParameter("flat_environment_map", ShaderOptionParameter.ShaderAddressMode.BlackBorder, new ShaderColor(0, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\color_red");
+                        result.AddFloat4ColorParameter("env_bloom_override", new ShaderColor(255, 0, 0, 0));
+                        result.AddFloatParameter("env_bloom_override_intensity", 1.0f);
                         rmopName = @"shaders\shader_options\env_map_from_flat_texture";
                         break;
                 }
@@ -997,30 +952,30 @@ namespace HaloShaderGenerator.Shader
                     case Self_Illumination.Off:
                         break;
                     case Self_Illumination.Simple:
+                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloat3ColorParameter("self_illum_color", new ShaderColor(255, 255, 255, 255));
                         result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_simple";
                         break;
                     case Self_Illumination._3_Channel_Self_Illum:
+                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloat4ColorParameter("channel_a", new ShaderColor(255, 255, 255, 255));
                         result.AddFloat4ColorParameter("channel_b", new ShaderColor(255, 255, 255, 255));
                         result.AddFloat4ColorParameter("channel_c", new ShaderColor(255, 255, 255, 255));
                         result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_3_channel";
                         break;
                     case Self_Illumination.Plasma:
-                        result.AddFloat4ColorWithFloatParameter("color_medium", 1.0f, new ShaderColor(255, 255, 255, 255));
-                        result.AddFloat4ColorWithFloatParameter("color_sharp", 1.0f, new ShaderColor(255, 255, 255, 255));
-                        result.AddFloat4ColorWithFloatParameter("color_wide", 1.0f, new ShaderColor(255, 255, 255, 255));
-                        result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddFloatParameter("thinness_medium", 16.0f);
-                        result.AddFloatParameter("thinness_sharp", 32.0f);
-                        result.AddFloatParameter("thinness_wide", 4.0f);
-                        result.AddSamplerParameter("alpha_mask_map", @"shaders\default_bitmaps\bitmaps\alpha_white");
                         result.AddSamplerParameter("noise_map_a", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("noise_map_b", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat4ColorWithFloatParameter("color_medium", 1.0f, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorWithFloatParameter("color_wide", 1.0f, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorWithFloatParameter("color_sharp", 1.0f, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", 1.0f);
+                        result.AddSamplerParameter("alpha_mask_map", @"shaders\default_bitmaps\bitmaps\alpha_white");
+                        result.AddFloatParameter("thinness_medium", 16.0f);
+                        result.AddFloatParameter("thinness_wide", 4.0f);
+                        result.AddFloatParameter("thinness_sharp", 32.0f);
                         rmopName = @"shaders\shader_options\illum_plasma";
                         break;
                     case Self_Illumination.From_Diffuse:
@@ -1029,93 +984,94 @@ namespace HaloShaderGenerator.Shader
                         rmopName = @"shaders\shader_options\illum_from_diffuse";
                         break;
                     case Self_Illumination.Illum_Detail:
+                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("self_illum_detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddFloat3ColorParameter("self_illum_color", new ShaderColor(255, 255, 255, 255));
                         result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddSamplerParameter("self_illum_detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
-                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_detail";
                         break;
                     case Self_Illumination.Meter:
+                        result.AddSamplerParameter("meter_map", @"shaders\default_bitmaps\bitmaps\monochrome_alpha_grid");
                         result.AddFloat3ColorParameter("meter_color_off", new ShaderColor(255, 255, 0, 0));
                         result.AddFloat3ColorParameter("meter_color_on", new ShaderColor(0, 0, 255, 0));
                         result.AddFloatParameter("meter_value", 0.5f);
-                        result.AddSamplerParameter("meter_map", @"shaders\default_bitmaps\bitmaps\monochrome_alpha_grid");
                         rmopName = @"shaders\shader_options\illum_meter";
                         break;
                     case Self_Illumination.Self_Illum_Times_Diffuse:
-                        result.AddFloat3ColorParameter("self_illum_color", new ShaderColor(255, 255, 255, 255));
-                        result.AddFloatParameter("primary_change_color_blend");
-                        result.AddFloatParameter("self_illum_intensity", 1.0f);
                         result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorParameter("self_illum_color", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", 1.0f);
+                        result.AddFloatParameter("primary_change_color_blend");
                         rmopName = @"shaders\shader_options\illum_times_diffuse";
                         break;
                     case Self_Illumination.Simple_With_Alpha_Mask:
+                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloat3ColorParameter("self_illum_color", new ShaderColor(255, 255, 255, 255));
                         result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_simple";
                         break;
                     case Self_Illumination.Simple_Four_Change_Color:
+                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloat3ColorExternParameter("self_illum_color", RenderMethodExtern.object_change_color_quaternary, new ShaderColor(255, 255, 255, 255));
                         result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\shader_options\illum_simple_four_change_color";
                         break;
                     case Self_Illumination.Illum_Change_Color:
-                        result.AddFloat3ColorExternParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
-                        result.AddFloat3ColorExternParameter("self_illum_color", RenderMethodExtern.object_change_color_primary, new ShaderColor(255, 255, 255, 255));
-                        result.AddFloatParameter("primary_change_color_blend");
-                        result.AddFloatParameter("self_illum_intensity", 1.0f);
                         result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorExternParameter("self_illum_color", RenderMethodExtern.object_change_color_primary, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", 1.0f);
+                        result.AddFloatParameter("primary_change_color_blend");
+                        //result.AddFloat3ColorExternParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
                         rmopName = @"shaders\shader_options\illum_change_color";
                         break;
                     case Self_Illumination.Multilayer_Additive:
-                        result.AddFloat3ColorParameter("self_illum_color", new ShaderColor(255, 255, 255, 255));
-                        result.AddFloatParameter("depth_darken", 1.0f);
-                        result.AddFloatParameter("layer_contrast", 4.0f);
-                        result.AddFloatParameter("layer_depth", 0.1f);
-                        result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddFloatParameter("texcoord_aspect_ratio", 1.0f);
-                        result.AddIntegerParameter("layers_of_4", 4);
                         result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorParameter("self_illum_color", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", 1.0f);
+                        result.AddFloatParameter("layer_depth", 0.1f);
+                        result.AddFloatParameter("layer_contrast", 4.0f);
+                        result.AddIntegerParameter("layers_of_4", 4);
+                        result.AddFloatParameter("texcoord_aspect_ratio", 1.0f);
+                        result.AddFloatParameter("depth_darken", 1.0f);
                         rmopName = @"shaders\shader_options\illum_multilayer";
                         break;
                     case Self_Illumination.Palettized_Plasma:
-                        result.AddFloat3ColorParameter("self_illum_color", new ShaderColor(1, 255, 255, 255));
-                        result.AddFloatParameter("alpha_modulation_factor", 0.1f);
-                        result.AddFloatParameter("depth_fade_range", 0.1f);
-                        result.AddFloatExternParameter("global_camera_forward", RenderMethodExtern.global_camera_forward);
-                        result.AddFloatExternParameter("global_depth_constants", RenderMethodExtern.global_depth_constants);
-                        result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddFloatParameter("v_coordinate", 0.5f);
-                        result.AddSamplerAddressParameter("alpha_mask_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
-                        result.AddSamplerExternFilterAddressParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddSamplerParameter("noise_map_a", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerParameter("noise_map_b", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerFilterAddressParameter("palette", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_mask_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddFloatParameter("alpha_modulation_factor", 0.1f);
+                        result.AddSamplerExternFilterAddressParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddFloatParameter("depth_fade_range", 0.1f);
+                        result.AddFloat3ColorParameter("self_illum_color", new ShaderColor(1, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", 1.0f);
+                        result.AddFloatParameter("v_coordinate", 0.5f);
+                        result.AddFloatExternParameter("global_depth_constants", RenderMethodExtern.global_depth_constants);
+                        result.AddFloatExternParameter("global_camera_forward", RenderMethodExtern.global_camera_forward);
                         rmopName = @"shaders\shader_options\illum_palettized_plasma";
                         break;
                     case Self_Illumination.Change_Color_Detail:
-                        result.AddFloat3ColorExternParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
-                        result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddSamplerParameter("self_illum_detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("self_illum_detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat3ColorExternParameter("self_illum_color", RenderMethodExtern.object_change_color_primary, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", 1.0f);
+                        //result.AddFloat3ColorExternParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
                         rmopName = @"shaders\shader_options\illum_change_color_detail";
                         break;
                     case Self_Illumination.Illum_Detail_World_Space_Four_Cc:
-                        result.AddFloat3ColorExternParameter("self_illum_color", RenderMethodExtern.object_change_color_quaternary, new ShaderColor(255, 255, 255, 255));
-                        result.AddFloat4ColorWithFloatParameter("self_illum_obj_bounding_sphere", 1.0f);
-                        result.AddFloatParameter("self_illum_intensity", 1.0f);
-                        result.AddSamplerParameter("self_illum_detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("self_illum_detail_map", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat3ColorExternParameter("self_illum_color", RenderMethodExtern.object_change_color_quaternary, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", 1.0f);
+                        result.AddFloat4ColorWithFloatParameter("self_illum_obj_bounding_sphere", 1.0f);
                         rmopName = @"shaders\shader_options\illum_detail_world_space_four_cc";
                         break;
                     case Self_Illumination.Change_Color:
-                        result.AddFloat3ColorExternParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
-                        result.AddFloat3ColorExternParameter("self_illum_color", RenderMethodExtern.object_change_color_primary, new ShaderColor(255, 255, 255, 255));
-                        result.AddFloatParameter("primary_change_color_blend");
-                        result.AddFloatParameter("self_illum_intensity", 1.0f);
                         result.AddSamplerParameter("self_illum_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorExternParameter("self_illum_color", RenderMethodExtern.object_change_color_primary, new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity", 1.0f);
+                        result.AddFloatParameter("primary_change_color_blend");
+                        //result.AddFloat3ColorExternParameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
                         rmopName = @"shaders\shader_options\illum_change_color";
                         break;
                 }
@@ -1151,18 +1107,18 @@ namespace HaloShaderGenerator.Shader
                     case Parallax.Off:
                         break;
                     case Parallax.Simple:
-                        result.AddFloatParameter("height_scale", 0.1f);
                         result.AddSamplerParameter("height_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
+                        result.AddFloatParameter("height_scale", 0.1f);
                         rmopName = @"shaders\shader_options\parallax_simple";
                         break;
                     case Parallax.Interpolated:
-                        result.AddFloatParameter("height_scale", 0.1f);
                         result.AddSamplerParameter("height_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
+                        result.AddFloatParameter("height_scale", 0.1f);
                         rmopName = @"shaders\shader_options\parallax_simple";
                         break;
                     case Parallax.Simple_Detail:
-                        result.AddFloatParameter("height_scale", 0.1f);
                         result.AddSamplerParameter("height_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
+                        result.AddFloatParameter("height_scale", 0.1f);
                         result.AddSamplerParameter("height_scale_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
                         rmopName = @"shaders\shader_options\parallax_detail";
                         break;
@@ -1201,10 +1157,10 @@ namespace HaloShaderGenerator.Shader
                     case Distortion.Off:
                         break;
                     case Distortion.On:
+                        result.AddSamplerParameter("distort_map", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloatParameter("distort_scale", 0.1f);
                         result.AddBooleanParameter("distort_selfonly");
                         result.AddFloatParameter("distort_fadeoff", 10.0f);
-                        result.AddFloatParameter("distort_scale", 0.1f);
-                        result.AddSamplerParameter("distort_map", @"shaders\default_bitmaps\bitmaps\default_vector");
                         rmopName = @"shaders\shader_options\sfx_distort";
                         break;
                 }
@@ -1239,14 +1195,15 @@ namespace HaloShaderGenerator.Shader
                     case Misc_Attr_Animation.Off:
                         break;
                     case Misc_Attr_Animation.Scrolling_Cube:
+                        result.AddIntegerParameter("misc_attr_animation_option", 1);
                         result.AddFloatParameter("scrolling_axis_x");
                         result.AddFloatParameter("scrolling_axis_y", 1.0f);
                         result.AddFloatParameter("scrolling_axis_z");
                         result.AddFloatParameter("scrolling_speed", 1.0f);
-                        result.AddIntegerParameter("misc_attr_animation_option", 1);
                         rmopName = @"shaders\shader_options\misc_attr_scrolling_cube";
                         break;
                     case Misc_Attr_Animation.Scrolling_Projected:
+                        result.AddIntegerParameter("misc_attr_animation_option", 2);
                         result.AddFloatParameter("object_center_x");
                         result.AddFloatParameter("object_center_y");
                         result.AddFloatParameter("object_center_z", 0.65f);
@@ -1258,11 +1215,10 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("plane_v_z", 1.0f);
                         result.AddFloatParameter("scale_u", 1.0f);
                         result.AddFloatParameter("scale_v", 1.0f);
-                        result.AddFloatParameter("speed_u", 0.1f);
-                        result.AddFloatParameter("speed_v");
                         result.AddFloatParameter("translate_u");
                         result.AddFloatParameter("translate_v");
-                        result.AddIntegerParameter("misc_attr_animation_option", 2);
+                        result.AddFloatParameter("speed_u", 0.1f);
+                        result.AddFloatParameter("speed_v");
                         rmopName = @"shaders\shader_options\misc_attr_scrolling_projected";
                         break;
                 }
@@ -1280,15 +1236,15 @@ namespace HaloShaderGenerator.Shader
                         rmopName = @"shaders\wetness_options\wetness_simple";
                         break;
                     case Wetness.Flood:
-                        result.AddFloat3ColorParameter("wet_material_dim_tint", new ShaderColor(0, 216, 216, 235));
-                        result.AddFloat3ColorParameter("wet_sheen_reflection_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("specular_mask_tweak_weight", 0.5f);
-                        result.AddFloatParameter("surface_tilt_tweak_weight");
                         result.AddFloatWithColorParameter("wet_material_dim_coefficient", new ShaderColor(0, 149, 149, 149), 1.0f);
+                        result.AddFloat3ColorParameter("wet_material_dim_tint", new ShaderColor(0, 216, 216, 235));
                         result.AddFloatParameter("wet_sheen_reflection_contribution", 0.3f);
+                        result.AddFloat3ColorParameter("wet_sheen_reflection_tint", new ShaderColor(0, 255, 255, 255));
                         result.AddFloatParameter("wet_sheen_thickness", 0.9f);
                         result.AddSamplerParameter("wet_flood_slope_map", @"rasterizer\water\static_wave\static_wave_slope_water");
                         result.AddSamplerFilterParameter("wet_noise_boundary_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"rasterizer\rain\rain_noise_boundary");
+                        result.AddFloatParameter("specular_mask_tweak_weight", 0.5f);
+                        result.AddFloatParameter("surface_tilt_tweak_weight");
                         rmopName = @"shaders\wetness_options\wetness_flood";
                         break;
                     case Wetness.Proof:
@@ -1299,14 +1255,14 @@ namespace HaloShaderGenerator.Shader
                         rmopName = @"shaders\wetness_options\wetness_simple";
                         break;
                     case Wetness.Ripples:
-                        result.AddFloat3ColorParameter("wet_material_dim_tint", new ShaderColor(0, 216, 216, 235));
-                        result.AddFloat3ColorParameter("wet_sheen_reflection_tint", new ShaderColor(0, 255, 255, 255));
-                        result.AddFloatParameter("specular_mask_tweak_weight", 0.5f);
-                        result.AddFloatParameter("surface_tilt_tweak_weight", 0.3f);
                         result.AddFloatWithColorParameter("wet_material_dim_coefficient", new ShaderColor(0, 149, 149, 149), 1.0f);
+                        result.AddFloat3ColorParameter("wet_material_dim_tint", new ShaderColor(0, 216, 216, 235));
                         result.AddFloatParameter("wet_sheen_reflection_contribution", 0.37f);
+                        result.AddFloat3ColorParameter("wet_sheen_reflection_tint", new ShaderColor(0, 255, 255, 255));
                         result.AddFloatParameter("wet_sheen_thickness", 0.4f);
                         result.AddSamplerFilterParameter("wet_noise_boundary_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"rasterizer\rain\rain_noise_boundary");
+                        result.AddFloatParameter("specular_mask_tweak_weight", 0.5f);
+                        result.AddFloatParameter("surface_tilt_tweak_weight", 0.3f);
                         rmopName = @"shaders\wetness_options\wetness_ripples";
                         break;
                 }
@@ -1322,29 +1278,29 @@ namespace HaloShaderGenerator.Shader
                         break;
                     case Alpha_Blend_Source.From_Albedo_Alpha:
                         result.AddFloatParameter("opacity_fresnel_coefficient");
-                        result.AddFloatParameter("opacity_fresnel_curve_steepness");
+                        result.AddFloatParameter("opacity_fresnel_curve_steepness", 3.0f);
                         result.AddFloatParameter("opacity_fresnel_curve_bias");
                         rmopName = @"shaders\shader_options\blend_source_from_albedo_alpha";
                         break;
                     case Alpha_Blend_Source.From_Opacity_Map_Alpha:
-                        result.AddFloatParameter("opacity_fresnel_coefficient");
-                        result.AddFloatParameter("opacity_fresnel_curve_bias");
-                        result.AddFloatParameter("opacity_fresnel_curve_steepness", 3f);
                         result.AddSamplerParameter("opacity_texture", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddFloatParameter("opacity_fresnel_coefficient");
+                        result.AddFloatParameter("opacity_fresnel_curve_steepness", 3.0f);
+                        result.AddFloatParameter("opacity_fresnel_curve_bias");
                         rmopName = @"shaders\shader_options\blend_source_from_opacity_map";
                         break;
                     case Alpha_Blend_Source.From_Opacity_Map_Rgb:
-                        result.AddFloatParameter("opacity_fresnel_coefficient");
-                        result.AddFloatParameter("opacity_fresnel_curve_bias");
-                        result.AddFloatParameter("opacity_fresnel_curve_steepness", 3f);
                         result.AddSamplerParameter("opacity_texture", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddFloatParameter("opacity_fresnel_coefficient");
+                        result.AddFloatParameter("opacity_fresnel_curve_steepness", 3.0f);
+                        result.AddFloatParameter("opacity_fresnel_curve_bias");
                         rmopName = @"shaders\shader_options\blend_source_from_opacity_map";
                         break;
                     case Alpha_Blend_Source.From_Opacity_Map_Alpha_And_Albedo_Alpha:
-                        result.AddFloatParameter("opacity_fresnel_coefficient");
-                        result.AddFloatParameter("opacity_fresnel_curve_bias");
-                        result.AddFloatParameter("opacity_fresnel_curve_steepness", 3f);
                         result.AddSamplerParameter("opacity_texture", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddFloatParameter("opacity_fresnel_coefficient");
+                        result.AddFloatParameter("opacity_fresnel_curve_steepness", 3.0f);
+                        result.AddFloatParameter("opacity_fresnel_curve_bias");
                         rmopName = @"shaders\shader_options\blend_source_from_opacity_map";
                         break;
                 }
@@ -1394,6 +1350,45 @@ namespace HaloShaderGenerator.Shader
             }
 
             return null;
+        }
+
+        public Array GetEntryPointOrder()
+        {
+            return new ShaderStage[]
+            {
+                ShaderStage.Albedo,
+                ShaderStage.Static_Per_Pixel,
+                ShaderStage.Static_Sh,
+                ShaderStage.Static_Per_Vertex,
+                ShaderStage.Dynamic_Light,
+                ShaderStage.Shadow_Generate,
+                ShaderStage.Static_Prt_Ambient,
+                ShaderStage.Static_Prt_Linear,
+                ShaderStage.Static_Prt_Quadratic,
+                ShaderStage.Active_Camo,
+                ShaderStage.Static_Per_Vertex_Color,
+                ShaderStage.Lightmap_Debug_Mode,
+                ShaderStage.Dynamic_Light_Cinematic,
+                ShaderStage.Sfx_Distort
+                //ShaderStage.Stipple,
+                //ShaderStage.Single_Pass_Per_Pixel,
+                //ShaderStage.Single_Pass_Per_Vertex,
+                //ShaderStage.Single_Pass_Single_Probe,
+                //ShaderStage.Single_Pass_Single_Probe_Ambient,
+                //ShaderStage.Imposter_Static_Sh,
+                //ShaderStage.Imposter_Static_Prt_Ambient,
+            };
+        }
+
+        public Array GetVertexTypeOrder() 
+        {
+            return new VertexType[] 
+            {
+                VertexType.World,
+                VertexType.Rigid,
+                VertexType.Skinned,
+                VertexType.DualQuat
+            };
         }
 
         public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)

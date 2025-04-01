@@ -42,31 +42,6 @@ namespace HaloShaderGenerator.Foliage
             }
         }
 
-        public bool IsEntryPointSupported(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                case ShaderStage.Albedo:
-                case ShaderStage.Static_Per_Pixel:
-                case ShaderStage.Static_Sh:
-                case ShaderStage.Static_Per_Vertex:
-                case ShaderStage.Shadow_Generate:
-                case ShaderStage.Static_Prt_Ambient:
-                case ShaderStage.Static_Prt_Linear:
-                case ShaderStage.Static_Prt_Quadratic:
-                //case ShaderStage.Stipple:
-                //case ShaderStage.Single_Pass_Per_Pixel:
-                //case ShaderStage.Single_Pass_Per_Vertex:
-                //case ShaderStage.Single_Pass_Single_Probe:
-                //case ShaderStage.Single_Pass_Single_Probe_Ambient:
-                //case ShaderStage.Imposter_Static_Sh:
-                //case ShaderStage.Imposter_Static_Prt_Ambient:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
             switch (entryPoint)
@@ -89,19 +64,6 @@ namespace HaloShaderGenerator.Foliage
             }
         }
 
-        public bool IsVertexFormatSupported(VertexType vertexType)
-        {
-            switch (vertexType)
-            {
-                case VertexType.World:
-                case VertexType.Rigid:
-                case VertexType.Skinned:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public bool IsAutoMacro()
         {
             return false;
@@ -111,21 +73,21 @@ namespace HaloShaderGenerator.Foliage
         {
             var result = new ShaderParameters();
 
+            result.AddSamplerExternParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerExternParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
+            result.AddSamplerExternFilterParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture, ShaderOptionParameter.ShaderFilterMode.Bilinear);
+            result.AddSamplerExternFilterAddressParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            result.AddSamplerExternParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddFloat3ColorExternWithFloatAndIntegerParameter("debug_tint", RenderMethodExtern.debug_tint, 1.0f, 1, new ShaderColor(255, 255, 255, 255));
             result.AddSamplerExternParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
-            result.AddSamplerExternParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerExternParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerExternParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
             result.AddSamplerExternParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
-            result.AddSamplerExternParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
             result.AddSamplerExternAddressParameter("g_diffuse_power_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_direction_lut", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse_vs", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
-            result.AddSamplerExternFilterAddressParameter("g_sample_vmf_phong_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
-            result.AddSamplerExternFilterParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture, ShaderOptionParameter.ShaderFilterMode.Bilinear);
-            result.AddSamplerExternParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerExternParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
-            result.AddSamplerExternParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerExternFilterAddressParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            //result.AddSamplerExternFilterAddressParameter("g_sample_vmf_phong_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerExternFilterAddressParameter("shadow_mask_texture", RenderMethodExtern.none, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp); // rmExtern - texture_global_target_shadow_mask
             rmopName = @"shaders\shader_options\global_shader_options";
 
@@ -145,14 +107,14 @@ namespace HaloShaderGenerator.Foliage
                 switch ((Albedo)option)
                 {
                     case Albedo.Simple:
-                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         rmopName = @"shaders\shader_options\albedo_simple";
                         break;
                     case Albedo.Default:
-                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         result.AddSamplerWithScaleParameter("base_map", 1.0f, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat4ColorWithFloatAndIntegerParameter("albedo_color", 1.0f, 1, new ShaderColor(255, 255, 255, 255));
                         rmopName = @"shaders\shader_options\albedo_default";
                         break;
                 }
@@ -189,28 +151,28 @@ namespace HaloShaderGenerator.Foliage
                 {
                     case Material_Model.Default:
                         result.AddFloat3ColorParameter("back_light");
-                        result.AddFloatParameter("animation_amplitude_horizontal", 0.04f);
                         result.AddFloatExternParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                        result.AddFloatParameter("animation_amplitude_horizontal", 0.04f);
                         rmopName = @"shaders\foliage_options\material_default";
                         break;
                     case Material_Model.Flat:
-                        result.AddFloatParameter("animation_amplitude_horizontal", 0.04f);
                         result.AddFloatExternParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
+                        result.AddFloatParameter("animation_amplitude_horizontal", 0.04f);
                         rmopName = @"shaders\foliage_options\material_flat";
                         break;
                     case Material_Model.Specular:
-                        result.AddFloat3ColorParameter("foliage_specular_color", new ShaderColor(1, 255, 255, 255));
+                        result.AddFloatExternParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
                         result.AddFloatParameter("animation_amplitude_horizontal", 0.04f);
+                        result.AddFloatParameter("foliage_translucency", 0.3f);
+                        result.AddFloat3ColorParameter("foliage_specular_color", new ShaderColor(1, 255, 255, 255));
                         result.AddFloatParameter("foliage_specular_intensity", 1.0f);
                         result.AddFloatParameter("foliage_specular_power", 4.0f);
-                        result.AddFloatParameter("foliage_translucency", 0.3f);
-                        result.AddFloatExternParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
                         rmopName = @"shaders\foliage_options\material_specular";
                         break;
                     case Material_Model.Translucent:
+                        result.AddFloatExternParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
                         result.AddFloatParameter("animation_amplitude_horizontal", 0.04f);
                         result.AddFloatParameter("foliage_translucency", 0.3f);
-                        result.AddFloatExternParameter("g_tree_animation_coeff", RenderMethodExtern.tree_animation_timer);
                         rmopName = @"shaders\foliage_options\material_translucent";
                         break;
                 }
@@ -254,6 +216,38 @@ namespace HaloShaderGenerator.Foliage
             }
 
             return null;
+        }
+
+        public Array GetEntryPointOrder()
+        {
+            return new ShaderStage[]
+            {
+                ShaderStage.Albedo,
+                ShaderStage.Static_Per_Pixel,
+                ShaderStage.Static_Sh,
+                ShaderStage.Static_Per_Vertex,
+                ShaderStage.Shadow_Generate,
+                ShaderStage.Static_Prt_Ambient,
+                ShaderStage.Static_Prt_Linear,
+                ShaderStage.Static_Prt_Quadratic
+                //ShaderStage.Stipple,
+                //ShaderStage.Single_Pass_Per_Pixel,
+                //ShaderStage.Single_Pass_Per_Vertex,
+                //ShaderStage.Single_Pass_Single_Probe,
+                //ShaderStage.Single_Pass_Single_Probe_Ambient,
+                //ShaderStage.Imposter_Static_Sh,
+                //ShaderStage.Imposter_Static_Prt_Ambient,
+            };
+        }
+
+        public Array GetVertexTypeOrder()
+        {
+            return new VertexType[]
+            {
+                VertexType.World,
+                VertexType.Rigid,
+                VertexType.Skinned
+            };
         }
 
         public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
