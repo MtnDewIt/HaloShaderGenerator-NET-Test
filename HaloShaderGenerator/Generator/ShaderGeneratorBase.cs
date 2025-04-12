@@ -31,9 +31,7 @@ namespace HaloShaderGenerator.Generator
                 if (!Directory.Exists(directoryPath)) // hack for submodule path
                     directoryPath = Path.GetFullPath("Tools\\halo_online_shaders\\");
 
-                Uri uri2 = new Uri(directoryPath + relative_path);
-
-                FileInfo file = new FileInfo(uri2.AbsolutePath);
+                FileInfo file = new FileInfo(directoryPath + relative_path);
 
                 if (!file.Exists)
                     throw new Exception($"Couldn't find file {relative_path}");

@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30011.22
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaloShaderGenerator", "HaloShaderGenerator\HaloShaderGenerator.csproj", "{17BFEFFB-1619-4647-BA40-3CD1D87FD774}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HaloShaderGenerator", "HaloShaderGenerator\HaloShaderGenerator.csproj", "{17BFEFFB-1619-4647-BA40-3CD1D87FD774}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaloShaderGeneratorTest", "HaloShaderGeneratorTest\HaloShaderGeneratorTest.csproj", "{CC8C6886-E1C0-41D6-AD74-A194CA0D841A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HaloShaderGeneratorTest", "HaloShaderGeneratorTest\HaloShaderGeneratorTest.csproj", "{CC8C6886-E1C0-41D6-AD74-A194CA0D841A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{17BFEFFB-1619-4647-BA40-3CD1D87FD774} = {17BFEFFB-1619-4647-BA40-3CD1D87FD774}
 	EndProjectSection
