@@ -372,7 +372,7 @@ namespace HaloShaderGenerator.Custom
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("env_roughness_scale", 1.0f);
-                        //result.AddFloatParameter("env_roughness_offset", 0.5f);
+                        //result.AddFloatParameter("env_roughness_offset", 0.5f); // Breaks shader recompilation
                         rmopName = @"shaders\shader_options\env_map_dynamic";
                         break;
                     case Environment_Mapping.From_Flat_Texture:
@@ -397,7 +397,7 @@ namespace HaloShaderGenerator.Custom
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("env_roughness_scale", 1.0f);
-                        //result.AddFloatParameter("env_roughness_offset", 0.5f);
+                        //result.AddFloatParameter("env_roughness_offset", 0.5f); // Breaks shader recompilation
                         rmopName = @"shaders\shader_options\env_map_dynamic";
                         break;
                 }

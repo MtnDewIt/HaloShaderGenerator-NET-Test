@@ -106,11 +106,9 @@ namespace HaloShaderGenerator.Water
                         result.AddFloatParameter("displacement_range_z");
                         result.AddFloatParameter("slope_range_x");
                         result.AddFloatParameter("slope_range_y");
-                        //result.AddSamplerParameter("wave_displacement_array_reach", @"rasterizer\water\wave_test7\wave_test7_displ_water"); // reach specific (could add as an extra sampler in the HLSL)
                         result.AddSamplerParameter("wave_displacement_array", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloatParameter("wave_height", 1.0f);
                         result.AddFloatParameter("time_warp", 1.0f);
-                        //result.AddSamplerParameter("wave_slope_array_reach", @"rasterizer\water\wave_test7\wave_test7_slope_water"); // reach specific (could add as an extra sampler in the HLSL)
                         result.AddSamplerParameter("wave_slope_array", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloatParameter("wave_height_aux");
                         result.AddFloatParameter("time_warp_aux", 1.0f);
@@ -123,6 +121,8 @@ namespace HaloShaderGenerator.Water
                         result.AddFloatParameter("detail_slope_steepness", 0.5f);
                         result.AddFloatParameter("wave_visual_damping_distance", 4.0f);
                         result.AddFloatParameter("wave_tessellation_level", 0.5f);
+                        //result.AddSamplerParameter("wave_displacement_array_reach", @"rasterizer\water\wave_test7\wave_test7_displ_water"); // reach specific (could add as an extra sampler in the HLSL)
+                        //result.AddSamplerParameter("wave_slope_array_reach", @"rasterizer\water\wave_test7\wave_test7_slope_water"); // reach specific (could add as an extra sampler in the HLSL)
                         rmopName = @"shaders\water_options\waveshape_default";
                         break;
                     case Waveshape.None:

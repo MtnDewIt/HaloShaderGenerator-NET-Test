@@ -69,7 +69,7 @@ namespace HaloShaderGenerator.Beam
         {
             var result = new ShaderParameters();
 
-            //result.AddSamplerExternFilterAddressParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            result.AddSamplerExternFilterAddressParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
             rmopName = @"shaders\beam_options\global_beam_options";
 
             return result;
