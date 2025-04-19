@@ -128,16 +128,48 @@ PARAM(float, global_albedo_tint);
 
 #define DETAIL_BUMP_ENABLED (ACTIVE_MATERIAL_COUNT < 4)
 
-#define MORPH_DYNAMIC(blend_option) MORPH_##blend_option
 #define MORPH_morph 0
 #define MORPH_dynamic 1
-
+#define MORPH_distance_blend_base 2
+#define MORPH_DYNAMIC(blend_option) (MORPH_##blend_option == MORPH_dynamic)
+#define DISTANCE_BLEND_BASE(blend_option) (MORPH_##blend_option == MORPH_distance_blend_base)
 
 #if MORPH_DYNAMIC(blend_type)
 	PARAM(float4, dynamic_material);
 	PARAM(float, transition_sharpness);
 	PARAM(float, transition_threshold);
 #endif // MORPH_DYNAMIC
+
+
+#if DISTANCE_BLEND_BASE(blend_type)
+
+	PARAM(float4, blend_target_0);
+	PARAM(float4, blend_target_1);
+	PARAM(float4, blend_target_2);
+	PARAM(float4, blend_target_3);
+
+	PARAM(float, blend_slope);
+	PARAM(float, blend_offset);
+
+	PARAM(float, blend_max_0);
+	PARAM(float, blend_max_1);
+	PARAM(float, blend_max_2);
+	PARAM(float, blend_max_3);
+
+	#define BLEND_BASE(base, base_blend, material) distance_blend_base_to_target(base, base_blend, blend_max_##material, blend_target_##material)
+	#define SETUP_BASE_BLEND(dist)	saturate(dist * blend_slope + blend_offset)
+
+	void distance_blend_base_to_target(inout float4 base, in float base_blend, in float blend_max, in float4 blend_target)
+	{
+		float amount=	min(base_blend, blend_max);
+		base= lerp(base, blend_target, amount);
+		return;
+	}
+
+#else // !DISTANCE_BLEND_BASE
+	#define BLEND_BASE(base, base_blend, material)
+	#define SETUP_BASE_BLEND(dist) 0
+#endif // DISTANCE_BLEND_BASE
 
 
 #define DECLARE_MATERIAL(material_number)							\

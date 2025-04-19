@@ -214,6 +214,10 @@ s_fast_particle_interpolators static_default_vs(
 			}; 
 			OUT.M_COLOR *= ravi_order_0(normal, sh_lighting_coefficients);
 		}
+		IF_CATEGORY_OPTION(lighting, per_vertex_ambient)
+		{
+			OUT.M_COLOR.rgb *= v_lighting_constant_3.rgb;
+		}
 
 		// Compute particle alpha
 		OUT.M_ALPHA= STATE.m_color.w;
@@ -290,7 +294,7 @@ float2 compute_fast_normalized_distortion(float2 screen_coords, float2 blended, 
 accum_pixel static_default_ps(s_fast_particle_interpolators IN, SCREEN_POSITION_INPUT(screen_coords))
 {
 #if (! defined(pc)) || (DX_VERSION == 11)
-	float depth_fade= (TEST_CATEGORY_OPTION(depth_fade, on) && !TEST_CATEGORY_OPTION(blend_mode, opaque))
+	float depth_fade= ((TEST_CATEGORY_OPTION(depth_fade, on) || TEST_CATEGORY_OPTION(depth_fade, low_res) || TEST_CATEGORY_OPTION(depth_fade, palette_shift)) && !TEST_CATEGORY_OPTION(blend_mode, opaque))
 		? compute_depth_fade(screen_coords, IN.M_DEPTH, depth_fade_range)
 		: 1.0f;
 

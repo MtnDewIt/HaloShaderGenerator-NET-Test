@@ -107,7 +107,7 @@ namespace HaloShaderGenerator.Shader
             result.AddSamplerExternParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
             result.AddSamplerExternParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
             result.AddSamplerExternParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
-            result.AddSamplerExternAddressParameter("g_diffuse_power_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            //result.AddSamplerExternAddressParameter("g_diffuse_power_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_direction_lut", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse_vs", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
@@ -140,7 +140,7 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerWithScaleParameter("detail_map2", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
-                        //result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f);
+                        //result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f); // Breaks shader recompilation
                         rmopName = @"shaders\shader_options\albedo_detail_blend";
                         break;
                     case Albedo.Constant_Color:
@@ -174,7 +174,7 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerWithScaleParameter("detail_map2", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerWithScaleParameter("detail_map3", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
-                        //result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f);
+                        //result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f); // Breaks shader recompilation
                         rmopName = @"shaders\shader_options\albedo_three_detail_blend";
                         break;
                     case Albedo.Two_Detail_Overlay:
@@ -753,6 +753,10 @@ namespace HaloShaderGenerator.Shader
                         result.AddBooleanParameter("no_dynamic_lights");
                         result.AddFloatParameter("albedo_blend");
                         result.AddFloatParameter("approximate_specular_type");
+                        result.AddSamplerExternParameter("g_diffuse_power_specular", RenderMethodExtern.material_diffuse_power);
+                        result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
+                        result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
                         rmopName = @"shaders\shader_options\material_cook_torrance_option_reach";
                         break;
                     case Material_Model.Two_Lobe_Phong_Reach:
@@ -773,6 +777,7 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("albedo_specular_tint_blend");
                         result.AddFloatParameter("approximate_specular_type");
                         result.AddFloatParameter("analytical_power", 25.0f);
+                        result.AddSamplerExternParameter("g_diffuse_power_specular", RenderMethodExtern.material_diffuse_power);
                         rmopName = @"shaders\shader_options\material_two_lobe_phong_option_reach";
                         break;
                     case Material_Model.Cook_Torrance_Custom_Cube:

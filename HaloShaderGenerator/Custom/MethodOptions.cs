@@ -61,7 +61,8 @@ namespace HaloShaderGenerator.Custom
         Two_Lobe_Phong,
         Foliage,
         None,
-        Custom_Specular
+        Custom_Specular,
+        Two_Lobe_Phong_Reach
     }
 
     public enum Environment_Mapping

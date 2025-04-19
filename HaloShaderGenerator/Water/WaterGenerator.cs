@@ -36,8 +36,6 @@ namespace HaloShaderGenerator.Water
                     return Enum.GetValues(typeof(Foam)).Length;
                 case WaterMethods.Reach_Compatibility:
                     return Enum.GetValues(typeof(Reach_Compatibility)).Length;
-                //case WaterMethods.Detail:
-                //    return Enum.GetValues(typeof(Detail)).Length;
             }
 
             return -1;
@@ -124,8 +122,7 @@ namespace HaloShaderGenerator.Water
                         result.AddFloatParameter("detail_slope_scale_z", 2.0f);
                         result.AddFloatParameter("detail_slope_steepness", 0.5f);
                         result.AddFloatParameter("wave_visual_damping_distance", 4.0f);
-                        //result.AddFloatParameter("slope_scaler", 1.0f);
-                        //result.AddFloatParameter("wave_tessellation_level", 0.5f);
+                        result.AddFloatParameter("wave_tessellation_level", 0.5f);
                         rmopName = @"shaders\water_options\waveshape_default";
                         break;
                     case Waveshape.None:
@@ -134,7 +131,6 @@ namespace HaloShaderGenerator.Water
                         result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
                         result.AddFloatParameter("wave_visual_damping_distance", 4.0f);
-                        //result.AddFloatParameter("slope_scaler", 1.0f);
                         rmopName = @"shaders\water_options\waveshape_bump";
                         break;
                 }
@@ -171,14 +167,12 @@ namespace HaloShaderGenerator.Water
                         result.AddFloatParameter("reflection_coefficient", 0.4f);
                         result.AddFloatParameter("sunspot_cut", 0.2f);
                         result.AddFloatParameter("shadow_intensity_mark", 0.5f);
-                        //result.AddFloatParameter("normal_variation_tweak", 1.0f);
                         rmopName = @"shaders\water_options\reflection_static";
                         break;
                     case Reflection.Dynamic:
                         result.AddFloatParameter("reflection_coefficient", 0.4f);
-                        //result.AddFloatParameter("sunspot_cut", 0.2f);
-                        //result.AddFloatParameter("shadow_intensity_mark", 0.5f);
-                        //result.AddFloatParameter("normal_variation_tweak", 1.0f);
+                        result.AddFloatParameter("sunspot_cut", 0.2f);
+                        result.AddFloatParameter("shadow_intensity_mark", 0.5f);
                         rmopName = @"shaders\water_options\reflection_dynamic";
                         break;
                     case Reflection.Static_Ssr:
@@ -245,7 +239,6 @@ namespace HaloShaderGenerator.Water
                         result.AddFloatParameter("fresnel_coefficient", 0.09769f);
                         result.AddFloat3ColorParameter("water_diffuse", new ShaderColor(0, 61, 61, 61));
                         result.AddBooleanParameter("no_dynamic_lights");
-                        //result.AddFloatParameter("fresnel_dark_spot", 1.0f);
                         rmopName = @"shaders\water_options\appearance_default";
                         break;
                 }
@@ -288,16 +281,12 @@ namespace HaloShaderGenerator.Water
                         result.AddSamplerParameter("foam_texture_detail", @"levels\shared\bitmaps\nature\water\wave_foam");
                         result.AddFloatParameter("foam_height", 0.01f);
                         result.AddFloatParameter("foam_pow", 2.0f);
-                        //result.AddFloatParameter("foam_cut", 0.5f);
-                        //result.AddFloatParameter("foam_start_side");
-                        //result.AddFloatParameter("foam_coefficient", 1.0f);
                         rmopName = @"shaders\water_options\foam_auto";
                         break;
                     case Foam.Paint:
                         result.AddSamplerParameter("foam_texture", @"levels\shared\bitmaps\nature\water\wave_foam");
                         result.AddSamplerParameter("foam_texture_detail", @"levels\shared\bitmaps\nature\water\wave_foam");
                         result.AddSamplerParameter("global_shape_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
-                        //result.AddFloatParameter("foam_coefficient", 1.0f);
                         rmopName = @"shaders\water_options\foam_paint";
                         break;
                     case Foam.Both:
@@ -306,9 +295,6 @@ namespace HaloShaderGenerator.Water
                         result.AddSamplerParameter("global_shape_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloatParameter("foam_height", 0.01f);
                         result.AddFloatParameter("foam_pow", 2.0f);
-                        //result.AddFloatParameter("foam_cut", 0.5f);
-                        //result.AddFloatParameter("foam_start_side");
-                        //result.AddFloatParameter("foam_coefficient", 1.0f);
                         rmopName = @"shaders\water_options\foam_both";
                         break;
                 }
@@ -323,51 +309,36 @@ namespace HaloShaderGenerator.Water
                     case Reach_Compatibility.Disabled:
                         break;
                     case Reach_Compatibility.Enabled:
-                        result.AddFloatParameter("slope_scaler");
-                        result.AddFloatParameter("normal_variation_tweak");
-                        result.AddFloatParameter("fresnel_dark_spot");
-                        result.AddFloatParameter("foam_coefficient");
-                        result.AddFloatParameter("foam_cut");
+                        result.AddFloatParameter("slope_scaler", 1.0f);
+                        result.AddFloatParameter("normal_variation_tweak", 1.0f);
+                        result.AddFloatParameter("fresnel_dark_spot", 1.0f);
+                        result.AddFloatParameter("foam_coefficient", 1.0f);
+                        result.AddFloatParameter("foam_cut", 0.5f);
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("detail_slope_scale_x", 10.0f);
                         result.AddFloatParameter("detail_slope_scale_y", 5.0f);
                         result.AddFloatParameter("detail_slope_scale_z", 2.0f);
                         result.AddFloatParameter("detail_slope_steepness", 0.5f);
+                        result.AddFloatParameter("foam_start_side");
                         rmopName = @"shaders\water_options\reach_compatibility_enabled";
                         break;
                     case Reach_Compatibility.Enabled_Detail_Repeat:
-                        result.AddFloatParameter("slope_scaler");
-                        result.AddFloatParameter("normal_variation_tweak");
-                        result.AddFloatParameter("fresnel_dark_spot");
-                        result.AddFloatParameter("foam_coefficient");
-                        result.AddFloatParameter("foam_cut");
+                        result.AddFloatParameter("slope_scaler", 1.0f);
+                        result.AddFloatParameter("normal_variation_tweak", 1.0f);
+                        result.AddFloatParameter("fresnel_dark_spot", 1.0f);
+                        result.AddFloatParameter("foam_coefficient", 1.0f);
+                        result.AddFloatParameter("foam_cut", 0.5f);
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("detail_slope_scale_x", 10.0f);
                         result.AddFloatParameter("detail_slope_scale_y", 5.0f);
                         result.AddFloatParameter("detail_slope_scale_z", 2.0f);
                         result.AddFloatParameter("detail_slope_steepness", 0.5f);
+                        result.AddFloatParameter("foam_start_side");
                         rmopName = @"shaders\water_options\reach_compatibility_enabled";
                         break;
                 }
             }
 
-            //if (methodName == "detail")
-            //{
-            //    optionName = ((Detail)option).ToString();
-            //
-            //    switch ((Detail)option)
-            //    {
-            //        case Detail.None:
-            //            break;
-            //        case Detail.Repeat:
-            //            result.AddFloatParameter("detail_slope_scale_x", 10.0f);
-            //            result.AddFloatParameter("detail_slope_scale_y", 5.0f);
-            //            result.AddFloatParameter("detail_slope_scale_z", 2.0f);
-            //            result.AddFloatParameter("detail_slope_steepness", 0.5f);
-            //            rmopName = @"shaders\water_options\detail_repeat";
-            //            break;
-            //    }
-            //}
             return result;
         }
 
@@ -398,8 +369,6 @@ namespace HaloShaderGenerator.Water
                     return Enum.GetValues(typeof(Foam));
                 case WaterMethods.Reach_Compatibility:
                     return Enum.GetValues(typeof(Reach_Compatibility));
-                //case WaterMethods.Detail:
-                //    return Enum.GetValues(typeof(Detail));
             }
 
             return null;
@@ -487,12 +456,6 @@ namespace HaloShaderGenerator.Water
                 vertexFunction = "invalid";
                 pixelFunction = "invalid";
             }
-
-            //if (methodName == "detail")
-            //{
-            //    vertexFunction = "invalid";
-            //    pixelFunction = "invalid";
-            //}
         }
 
         public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
@@ -666,21 +629,6 @@ namespace HaloShaderGenerator.Water
                         break;
                 }
             }
-
-            //if (methodName == "detail")
-            //{
-            //    switch ((Detail)option)
-            //    {
-            //        case Detail.None:
-            //            vertexFunction = "invalid";
-            //            pixelFunction = "invalid";
-            //            break;
-            //        case Detail.Repeat:
-            //            vertexFunction = "invalid";
-            //            pixelFunction = "invalid";
-            //            break;
-            //    }
-            //}
         }
     }
 }
