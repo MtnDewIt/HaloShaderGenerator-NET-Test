@@ -140,7 +140,7 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerWithScaleParameter("detail_map2", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
-                        //result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f); // Breaks shader recompilation
+                        result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f);
                         rmopName = @"shaders\shader_options\albedo_detail_blend";
                         break;
                     case Albedo.Constant_Color:
@@ -174,7 +174,7 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerWithScaleParameter("detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerWithScaleParameter("detail_map2", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
                         result.AddSamplerWithScaleParameter("detail_map3", 16.0f, @"shaders\default_bitmaps\bitmaps\default_detail");
-                        //result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f); // Breaks shader recompilation
+                        result.AddFloatWithColorParameter("blend_alpha", new ShaderColor(255, 255, 255, 255), 1.0f);
                         rmopName = @"shaders\shader_options\albedo_three_detail_blend";
                         break;
                     case Albedo.Two_Detail_Overlay:
@@ -906,7 +906,7 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("env_roughness_scale", 1.0f);
-                        //result.AddFloatParameter("env_roughness_offset", 0.5f); // Breaks shader recompilation
+                        result.AddFloatParameter("env_roughness_offset", 0.5f);
                         rmopName = @"shaders\shader_options\env_map_dynamic";
                         break;
                     case Environment_Mapping.From_Flat_Texture:
@@ -931,7 +931,7 @@ namespace HaloShaderGenerator.Shader
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddSamplerExternAddressParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, ShaderOptionParameter.ShaderAddressMode.Clamp);
                         result.AddFloatParameter("env_roughness_scale", 1.0f);
-                        //result.AddFloatParameter("env_roughness_offset", 0.5f); // Breaks shader recompilation
+                        result.AddFloatParameter("env_roughness_offset", 0.5f);
                         rmopName = @"shaders\shader_options\env_map_dynamic";
                         break;
                     case Environment_Mapping.From_Flat_Texture_As_Cubemap:

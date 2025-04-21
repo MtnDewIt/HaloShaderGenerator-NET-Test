@@ -93,7 +93,7 @@ float sample_depth_reach(float2 texcoord)
 	// fp32 depth buffer stores w, we need to convert to z
 //#ifdef pc
 	float depth = tex2D(depth_buffer, texcoord).r;
-	return 1.0f - (k_ps_water_view_depth_constant.x / depth + k_ps_water_view_depth_constant.y); // Zbuf = -FN/(F-N) / z + F/(F-N)
+	return 1.0f - (k_water_view_depth_constant.x / depth + k_water_view_depth_constant.y); // Zbuf = -FN/(F-N) / z + F/(F-N)
 //#else // xenon
 //	float4 result;
 //	asm
@@ -224,7 +224,7 @@ accum_pixel water_shading_reach(s_water_interpolators INTERPOLATORS)
 		float2 texcoord_ss = INTERPOLATORS.position_ss.xy;
 		texcoord_ss = texcoord_ss / 2 + 0.5;
 		texcoord_ss.y = 1 - texcoord_ss.y;
-		texcoord_ss = k_ps_water_player_view_constant.xy + texcoord_ss * k_ps_water_player_view_constant.zw;
+		texcoord_ss = k_water_player_view_constant.xy + texcoord_ss * k_water_player_view_constant.zw;
 	
 		float2 texcoord_refraction;
 		float refraction_depth;
@@ -273,7 +273,7 @@ accum_pixel water_shading_reach(s_water_interpolators INTERPOLATORS)
 		texcoord_refraction.y= 1.0 - texcoord_refraction.y;
 		texcoord_refraction= texcoord_refraction*2 - 1.0f;
 		float4 point_refraction= float4(texcoord_refraction, refraction_depth, 1.0f);
-		point_refraction= mul(point_refraction, k_ps_water_view_xform_inverse);
+		point_refraction= mul(point_refraction, k_water_view_xform_inverse);
 		point_refraction.xyz/= point_refraction.w;
 
 		// world space depth
