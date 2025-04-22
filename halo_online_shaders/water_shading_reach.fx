@@ -207,6 +207,7 @@ accum_pixel water_shading_reach(s_water_interpolators INTERPOLATORS)
 	float3 color_refraction;
 	float3 color_refraction_bed;
 	float4 color_refraction_blend;
+	//float color_refraction_bed_contribution= 0.0f;
 
 	if (TEST_CATEGORY_OPTION(refraction, none))
 	{
@@ -284,6 +285,7 @@ accum_pixel water_shading_reach(s_water_interpolators INTERPOLATORS)
 //		float transparency= compute_fog_transparency(water_murkiness*ripple_slope_length, refraction_depth);		// what does ripple slope length accomplish?  attempt to darken ripple edges?
 		float transparency= compute_fog_transparency_reach(water_murkiness, negative_refraction_depth);
 		transparency *= saturate(refraction_extinct_distance * one_over_camera_distance);							// turns opaque at distance
+		//color_refraction_bed_contribution= transparency;
 		
 		if (k_is_camera_underwater)
 		{
@@ -473,6 +475,7 @@ accum_pixel water_shading_reach(s_water_interpolators INTERPOLATORS)
 	//else
 	{		
 		output_color.rgb= lerp(color_refraction, color_reflection,  fresnel);
+		//color_refraction_bed_contribution*= 1.0f - fresnel;
 	
 		// add diffuse
 		output_color.rgb= output_color.rgb + color_diffuse; 
@@ -481,12 +484,14 @@ accum_pixel water_shading_reach(s_water_interpolators INTERPOLATORS)
 		if ( !TEST_CATEGORY_OPTION(bankalpha, none) )
 		{
 			output_color.rgb= lerp(color_refraction_bed, output_color.rgb, bank_alpha);
+			//color_refraction_bed_contribution= (1.0f-bank_alpha) + color_refraction_bed_contribution*bank_alpha;
 		}
 
 		// apply foam
 		if (!TEST_CATEGORY_OPTION(foam, none))
 		{
 			output_color.rgb= lerp(output_color.rgb, foam_color.rgb, foam_factor);
+			//color_refraction_bed_contribution*= (1.0f - foam_factor);
 		}
 	
 		// apply under water fog
@@ -500,8 +505,10 @@ accum_pixel water_shading_reach(s_water_interpolators INTERPOLATORS)
 	}
 	
 	// this needs to be figured out
-    //output_color = output_color * INTERPOLATORS.fog_extinction + INTERPOLATORS.fog_inscatter * BLEND_FOG_INSCATTER_SCALE;
-	output_color.rgb *= g_exposure.rrr;
+	//output_color.rgb = output_color.rgb - color_refraction_bed*color_refraction_bed_contribution;
+    //output_color.rgb = output_color.rgb * INTERPOLATORS.fog_extinction + INTERPOLATORS.fog_inscatter * BLEND_FOG_INSCATTER_SCALE * (1.0f - color_refraction_bed_contribution);
+	output_color.rgb = output_color.rgb * g_exposure.rrr;
+	//output_color.rgb = output_color.rgb + color_refraction_bed*color_refraction_bed_contribution;
 		
 	// this may not match reach, but we need to replicate rt write
 	return convert_to_render_target(output_color, true, true, 0.0f);		
