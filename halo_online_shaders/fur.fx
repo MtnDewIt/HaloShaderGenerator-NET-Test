@@ -278,8 +278,8 @@ albedo_pixel albedo_ps(
 
 	float4 albedo=						calc_albedo_ps(texcoord, view_dir_in_tangent_space, fragment_to_camera_world, view_dot_normal);
 
-    // TODO: Implement Reach convert_to_albedo_target
-	return convert_to_albedo_target(albedo, bump_normal, approximate_specular_type, float3(0.0f, 0.0f, 0.0f));
+	// TODO: Map to Halo 3's input structs
+	return convert_to_albedo_target(albedo, bump_normal, 0.0f, tangent_frame[2], approximate_specular_type);
 }
 
 float4 get_albedo(in float2 fragment_position)
