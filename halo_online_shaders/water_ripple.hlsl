@@ -10,6 +10,7 @@ Copyright (c) Microsoft Corporation, 2005. all rights reserved.
 
 //This comment causes the shader compiler to be invoked for certain vertex types and entry points
 //@generate s_ripple_vertex
+//@generate s_screen_vertex
 //@entry default
 //@entry albedo
 //@entry dynamic_light
