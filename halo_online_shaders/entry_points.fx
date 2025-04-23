@@ -15,6 +15,9 @@ PARAM_SAMPLER_2D(radiance_map);
 
 PARAM_SAMPLER_2D(dynamic_light_gel_texture);
 //float4 dynamic_light_gel_texture_xform;		// no way to extern this, so I replace it with p_dynamic_light_gel_xform which is aliased on p_lighting_constant_4
+
+PARAM(float, approximate_specular_type);
+
 #include "common.fx"
 
 float3 get_constant_analytical_light_dir_vs()

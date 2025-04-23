@@ -87,7 +87,6 @@ namespace HaloShaderGenerator.Cortana
             result.AddSamplerExternParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
             result.AddSamplerExternParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
             result.AddSamplerExternParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
-            //result.AddSamplerExternAddressParameter("g_diffuse_power_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_direction_lut", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse_vs", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
@@ -179,12 +178,6 @@ namespace HaloShaderGenerator.Cortana
                         result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
                         result.AddFloatParameter("albedo_blend");
                         result.AddFloatParameter("analytical_anti_shadow_control");
-                        //result.AddFloat3ColorParameter("specular_color_by_angle", new ShaderColor(0, 255, 255, 255));
-                        //result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
-                        //result.AddFloatParameter("analytical_roughness", 0.5f);
-                        //result.AddFloatParameter("material_texture_black_specular_multiplier", 1.0f);
-                        //result.AddFloatParameter("material_texture_black_roughness", 1.0f);
-                        //result.AddFloatParameter("approximate_specular_type");
                         rmopName = @"shaders\shader_options\material_cook_torrance_option";
                         break;
                 }

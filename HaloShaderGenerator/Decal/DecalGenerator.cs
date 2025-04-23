@@ -132,7 +132,7 @@ namespace HaloShaderGenerator.Decal
                         result.AddFloat4ColorExternParameter("emblem_color_icon2_argb", RenderMethodExtern.none, new ShaderColor(0, 13, 0, 255)); // rmExtern - object_emblem_color_secondary
                         result.AddFloatParameter("u_tiles", 1.0f);
                         result.AddFloatParameter("v_tiles", 1.0f);
-                        //result.AddSamplerExternWithColorParameter("foreground0_sampler", RenderMethodExtern.none, new ShaderColor(0, 13, 0, 255)); // rmExtern - object_emblem_bitmap_and_data
+                        result.AddSamplerExternWithColorParameter("foreground0_sampler", RenderMethodExtern.none, new ShaderColor(0, 13, 0, 255), @"shaders\default_bitmaps\bitmaps\gray_50_percent"); // rmExtern - object_emblem_bitmap_and_data
                         rmopName = @"shaders\decal_options\albedo_emblem_change_color";
                         break;
                     case Albedo.Change_Color:
@@ -181,7 +181,7 @@ namespace HaloShaderGenerator.Decal
                         rmopName = @"shaders\decal_options\albedo_vector_alpha_drop_shadow";
                         break;
                     case Albedo.Patchy_Emblem:
-                        //result.AddSamplerExternWithColorParameter("foreground0_sampler", RenderMethodExtern.none, new ShaderColor(0, 13, 0, 255)); // rmExtern - object_emblem_bitmap_and_data
+                        result.AddSamplerExternWithColorParameter("foreground0_sampler", RenderMethodExtern.none, new ShaderColor(0, 13, 0, 255), @"shaders\default_bitmaps\bitmaps\gray_50_percent"); // rmExtern - object_emblem_bitmap_and_data
                         result.AddSamplerParameter("alpha_map", @"shaders\default_bitmaps\bitmaps\clouds_256");
                         result.AddFloatParameter("alpha_max", 1.0f);
                         result.AddFloatParameter("alpha_min");

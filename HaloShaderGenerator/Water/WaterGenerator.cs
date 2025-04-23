@@ -121,8 +121,6 @@ namespace HaloShaderGenerator.Water
                         result.AddFloatParameter("detail_slope_steepness", 0.5f);
                         result.AddFloatParameter("wave_visual_damping_distance", 4.0f);
                         result.AddFloatParameter("wave_tessellation_level", 0.5f);
-                        //result.AddSamplerParameter("wave_displacement_array_reach", @"rasterizer\water\wave_test7\wave_test7_displ_water"); // reach specific (could add as an extra sampler in the HLSL)
-                        //result.AddSamplerParameter("wave_slope_array_reach", @"rasterizer\water\wave_test7\wave_test7_slope_water"); // reach specific (could add as an extra sampler in the HLSL)
                         rmopName = @"shaders\water_options\waveshape_default";
                         break;
                     case Waveshape.None:

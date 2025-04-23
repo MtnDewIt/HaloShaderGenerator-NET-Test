@@ -85,7 +85,6 @@ namespace HaloShaderGenerator.Mux
             result.AddSamplerExternParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
             result.AddSamplerExternParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
             result.AddSamplerExternParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
-            //result.AddSamplerExternAddressParameter("g_diffuse_power_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_direction_lut", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse_vs", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
             //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
@@ -167,7 +166,7 @@ namespace HaloShaderGenerator.Mux
                 {
                     case Materials.Diffuse_Only:
                         result.AddBooleanParameter("no_dynamic_lights");
-                        //result.AddFloatParameter("approximate_specular_type");
+                        result.AddFloatParameter("approximate_specular_type");
                         rmopName = @"shaders\shader_options\material_diffuse_only";
                         break;
                     case Materials.Single_Lobe_Phong:

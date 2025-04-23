@@ -41,6 +41,9 @@ PARAM_SAMPLER_2D(base_map);
 PARAM(float4, base_map_xform);
 PARAM_SAMPLER_2D(detail_map);
 PARAM(float4, detail_map_xform);
+PARAM_SAMPLER_2D(camouflage_change_color_map);
+PARAM(float4, camouflage_change_color_map_xform);
+PARAM(float, camouflage_scale);
 
 #ifdef pc
 PARAM(float4, debug_tint);
