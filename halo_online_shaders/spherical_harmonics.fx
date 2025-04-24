@@ -1,18 +1,50 @@
+#ifndef _SPHERICAL_HARMONICS_FX_
+#define _SPHERICAL_HARMONICS_FX_
+
 // some common shared routines for calculating sh lighting
 //
 // 
 
 #ifdef VERTEX_SHADER
-sampler g_sample_vmf_diffuse_vs;
+PARAM_SAMPLER_2D( g_sample_vmf_diffuse_vs);
 #else
-sampler g_sample_vmf_diffuse;
+PARAM_SAMPLER_2D(g_sample_vmf_diffuse);
 #endif
+
+PARAM_SAMPLER_2D(g_sample_vmf_1d);
+PARAM_SAMPLER_2D(g_sample_zonal_rot_lut);
+PARAM_SAMPLER_2D(g_sample_vmf_phong_specular); // linear/quadratic terms of the zonal projection of vMF
+
+#define SH_ORDER_0
+#define SH_ORDER_1
+#define SH_ORDER_2
+#define DOMINANT_LIGHT
 
 #define SQRT3 1.73205080756
 
 // PRT C0 default = 1 / 2 sqrt(pi)
 #define PRT_C0_DEFAULT (0.28209479177387814347403972578039)
 #define pi 3.14159265358979323846
+#define sh_constants_direction_evaluation0 0.28209479177387814347415840517935   //(0.5f/sqrt(D3DX_PI))          //DC
+#define sh_constants_direction_evaluation1 0.48860251190291992158659018158716   //(0.5f*sqrt(3/D3DX_PI))        //Linear
+#define sh_constants_direction_evaluation2 1.0925484305920790705438453491384    //(0.5f*sqrt(15/D3DX_PI))       // Qadratic -2,-1,1,2
+#define sh_constants_direction_evaluation3 0.94617469575756001809307913369254   //(0.25f*sqrt(5/D3DX_PI))*3     // Qadratic 0
+#define sh_constants_direction_evaluation4 0.5462742152960395352719226745692    //SHConstants[2]/2
+#define sh_constants_direction_evaluation5 0.31539156525252000603102637789751   //SHConstants[3]/3
+
+#define sh_dc_square (sh_constants_direction_evaluation0*sh_constants_direction_evaluation0)
+
+///  $TODO: 20 Jun 2008   16:22 BUNGIE\yaohhu :
+///     Sh coefficents is written everywhere. Should use this table:
+static const float sh_constants_direction_evaluation[]=
+{
+    sh_constants_direction_evaluation0,
+    sh_constants_direction_evaluation1,
+    sh_constants_direction_evaluation2,
+    sh_constants_direction_evaluation3,
+    sh_constants_direction_evaluation4,
+    sh_constants_direction_evaluation5,
+};
 
 //#define LIGHTPROBE_8BIT
 
@@ -669,4 +701,7 @@ float3 dual_vmf_diffuse(float3 normal, float4 lighting_constants[4])
         vmf_coeff_fil*
         lighting_constants[3].rgb;    
     return vmf_lighting/pi;
-}	
+}
+
+
+#endif
