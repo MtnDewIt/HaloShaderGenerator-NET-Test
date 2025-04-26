@@ -379,6 +379,7 @@ namespace HaloShaderGenerator.Water
                 ShaderStage.Water_Tessellation,
                 ShaderStage.Static_Per_Pixel,
                 ShaderStage.Static_Per_Vertex,
+                //ShaderStage.Z_Only,
                 //ShaderStage.Lightmap_Debug_Mode,
                 //ShaderStage.Single_Pass_Per_Vertex,
                 //ShaderStage.Single_Pass_Per_Pixel,

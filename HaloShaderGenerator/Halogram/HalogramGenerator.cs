@@ -562,6 +562,7 @@ namespace HaloShaderGenerator.Halogram
                 ShaderStage.Static_Prt_Quadratic,
                 ShaderStage.Static_Per_Vertex_Color,
                 ShaderStage.Dynamic_Light_Cinematic,
+                ShaderStage.Sfx_Distort,
                 //ShaderStage.Stipple,
                 //ShaderStage.Active_Camo
             };
