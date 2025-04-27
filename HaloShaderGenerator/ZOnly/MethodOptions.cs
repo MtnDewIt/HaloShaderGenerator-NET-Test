@@ -1,13 +1,12 @@
-﻿
 namespace HaloShaderGenerator.ZOnly
 {
     public enum ZOnlyMethods
     {
-        Test,
+        Test
     }
 
     public enum Test
     {
-        Default,
+        Default
     }
 }

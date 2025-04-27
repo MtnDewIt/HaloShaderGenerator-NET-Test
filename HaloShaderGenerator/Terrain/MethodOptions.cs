@@ -1,9 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace HaloShaderGenerator.Terrain
 {
     public enum TerrainMethods
@@ -13,16 +7,18 @@ namespace HaloShaderGenerator.Terrain
         Material_0,
         Material_1,
         Material_2,
-        Material_3
+        Material_3,
+        Wetness
     }
 
     public enum Blending
     {
         Morph,
-        Dynamic_Morph
+        Dynamic_Morph,
+        Distance_Blend_Base
     }
 
-    public enum Environment_Mapping
+    public enum Environment_Map
     {
         None,
         Per_Pixel,
@@ -30,7 +26,7 @@ namespace HaloShaderGenerator.Terrain
         Dynamic_Reach
     }
 
-    public enum Material
+    public enum Material_0
     {
         Diffuse_Only,
         Diffuse_Plus_Specular,
@@ -42,7 +38,7 @@ namespace HaloShaderGenerator.Terrain
         Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap
     }
 
-    public enum Material1
+    public enum Material_1
     {
         Diffuse_Only,
         Diffuse_Plus_Specular,
@@ -53,21 +49,27 @@ namespace HaloShaderGenerator.Terrain
         Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap
     }
 
-    public enum Material2
+    public enum Material_2
     {
         Diffuse_Only,
         Diffuse_Plus_Specular,
         Off,
         Diffuse_Only_Plus_Self_Illum,
-        Diffuse_Plus_Specular_Plus_Self_Illum,
+        Diffuse_Plus_Specular_Plus_Self_Illum
     }
 
-    public enum Material_No_Detail_Bump
+    public enum Material_3
     {
         Off,
-        Diffuse_Only,
-        Diffuse_Plus_Specular
+        Diffuse_Only_Four_Material_Shaders_Disable_Detail_Bump,
+        Diffuse_Plus_Specular_Four_Material_Shaders_Disable_Detail_Bump
     }
 
-
+    public enum Wetness
+    {
+        Default,
+        Proof,
+        Flood,
+        Ripples
+    }
 }

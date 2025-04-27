@@ -15,6 +15,9 @@ PARAM_SAMPLER_2D(radiance_map);
 
 PARAM_SAMPLER_2D(dynamic_light_gel_texture);
 //float4 dynamic_light_gel_texture_xform;		// no way to extern this, so I replace it with p_dynamic_light_gel_xform which is aliased on p_lighting_constant_4
+
+PARAM(float, approximate_specular_type);
+
 #include "common.fx"
 
 float3 get_constant_analytical_light_dir_vs()
@@ -160,7 +163,7 @@ albedo_pixel albedo_ps(
     albedo.rgb = cross(vsout.binormal.xyz, vsout.tangent.xyz);
 	#endif
 	
-	return convert_to_albedo_target(albedo, bump_normal, vsout.normal.w, tangent_frame[2]);
+	return convert_to_albedo_target(albedo, bump_normal, vsout.normal.w, tangent_frame[2], approximate_specular_type);
 }
 
 

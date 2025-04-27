@@ -1,4 +1,3 @@
-﻿
 namespace HaloShaderGenerator.Contrail
 {
     public enum ContrailMethods
@@ -13,7 +12,7 @@ namespace HaloShaderGenerator.Contrail
     {
         Diffuse_Only,
         Palettized,
-        Palettized_Plus_Alpha,
+        Palettized_Plus_Alpha
     }
 
     public enum Blend_Mode
@@ -28,18 +27,18 @@ namespace HaloShaderGenerator.Contrail
         Add_Src_Times_Dstalpha,
         Add_Src_Times_Srcalpha,
         Inv_Alpha_Blend,
-        Pre_Multiplied_Alpha,
+        Pre_Multiplied_Alpha
     }
 
     public enum Black_Point
     {
         Off,
-        On,
+        On
     }
 
     public enum Fog
     {
         Off,
-        On,
+        On
     }
 }

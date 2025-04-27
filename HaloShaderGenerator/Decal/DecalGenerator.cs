@@ -1,158 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Water;
+using HaloShaderGenerator.Shared;
 
 namespace HaloShaderGenerator.Decal
 {
     public class DecalGenerator : IShaderGenerator
     {
-        private bool TemplateGenerationValid;
-        private bool ApplyFixes;
-        private bool DecalIsSimple;
-
-        Albedo albedo;
-        Blend_Mode blend_mode;
-        Render_Pass render_pass;
-        Specular specular;
-        Bump_Mapping bump_mapping;
-        Tinting tinting;
-
-        /// <summary>
-        /// Generator insantiation for shared shaders. Does not require method options.
-        /// </summary>
-        public DecalGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
-
-        /// <summary>
-        /// Generator instantiation for method specific shaders.
-        /// </summary>
-        public DecalGenerator(Albedo albedo, Blend_Mode blend_mode, Render_Pass render_pass, Specular specular, Bump_Mapping bump_mapping, Tinting tinting, bool applyFixes = false)
-        {
-            this.albedo = albedo;
-            this.blend_mode = blend_mode;
-            this.render_pass = render_pass;
-            this.specular = specular;
-            this.bump_mapping = bump_mapping;
-            this.tinting = tinting;
-
-            ApplyFixes = applyFixes;
-            DecalIsSimple = this.render_pass == Render_Pass.Pre_Lighting && this.bump_mapping == Bump_Mapping.Leave;
-            TemplateGenerationValid = true;
-        }
-
-        public DecalGenerator(byte[] options, bool applyFixes = false)
-        {
-            options = ValidateOptions(options);
-
-            this.albedo = (Albedo)options[0];
-            this.blend_mode = (Blend_Mode)options[1];
-            this.render_pass = (Render_Pass)options[2];
-            this.specular = (Specular)options[3];
-            this.bump_mapping = (Bump_Mapping)options[4];
-            this.tinting = (Tinting)options[5];
-
-            ApplyFixes = applyFixes;
-            DecalIsSimple = this.render_pass == Render_Pass.Pre_Lighting && this.bump_mapping == Bump_Mapping.Leave;
-            TemplateGenerationValid = true;
-        }
-
-        public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            Shared.Blend_Mode sBlendMode = (Shared.Blend_Mode)Enum.Parse(typeof(Shared.Blend_Mode), blend_mode.ToString());
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Decal, entryPoint, sBlendMode, 
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
-
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Albedo>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Blend_Mode>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Render_Pass>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Specular>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Bump_Mapping>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Tinting>());
-
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("albedo", albedo.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("blend_mode", blend_mode.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("render_pass", render_pass.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("specular", specular.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("bump_mapping", bump_mapping.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("tinting", tinting.ToString().ToLower()));
-
-            string entryName = entryPoint.ToString().ToLower() + "_ps";
-            switch (entryPoint)
-            {
-                case ShaderStage.Static_Prt_Linear:
-                case ShaderStage.Static_Prt_Quadratic:
-                case ShaderStage.Static_Prt_Ambient:
-                    entryName = "static_prt_ps";
-                    break;
-                case ShaderStage.Dynamic_Light_Cinematic:
-                    entryName = "dynamic_light_cine_ps";
-                    break;
-            }
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"decal.fx", macros, entryName, "ps_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
-        {
-            if (!IsEntryPointSupported(entryPoint) || !IsPixelShaderShared(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"glps_decal.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!IsVertexFormatSupported(vertexType) || !IsEntryPointSupported(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<VertexType>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_vertex_transform", vertexType, "calc_vertex_transform_", ""));
-            macros.Add(ShaderGeneratorBase.CreateMacro("transform_unknown_vector", vertexType, "transform_unknown_vector_", ""));
-            macros.Add(ShaderGeneratorBase.CreateVertexMacro("input_vertex_format", vertexType));
-            macros.Add(ShaderGeneratorBase.CreateMacro("transform_dominant_light", vertexType, "transform_dominant_light_", ""));
-
-            macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("vertextype", vertexType, "k_vertextype_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Decal, "shadertype_"));
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(@"glvs_decal.hlsl", macros, $"entry_{entryPoint.ToString().ToLower()}", "vs_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-            return null;
-        }
-
         public int GetMethodCount()
         {
-            return System.Enum.GetValues(typeof(DecalMethods)).Length;
+            return Enum.GetValues(typeof(DecalMethods)).Length;
         }
 
         public int GetMethodOptionCount(int methodIndex)
@@ -171,180 +30,58 @@ namespace HaloShaderGenerator.Decal
                     return Enum.GetValues(typeof(Bump_Mapping)).Length;
                 case DecalMethods.Tinting:
                     return Enum.GetValues(typeof(Tinting)).Length;
+                case DecalMethods.Parallax:
+                    return Enum.GetValues(typeof(Parallax)).Length;
+                case DecalMethods.Interier:
+                    return Enum.GetValues(typeof(Interier)).Length;
             }
 
             return -1;
         }
 
-        public int GetMethodOptionValue(int methodIndex)
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
         {
-            switch ((DecalMethods)methodIndex)
+            switch (entryPoint)
             {
-                case DecalMethods.Albedo:
-                    return (int)albedo;
-                case DecalMethods.Blend_Mode:
-                    return (int)blend_mode;
-                case DecalMethods.Render_Pass:
-                    return (int)render_pass;
-                case DecalMethods.Specular:
-                    return (int)specular;
-                case DecalMethods.Bump_Mapping:
-                    return (int)bump_mapping;
-                case DecalMethods.Tinting:
-                    return (int)tinting;
+                case ShaderStage.Default:
+                    return 4;
+                default:
+                    return -1;
             }
-            return -1;
-        }
-
-        public bool IsEntryPointSupported(ShaderStage entryPoint)
-        {
-            return entryPoint == ShaderStage.Default;
-        }
-
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            return false;
-        }
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
-        {
-            return false;
-        }
-
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            return false;
-        }
-
-        public bool IsVertexFormatSupported(VertexType vertexType)
-        {
-            return vertexType == VertexType.World || vertexType == VertexType.Rigid || vertexType == VertexType.Skinned ||
-                vertexType == VertexType.FlatWorld || vertexType == VertexType.FlatRigid || vertexType == VertexType.FlatSkinned;
-        }
-
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
-        {
-            return true;
-        }
-
-        public ShaderParameters GetPixelShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            switch (albedo)
-            {
-                case Albedo.Diffuse_Only:
-                    result.AddSamplerWithoutXFormParameter("base_map");
-                    break;
-                case Albedo.Palettized:
-                    result.AddSamplerWithoutXFormParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("palette");
-                    break;
-                case Albedo.Palettized_Plus_Alpha:
-                    result.AddSamplerWithoutXFormParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("palette");
-                    result.AddSamplerWithoutXFormParameter("alpha_map");
-                    break;
-                case Albedo.Diffuse_Plus_Alpha:
-                    result.AddSamplerWithoutXFormParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("alpha_map");
-                    break;
-                case Albedo.Emblem_Change_Color:
-                    result.AddSamplerWithoutXFormParameter("tex0_sampler", RenderMethodExtern.emblem_player_shoulder_texture);
-                    result.AddSamplerWithoutXFormParameter("tex1_sampler", RenderMethodExtern.emblem_player_shoulder_texture);
-                    result.AddFloat4Parameter("emblem_color_background_argb");
-                    result.AddFloat4Parameter("emblem_color_icon1_argb");
-                    result.AddFloat4Parameter("emblem_color_icon2_argb");
-                    break;
-                case Albedo.Change_Color:
-                    result.AddSamplerWithoutXFormParameter("change_color_map");
-                    result.AddFloat3Parameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
-                    result.AddFloat3Parameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
-                    result.AddFloat3Parameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary);
-                    break;
-                case Albedo.Diffuse_Plus_Alpha_Mask:
-                    result.AddSamplerWithoutXFormParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("alpha_map");
-                    break;
-                case Albedo.Palettized_Plus_Alpha_Mask:
-                    result.AddSamplerWithoutXFormParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("palette");
-                    result.AddSamplerWithoutXFormParameter("alpha_map");
-                    break;
-                case Albedo.Vector_Alpha:
-                    result.AddSamplerParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("vector_map");
-                    result.AddFloatParameter("vector_sharpness");
-                    result.AddFloatParameter("antialias_tweak");
-                    break;
-                case Albedo.Vector_Alpha_Drop_Shadow:
-                    result.AddSamplerParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("vector_map");
-                    result.AddFloatParameter("vector_sharpness");
-                    result.AddSamplerWithoutXFormParameter("shadow_vector_map");
-                    result.AddFloatParameter("shadow_darkness");
-                    result.AddFloatParameter("shadow_sharpness");
-                    result.AddFloatParameter("antialias_tweak");
-                    break;
-            }
-            switch (specular)
-            {
-                case Specular.Modulate:
-                    result.AddFloatParameter("specular_multiplier");
-                    break;
-            }
-            switch (bump_mapping)
-            {
-                case Bump_Mapping.Standard:
-                    result.AddSamplerParameter("bump_map");
-                    break;
-                case Bump_Mapping.Standard_Mask:
-                    result.AddSamplerParameter("bump_map");
-                    break;
-            }
-            switch (tinting)
-            {
-                case Tinting.Unmodulated:
-                    result.AddFloat4Parameter("tint_color");
-                    result.AddFloatParameter("intensity");
-                    break;
-                case Tinting.Partially_Modulated:
-                    result.AddFloat4Parameter("tint_color");
-                    result.AddFloatParameter("intensity");
-                    result.AddFloatParameter("modulation_factor");
-                    break;
-                case Tinting.Fully_Modulated:
-                    result.AddFloat4Parameter("tint_color");
-                    result.AddFloatParameter("intensity");
-                    break;
-            }
-
-            return result;
-        }
-
-        public ShaderParameters GetVertexShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-
-            var result = new ShaderParameters();
-
-            result.AddFloatVertexParameter("u_tiles");
-            result.AddFloatVertexParameter("v_tiles");
-
-            return result;
-        }
-
-        public ShaderParameters GetGlobalParameters()
-        {
-            return new ShaderParameters();
         }
 
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
-            throw new NotImplementedException();
+            switch (entryPoint)
+            {
+                case ShaderStage.Default:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public bool IsPixelShaderShared(ShaderStage entryPoint)
+        {
+            switch (entryPoint)
+            {
+                default:
+                    return false;
+            }
+        }
+
+        public bool IsAutoMacro()
+        {
+            return true;
+        }
+
+        public ShaderParameters GetGlobalParameters(out string rmopName)
+        {
+            var result = new ShaderParameters();
+
+            rmopName = @"shaders\decal_options\global_decal_options";
+
+            return result;
         }
 
         public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
@@ -356,154 +93,274 @@ namespace HaloShaderGenerator.Decal
             if (methodName == "albedo")
             {
                 optionName = ((Albedo)option).ToString();
+
                 switch ((Albedo)option)
                 {
                     case Albedo.Diffuse_Only:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddFloatVertexParameter("u_tiles");
-                        result.AddFloatVertexParameter("v_tiles");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("u_tiles", 1.0f);
+                        result.AddFloatParameter("v_tiles", 1.0f);
                         rmopName = @"shaders\decal_options\albedo_diffuse_only";
                         break;
                     case Albedo.Palettized:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("palette");
-                        result.AddFloatVertexParameter("u_tiles");
-                        result.AddFloatVertexParameter("v_tiles");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("u_tiles", 1.0f);
+                        result.AddFloatParameter("v_tiles", 1.0f);
                         rmopName = @"shaders\decal_options\albedo_palettized";
                         break;
                     case Albedo.Palettized_Plus_Alpha:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("palette");
-                        result.AddSamplerWithoutXFormParameter("alpha_map");
-                        result.AddFloatVertexParameter("u_tiles");
-                        result.AddFloatVertexParameter("v_tiles");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddFloatParameter("u_tiles", 1.0f);
+                        result.AddFloatParameter("v_tiles", 1.0f);
                         rmopName = @"shaders\decal_options\albedo_palettized_plus_alpha";
                         break;
                     case Albedo.Diffuse_Plus_Alpha:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("alpha_map");
-                        result.AddFloatVertexParameter("u_tiles");
-                        result.AddFloatVertexParameter("v_tiles");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddFloatParameter("u_tiles", 1.0f);
+                        result.AddFloatParameter("v_tiles", 1.0f);
                         rmopName = @"shaders\decal_options\albedo_diffuse_plus_alpha";
                         break;
                     case Albedo.Emblem_Change_Color:
-                        result.AddSamplerWithoutXFormParameter("tex0_sampler", RenderMethodExtern.emblem_player_shoulder_texture);
-                        result.AddSamplerWithoutXFormParameter("tex1_sampler", RenderMethodExtern.emblem_player_shoulder_texture);
-                        result.AddFloat4Parameter("emblem_color_background_argb");
-                        result.AddFloat4Parameter("emblem_color_icon1_argb");
-                        result.AddFloat4Parameter("emblem_color_icon2_argb");
-                        result.AddFloatVertexParameter("u_tiles");
-                        result.AddFloatVertexParameter("v_tiles");
+                        result.AddSamplerExternAddressParameter("tex0_sampler", RenderMethodExtern.emblem_player_shoulder_texture, ShaderOptionParameter.ShaderAddressMode.BlackBorder, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerExternAddressParameter("tex1_sampler", RenderMethodExtern.emblem_player_shoulder_texture, ShaderOptionParameter.ShaderAddressMode.BlackBorder, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat4ColorExternParameter("emblem_color_background_argb", RenderMethodExtern.none, new ShaderColor(0, 255, 0, 0)); // rmExtern - object_emblem_color_background
+                        result.AddFloat4ColorExternParameter("emblem_color_icon1_argb", RenderMethodExtern.none, new ShaderColor(0, 19, 255, 0)); // rmExtern - object_emblem_color_primary
+                        result.AddFloat4ColorExternParameter("emblem_color_icon2_argb", RenderMethodExtern.none, new ShaderColor(0, 13, 0, 255)); // rmExtern - object_emblem_color_secondary
+                        result.AddFloatParameter("u_tiles", 1.0f);
+                        result.AddFloatParameter("v_tiles", 1.0f);
+                        result.AddSamplerExternWithColorParameter("foreground0_sampler", RenderMethodExtern.none, new ShaderColor(0, 13, 0, 255), @"shaders\default_bitmaps\bitmaps\gray_50_percent"); // rmExtern - object_emblem_bitmap_and_data
                         rmopName = @"shaders\decal_options\albedo_emblem_change_color";
                         break;
                     case Albedo.Change_Color:
-                        result.AddSamplerWithoutXFormParameter("change_color_map");
-                        result.AddFloat3Parameter("primary_change_color", RenderMethodExtern.object_change_color_primary);
-                        result.AddFloat3Parameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary);
-                        result.AddFloat3Parameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary);
-                        result.AddFloatVertexParameter("u_tiles");
-                        result.AddFloatVertexParameter("v_tiles");
+                        result.AddSamplerAddressParameter("change_color_map", ShaderOptionParameter.ShaderAddressMode.BlackBorder, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorExternParameter("primary_change_color", RenderMethodExtern.object_change_color_primary, new ShaderColor(0, 255, 0, 0));
+                        result.AddFloat3ColorExternParameter("secondary_change_color", RenderMethodExtern.object_change_color_secondary, new ShaderColor(0, 19, 255, 0));
+                        result.AddFloat3ColorExternParameter("tertiary_change_color", RenderMethodExtern.object_change_color_tertiary, new ShaderColor(0, 13, 0, 255));
+                        result.AddFloatParameter("u_tiles", 1.0f);
+                        result.AddFloatParameter("v_tiles", 1.0f);
                         rmopName = @"shaders\decal_options\albedo_change_color";
                         break;
                     case Albedo.Diffuse_Plus_Alpha_Mask:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("alpha_map");
-                        result.AddFloatVertexParameter("u_tiles");
-                        result.AddFloatVertexParameter("v_tiles");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddFloatParameter("u_tiles", 1.0f);
+                        result.AddFloatParameter("v_tiles", 1.0f);                        
                         rmopName = @"shaders\decal_options\albedo_diffuse_plus_alpha_mask";
                         break;
                     case Albedo.Palettized_Plus_Alpha_Mask:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("palette");
-                        result.AddSamplerWithoutXFormParameter("alpha_map");
-                        result.AddFloatVertexParameter("u_tiles");
-                        result.AddFloatVertexParameter("v_tiles");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddFloatParameter("u_tiles", 1.0f);
+                        result.AddFloatParameter("v_tiles", 1.0f);
                         rmopName = @"shaders\decal_options\albedo_palettized_plus_alpha_mask";
                         break;
                     case Albedo.Vector_Alpha:
-                        result.AddSamplerParameter("base_map");
-                        result.AddFloatVertexParameter("u_tiles");
-                        result.AddFloatVertexParameter("v_tiles");
-                        result.AddSamplerWithoutXFormParameter("vector_map");
-                        result.AddFloatParameter("vector_sharpness");
-                        result.AddFloatParameter("antialias_tweak");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("u_tiles", 1.0f);
+                        result.AddFloatParameter("v_tiles", 1.0f);
+                        result.AddSamplerParameter("vector_map", @"shaders\default_bitmaps\bitmaps\reference_grids");
+                        result.AddFloatParameter("vector_sharpness", 1000.0f);
+                        result.AddFloatParameter("antialias_tweak", 0.025f);
                         rmopName = @"shaders\decal_options\albedo_vector_alpha";
                         break;
                     case Albedo.Vector_Alpha_Drop_Shadow:
-                        result.AddSamplerParameter("base_map");
-                        result.AddFloatVertexParameter("u_tiles");
-                        result.AddFloatVertexParameter("v_tiles");
-                        result.AddSamplerWithoutXFormParameter("vector_map");
-                        result.AddFloatParameter("vector_sharpness");
-                        result.AddSamplerWithoutXFormParameter("shadow_vector_map");
-                        result.AddFloatParameter("shadow_darkness");
-                        result.AddFloatParameter("shadow_sharpness");
-                        result.AddFloatParameter("antialias_tweak");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("u_tiles", 1.0f);
+                        result.AddFloatParameter("v_tiles", 1.0f);
+                        result.AddSamplerParameter("vector_map", @"shaders\default_bitmaps\bitmaps\reference_grids");
+                        result.AddFloatParameter("vector_sharpness", 1000.0f);
+                        result.AddSamplerParameter("shadow_vector_map", @"shaders\default_bitmaps\bitmaps\reference_grids");
+                        result.AddFloatParameter("shadow_darkness", 1.0f);
+                        result.AddFloatParameter("shadow_sharpness", 2.0f);
+                        result.AddFloatParameter("antialias_tweak", 0.025f);
                         rmopName = @"shaders\decal_options\albedo_vector_alpha_drop_shadow";
+                        break;
+                    case Albedo.Patchy_Emblem:
+                        result.AddSamplerExternWithColorParameter("foreground0_sampler", RenderMethodExtern.none, new ShaderColor(0, 13, 0, 255), @"shaders\default_bitmaps\bitmaps\gray_50_percent"); // rmExtern - object_emblem_bitmap_and_data
+                        result.AddSamplerParameter("alpha_map", @"shaders\default_bitmaps\bitmaps\clouds_256");
+                        result.AddFloatParameter("alpha_max", 1.0f);
+                        result.AddFloatParameter("alpha_min");
+                        rmopName = @"shaders\decal_options\albedo_patchy_emblem";
                         break;
                 }
             }
+
             if (methodName == "blend_mode")
             {
                 optionName = ((Blend_Mode)option).ToString();
+
+                switch ((Blend_Mode)option)
+                {
+                    case Blend_Mode.Opaque:
+                        break;
+                    case Blend_Mode.Additive:
+                        break;
+                    case Blend_Mode.Multiply:
+                        break;
+                    case Blend_Mode.Alpha_Blend:
+                        break;
+                    case Blend_Mode.Double_Multiply:
+                        break;
+                    case Blend_Mode.Maximum:
+                        break;
+                    case Blend_Mode.Multiply_Add:
+                        break;
+                    case Blend_Mode.Add_Src_Times_Dstalpha:
+                        break;
+                    case Blend_Mode.Add_Src_Times_Srcalpha:
+                        break;
+                    case Blend_Mode.Inv_Alpha_Blend:
+                        break;
+                    case Blend_Mode.Pre_Multiplied_Alpha:
+                        break;
+                }
             }
+
             if (methodName == "render_pass")
             {
                 optionName = ((Render_Pass)option).ToString();
+
+                switch ((Render_Pass)option)
+                {
+                    case Render_Pass.Pre_Lighting:
+                        break;
+                    case Render_Pass.Post_Lighting:
+                        break;
+                    case Render_Pass.Transparent:
+                        break;
+                }
             }
+
             if (methodName == "specular")
             {
                 optionName = ((Specular)option).ToString();
 
                 switch ((Specular)option)
                 {
+                    case Specular.Leave:
+                        break;
                     case Specular.Modulate:
                         result.AddFloatParameter("specular_multiplier");
                         rmopName = @"shaders\decal_options\specular_modulate";
                         break;
                 }
             }
+
             if (methodName == "bump_mapping")
             {
                 optionName = ((Bump_Mapping)option).ToString();
 
                 switch ((Bump_Mapping)option)
                 {
+                    case Bump_Mapping.Leave:
+                        break;
                     case Bump_Mapping.Standard:
-                        result.AddSamplerParameter("bump_map");
+                        result.AddSamplerAddressParameter("bump_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\default_vector");
                         rmopName = @"shaders\decal_options\bump_mapping_standard";
                         break;
                     case Bump_Mapping.Standard_Mask:
-                        result.AddSamplerParameter("bump_map");
+                        result.AddSamplerAddressParameter("bump_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\default_vector");
                         rmopName = @"shaders\decal_options\bump_mapping_standard_mask";
                         break;
                 }
             }
+
             if (methodName == "tinting")
             {
                 optionName = ((Tinting)option).ToString();
 
                 switch ((Tinting)option)
                 {
+                    case Tinting.None:
+                        break;
                     case Tinting.Unmodulated:
-                        result.AddFloat4Parameter("tint_color");
-                        result.AddFloatParameter("intensity");
+                        result.AddFloat3ColorParameter("tint_color", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("intensity", 1.0f);
                         rmopName = @"shaders\decal_options\tinting_unmodulated";
                         break;
                     case Tinting.Partially_Modulated:
-                        result.AddFloat4Parameter("tint_color");
-                        result.AddFloatParameter("intensity");
-                        result.AddFloatParameter("modulation_factor");
+                        result.AddFloat3ColorParameter("tint_color", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("intensity", 1.0f);
+                        result.AddFloatParameter("modulation_factor", 1.0f);
                         rmopName = @"shaders\decal_options\tinting_partially_modulated";
                         break;
                     case Tinting.Fully_Modulated:
-                        result.AddFloat4Parameter("tint_color");
-                        result.AddFloatParameter("intensity");
+                        result.AddFloat3ColorParameter("tint_color", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("intensity", 1.0f);
                         rmopName = @"shaders\decal_options\tinting_fully_modulated";
                         break;
                 }
             }
 
+            if (methodName == "parallax")
+            {
+                optionName = ((Parallax)option).ToString();
+
+                switch ((Parallax)option)
+                {
+                    case Parallax.Off:
+                        break;
+                    case Parallax.Simple:
+                        result.AddSamplerParameter("height_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
+                        result.AddFloatParameter("height_scale", 0.1f);
+                        rmopName = @"shaders\decal_options\parallax_simple";
+                        break;
+                    case Parallax.Sphere:
+                        result.AddFloatParameter("sphere_radius", 0.5f);
+                        result.AddFloatParameter("sphere_height", 0.2f);
+                        rmopName = @"shaders\decal_options\parallax_sphere";
+                        break;
+                }
+            }
+
+            if (methodName == "interier")
+            {
+                optionName = ((Interier)option).ToString();
+
+                switch ((Interier)option)
+                {
+                    case Interier.Off:
+                        break;
+                    case Interier.Simple:
+                        result.AddSamplerParameter("interier", @"shaders\default_bitmaps\bitmaps\checker_board");
+                        result.AddFloatParameter("mask_threshold", 0.5f);
+                        rmopName = @"shaders\decal_options\interier_shell";
+                        break;
+                    case Interier.Floor:
+                        result.AddSamplerParameter("interier", @"shaders\default_bitmaps\bitmaps\checker_board");
+                        result.AddFloatParameter("mask_threshold", 0.5f);
+                        result.AddFloatParameter("thin_shell_height", 0.5f);
+                        rmopName = @"shaders\decal_options\interier_thin_shell";
+                        break;
+                    case Interier.Hole:
+                        result.AddSamplerParameter("interier", @"shaders\default_bitmaps\bitmaps\checker_board");
+                        result.AddFloatParameter("mask_threshold", 0.5f);
+                        result.AddFloatParameter("thin_shell_height", 0.5f);
+                        result.AddSamplerParameter("wall_map", @"shaders\default_bitmaps\bitmaps\checker_board");
+                        result.AddFloatParameter("hole_radius", 0.5f);
+                        result.AddFloatParameter("fog_factor", 0.5f);
+                        result.AddFloat3ColorWithFloatParameter("fog_top_color", 0.5f, new ShaderColor(0, 121, 116, 116));
+                        result.AddFloat3ColorWithFloatParameter("fog_bottom_color", 0.5f, new ShaderColor(0, 121, 116, 116));
+                        rmopName = @"shaders\decal_options\interier_hole";
+                        break;
+                    case Interier.Box:                        
+                        result.AddSamplerParameter("interier", @"shaders\default_bitmaps\bitmaps\random");
+                        result.AddFloatParameter("mask_threshold", 0.5f);
+                        result.AddFloatParameter("thin_shell_height", 0.5f);
+                        result.AddSamplerParameter("wall_map", @"shaders\default_bitmaps\bitmaps\random");
+                        result.AddFloatParameter("box_size", 0.5f);
+                        result.AddFloatParameter("fog_factor", 0.5f);
+                        result.AddFloat3ColorWithFloatParameter("fog_top_color", 0.5f, new ShaderColor(0, 121, 116, 116));
+                        result.AddFloat3ColorWithFloatParameter("fog_bottom_color", 0.5f, new ShaderColor(0, 121, 116, 116));
+                        rmopName = @"shaders\decal_options\interier_box";
+                        break;
+                }
+            }
             return result;
         }
 
@@ -528,19 +385,318 @@ namespace HaloShaderGenerator.Decal
                     return Enum.GetValues(typeof(Bump_Mapping));
                 case DecalMethods.Tinting:
                     return Enum.GetValues(typeof(Tinting));
+                case DecalMethods.Parallax:
+                    return Enum.GetValues(typeof(Parallax));
+                case DecalMethods.Interier:
+                    return Enum.GetValues(typeof(Interier));
             }
 
             return null;
         }
 
-        public byte[] ValidateOptions(byte[] options)
+        public Array GetEntryPointOrder()
         {
-            List<byte> optionList = new List<byte>(options);
+            return new ShaderStage[]
+            {
+                ShaderStage.Default
+            };
+        }
 
-            while (optionList.Count < GetMethodCount())
-                optionList.Add(0);
+        public Array GetVertexTypeOrder()
+        {
+            return new VertexType[]
+            {
+                VertexType.World,
+                VertexType.Rigid,
+                VertexType.Skinned,
+                VertexType.FlatWorld,
+                VertexType.FlatRigid,
+                VertexType.FlatSkinned
+            };
+        }
 
-            return optionList.ToArray();
+        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "albedo")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "blend_mode")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "blend_type";
+            }
+
+            if (methodName == "render_pass")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "specular")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "bump_mapping")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "tinting")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "parallax")
+            {
+                vertexFunction = "calc_parallax_vs";
+                pixelFunction = "calc_parallax_ps";
+            }
+
+            if (methodName == "interier")
+            {
+                vertexFunction = "update_interier_layer_vs";
+                pixelFunction = "update_interier_layer_ps";
+            }
+        }
+
+        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "albedo")
+            {
+                switch ((Albedo)option)
+                {
+                    case Albedo.Diffuse_Only:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Palettized:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Palettized_Plus_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Diffuse_Plus_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Emblem_Change_Color:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Change_Color:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Diffuse_Plus_Alpha_Mask:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Palettized_Plus_Alpha_Mask:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Vector_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Vector_Alpha_Drop_Shadow:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Patchy_Emblem:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "blend_mode")
+            {
+                switch ((Blend_Mode)option)
+                {
+                    case Blend_Mode.Opaque:
+                        vertexFunction = "invalid";
+                        pixelFunction = "opaque";
+                        break;
+                    case Blend_Mode.Additive:
+                        vertexFunction = "invalid";
+                        pixelFunction = "additive";
+                        break;
+                    case Blend_Mode.Multiply:
+                        vertexFunction = "invalid";
+                        pixelFunction = "multiply";
+                        break;
+                    case Blend_Mode.Alpha_Blend:
+                        vertexFunction = "invalid";
+                        pixelFunction = "alpha_blend";
+                        break;
+                    case Blend_Mode.Double_Multiply:
+                        vertexFunction = "invalid";
+                        pixelFunction = "double_multiply";
+                        break;
+                    case Blend_Mode.Maximum:
+                        vertexFunction = "invalid";
+                        pixelFunction = "maximum";
+                        break;
+                    case Blend_Mode.Multiply_Add:
+                        vertexFunction = "invalid";
+                        pixelFunction = "multiply_add";
+                        break;
+                    case Blend_Mode.Add_Src_Times_Dstalpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "add_src_times_dstalpha";
+                        break;
+                    case Blend_Mode.Add_Src_Times_Srcalpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "add_src_times_srcalpha";
+                        break;
+                    case Blend_Mode.Inv_Alpha_Blend:
+                        vertexFunction = "invalid";
+                        pixelFunction = "inv_alpha_blend";
+                        break;
+                    case Blend_Mode.Pre_Multiplied_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "pre_multiplied_alpha";
+                        break;
+                }
+            }
+
+            if (methodName == "render_pass")
+            {
+                switch ((Render_Pass)option)
+                {
+                    case Render_Pass.Pre_Lighting:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Render_Pass.Post_Lighting:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Render_Pass.Transparent:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "specular")
+            {
+                switch ((Specular)option)
+                {
+                    case Specular.Leave:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Specular.Modulate:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "bump_mapping")
+            {
+                switch ((Bump_Mapping)option)
+                {
+                    case Bump_Mapping.Leave:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Bump_Mapping.Standard:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Bump_Mapping.Standard_Mask:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "tinting")
+            {
+                switch ((Tinting)option)
+                {
+                    case Tinting.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Tinting.Unmodulated:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Tinting.Partially_Modulated:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Tinting.Fully_Modulated:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "parallax")
+            {
+                switch ((Parallax)option)
+                {
+                    case Parallax.Off:
+                        vertexFunction = "calc_parallax_off_vs";
+                        pixelFunction = "calc_parallax_off_ps";
+                        break;
+                    case Parallax.Simple:
+                        vertexFunction = "calc_parallax_simple_vs";
+                        pixelFunction = "calc_parallax_simple_ps";
+                        break;
+                    case Parallax.Sphere:
+                        vertexFunction = "calc_parallax_sphere_vs";
+                        pixelFunction = "calc_parallax_sphere_ps";
+                        break;
+                }
+            }
+
+            if (methodName == "interier")
+            {
+                switch ((Interier)option)
+                {
+                    case Interier.Off:
+                        vertexFunction = "update_interier_layer_off_vs";
+                        pixelFunction = "update_interier_layer_off_ps";
+                        break;
+                    case Interier.Simple:
+                        vertexFunction = "update_interier_layer_simple_vs";
+                        pixelFunction = "update_interier_layer_simple_ps";
+                        break;
+                    case Interier.Floor:
+                        vertexFunction = "update_interier_layer_floor_vs";
+                        pixelFunction = "update_interier_layer_floor_ps";
+                        break;
+                    case Interier.Hole:
+                        vertexFunction = "update_interier_layer_hole_vs";
+                        pixelFunction = "update_interier_layer_hole_ps";
+                        break;
+                    case Interier.Box:
+                        vertexFunction = "update_interier_layer_box_vs";
+                        pixelFunction = "update_interier_layer_box_ps";
+                        break;
+                }
+            }
         }
     }
 }

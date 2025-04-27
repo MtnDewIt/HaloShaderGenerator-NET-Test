@@ -1,146 +1,14 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using System;
+using HaloShaderGenerator.Shared;
 
 namespace HaloShaderGenerator.Terrain
 {
     public class TerrainGenerator : IShaderGenerator
     {
-        private bool TemplateGenerationValid;
-        private bool ApplyFixes;
-
-        Blending blending;
-        Environment_Mapping environment_mapping;
-        Material material_0;
-        Material1 material_1;
-        Material2 material_2;
-        Material_No_Detail_Bump material_3;
-
-        /// <summary>
-        /// Generator insantiation for shared shaders. Does not require method options.
-        /// </summary>
-        public TerrainGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
-
-        /// <summary>
-        /// Generator instantiation for method specific shaders.
-        /// </summary>
-        public TerrainGenerator(Blending blending, Environment_Mapping environment_mapping, Material material_0, Material1 material_1, Material2 material_2, Material_No_Detail_Bump material_3)
-        {
-            this.blending = blending;
-            this.environment_mapping = environment_mapping;
-            this.material_0 = material_0;
-            this.material_1 = material_1;
-            this.material_2 = material_2;
-            this.material_3 = material_3;
-            TemplateGenerationValid = true;
-        }
-
-        public TerrainGenerator(byte[] options, bool applyFixes = false)
-        {
-            options = ValidateOptions(options);
-
-            this.blending = (Blending)options[0];
-            this.environment_mapping = (Environment_Mapping)options[1];
-            this.material_0 = (Material)options[2];
-            this.material_1 = (Material1)options[3];
-            this.material_2 = (Material2)options[4];
-            this.material_3 = (Material_No_Detail_Bump)options[5];
-
-            //ApplyFixes = applyFixes;
-            TemplateGenerationValid = true;
-        }
-
-
-        public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Terrain, entryPoint, Shared.Blend_Mode.Opaque, 
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
-
-
-            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", blending == Blending.Dynamic_Morph ? "dynamic" : blending.ToString()));
-            macros.Add(ShaderGeneratorBase.CreateMacro("envmap_type", environment_mapping));
-            macros.Add(ShaderGeneratorBase.CreateMacro("material_0_type", material_0));
-            macros.Add(ShaderGeneratorBase.CreateMacro("material_1_type", material_1));
-            macros.Add(ShaderGeneratorBase.CreateMacro("material_2_type", material_2));
-            macros.Add(ShaderGeneratorBase.CreateMacro("material_3_type", material_3));
-
-            string entryName = entryPoint.ToString().ToLower() + "_ps";
-            switch (entryPoint)
-            {
-                case ShaderStage.Static_Prt_Linear:
-                case ShaderStage.Static_Prt_Quadratic:
-                case ShaderStage.Static_Prt_Ambient:
-                    entryName = "static_prt_ps";
-                    break;
-                case ShaderStage.Dynamic_Light_Cinematic:
-                    entryName = "dynamic_light_cine_ps";
-                    break;
-            }
-
-            macros.Add(ShaderGeneratorBase.CreateMacro("TERRAIN_COMPILE_HACK", "1"));
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"terrain.fx", macros, entryName, "ps_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
-        {
-            if (!IsEntryPointSupported(entryPoint) || !IsPixelShaderShared(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-            macros.Add(new D3D.SHADER_MACRO { Name = "_TERRAIN_HELPER_HLSLI", Definition = "1" });
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"glps_terrain.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!IsVertexFormatSupported(vertexType) || !IsEntryPointSupported(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            macros.Add(new D3D.SHADER_MACRO { Name = "_VERTEX_SHADER_HELPER_HLSLI", Definition = "1" });
-            macros.Add(new D3D.SHADER_MACRO { Name = "_TERRAIN_HELPER_HLSLI", Definition = "1" });
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<VertexType>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_vertex_transform", vertexType, "calc_vertex_transform_", ""));
-            macros.Add(ShaderGeneratorBase.CreateMacro("transform_dominant_light", vertexType, "transform_dominant_light_", ""));
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_distortion", vertexType, "calc_distortion_", ""));
-            macros.Add(ShaderGeneratorBase.CreateVertexMacro("input_vertex_format", vertexType));
-
-            macros.Add(ShaderGeneratorBase.CreateMacro("shaderstage", entryPoint, "k_shaderstage_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("vertextype", vertexType, "k_vertextype_"));
-            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Terrain, "shadertype_"));
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(@"glvs_terrain.hlsl", macros, $"entry_{entryPoint.ToString().ToLower()}", "vs_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-            return null;
-        }
-
         public int GetMethodCount()
         {
             return Enum.GetValues(typeof(TerrainMethods)).Length;
@@ -153,84 +21,38 @@ namespace HaloShaderGenerator.Terrain
                 case TerrainMethods.Blending:
                     return Enum.GetValues(typeof(Blending)).Length;
                 case TerrainMethods.Environment_Map:
-                    return Enum.GetValues(typeof(Environment_Mapping)).Length;
+                    return Enum.GetValues(typeof(Environment_Map)).Length;
                 case TerrainMethods.Material_0:
-                    return Enum.GetValues(typeof(Material)).Length;
+                    return Enum.GetValues(typeof(Material_0)).Length;
                 case TerrainMethods.Material_1:
-                    return Enum.GetValues(typeof(Material1)).Length;
+                    return Enum.GetValues(typeof(Material_1)).Length;
                 case TerrainMethods.Material_2:
-                    return Enum.GetValues(typeof(Material2)).Length;
+                    return Enum.GetValues(typeof(Material_2)).Length;
                 case TerrainMethods.Material_3:
-                    return Enum.GetValues(typeof(Material_No_Detail_Bump)).Length;
+                    return Enum.GetValues(typeof(Material_3)).Length;
+                case TerrainMethods.Wetness:
+                    return Enum.GetValues(typeof(Wetness)).Length;
             }
+
             return -1;
         }
 
-        public int GetMethodOptionValue(int methodIndex)
-        {
-            switch ((TerrainMethods)methodIndex)
-            {
-                case TerrainMethods.Blending:
-                    return (int)blending;
-                case TerrainMethods.Environment_Map:
-                    return (int)environment_mapping;
-                case TerrainMethods.Material_0:
-                    return (int)material_0;
-                case TerrainMethods.Material_1:
-                    return (int)material_1;
-                case TerrainMethods.Material_2:
-                    return (int)material_2;
-                case TerrainMethods.Material_3:
-                    return (int)material_3;
-                
-            }
-            return -1;
-        }
-
-        public bool IsEntryPointSupported(ShaderStage entryPoint)
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
         {
             switch (entryPoint)
             {
-                case ShaderStage.Albedo:
-                case ShaderStage.Static_Per_Pixel:
-                case ShaderStage.Static_Per_Vertex:
-                case ShaderStage.Static_Sh:
-                case ShaderStage.Dynamic_Light:
-                case ShaderStage.Lightmap_Debug_Mode:
-                case ShaderStage.Shadow_Generate:
-                case ShaderStage.Dynamic_Light_Cinematic:
-                case ShaderStage.Static_Prt_Quadratic:
-                case ShaderStage.Static_Prt_Linear:
-                case ShaderStage.Static_Prt_Ambient:
-                    return true;
-                    
                 default:
-                case ShaderStage.Default:
-                case ShaderStage.Z_Only:
-                case ShaderStage.Water_Shading:
-                case ShaderStage.Water_Tessellation:
-                case ShaderStage.Shadow_Apply:
-                case ShaderStage.Static_Default:
-                case ShaderStage.Static_Per_Vertex_Color:
-                case ShaderStage.Active_Camo:
-                case ShaderStage.Sfx_Distort:
-                    return false;
+                    return -1;
             }
-        }
-
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            return false;
         }
 
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
-            return false;
-        }
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
-        {
-            return entryPoint == ShaderStage.Shadow_Generate;
+            switch (entryPoint)
+            {
+                default:
+                    return false;
+            }
         }
 
         public bool IsPixelShaderShared(ShaderStage entryPoint)
@@ -244,358 +66,32 @@ namespace HaloShaderGenerator.Terrain
             }
         }
 
-        public bool IsVertexFormatSupported(VertexType vertexType)
+        public bool IsAutoMacro()
         {
-            switch (vertexType)
-            {
-                case VertexType.World:
-                case VertexType.Rigid:
-                case VertexType.Skinned:
-                    return true;
-                default:
-                    return false;
-            }
+            return false;
         }
 
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
+        public ShaderParameters GetGlobalParameters(out string rmopName)
         {
-            return true;
-        }
-
-        public ShaderParameters GetPixelShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
             var result = new ShaderParameters();
 
-            result.AddSamplerParameter("blend_map");
-            result.AddFloatParameter("global_albedo_tint");
-            switch (blending)
-            {
-                case Blending.Dynamic_Morph:
-                    result.AddFloatParameter("dynamic_material");
-                    result.AddFloatParameter("transition_sharpness");
-                    result.AddFloatParameter("transition_threshold");
-                    break;
-            }
+            result.AddSamplerExternParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
+            result.AddSamplerExternParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
+            result.AddSamplerExternFilterParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture, ShaderOptionParameter.ShaderFilterMode.Bilinear);
+            result.AddSamplerExternFilterAddressParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            result.AddSamplerExternParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
+            result.AddFloat3ColorExternWithFloatAndIntegerParameter("debug_tint", RenderMethodExtern.debug_tint, 1.0f, 1, new ShaderColor(255, 255, 255, 255));
+            result.AddSamplerExternParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
+            result.AddSamplerExternParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerExternParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
+            result.AddSamplerExternParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
+            //result.AddSamplerFilterAddressParameter("g_direction_lut", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"rasterizer\direction_lut_1002");
+            //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"rasterizer\diffusetable");
+            //result.AddSamplerFilterAddressParameter("g_sample_vmf_diffuse_vs", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"rasterizer\diffusetable");
+            //result.AddSamplerExternFilterAddressParameter("g_sample_vmf_phong_specular", RenderMethodExtern.material_diffuse_power, ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            //result.AddSamplerExternFilterAddressParameter("shadow_mask_texture", RenderMethodExtern.none, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp); // rmExtern - texture_global_target_shadow_mask
+            rmopName = @"shaders\shader_options\global_shader_options";
 
-            switch (environment_mapping)
-            {
-                case Environment_Mapping.None:
-                    break;
-                case Environment_Mapping.Per_Pixel:
-                    result.AddSamplerWithoutXFormParameter("environment_map");
-                    result.AddFloat3ColorParameter("env_tint_color");
-                    result.AddFloatParameter("env_roughness_scale");
-                    break;
-                case Environment_Mapping.Dynamic:
-                case Environment_Mapping.Dynamic_Reach:
-                    result.AddFloat3ColorParameter("env_tint_color");
-                    result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
-                    result.AddSamplerParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
-                    result.AddFloatParameter("env_roughness_scale");
-                    break;
-            }
-
-            switch (material_0)
-            {
-                case Material.Off:
-                    break;
-
-                case Material.Diffuse_Only:
-                    result.AddSamplerParameter("base_map_m_0");
-                    result.AddSamplerParameter("detail_map_m_0");
-                    result.AddSamplerParameter("bump_map_m_0");
-                    result.AddSamplerParameter("detail_bump_m_0");
-                    break;
-
-                case Material.Diffuse_Plus_Specular:
-                    result.AddSamplerParameter("base_map_m_0");
-                    result.AddSamplerParameter("detail_map_m_0");
-                    result.AddSamplerParameter("bump_map_m_0");
-                    result.AddSamplerParameter("detail_bump_m_0");
-
-                    result.AddFloatParameter("diffuse_coefficient_m_0");
-                    result.AddFloatParameter("specular_coefficient_m_0");
-                    result.AddFloatParameter("specular_power_m_0");
-                    result.AddFloat3Parameter("specular_tint_m_0");
-                    result.AddFloatParameter("fresnel_curve_steepness_m_0");
-                    result.AddFloatParameter("area_specular_contribution_m_0");
-                    result.AddFloatParameter("analytical_specular_contribution_m_0");
-                    result.AddFloatParameter("environment_specular_contribution_m_0");
-                    result.AddFloatParameter("albedo_specular_tint_blend_m_0");
-                    break;
-                case Material.Diffuse_Only_Plus_Self_Illum:
-                    result.AddSamplerParameter("base_map_m_0");
-                    result.AddSamplerParameter("bump_map_m_0");
-                    result.AddSamplerParameter("self_illum_map_m_0");
-                    result.AddSamplerParameter("self_illum_detail_map_m_0");
-                    result.AddFloat3Parameter("self_illum_color_m_0");
-                    result.AddFloatParameter("self_illum_intensity_m_0");
-                    break;
-                case Material.Diffuse_Plus_Specular_Plus_Self_Illum:
-                    result.AddSamplerParameter("base_map_m_0");
-                    result.AddSamplerParameter("bump_map_m_0");
-                    result.AddSamplerParameter("self_illum_map_m_0");
-                    result.AddSamplerParameter("self_illum_detail_map_m_0");
-                    result.AddFloat3Parameter("self_illum_color_m_0");
-                    result.AddFloatParameter("self_illum_intensity_m_0");
-                    result.AddFloatParameter("diffuse_coefficient_m_0");
-                    result.AddFloatParameter("specular_coefficient_m_0");
-                    result.AddFloatParameter("specular_power_m_0");
-                    result.AddFloat3Parameter("specular_tint_m_0");
-                    result.AddFloatParameter("fresnel_curve_steepness_m_0");
-                    result.AddFloatParameter("area_specular_contribution_m_0");
-                    result.AddFloatParameter("analytical_specular_contribution_m_0");
-                    result.AddFloatParameter("environment_specular_contribution_m_0");
-                    result.AddFloatParameter("albedo_specular_tint_blend_m_0");
-                    break;
-                case Material.Diffuse_Plus_Specular_Plus_Heightmap:
-                    result.AddSamplerParameter("base_map_m_0");
-                    result.AddSamplerParameter("detail_map_m_0");
-                    result.AddSamplerParameter("bump_map_m_0");
-                    result.AddSamplerParameter("detail_bump_m_0");
-                    result.AddSamplerParameter("heightmap_m_0");
-                    result.AddBooleanParameter("heightmap_invert_m_0");
-                    result.AddFloatParameter("diffuse_coefficient_m_0");
-                    result.AddFloatParameter("specular_coefficient_m_0");
-                    result.AddFloatParameter("specular_power_m_0");
-                    result.AddFloat3Parameter("specular_tint_m_0");
-                    result.AddFloatParameter("fresnel_curve_steepness_m_0");
-                    result.AddFloatParameter("area_specular_contribution_m_0");
-                    result.AddFloatParameter("analytical_specular_contribution_m_0");
-                    result.AddFloatParameter("environment_specular_contribution_m_0");
-                    result.AddFloatParameter("albedo_specular_tint_blend_m_0");
-                    result.AddFloatParameter("smooth_zone_m_0");
-                    break;
-                case Material.Diffuse_Plus_Two_Detail:
-                    result.AddSamplerParameter("base_map_m_0");
-                    result.AddSamplerParameter("detail_map_m_0");
-                    result.AddSamplerParameter("detail_map2_m_0");
-                    result.AddSamplerParameter("bump_map_m_0");
-                    result.AddSamplerParameter("detail_bump_m_0");
-                    break;
-                case Material.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
-                    result.AddSamplerParameter("base_map_m_0");
-                    result.AddSamplerParameter("detail_map_m_0");
-                    result.AddSamplerParameter("bump_map_m_0");
-                    result.AddSamplerParameter("detail_bump_m_0");
-                    result.AddSamplerParameter("heightmap_m_0");
-                    result.AddBooleanParameter("heightmap_invert_m_0");
-                    result.AddFloatParameter("diffuse_coefficient_m_0");
-                    result.AddFloatParameter("specular_coefficient_m_0");
-                    result.AddFloatParameter("specular_power_m_0");
-                    result.AddFloat3Parameter("specular_tint_m_0");
-                    result.AddFloatParameter("fresnel_curve_steepness_m_0");
-                    result.AddFloatParameter("area_specular_contribution_m_0");
-                    result.AddFloatParameter("analytical_specular_contribution_m_0");
-                    result.AddFloatParameter("environment_specular_contribution_m_0");
-                    result.AddFloatParameter("albedo_specular_tint_blend_m_0");
-                    result.AddFloatParameter("smooth_zone_m_0");
-                    result.AddFloatParameter("up_vector_scale_m_0");
-                    result.AddFloatParameter("up_vector_shift_m_0");
-                    break;
-            }
-
-            switch (material_1)
-            {
-                case Material1.Off:
-                    break;
-
-                case Material1.Diffuse_Only:
-                    result.AddSamplerParameter("base_map_m_1");
-                    result.AddSamplerParameter("detail_map_m_1");
-                    result.AddSamplerParameter("bump_map_m_1");
-                    result.AddSamplerParameter("detail_bump_m_1");
-                    break;
-
-                case Material1.Diffuse_Plus_Specular:
-                    result.AddSamplerParameter("base_map_m_1");
-                    result.AddSamplerParameter("detail_map_m_1");
-                    result.AddSamplerParameter("bump_map_m_1");
-                    result.AddSamplerParameter("detail_bump_m_1");
-
-                    result.AddFloatParameter("diffuse_coefficient_m_1");
-                    result.AddFloatParameter("specular_coefficient_m_1");
-                    result.AddFloatParameter("specular_power_m_1");
-                    result.AddFloat3Parameter("specular_tint_m_1");
-                    result.AddFloatParameter("fresnel_curve_steepness_m_1");
-                    result.AddFloatParameter("area_specular_contribution_m_1");
-                    result.AddFloatParameter("analytical_specular_contribution_m_1");
-                    result.AddFloatParameter("environment_specular_contribution_m_1");
-                    result.AddFloatParameter("albedo_specular_tint_blend_m_1");
-                    break;
-                case Material1.Diffuse_Only_Plus_Self_Illum:
-                    result.AddSamplerParameter("base_map_m_1");
-                    result.AddSamplerParameter("bump_map_m_1");
-                    result.AddSamplerParameter("self_illum_map_m_1");
-                    result.AddSamplerParameter("self_illum_detail_map_m_1");
-                    result.AddFloat3Parameter("self_illum_color_m_1");
-                    result.AddFloatParameter("self_illum_intensity_m_1");
-                    break;
-                case Material1.Diffuse_Plus_Specular_Plus_Self_Illum:
-                    result.AddSamplerParameter("base_map_m_1");
-                    result.AddSamplerParameter("bump_map_m_1");
-                    result.AddSamplerParameter("self_illum_map_m_1");
-                    result.AddSamplerParameter("self_illum_detail_map_m_1");
-                    result.AddFloat3Parameter("self_illum_color_m_1");
-                    result.AddFloatParameter("self_illum_intensity_m_1");
-                    result.AddFloatParameter("diffuse_coefficient_m_1");
-                    result.AddFloatParameter("specular_coefficient_m_1");
-                    result.AddFloatParameter("specular_power_m_1");
-                    result.AddFloat3Parameter("specular_tint_m_1");
-                    result.AddFloatParameter("fresnel_curve_steepness_m_1");
-                    result.AddFloatParameter("area_specular_contribution_m_1");
-                    result.AddFloatParameter("analytical_specular_contribution_m_1");
-                    result.AddFloatParameter("environment_specular_contribution_m_1");
-                    result.AddFloatParameter("albedo_specular_tint_blend_m_1");
-                    break;
-                case Material1.Diffuse_Plus_Specular_Plus_Heightmap:
-                    result.AddSamplerParameter("base_map_m_1");
-                    result.AddSamplerParameter("detail_map_m_1");
-                    result.AddSamplerParameter("bump_map_m_1");
-                    result.AddSamplerParameter("detail_bump_m_1");
-                    result.AddSamplerParameter("heightmap_m_1");
-                    result.AddBooleanParameter("heightmap_invert_m_1");
-                    result.AddFloatParameter("diffuse_coefficient_m_1");
-                    result.AddFloatParameter("specular_coefficient_m_1");
-                    result.AddFloatParameter("specular_power_m_1");
-                    result.AddFloat3Parameter("specular_tint_m_1");
-                    result.AddFloatParameter("fresnel_curve_steepness_m_1");
-                    result.AddFloatParameter("area_specular_contribution_m_1");
-                    result.AddFloatParameter("analytical_specular_contribution_m_1");
-                    result.AddFloatParameter("environment_specular_contribution_m_1");
-                    result.AddFloatParameter("albedo_specular_tint_blend_m_1");
-                    result.AddFloatParameter("smooth_zone_m_1");
-                    break;
-                case Material1.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
-                    result.AddSamplerParameter("base_map_m_1");
-                    result.AddSamplerParameter("detail_map_m_1");
-                    result.AddSamplerParameter("bump_map_m_1");
-                    result.AddSamplerParameter("detail_bump_m_1");
-                    result.AddSamplerParameter("heightmap_m_1");
-                    result.AddBooleanParameter("heightmap_invert_m_1");
-                    result.AddFloatParameter("diffuse_coefficient_m_1");
-                    result.AddFloatParameter("specular_coefficient_m_1");
-                    result.AddFloatParameter("specular_power_m_1");
-                    result.AddFloat3Parameter("specular_tint_m_1");
-                    result.AddFloatParameter("fresnel_curve_steepness_m_1");
-                    result.AddFloatParameter("area_specular_contribution_m_1");
-                    result.AddFloatParameter("analytical_specular_contribution_m_1");
-                    result.AddFloatParameter("environment_specular_contribution_m_1");
-                    result.AddFloatParameter("albedo_specular_tint_blend_m_1");
-                    result.AddFloatParameter("smooth_zone_m_1");
-                    result.AddFloatParameter("up_vector_scale_m_1");
-                    result.AddFloatParameter("up_vector_shift_m_1");
-                    break;
-            }
-
-            switch (material_2)
-            {
-                case Material2.Off:
-                    break;
-
-                case Material2.Diffuse_Only:
-                    result.AddSamplerParameter("base_map_m_2");
-                    result.AddSamplerParameter("detail_map_m_2");
-                    result.AddSamplerParameter("bump_map_m_2");
-                    result.AddSamplerParameter("detail_bump_m_2");
-                    break;
-
-                case Material2.Diffuse_Plus_Specular:
-                    result.AddSamplerParameter("base_map_m_2");
-                    result.AddSamplerParameter("detail_map_m_2");
-                    result.AddSamplerParameter("bump_map_m_2");
-                    result.AddSamplerParameter("detail_bump_m_2");
-
-                    result.AddFloatParameter("diffuse_coefficient_m_2");
-                    result.AddFloatParameter("specular_coefficient_m_2");
-                    result.AddFloatParameter("specular_power_m_2");
-                    result.AddFloat3Parameter("specular_tint_m_2");
-                    result.AddFloatParameter("fresnel_curve_steepness_m_2");
-                    result.AddFloatParameter("area_specular_contribution_m_2");
-                    result.AddFloatParameter("analytical_specular_contribution_m_2");
-                    result.AddFloatParameter("environment_specular_contribution_m_2");
-                    result.AddFloatParameter("albedo_specular_tint_blend_m_2");
-                    break;
-                case Material2.Diffuse_Only_Plus_Self_Illum:
-                    result.AddSamplerParameter("base_map_m_2");
-                    result.AddSamplerParameter("bump_map_m_2");
-                    result.AddSamplerParameter("self_illum_map_m_2");
-                    result.AddSamplerParameter("self_illum_detail_map_m_2");
-                    result.AddFloat3Parameter("self_illum_color_m_2");
-                    result.AddFloatParameter("self_illum_intensity_m_2");
-                    break;
-                case Material2.Diffuse_Plus_Specular_Plus_Self_Illum:
-                    result.AddSamplerParameter("base_map_m_2");
-                    result.AddSamplerParameter("bump_map_m_2");
-                    result.AddSamplerParameter("self_illum_map_m_2");
-                    result.AddSamplerParameter("self_illum_detail_map_m_2");
-                    result.AddFloat3Parameter("self_illum_color_m_2");
-                    result.AddFloatParameter("self_illum_intensity_m_2");
-                    result.AddFloatParameter("diffuse_coefficient_m_2");
-                    result.AddFloatParameter("specular_coefficient_m_2");
-                    result.AddFloatParameter("specular_power_m_2");
-                    result.AddFloat3Parameter("specular_tint_m_2");
-                    result.AddFloatParameter("fresnel_curve_steepness_m_2");
-                    result.AddFloatParameter("area_specular_contribution_m_2");
-                    result.AddFloatParameter("analytical_specular_contribution_m_2");
-                    result.AddFloatParameter("environment_specular_contribution_m_2");
-                    result.AddFloatParameter("albedo_specular_tint_blend_m_2");
-                    break;
-            }
-
-            switch (material_3)
-            {
-                case Material_No_Detail_Bump.Off:
-                    break;
-
-                case Material_No_Detail_Bump.Diffuse_Only:
-                    result.AddSamplerParameter("base_map_m_3");
-                    result.AddSamplerParameter("detail_map_m_3");
-                    result.AddSamplerParameter("bump_map_m_3");
-                    result.AddSamplerParameter("detail_bump_m_3");
-                    break;
-
-                case Material_No_Detail_Bump.Diffuse_Plus_Specular:
-                    result.AddSamplerParameter("base_map_m_3");
-                    result.AddSamplerParameter("detail_map_m_3");
-                    result.AddSamplerParameter("bump_map_m_3");
-                    result.AddSamplerParameter("detail_bump_m_3");
-
-                    result.AddFloatParameter("diffuse_coefficient_m_3");
-                    result.AddFloatParameter("specular_coefficient_m_3");
-                    result.AddFloatParameter("specular_power_m_3");
-                    result.AddFloat3Parameter("specular_tint_m_3");
-                    result.AddFloatParameter("fresnel_curve_steepness_m_3");
-                    result.AddFloatParameter("area_specular_contribution_m_3");
-                    result.AddFloatParameter("analytical_specular_contribution_m_3");
-                    result.AddFloatParameter("environment_specular_contribution_m_3");
-                    result.AddFloatParameter("albedo_specular_tint_blend_m_3");
-                    break;
-            }
-
-            return result;
-        }
-
-        public ShaderParameters GetVertexShaderParameters()
-        {
-            return new ShaderParameters();
-        }
-
-        public ShaderParameters GetGlobalParameters()
-        {
-            var result = new ShaderParameters();
-            result.AddSamplerWithoutXFormParameter("albedo_texture", RenderMethodExtern.texture_global_target_texaccum);
-            result.AddSamplerWithoutXFormParameter("normal_texture", RenderMethodExtern.texture_global_target_normal);
-            result.AddSamplerWithoutXFormParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
-            result.AddSamplerWithoutXFormParameter("shadow_depth_map_1", RenderMethodExtern.texture_global_target_shadow_buffer1);
-            result.AddSamplerWithoutXFormParameter("dynamic_light_gel_texture", RenderMethodExtern.texture_dynamic_light_gel_0);
-            result.AddFloat4Parameter("debug_tint", RenderMethodExtern.debug_tint);
-            result.AddSamplerWithoutXFormParameter("active_camo_distortion_texture", RenderMethodExtern.active_camo_distortion_texture);
-            result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
-            result.AddSamplerWithoutXFormParameter("dominant_light_intensity_map", RenderMethodExtern.texture_dominant_light_intensity_map);
             return result;
         }
 
@@ -612,329 +108,361 @@ namespace HaloShaderGenerator.Terrain
                 switch ((Blending)option)
                 {
                     case Blending.Morph:
-                        result.AddSamplerParameter("blend_map");
-                        result.AddFloatParameter("global_albedo_tint");
+                        result.AddSamplerWithFloatAndColorParameter("blend_map", 1.0f, new ShaderColor(255, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatWithColorParameter("global_albedo_tint", new ShaderColor(255, 255, 255, 255), 1.0f);
                         rmopName = @"shaders\terrain_options\default_blending";
                         break;
                     case Blending.Dynamic_Morph:
-                        result.AddSamplerParameter("blend_map");
-                        result.AddFloatParameter("global_albedo_tint");
-                        result.AddFloatParameter("dynamic_material");
-                        result.AddFloatParameter("transition_sharpness");
-                        result.AddFloatParameter("transition_threshold");
+                        result.AddSamplerWithFloatAndColorParameter("blend_map", 1.0f, new ShaderColor(255, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatWithColorParameter("global_albedo_tint", new ShaderColor(255, 255, 255, 255), 1.0f);
+                        result.AddFloat4ColorParameter("dynamic_material");
+                        result.AddFloatParameter("transition_sharpness", 4f);
+                        result.AddFloatParameter("transition_threshold", 1.0f);
                         rmopName = @"shaders\terrain_options\dynamic_blending";
                         break;
+                    case Blending.Distance_Blend_Base:                        
+                        result.AddSamplerWithFloatAndColorParameter("blend_map", 1.0f, new ShaderColor(255, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatWithColorParameter("global_albedo_tint", new ShaderColor(255, 255, 255, 255), 1.0f);
+                        result.AddFloat4ColorParameter("blend_target_0", new ShaderColor(0, 188, 188, 188));
+                        result.AddFloat4ColorParameter("blend_target_1", new ShaderColor(0, 188, 188, 188));
+                        result.AddFloat4ColorParameter("blend_target_2", new ShaderColor(0, 188, 188, 188));
+                        result.AddFloat4ColorParameter("blend_target_3", new ShaderColor(0, 188, 188, 188));
+                        result.AddFloatParameter("blend_offset", -1.0f);
+                        result.AddFloatParameter("blend_slope", 0.1f);
+                        result.AddFloatParameter("blend_max_0", 0.8f);
+                        result.AddFloatParameter("blend_max_1", 0.8f);
+                        result.AddFloatParameter("blend_max_2", 0.8f);
+                        result.AddFloatParameter("blend_max_3", 0.8f);
+                        rmopName = @"shaders\terrain_options\distance_blend_base";
+                        break;
                 }
             }
-            if (methodName == "environment_mapping")
-            {
-                optionName = ((Environment_Mapping)option).ToString();
 
-                switch ((Environment_Mapping)option)
+            if (methodName == "environment_map")
+            {
+                optionName = ((Environment_Map)option).ToString();
+
+                switch ((Environment_Map)option)
                 {
-                    case Environment_Mapping.Per_Pixel:
-                        result.AddSamplerWithoutXFormParameter("environment_map");
-                        result.AddFloat3ColorParameter("env_tint_color");
-                        result.AddFloatParameter("env_roughness_scale");
+                    case Environment_Map.None:
+                        break;
+                    case Environment_Map.Per_Pixel:
+                        result.AddSamplerAddressWithColorParameter("environment_map", ShaderOptionParameter.ShaderAddressMode.Clamp, new ShaderColor(0, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\default_dynamic_cube_map");
+                        result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("env_roughness_scale", 1.0f);
                         rmopName = @"shaders\shader_options\env_map_per_pixel";
                         break;
-                    case Environment_Mapping.Dynamic:
-                    case Environment_Mapping.Dynamic_Reach:
-                        result.AddFloat3ColorParameter("env_tint_color");
-                        result.AddSamplerParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0);
-                        result.AddSamplerParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1);
-                        result.AddFloatParameter("env_roughness_scale");
+                    case Environment_Map.Dynamic:
+                        result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
+                        result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerExternAddressParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddFloatParameter("env_roughness_scale", 1.0f);
+                        result.AddFloatParameter("env_roughness_offset", 0.5f);
                         rmopName = @"shaders\shader_options\env_map_dynamic";
+                        break;
+                    case Environment_Map.Dynamic_Reach:
                         break;
                 }
             }
+
             if (methodName == "material_0")
             {
-                optionName = ((Material)option).ToString();
+                optionName = ((Material_0)option).ToString();
 
-                switch ((Material)option)
+                switch ((Material_0)option)
                 {
-                    case Material.Diffuse_Only:
-                        result.AddSamplerParameter("base_map_m_0");
-                        result.AddSamplerParameter("detail_map_m_0");
-                        result.AddSamplerParameter("bump_map_m_0");
-                        result.AddSamplerParameter("detail_bump_m_0");
+                    case Material_0.Diffuse_Only:
+                        result.AddSamplerParameter("base_map_m_0", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_m_0", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("bump_map_m_0", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("detail_bump_m_0", @"shaders\default_bitmaps\bitmaps\default_vector");
                         rmopName = @"shaders\terrain_options\diffuse_only_m_0";
                         break;
-                    case Material.Diffuse_Plus_Specular:
-                        result.AddSamplerParameter("base_map_m_0");
-                        result.AddSamplerParameter("detail_map_m_0");
-                        result.AddSamplerParameter("bump_map_m_0");
-                        result.AddSamplerParameter("detail_bump_m_0");
-                        result.AddFloatParameter("diffuse_coefficient_m_0");
+                    case Material_0.Diffuse_Plus_Specular:
+                        result.AddSamplerParameter("base_map_m_0", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_m_0", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("bump_map_m_0", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerWithFloatParameter("detail_bump_m_0", 1.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloatParameter("diffuse_coefficient_m_0", 1.0f);
                         result.AddFloatParameter("specular_coefficient_m_0");
-                        result.AddFloatParameter("specular_power_m_0");
-                        result.AddFloat3Parameter("specular_tint_m_0");
-                        result.AddFloatParameter("fresnel_curve_steepness_m_0");
-                        result.AddFloatParameter("area_specular_contribution_m_0");
-                        result.AddFloatParameter("analytical_specular_contribution_m_0");
+                        result.AddFloatParameter("specular_power_m_0", 10.0f);
+                        result.AddFloat3ColorParameter("specular_tint_m_0", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness_m_0", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution_m_0", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution_m_0", 0.5f);
                         result.AddFloatParameter("environment_specular_contribution_m_0");
                         result.AddFloatParameter("albedo_specular_tint_blend_m_0");
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_m_0";
                         break;
-                    case Material.Diffuse_Only_Plus_Self_Illum:
-                        result.AddSamplerParameter("base_map_m_0");
-                        result.AddSamplerParameter("bump_map_m_0");
-                        result.AddSamplerParameter("self_illum_map_m_0");
-                        result.AddSamplerParameter("self_illum_detail_map_m_0");
-                        result.AddFloat3Parameter("self_illum_color_m_0");
-                        result.AddFloatParameter("self_illum_intensity_m_0");
+                    case Material_0.Off:
+                        break;
+                    case Material_0.Diffuse_Only_Plus_Self_Illum:
+                        result.AddSamplerParameter("base_map_m_0", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("bump_map_m_0", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("self_illum_map_m_0", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("self_illum_detail_map_m_0", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat3ColorParameter("self_illum_color_m_0", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity_m_0", 1.0f);
                         rmopName = @"shaders\terrain_options\diffuse_only_plus_sefl_illum_m_0";
                         break;
-                    case Material.Diffuse_Plus_Specular_Plus_Self_Illum:
-                        result.AddSamplerParameter("base_map_m_0");
-                        result.AddSamplerParameter("bump_map_m_0");
-                        result.AddSamplerParameter("self_illum_map_m_0");
-                        result.AddSamplerParameter("self_illum_detail_map_m_0");
-                        result.AddFloat3Parameter("self_illum_color_m_0");
-                        result.AddFloatParameter("self_illum_intensity_m_0");
-                        result.AddFloatParameter("diffuse_coefficient_m_0");
+                    case Material_0.Diffuse_Plus_Specular_Plus_Self_Illum:
+                        result.AddSamplerParameter("base_map_m_0", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("bump_map_m_0", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("self_illum_map_m_0", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("self_illum_detail_map_m_0", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat3ColorParameter("self_illum_color_m_0", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity_m_0", 1.0f);
+                        result.AddFloatParameter("diffuse_coefficient_m_0", 1.0f);
                         result.AddFloatParameter("specular_coefficient_m_0");
-                        result.AddFloatParameter("specular_power_m_0");
-                        result.AddFloat3Parameter("specular_tint_m_0");
-                        result.AddFloatParameter("fresnel_curve_steepness_m_0");
-                        result.AddFloatParameter("area_specular_contribution_m_0");
-                        result.AddFloatParameter("analytical_specular_contribution_m_0");
+                        result.AddFloatParameter("specular_power_m_0", 10.0f);
+                        result.AddFloat3ColorParameter("specular_tint_m_0", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness_m_0", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution_m_0", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution_m_0", 0.5f);
                         result.AddFloatParameter("environment_specular_contribution_m_0");
                         result.AddFloatParameter("albedo_specular_tint_blend_m_0");
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_plus_self_illumm_0";
                         break;
-                    case Material.Diffuse_Plus_Specular_Plus_Heightmap:
-                        result.AddSamplerParameter("base_map_m_0");
-                        result.AddSamplerParameter("detail_map_m_0");
-                        result.AddSamplerParameter("bump_map_m_0");
-                        result.AddSamplerParameter("detail_bump_m_0");
-                        result.AddSamplerParameter("heightmap_m_0");
+                    case Material_0.Diffuse_Plus_Specular_Plus_Heightmap:
+                        result.AddSamplerParameter("base_map_m_0", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_m_0", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("bump_map_m_0", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerWithFloatParameter("detail_bump_m_0", 1.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("heightmap_m_0", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddBooleanParameter("heightmap_invert_m_0");
-                        result.AddFloatParameter("diffuse_coefficient_m_0");
+                        result.AddFloatParameter("diffuse_coefficient_m_0", 1.0f);
                         result.AddFloatParameter("specular_coefficient_m_0");
-                        result.AddFloatParameter("specular_power_m_0");
-                        result.AddFloat3Parameter("specular_tint_m_0");
-                        result.AddFloatParameter("fresnel_curve_steepness_m_0");
-                        result.AddFloatParameter("area_specular_contribution_m_0");
-                        result.AddFloatParameter("analytical_specular_contribution_m_0");
+                        result.AddFloatParameter("specular_power_m_0", 10.0f);
+                        result.AddFloat3ColorParameter("specular_tint_m_0", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness_m_0", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution_m_0", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution_m_0", 0.5f);
                         result.AddFloatParameter("environment_specular_contribution_m_0");
                         result.AddFloatParameter("albedo_specular_tint_blend_m_0");
-                        result.AddFloatParameter("smooth_zone_m_0");
+                        result.AddFloatParameter("smooth_zone_m_0", 10.0f);
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_plus_heightmap_m_0";
                         break;
-                    case Material.Diffuse_Plus_Two_Detail:
-                        result.AddSamplerParameter("base_map_m_0");
-                        result.AddSamplerParameter("detail_map_m_0");
-                        result.AddSamplerParameter("detail_map2_m_0");
-                        result.AddSamplerParameter("bump_map_m_0");
-                        result.AddSamplerParameter("detail_bump_m_0");
+                    case Material_0.Diffuse_Plus_Two_Detail:
+                        result.AddSamplerParameter("base_map_m_0", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_m_0", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("detail_map2_m_0", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("bump_map_m_0", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("detail_bump_m_0", @"shaders\default_bitmaps\bitmaps\default_vector");
                         rmopName = @"shaders\terrain_options\diffuse_plus_two_detail_m_0";
                         break;
-                    case Material.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
-                        result.AddSamplerParameter("base_map_m_0");
-                        result.AddSamplerParameter("detail_map_m_0");
-                        result.AddSamplerParameter("bump_map_m_0");
-                        result.AddSamplerParameter("detail_bump_m_0");
-                        result.AddSamplerParameter("heightmap_m_0");
+                    case Material_0.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
+                        result.AddSamplerParameter("base_map_m_0", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_m_0", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("bump_map_m_0", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerWithFloatParameter("detail_bump_m_0", 1.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("heightmap_m_0", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddBooleanParameter("heightmap_invert_m_0");
-                        result.AddFloatParameter("diffuse_coefficient_m_0");
+                        result.AddFloatParameter("diffuse_coefficient_m_0", 1.0f);
                         result.AddFloatParameter("specular_coefficient_m_0");
-                        result.AddFloatParameter("specular_power_m_0");
-                        result.AddFloat3Parameter("specular_tint_m_0");
-                        result.AddFloatParameter("fresnel_curve_steepness_m_0");
-                        result.AddFloatParameter("area_specular_contribution_m_0");
-                        result.AddFloatParameter("analytical_specular_contribution_m_0");
+                        result.AddFloatParameter("specular_power_m_0", 10.0f);
+                        result.AddFloat3ColorParameter("specular_tint_m_0", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness_m_0", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution_m_0", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution_m_0", 0.5f);
                         result.AddFloatParameter("environment_specular_contribution_m_0");
                         result.AddFloatParameter("albedo_specular_tint_blend_m_0");
-                        result.AddFloatParameter("smooth_zone_m_0");
-                        result.AddFloatParameter("up_vector_scale_m_0");
+                        result.AddFloatParameter("smooth_zone_m_0", 10.0f);
+                        result.AddFloatParameter("up_vector_scale_m_0", 1.0f);
                         result.AddFloatParameter("up_vector_shift_m_0");
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_plus_up_vector_plus_heightmap_m_0";
                         break;
                 }
             }
+
             if (methodName == "material_1")
             {
-                optionName = ((Material1)option).ToString();
+                optionName = ((Material_1)option).ToString();
 
-                switch ((Material1)option)
+                switch ((Material_1)option)
                 {
-                    case Material1.Diffuse_Only:
-                        result.AddSamplerParameter("base_map_m_1");
-                        result.AddSamplerParameter("detail_map_m_1");
-                        result.AddSamplerParameter("bump_map_m_1");
-                        result.AddSamplerParameter("detail_bump_m_1");
+                    case Material_1.Diffuse_Only:
+                        result.AddSamplerParameter("base_map_m_1", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_m_1", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("bump_map_m_1", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("detail_bump_m_1", @"shaders\default_bitmaps\bitmaps\default_vector");
                         rmopName = @"shaders\terrain_options\diffuse_only_m_1";
                         break;
-                    case Material1.Diffuse_Plus_Specular:
-                        result.AddSamplerParameter("base_map_m_1");
-                        result.AddSamplerParameter("detail_map_m_1");
-                        result.AddSamplerParameter("bump_map_m_1");
-                        result.AddSamplerParameter("detail_bump_m_1");
-                        result.AddFloatParameter("diffuse_coefficient_m_1");
+                    case Material_1.Diffuse_Plus_Specular:
+                        result.AddSamplerParameter("base_map_m_1", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_m_1", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("bump_map_m_1", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerWithFloatParameter("detail_bump_m_1", 1.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloatParameter("diffuse_coefficient_m_1", 1.0f);
                         result.AddFloatParameter("specular_coefficient_m_1");
-                        result.AddFloatParameter("specular_power_m_1");
-                        result.AddFloat3Parameter("specular_tint_m_1");
-                        result.AddFloatParameter("fresnel_curve_steepness_m_1");
-                        result.AddFloatParameter("area_specular_contribution_m_1");
-                        result.AddFloatParameter("analytical_specular_contribution_m_1");
+                        result.AddFloatParameter("specular_power_m_1", 10.0f);
+                        result.AddFloat3ColorParameter("specular_tint_m_1", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness_m_1", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution_m_1", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution_m_1", 0.5f);
                         result.AddFloatParameter("environment_specular_contribution_m_1");
                         result.AddFloatParameter("albedo_specular_tint_blend_m_1");
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_m_1";
                         break;
-                    case Material1.Diffuse_Only_Plus_Self_Illum:
-                        result.AddSamplerParameter("base_map_m_1");
-                        result.AddSamplerParameter("bump_map_m_1");
-                        result.AddSamplerParameter("self_illum_map_m_1");
-                        result.AddSamplerParameter("self_illum_detail_map_m_1");
-                        result.AddFloat3Parameter("self_illum_color_m_1");
-                        result.AddFloatParameter("self_illum_intensity_m_1");
+                    case Material_1.Off:
+                        break;
+                    case Material_1.Diffuse_Only_Plus_Self_Illum:
+                        result.AddSamplerParameter("base_map_m_1", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("bump_map_m_1", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("self_illum_map_m_1", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("self_illum_detail_map_m_1", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat3ColorParameter("self_illum_color_m_1", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity_m_1", 1.0f);
                         rmopName = @"shaders\terrain_options\diffuse_only_plus_sefl_illum_m_1";
                         break;
-                    case Material1.Diffuse_Plus_Specular_Plus_Self_Illum:
-                        result.AddSamplerParameter("base_map_m_1");
-                        result.AddSamplerParameter("bump_map_m_1");
-                        result.AddSamplerParameter("self_illum_map_m_1");
-                        result.AddSamplerParameter("self_illum_detail_map_m_1");
-                        result.AddFloat3Parameter("self_illum_color_m_1");
-                        result.AddFloatParameter("self_illum_intensity_m_1");
-                        result.AddFloatParameter("diffuse_coefficient_m_1");
+                    case Material_1.Diffuse_Plus_Specular_Plus_Self_Illum:
+                        result.AddSamplerParameter("base_map_m_1", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("bump_map_m_1", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("self_illum_map_m_1", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("self_illum_detail_map_m_1", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat3ColorParameter("self_illum_color_m_1", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity_m_1", 1.0f);
+                        result.AddFloatParameter("diffuse_coefficient_m_1", 1.0f);
                         result.AddFloatParameter("specular_coefficient_m_1");
-                        result.AddFloatParameter("specular_power_m_1");
-                        result.AddFloat3Parameter("specular_tint_m_1");
-                        result.AddFloatParameter("fresnel_curve_steepness_m_1");
-                        result.AddFloatParameter("area_specular_contribution_m_1");
-                        result.AddFloatParameter("analytical_specular_contribution_m_1");
+                        result.AddFloatParameter("specular_power_m_1", 10.0f);
+                        result.AddFloat3ColorParameter("specular_tint_m_1", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness_m_1", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution_m_1", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution_m_1", 0.5f);
                         result.AddFloatParameter("environment_specular_contribution_m_1");
                         result.AddFloatParameter("albedo_specular_tint_blend_m_1");
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_plus_self_illumm_1";
                         break;
-                    case Material1.Diffuse_Plus_Specular_Plus_Heightmap:
-                        result.AddSamplerParameter("base_map_m_1");
-                        result.AddSamplerParameter("detail_map_m_1");
-                        result.AddSamplerParameter("bump_map_m_1");
-                        result.AddSamplerParameter("detail_bump_m_1");
-                        result.AddSamplerParameter("heightmap_m_1");
+                    case Material_1.Diffuse_Plus_Specular_Plus_Heightmap:
+                        result.AddSamplerParameter("base_map_m_1", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_m_1", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("bump_map_m_1", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerWithFloatParameter("detail_bump_m_1", 1.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("heightmap_m_1", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddBooleanParameter("heightmap_invert_m_1");
-                        result.AddFloatParameter("diffuse_coefficient_m_1");
+                        result.AddFloatParameter("diffuse_coefficient_m_1", 1.0f);
                         result.AddFloatParameter("specular_coefficient_m_1");
-                        result.AddFloatParameter("specular_power_m_1");
-                        result.AddFloat3Parameter("specular_tint_m_1");
-                        result.AddFloatParameter("fresnel_curve_steepness_m_1");
-                        result.AddFloatParameter("area_specular_contribution_m_1");
-                        result.AddFloatParameter("analytical_specular_contribution_m_1");
+                        result.AddFloatParameter("specular_power_m_1", 10.0f);
+                        result.AddFloat3ColorParameter("specular_tint_m_1", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness_m_1", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution_m_1", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution_m_1", 0.5f);
                         result.AddFloatParameter("environment_specular_contribution_m_1");
                         result.AddFloatParameter("albedo_specular_tint_blend_m_1");
-                        result.AddFloatParameter("smooth_zone_m_1");
+                        result.AddFloatParameter("smooth_zone_m_1", 10.0f);
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_plus_heightmap_m_1";
                         break;
-                    case Material1.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
-                        result.AddSamplerParameter("base_map_m_1");
-                        result.AddSamplerParameter("detail_map_m_1");
-                        result.AddSamplerParameter("bump_map_m_1");
-                        result.AddSamplerParameter("detail_bump_m_1");
-                        result.AddSamplerParameter("heightmap_m_1");
+                    case Material_1.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
+                        result.AddSamplerParameter("base_map_m_1", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_m_1", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("bump_map_m_1", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerWithFloatParameter("detail_bump_m_1", 1.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("heightmap_m_1", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddBooleanParameter("heightmap_invert_m_1");
-                        result.AddFloatParameter("diffuse_coefficient_m_1");
+                        result.AddFloatParameter("diffuse_coefficient_m_1", 1.0f);
                         result.AddFloatParameter("specular_coefficient_m_1");
-                        result.AddFloatParameter("specular_power_m_1");
-                        result.AddFloat3Parameter("specular_tint_m_1");
-                        result.AddFloatParameter("fresnel_curve_steepness_m_1");
-                        result.AddFloatParameter("area_specular_contribution_m_1");
-                        result.AddFloatParameter("analytical_specular_contribution_m_1");
+                        result.AddFloatParameter("specular_power_m_1", 10.0f);
+                        result.AddFloat3ColorParameter("specular_tint_m_1", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness_m_1", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution_m_1", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution_m_1", 0.5f);
                         result.AddFloatParameter("environment_specular_contribution_m_1");
                         result.AddFloatParameter("albedo_specular_tint_blend_m_1");
-                        result.AddFloatParameter("smooth_zone_m_1");
-                        result.AddFloatParameter("up_vector_scale_m_1");
+                        result.AddFloatParameter("smooth_zone_m_1", 10.0f);
+                        result.AddFloatParameter("up_vector_scale_m_1", 1.0f);
                         result.AddFloatParameter("up_vector_shift_m_1");
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_plus_up_vector_plus_heightmap_m_1";
                         break;
                 }
             }
+
             if (methodName == "material_2")
             {
-                optionName = ((Material2)option).ToString();
+                optionName = ((Material_2)option).ToString();
 
-                switch ((Material2)option)
+                switch ((Material_2)option)
                 {
-                    case Material2.Diffuse_Only:
-                        result.AddSamplerParameter("base_map_m_2");
-                        result.AddSamplerParameter("detail_map_m_2");
-                        result.AddSamplerParameter("bump_map_m_2");
-                        result.AddSamplerParameter("detail_bump_m_2");
+                    case Material_2.Diffuse_Only:
+                        result.AddSamplerParameter("base_map_m_2", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_m_2", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("bump_map_m_2", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("detail_bump_m_2", @"shaders\default_bitmaps\bitmaps\default_vector");
                         rmopName = @"shaders\terrain_options\diffuse_only_m_2";
                         break;
-                    case Material2.Diffuse_Plus_Specular:
-                        result.AddSamplerParameter("base_map_m_2");
-                        result.AddSamplerParameter("detail_map_m_2");
-                        result.AddSamplerParameter("bump_map_m_2");
-                        result.AddSamplerParameter("detail_bump_m_2");
-                        result.AddFloatParameter("diffuse_coefficient_m_2");
+                    case Material_2.Diffuse_Plus_Specular:
+                        result.AddSamplerParameter("base_map_m_2", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_m_2", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("bump_map_m_2", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerWithFloatParameter("detail_bump_m_2", 1.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloatParameter("diffuse_coefficient_m_2", 1.0f);
                         result.AddFloatParameter("specular_coefficient_m_2");
-                        result.AddFloatParameter("specular_power_m_2");
-                        result.AddFloat3Parameter("specular_tint_m_2");
-                        result.AddFloatParameter("fresnel_curve_steepness_m_2");
-                        result.AddFloatParameter("area_specular_contribution_m_2");
-                        result.AddFloatParameter("analytical_specular_contribution_m_2");
+                        result.AddFloatParameter("specular_power_m_2", 10.0f);
+                        result.AddFloat3ColorParameter("specular_tint_m_2", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness_m_2", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution_m_2", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution_m_2", 0.5f);
                         result.AddFloatParameter("environment_specular_contribution_m_2");
                         result.AddFloatParameter("albedo_specular_tint_blend_m_2");
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_m_2";
                         break;
-                    case Material2.Diffuse_Only_Plus_Self_Illum:
-                        result.AddSamplerParameter("base_map_m_2");
-                        result.AddSamplerParameter("bump_map_m_2");
-                        result.AddSamplerParameter("self_illum_map_m_2");
-                        result.AddSamplerParameter("self_illum_detail_map_m_2");
-                        result.AddFloat3Parameter("self_illum_color_m_2");
-                        result.AddFloatParameter("self_illum_intensity_m_2");
+                    case Material_2.Off:
+                        break;
+                    case Material_2.Diffuse_Only_Plus_Self_Illum:
+                        result.AddSamplerParameter("base_map_m_2", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("bump_map_m_2", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("self_illum_map_m_2", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("self_illum_detail_map_m_2", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat3ColorParameter("self_illum_color_m_2", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity_m_2", 1.0f);
                         rmopName = @"shaders\terrain_options\diffuse_only_plus_sefl_illum_m_2";
                         break;
-                    case Material2.Diffuse_Plus_Specular_Plus_Self_Illum:
-                        result.AddSamplerParameter("base_map_m_2");
-                        result.AddSamplerParameter("bump_map_m_2");
-                        result.AddSamplerParameter("self_illum_map_m_2");
-                        result.AddSamplerParameter("self_illum_detail_map_m_2");
-                        result.AddFloat3Parameter("self_illum_color_m_2");
-                        result.AddFloatParameter("self_illum_intensity_m_2");
-                        result.AddFloatParameter("diffuse_coefficient_m_2");
+                    case Material_2.Diffuse_Plus_Specular_Plus_Self_Illum:
+                        result.AddSamplerParameter("base_map_m_2", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("bump_map_m_2", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("self_illum_map_m_2", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("self_illum_detail_map_m_2", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddFloat3ColorParameter("self_illum_color_m_2", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("self_illum_intensity_m_2", 1.0f);
+                        result.AddFloatParameter("diffuse_coefficient_m_2", 1.0f);
                         result.AddFloatParameter("specular_coefficient_m_2");
-                        result.AddFloatParameter("specular_power_m_2");
-                        result.AddFloat3Parameter("specular_tint_m_2");
-                        result.AddFloatParameter("fresnel_curve_steepness_m_2");
-                        result.AddFloatParameter("area_specular_contribution_m_2");
-                        result.AddFloatParameter("analytical_specular_contribution_m_2");
+                        result.AddFloatParameter("specular_power_m_2", 10.0f);
+                        result.AddFloat3ColorParameter("specular_tint_m_2", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness_m_2", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution_m_2", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution_m_2", 0.5f);
                         result.AddFloatParameter("environment_specular_contribution_m_2");
                         result.AddFloatParameter("albedo_specular_tint_blend_m_2");
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_plus_self_illumm_2";
                         break;
                 }
             }
+
             if (methodName == "material_3")
             {
-                optionName = ((Material_No_Detail_Bump)option).ToString();
+                optionName = ((Material_3)option).ToString();
 
-                switch ((Material_No_Detail_Bump)option)
+                switch ((Material_3)option)
                 {
-                    case Material_No_Detail_Bump.Diffuse_Only:
-                        result.AddSamplerParameter("base_map_m_3");
-                        result.AddSamplerParameter("detail_map_m_3");
-                        result.AddSamplerParameter("bump_map_m_3");
-                        result.AddSamplerParameter("detail_bump_m_3");
+                    case Material_3.Off:
+                        break;
+                    case Material_3.Diffuse_Only_Four_Material_Shaders_Disable_Detail_Bump:
+                        result.AddSamplerParameter("base_map_m_3", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_m_3", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("bump_map_m_3", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerParameter("detail_bump_m_3", @"shaders\default_bitmaps\bitmaps\default_vector");
                         rmopName = @"shaders\terrain_options\diffuse_only_m_3";
                         break;
-                    case Material_No_Detail_Bump.Diffuse_Plus_Specular:
-                        result.AddSamplerParameter("base_map_m_3");
-                        result.AddSamplerParameter("detail_map_m_3");
-                        result.AddSamplerParameter("bump_map_m_3");
-                        result.AddSamplerParameter("detail_bump_m_3");
-                        result.AddFloatParameter("diffuse_coefficient_m_3");
+                    case Material_3.Diffuse_Plus_Specular_Four_Material_Shaders_Disable_Detail_Bump:
+                        result.AddSamplerParameter("base_map_m_3", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("detail_map_m_3", @"shaders\default_bitmaps\bitmaps\default_detail");
+                        result.AddSamplerParameter("bump_map_m_3", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerWithFloatParameter("detail_bump_m_3", 1.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloatParameter("diffuse_coefficient_m_3", 1.0f);
                         result.AddFloatParameter("specular_coefficient_m_3");
-                        result.AddFloatParameter("specular_power_m_3");
-                        result.AddFloat3Parameter("specular_tint_m_3");
-                        result.AddFloatParameter("fresnel_curve_steepness_m_3");
-                        result.AddFloatParameter("area_specular_contribution_m_3");
-                        result.AddFloatParameter("analytical_specular_contribution_m_3");
+                        result.AddFloatParameter("specular_power_m_3", 10.0f);
+                        result.AddFloat3ColorParameter("specular_tint_m_3", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness_m_3", 5.0f);
+                        result.AddFloatParameter("area_specular_contribution_m_3", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution_m_3", 0.5f);
                         result.AddFloatParameter("environment_specular_contribution_m_3");
                         result.AddFloatParameter("albedo_specular_tint_blend_m_3");
                         rmopName = @"shaders\terrain_options\diffuse_plus_specular_m_3";
@@ -942,6 +470,44 @@ namespace HaloShaderGenerator.Terrain
                 }
             }
 
+            if (methodName == "wetness")
+            {
+                optionName = ((Wetness)option).ToString();
+
+                switch ((Wetness)option)
+                {
+                    case Wetness.Default:
+                        result.AddFloat3ColorParameter("wet_material_dim_tint", new ShaderColor(0, 216, 216, 235));
+                        result.AddFloatWithColorParameter("wet_material_dim_coefficient", new ShaderColor(0, 149, 149, 149), 1.0f);
+                        rmopName = @"shaders\wetness_options\wetness_simple";
+                        break;
+                    case Wetness.Proof:
+                        break;
+                    case Wetness.Flood:
+                        result.AddFloatWithColorParameter("wet_material_dim_coefficient", new ShaderColor(0, 149, 149, 149), 1.0f);
+                        result.AddFloat3ColorParameter("wet_material_dim_tint", new ShaderColor(0, 216, 216, 235));
+                        result.AddFloatParameter("wet_sheen_reflection_contribution", 0.3f);
+                        result.AddFloat3ColorParameter("wet_sheen_reflection_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("wet_sheen_thickness", 0.9f);
+                        result.AddSamplerParameter("wet_flood_slope_map", @"rasterizer\water\static_wave\static_wave_slope_water");
+                        result.AddSamplerFilterParameter("wet_noise_boundary_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"rasterizer\rain\rain_noise_boundary");
+                        result.AddFloatParameter("specular_mask_tweak_weight", 0.5f);
+                        result.AddFloatParameter("surface_tilt_tweak_weight");
+                        rmopName = @"shaders\wetness_options\wetness_flood";
+                        break;
+                    case Wetness.Ripples:
+                        result.AddFloatWithColorParameter("wet_material_dim_coefficient", new ShaderColor(0, 149, 149, 149), 1.0f);
+                        result.AddFloat3ColorParameter("wet_material_dim_tint", new ShaderColor(0, 216, 216, 235));
+                        result.AddFloatParameter("wet_sheen_reflection_contribution", 0.37f);
+                        result.AddFloat3ColorParameter("wet_sheen_reflection_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("wet_sheen_thickness", 0.4f);
+                        result.AddSamplerFilterParameter("wet_noise_boundary_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"rasterizer\rain\rain_noise_boundary");
+                        result.AddFloatParameter("specular_mask_tweak_weight", 0.5f);
+                        result.AddFloatParameter("surface_tilt_tweak_weight", 0.3f);
+                        rmopName = @"shaders\wetness_options\wetness_ripples";
+                        break;
+                }
+            }
             return result;
         }
 
@@ -957,28 +523,290 @@ namespace HaloShaderGenerator.Terrain
                 case TerrainMethods.Blending:
                     return Enum.GetValues(typeof(Blending));
                 case TerrainMethods.Environment_Map:
-                    return Enum.GetValues(typeof(Environment_Mapping));
+                    return Enum.GetValues(typeof(Environment_Map));
                 case TerrainMethods.Material_0:
-                    return Enum.GetValues(typeof(Material));
+                    return Enum.GetValues(typeof(Material_0));
                 case TerrainMethods.Material_1:
-                    return Enum.GetValues(typeof(Material1));
+                    return Enum.GetValues(typeof(Material_1));
                 case TerrainMethods.Material_2:
-                    return Enum.GetValues(typeof(Material2));
+                    return Enum.GetValues(typeof(Material_2));
                 case TerrainMethods.Material_3:
-                    return Enum.GetValues(typeof(Material_No_Detail_Bump));
+                    return Enum.GetValues(typeof(Material_3));
+                case TerrainMethods.Wetness:
+                    return Enum.GetValues(typeof(Wetness));
             }
 
             return null;
         }
 
-        public byte[] ValidateOptions(byte[] options)
+        public Array GetEntryPointOrder()
         {
-            List<byte> optionList = new List<byte>(options);
+            return new ShaderStage[]
+            {
+                ShaderStage.Albedo,
+                ShaderStage.Static_Per_Pixel,
+                ShaderStage.Static_Per_Vertex,
+                ShaderStage.Static_Sh,
+                ShaderStage.Dynamic_Light,
+                ShaderStage.Lightmap_Debug_Mode,
+                ShaderStage.Shadow_Generate,
+                ShaderStage.Dynamic_Light_Cinematic,
+                ShaderStage.Static_Prt_Quadratic,
+                ShaderStage.Static_Prt_Linear,
+                ShaderStage.Static_Prt_Ambient
+                //ShaderStage.Stipple,
+                //ShaderStage.Imposter_Static_Sh,
+                //ShaderStage.Imposter_Static_Prt_Ambient
+            };
+        }
 
-            while (optionList.Count < GetMethodCount())
-                optionList.Add(0);
+        public Array GetVertexTypeOrder()
+        {
+            return new VertexType[]
+            {
+                VertexType.World,
+                VertexType.Rigid,
+                VertexType.Skinned
+            };
+        }
 
-            return optionList.ToArray();
+        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "blending")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "blend_type";
+            }
+
+            if (methodName == "environment_map")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "envmap_type";
+            }
+
+            if (methodName == "material_0")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "material_0_type";
+            }
+
+            if (methodName == "material_1")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "material_1_type";
+            }
+
+            if (methodName == "material_2")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "material_2_type";
+            }
+
+            if (methodName == "material_3")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "material_3_type";
+            }
+
+            if (methodName == "wetness")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "calc_wetness_ps";
+            }
+        }
+
+        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "blending")
+            {
+                switch ((Blending)option)
+                {
+                    case Blending.Morph:
+                        vertexFunction = "invalid";
+                        pixelFunction = "morph";
+                        break;
+                    case Blending.Dynamic_Morph:
+                        vertexFunction = "invalid";
+                        pixelFunction = "dynamic";
+                        break;
+                    case Blending.Distance_Blend_Base:
+                        vertexFunction = "invalid";
+                        pixelFunction = "distance_blend_base";
+                        break;
+                }
+            }
+
+            if (methodName == "environment_map")
+            {
+                switch ((Environment_Map)option)
+                {
+                    case Environment_Map.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "none";
+                        break;
+                    case Environment_Map.Per_Pixel:
+                        vertexFunction = "invalid";
+                        pixelFunction = "per_pixel";
+                        break;
+                    case Environment_Map.Dynamic:
+                        vertexFunction = "invalid";
+                        pixelFunction = "dynamic";
+                        break;
+                    case Environment_Map.Dynamic_Reach:
+                        vertexFunction = "invalid";
+                        pixelFunction = "dynamic_reach";
+                        break;
+                }
+            }
+
+            if (methodName == "material_0")
+            {
+                switch ((Material_0)option)
+                {
+                    case Material_0.Diffuse_Only:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_only";
+                        break;
+                    case Material_0.Diffuse_Plus_Specular:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_plus_specular";
+                        break;
+                    case Material_0.Off:
+                        vertexFunction = "invalid";
+                        pixelFunction = "off";
+                        break;
+                    case Material_0.Diffuse_Only_Plus_Self_Illum:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_only_plus_self_illum";
+                        break;
+                    case Material_0.Diffuse_Plus_Specular_Plus_Self_Illum:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_plus_specular_plus_self_illum";
+                        break;
+                    case Material_0.Diffuse_Plus_Specular_Plus_Heightmap:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_plus_specular_plus_heightmap";
+                        break;
+                    case Material_0.Diffuse_Plus_Two_Detail:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_plus_two_detail";
+                        break;
+                    case Material_0.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_plus_specular_plus_up_vector_plus_heightmap";
+                        break;
+                }
+            }
+
+            if (methodName == "material_1")
+            {
+                switch ((Material_1)option)
+                {
+                    case Material_1.Diffuse_Only:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_only";
+                        break;
+                    case Material_1.Diffuse_Plus_Specular:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_plus_specular";
+                        break;
+                    case Material_1.Off:
+                        vertexFunction = "invalid";
+                        pixelFunction = "off";
+                        break;
+                    case Material_1.Diffuse_Only_Plus_Self_Illum:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_only_plus_self_illum";
+                        break;
+                    case Material_1.Diffuse_Plus_Specular_Plus_Self_Illum:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_plus_specular_plus_self_illum";
+                        break;
+                    case Material_1.Diffuse_Plus_Specular_Plus_Heightmap:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_plus_specular_plus_heightmap";
+                        break;
+                    case Material_1.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_plus_specular_plus_up_vector_plus_heightmap";
+                        break;
+                }
+            }
+
+            if (methodName == "material_2")
+            {
+                switch ((Material_2)option)
+                {
+                    case Material_2.Diffuse_Only:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_only";
+                        break;
+                    case Material_2.Diffuse_Plus_Specular:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_plus_specular";
+                        break;
+                    case Material_2.Off:
+                        vertexFunction = "invalid";
+                        pixelFunction = "off";
+                        break;
+                    case Material_2.Diffuse_Only_Plus_Self_Illum:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_only_plus_self_illum";
+                        break;
+                    case Material_2.Diffuse_Plus_Specular_Plus_Self_Illum:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_plus_specular_plus_self_illum";
+                        break;
+                }
+            }
+
+            if (methodName == "material_3")
+            {
+                switch ((Material_3)option)
+                {
+                    case Material_3.Off:
+                        vertexFunction = "invalid";
+                        pixelFunction = "off";
+                        break;
+                    case Material_3.Diffuse_Only_Four_Material_Shaders_Disable_Detail_Bump:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_only";
+                        break;
+                    case Material_3.Diffuse_Plus_Specular_Four_Material_Shaders_Disable_Detail_Bump:
+                        vertexFunction = "invalid";
+                        pixelFunction = "diffuse_plus_specular";
+                        break;
+                }
+            }
+
+            if (methodName == "wetness")
+            {
+                switch ((Wetness)option)
+                {
+                    case Wetness.Default:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_wetness_default_ps";
+                        break;
+                    case Wetness.Proof:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_wetness_proof_ps";
+                        break;
+                    case Wetness.Flood:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_wetness_flood_ps";
+                        break;
+                    case Wetness.Ripples:
+                        vertexFunction = "invalid";
+                        pixelFunction = "calc_wetness_ripples_ps";
+                        break;
+                }
+            }
         }
     }
 }

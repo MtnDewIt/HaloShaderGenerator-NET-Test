@@ -1,4 +1,3 @@
-﻿
 namespace HaloShaderGenerator.Beam
 {
     public enum BeamMethods
@@ -6,7 +5,8 @@ namespace HaloShaderGenerator.Beam
         Albedo,
         Blend_Mode,
         Black_Point,
-        Fog
+        Fog,
+        Depth_Fade
     }
 
     public enum Albedo
@@ -30,18 +30,25 @@ namespace HaloShaderGenerator.Beam
         Add_Src_Times_Dstalpha,
         Add_Src_Times_Srcalpha,
         Inv_Alpha_Blend,
-        Pre_Multiplied_Alpha,
+        Pre_Multiplied_Alpha
     }
 
     public enum Black_Point
     {
         Off,
-        On,
+        On
     }
 
     public enum Fog
     {
         Off,
+        On
+    }
+
+    public enum Depth_Fade
+    {
+        Off,
         On,
+        Palette_Shift
     }
 }

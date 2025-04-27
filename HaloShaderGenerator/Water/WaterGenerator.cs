@@ -1,160 +1,14 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using System;
+using HaloShaderGenerator.Shared;
 
 namespace HaloShaderGenerator.Water
 {
     public class WaterGenerator : IShaderGenerator
     {
-        private bool TemplateGenerationValid;
-        private bool ApplyFixes;
-
-        Waveshape waveshape;
-        Watercolor watercolor;
-        Reflection reflection;
-        Refraction refraction;
-        Bankalpha bankalpha;
-        Appearance appearance;
-        Global_Shape global_shape;
-        Foam foam;
-        Reach_Compatibility reach_compatibility;
-
-        public WaterGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
-
-        public WaterGenerator(Waveshape waveshape, Watercolor watercolor, Reflection reflection, Refraction refraction, 
-            Bankalpha bankalpha, Appearance appearance, Global_Shape global_shape, Foam foam, Reach_Compatibility reach_compatibility, bool applyFixes = false)
-        {
-            this.waveshape = waveshape;
-            this.watercolor = watercolor;
-            this.reflection = reflection;
-            this.refraction = refraction;
-            this.bankalpha = bankalpha;
-            this.appearance = appearance;
-            this.global_shape = global_shape;
-            this.foam = foam;
-            this.reach_compatibility = reach_compatibility;
-
-            ApplyFixes = applyFixes;
-            TemplateGenerationValid = true;
-        }
-
-        public WaterGenerator(byte[] options, bool applyFixes = false)
-        {
-            options = ValidateOptions(options);
-
-            this.waveshape = (Waveshape)options[0];
-            this.watercolor = (Watercolor)options[1];
-            this.reflection = (Reflection)options[2];
-            this.refraction = (Refraction)options[3];
-            this.bankalpha = (Bankalpha)options[4];
-            this.appearance = (Appearance)options[5];
-            this.global_shape = (Global_Shape)options[6];
-            this.foam = (Foam)options[7];
-            this.reach_compatibility = options.Length > 8 ? (Reach_Compatibility)options[8] : Reach_Compatibility.Disabled;
-
-            ApplyFixes = applyFixes;
-            TemplateGenerationValid = true;
-        }
-
-        public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Water, entryPoint, Shared.Blend_Mode.Opaque, 
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
-
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Waveshape>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Watercolor>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Reflection>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Refraction>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Bankalpha>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Appearance>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Global_Shape>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Foam>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Reach_Compatibility>());
-
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("waveshape", waveshape.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("watercolor", watercolor.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("reflection", reflection.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("refraction", refraction.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("bankalpha", bankalpha.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("appearance", appearance.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("global_shape", global_shape.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("foam", foam.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("reach_compatibility", reach_compatibility.ToString().ToLower()));
-
-            string entryName = entryPoint.ToString().ToLower() + "_ps";
-            switch (entryPoint)
-            {
-                case ShaderStage.Static_Prt_Linear:
-                case ShaderStage.Static_Prt_Quadratic:
-                case ShaderStage.Static_Prt_Ambient:
-                    entryName = "static_prt_ps";
-                    break;
-                case ShaderStage.Dynamic_Light_Cinematic:
-                    entryName = "dynamic_light_cine_ps";
-                    break;
-            }
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"water.fx", macros, entryName, "ps_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
-        {
-            return null;
-        }
-
-        public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!IsVertexFormatSupported(vertexType) || !IsEntryPointSupported(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Shader, entryPoint,
-                Shared.Blend_Mode.Opaque, Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, false, true, vertexType);
-
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Waveshape>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Watercolor>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Reflection>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Refraction>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Bankalpha>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Appearance>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Global_Shape>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Foam>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Reach_Compatibility>());
-
-            //macros.Add(ShaderGeneratorBase.CreateAutoMacro("waveshape", waveshape.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("watercolor", Watercolor.Pure.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("reflection", Reflection.None.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("refraction", Refraction.None.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("bankalpha", Bankalpha.None.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("appearance", Appearance.Default.ToString().ToLower()));
-            //macros.Add(ShaderGeneratorBase.CreateAutoMacro("global_shape", global_shape.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("foam", Foam.None.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("reach_compatibility", Reach_Compatibility.Disabled.ToString().ToLower()));
-
-            string entryName = TemplateGenerator.TemplateGenerator.GetEntryName(entryPoint, true);
-            string filename = TemplateGenerator.TemplateGenerator.GetSourceFilename(Globals.ShaderType.Water);
-            byte[] bytecode = ShaderGeneratorBase.GenerateSource(filename, macros, entryName, "vs_3_0");
-
-            return new ShaderGeneratorResult(bytecode);
-        }
-
-        public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-            return null;
-        }
-
         public int GetMethodCount()
         {
             return Enum.GetValues(typeof(WaterMethods)).Length;
@@ -183,264 +37,54 @@ namespace HaloShaderGenerator.Water
                 case WaterMethods.Reach_Compatibility:
                     return Enum.GetValues(typeof(Reach_Compatibility)).Length;
             }
+
             return -1;
         }
 
-        public int GetMethodOptionValue(int methodIndex)
-        {
-            switch ((WaterMethods)methodIndex)
-            {
-                case WaterMethods.Waveshape:
-                    return (int)waveshape;
-                case WaterMethods.Watercolor:
-                    return (int)watercolor;
-                case WaterMethods.Reflection:
-                    return (int)reflection;
-                case WaterMethods.Refraction:
-                    return (int)refraction;
-                case WaterMethods.Bankalpha:
-                    return (int)bankalpha;
-                case WaterMethods.Appearance:
-                    return (int)appearance;
-                case WaterMethods.Global_Shape:
-                    return (int)global_shape;
-                case WaterMethods.Foam:
-                    return (int)foam;
-                case WaterMethods.Reach_Compatibility:
-                    return (int)reach_compatibility;
-            }
-            return -1;
-        }
-
-        public bool IsEntryPointSupported(ShaderStage entryPoint)
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
         {
             switch (entryPoint)
             {
-                case ShaderStage.Static_Per_Pixel:
-                case ShaderStage.Static_Per_Vertex:
-                case ShaderStage.Water_Tessellation:
-                    return true;
+                default:
+                    return -1;
             }
-            return false;
         }
 
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index) => false;
-
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint) => false;
-
-        public bool IsPixelShaderShared(ShaderStage entryPoint) => false;
-
-        public bool IsVertexFormatSupported(VertexType vertexType) => vertexType == VertexType.Water;
-
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
-            return IsEntryPointSupported(entryPoint);
+            switch (entryPoint)
+            {
+                default:
+                    return false;
+            }
         }
 
-        public ShaderParameters GetPixelShaderParameters()
+        public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            switch (waveshape)
+            switch (entryPoint)
             {
-                case Waveshape.Default:
-                    result.AddFloatParameter("displacement_range_x");
-                    result.AddFloatParameter("displacement_range_y");
-                    result.AddFloatParameter("displacement_range_z");
-                    result.AddFloatParameter("slope_range_x");
-                    result.AddFloatParameter("slope_range_y");
-                    result.AddSamplerParameter("wave_displacement_array");
-                    result.AddFloatParameter("wave_height");
-                    result.AddFloatParameter("time_warp");
-                    result.AddSamplerParameter("wave_slope_array");
-                    result.AddFloatParameter("wave_height_aux");
-                    result.AddFloatParameter("time_warp_aux");
-                    result.AddFloatParameter("detail_slope_scale_x");
-                    result.AddFloatParameter("detail_slope_scale_y");
-                    result.AddFloatParameter("detail_slope_scale_z");
-                    result.AddFloatParameter("detail_slope_steepness");
-                    break;
-                case Waveshape.Bump:
-                    result.AddSamplerParameter("bump_map");
-                    result.AddSamplerParameter("bump_detail_map");
-                    break;
+                default:
+                    return false;
             }
-
-            switch (watercolor)
-            {
-                case Watercolor.Pure:
-                    result.AddFloat4Parameter("water_color_pure");
-                    break;
-                case Watercolor.Texture:
-                    result.AddSamplerWithoutXFormParameter("watercolor_texture");
-                    result.AddFloatParameter("watercolor_coefficient");
-                    break;
-            }
-
-            switch (reflection)
-            {
-                case Reflection.Static:
-                    result.AddSamplerWithoutXFormParameter("environment_map");
-                    result.AddFloatParameter("reflection_coefficient");
-                    result.AddFloatParameter("sunspot_cut");
-                    result.AddFloatParameter("shadow_intensity_mark");
-                    break;
-                case Reflection.Dynamic:
-                    result.AddFloatParameter("reflection_coefficient");
-                    break;
-            }
-
-            switch (refraction)
-            {
-                case Refraction.Dynamic:
-                    result.AddFloatParameter("refraction_texcoord_shift");
-                    result.AddFloatParameter("water_murkiness");
-                    result.AddFloatParameter("refraction_extinct_distance");
-                    result.AddFloatParameter("minimal_wave_disturbance");
-                    result.AddFloatParameter("refraction_depth_dominant_ratio");
-                    break;
-            }
-
-            switch (bankalpha)
-            {
-                case Bankalpha.Depth:
-                    result.AddFloatParameter("bankalpha_infuence_depth");
-                    break;
-                case Bankalpha.Paint:
-                    result.AddSamplerParameter("watercolor_texture");
-                    break;
-                case Bankalpha.From_Shape_Texture_Alpha:
-                    result.AddSamplerParameter("global_shape_texture"); //v
-                    break;
-            }
-
-            switch (appearance)
-            {
-                case Appearance.Default:
-                    result.AddFloatParameter("fresnel_coefficient");
-                    result.AddFloat4Parameter("water_diffuse");
-                    result.AddBooleanParameter("no_dynamic_lights");
-                    break;
-            }
-
-            switch (global_shape)
-            {
-                case Global_Shape.Paint:
-                    result.AddSamplerParameter("global_shape_texture"); //v
-                    break;
-                case Global_Shape.Depth:
-                    result.AddFloatParameter("globalshape_infuence_depth"); //v
-                    break;
-            }
-
-            switch (foam)
-            {
-                case Foam.None:
-                    result.AddSamplerParameter("foam_texture");
-                    result.AddSamplerParameter("foam_texture_detail");
-                    break;
-                case Foam.Auto:
-                    result.AddSamplerParameter("foam_texture");
-                    result.AddSamplerParameter("foam_texture_detail");
-                    result.AddFloatParameter("foam_height");
-                    result.AddFloatParameter("foam_pow");
-                    break;
-                case Foam.Paint:
-                    result.AddSamplerParameter("foam_texture");
-                    result.AddSamplerParameter("foam_texture_detail");
-                    result.AddSamplerParameter("global_shape_texture"); //v
-                    break;
-                case Foam.Both:
-                    result.AddSamplerParameter("foam_texture");
-                    result.AddSamplerParameter("foam_texture_detail");
-                    result.AddSamplerParameter("global_shape_texture"); //v
-                    result.AddFloatParameter("foam_height");
-                    result.AddFloatParameter("foam_pow");
-                    break;
-            }
-
-            switch (reach_compatibility)
-            {
-                case Reach_Compatibility.Enabled:
-                    result.AddFloatParameter("slope_scaler");
-                    result.AddFloatParameter("normal_variation_tweak");
-                    result.AddFloatParameter("fresnel_dark_spot");
-                    result.AddFloatParameter("foam_coefficient");
-                    result.AddFloatParameter("foam_cut");
-                    break;
-            }
-
-            return result;
         }
 
-        public ShaderParameters GetVertexShaderParameters()
+        public bool IsAutoMacro()
         {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            //result.AddPrefixedFloat4VertexParameter("waveshape", "category_");
-            //result.AddPrefixedFloat4VertexParameter("global_shape", "category_");
-            //result.AddPrefixedFloat4VertexParameter("reach_compatibility", "category_");
-
-            result.AddCategoryVertexParameter("waveshape");
-            result.AddCategoryVertexParameter("global_shape");
-            result.AddCategoryVertexParameter("reach_compatibility");
-
-            switch (waveshape)
-            {
-                case Waveshape.Default:
-                    result.AddFloatVertexParameter("displacement_range_x");
-                    result.AddFloatVertexParameter("displacement_range_y");
-                    result.AddFloatVertexParameter("displacement_range_z");
-                    result.AddSamplerVertexParameter("wave_displacement_array");
-                    result.AddFloatVertexParameter("wave_height");
-                    result.AddFloatVertexParameter("time_warp");
-                    result.AddSamplerVertexParameter("wave_slope_array");
-                    result.AddFloatVertexParameter("wave_height_aux");
-                    result.AddFloatVertexParameter("time_warp_aux");
-                    result.AddFloatVertexParameter("choppiness_forward");
-                    result.AddFloatVertexParameter("choppiness_backward");
-                    result.AddFloatVertexParameter("choppiness_side");
-                    result.AddFloatVertexParameter("wave_visual_damping_distance");
-                    break;
-            }
-
-            switch (global_shape)
-            {
-                case Global_Shape.Paint:
-                    result.AddSamplerVertexParameter("global_shape_texture"); //v
-                    break;
-                case Global_Shape.Depth:
-                    result.AddFloatVertexParameter("globalshape_infuence_depth"); //v
-                    break;
-            }
-
-            switch (foam)
-            {
-                case Foam.Paint:
-                    result.AddSamplerVertexParameter("global_shape_texture"); //v
-                    break;
-                case Foam.Both:
-                    result.AddSamplerVertexParameter("global_shape_texture"); //v
-                    break;
-            }
-
-            return result;
+            return true;
         }
 
-        public ShaderParameters GetGlobalParameters()
+        public ShaderParameters GetGlobalParameters(out string rmopName)
         {
             var result = new ShaderParameters();
-            result.AddFloat4Parameter("water_memory_export_addr", RenderMethodExtern.water_memory_export_address);
-            result.AddSamplerWithoutXFormParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
-            result.AddSamplerWithoutXFormParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
-            result.AddSamplerWithoutXFormParameter("depth_buffer", RenderMethodExtern.texture_global_target_z);
-            result.AddSamplerWithoutXFormParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture);
+
+            result.AddFloat3ColorExternParameter("water_memory_export_addr", RenderMethodExtern.water_memory_export_address);
+            result.AddSamplerExternParameter("scene_ldr_texture", RenderMethodExtern.scene_ldr_texture);
+            result.AddSamplerExternParameter("scene_hdr_texture", RenderMethodExtern.scene_hdr_texture);
+            result.AddSamplerExternFilterParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Bilinear);
+            result.AddSamplerExternFilterParameter("lightprobe_texture_array", RenderMethodExtern.texture_lightprobe_texture, ShaderOptionParameter.ShaderFilterMode.Bilinear);
+            //result.AddSamplerFilterAddressParameter("g_direction_lut", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            rmopName = @"shaders\water_options\water_global";
+
             return result;
         }
 
@@ -462,29 +106,34 @@ namespace HaloShaderGenerator.Water
                         result.AddFloatParameter("displacement_range_z");
                         result.AddFloatParameter("slope_range_x");
                         result.AddFloatParameter("slope_range_y");
-                        result.AddSamplerParameter("wave_displacement_array");
-                        result.AddFloatParameter("wave_height");
-                        result.AddFloatParameter("time_warp");
-                        result.AddSamplerParameter("wave_slope_array");
+                        result.AddSamplerParameter("wave_displacement_array", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("wave_height", 1.0f);
+                        result.AddFloatParameter("time_warp", 1.0f);
+                        result.AddSamplerParameter("wave_slope_array", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         result.AddFloatParameter("wave_height_aux");
-                        result.AddFloatParameter("time_warp_aux");
-                        result.AddFloatVertexParameter("choppiness_forward");
-                        result.AddFloatVertexParameter("choppiness_backward");
-                        result.AddFloatVertexParameter("choppiness_side");
-                        result.AddFloatParameter("detail_slope_scale_x");
-                        result.AddFloatParameter("detail_slope_scale_y");
-                        result.AddFloatParameter("detail_slope_scale_z");
-                        result.AddFloatParameter("detail_slope_steepness");
-                        result.AddFloatVertexParameter("wave_visual_damping_distance");
+                        result.AddFloatParameter("time_warp_aux", 1.0f);
+                        result.AddFloatParameter("choppiness_forward", 1.0f);
+                        result.AddFloatParameter("choppiness_backward", 1.0f);
+                        result.AddFloatParameter("choppiness_side", 0.4f);
+                        result.AddFloatParameter("detail_slope_scale_x", 10.0f);
+                        result.AddFloatParameter("detail_slope_scale_y", 5.0f);
+                        result.AddFloatParameter("detail_slope_scale_z", 2.0f);
+                        result.AddFloatParameter("detail_slope_steepness", 0.5f);
+                        result.AddFloatParameter("wave_visual_damping_distance", 4.0f);
+                        result.AddFloatParameter("wave_tessellation_level", 0.5f);
                         rmopName = @"shaders\water_options\waveshape_default";
                         break;
+                    case Waveshape.None:
+                        break;
                     case Waveshape.Bump:
-                        result.AddSamplerParameter("bump_map");
-                        result.AddSamplerParameter("bump_detail_map");
+                        result.AddSamplerParameter("bump_map", @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddSamplerWithScaleParameter("bump_detail_map", 16.0f, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        result.AddFloatParameter("wave_visual_damping_distance", 4.0f);
                         rmopName = @"shaders\water_options\waveshape_bump";
                         break;
                 }
             }
+
             if (methodName == "watercolor")
             {
                 optionName = ((Watercolor)option).ToString();
@@ -492,71 +141,92 @@ namespace HaloShaderGenerator.Water
                 switch ((Watercolor)option)
                 {
                     case Watercolor.Pure:
-                        result.AddFloat4Parameter("water_color_pure");
+                        result.AddFloat3ColorParameter("water_color_pure", new ShaderColor(0, 1, 16, 12));
                         rmopName = @"shaders\water_options\watercolor_pure";
                         break;
                     case Watercolor.Texture:
-                        result.AddSamplerWithoutXFormParameter("watercolor_texture");
-                        result.AddFloatParameter("watercolor_coefficient");
+                        result.AddSamplerParameter("watercolor_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("watercolor_coefficient", 1.0f);
                         rmopName = @"shaders\water_options\watercolor_texture";
                         break;
                 }
             }
+
             if (methodName == "reflection")
             {
                 optionName = ((Reflection)option).ToString();
 
                 switch ((Reflection)option)
                 {
+                    case Reflection.None:
+                        break;
                     case Reflection.Static:
-                        result.AddSamplerWithoutXFormParameter("environment_map");
-                        result.AddFloatParameter("reflection_coefficient");
-                        result.AddFloatParameter("sunspot_cut");
-                        result.AddFloatParameter("shadow_intensity_mark");
+                        result.AddSamplerAddressParameter("environment_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\default_dynamic_cube_map");
+                        result.AddFloatParameter("reflection_coefficient", 0.4f);
+                        result.AddFloatParameter("sunspot_cut", 0.2f);
+                        result.AddFloatParameter("shadow_intensity_mark", 0.5f);
                         rmopName = @"shaders\water_options\reflection_static";
                         break;
                     case Reflection.Dynamic:
-                        result.AddFloatParameter("reflection_coefficient");
+                        result.AddFloatParameter("reflection_coefficient", 0.4f);
+                        result.AddFloatParameter("sunspot_cut", 0.2f);
+                        result.AddFloatParameter("shadow_intensity_mark", 0.5f);
                         rmopName = @"shaders\water_options\reflection_dynamic";
+                        break;
+                    case Reflection.Static_Ssr:
+                        result.AddSamplerAddressParameter("environment_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\default_dynamic_cube_map");
+                        result.AddFloatParameter("reflection_coefficient", 0.4f);
+                        result.AddFloatParameter("sunspot_cut", 0.2f);
+                        result.AddFloatParameter("shadow_intensity_mark", 0.5f);
+                        result.AddFloatParameter("ssr_transparency", 1.0f);
+                        result.AddFloatParameter("ssr_smooth_factor", 5.0f);
+                        rmopName = @"shaders\water_options\reflection_static_ssr";
                         break;
                 }
             }
+
             if (methodName == "refraction")
             {
                 optionName = ((Refraction)option).ToString();
 
                 switch ((Refraction)option)
                 {
+                    case Refraction.None:
+                        break;
                     case Refraction.Dynamic:
-                        result.AddFloatParameter("refraction_texcoord_shift");
-                        result.AddFloatParameter("water_murkiness");
-                        result.AddFloatParameter("refraction_extinct_distance");
-                        result.AddFloatParameter("minimal_wave_disturbance");
+                        result.AddFloatParameter("refraction_texcoord_shift", 0.03f);
+                        result.AddFloatParameter("water_murkiness", 0.3f);
+                        result.AddFloatParameter("refraction_extinct_distance", 30f);
+                        result.AddFloatParameter("minimal_wave_disturbance", 0.2f);
                         result.AddFloatParameter("refraction_depth_dominant_ratio");
                         rmopName = @"shaders\water_options\refraction_dynamic";
                         break;
                 }
             }
+
             if (methodName == "bankalpha")
             {
                 optionName = ((Bankalpha)option).ToString();
 
                 switch ((Bankalpha)option)
                 {
+                    case Bankalpha.None:
+                        break;
                     case Bankalpha.Depth:
-                        result.AddFloatParameter("bankalpha_infuence_depth");
+                        result.AddFloatParameter("bankalpha_infuence_depth", 0.3f);
                         rmopName = @"shaders\water_options\bankalpha_depth";
                         break;
                     case Bankalpha.Paint:
-                        result.AddSamplerParameter("watercolor_texture");
+                        result.AddSamplerParameter("watercolor_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\water_options\bankalpha_paint";
                         break;
                     case Bankalpha.From_Shape_Texture_Alpha:
-                        result.AddSamplerParameter("global_shape_texture");
+                        result.AddSamplerParameter("global_shape_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\water_options\bankalpha_from_shape_texture_alpha";
                         break;
                 }
             }
+
             if (methodName == "appearance")
             {
                 optionName = ((Appearance)option).ToString();
@@ -564,29 +234,35 @@ namespace HaloShaderGenerator.Water
                 switch ((Appearance)option)
                 {
                     case Appearance.Default:
-                        result.AddFloatParameter("fresnel_coefficient");
-                        result.AddFloat4Parameter("water_diffuse");
+                        result.AddFloatParameter("fresnel_coefficient", 0.09769f);
+                        result.AddFloat3ColorParameter("water_diffuse", new ShaderColor(0, 61, 61, 61));
                         result.AddBooleanParameter("no_dynamic_lights");
                         rmopName = @"shaders\water_options\appearance_default";
                         break;
                 }
             }
+
             if (methodName == "global_shape")
             {
                 optionName = ((Global_Shape)option).ToString();
 
                 switch ((Global_Shape)option)
                 {
+                    case Global_Shape.None:
+                        result.AddSamplerParameter("global_shape_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        rmopName = @"shaders\water_options\globalshape_none";
+                        break;
                     case Global_Shape.Paint:
-                        result.AddSamplerParameter("global_shape_texture");
+                        result.AddSamplerParameter("global_shape_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\water_options\globalshape_paint";
                         break;
                     case Global_Shape.Depth:
-                        result.AddFloatParameter("globalshape_infuence_depth");
+                        result.AddFloatParameter("globalshape_infuence_depth", 1.0f);
                         rmopName = @"shaders\water_options\globalshape_depth";
                         break;
                 }
             }
+
             if (methodName == "foam")
             {
                 optionName = ((Foam)option).ToString();
@@ -594,45 +270,68 @@ namespace HaloShaderGenerator.Water
                 switch ((Foam)option)
                 {
                     case Foam.None:
-                        result.AddSamplerParameter("foam_texture");
-                        result.AddSamplerParameter("foam_texture_detail");
+                        result.AddSamplerParameter("foam_texture", @"levels\shared\bitmaps\nature\water\wave_foam");
+                        result.AddSamplerParameter("foam_texture_detail", @"levels\shared\bitmaps\nature\water\wave_foam");
                         rmopName = @"shaders\water_options\foam_none";
                         break;
                     case Foam.Auto:
-                        result.AddSamplerParameter("foam_texture");
-                        result.AddSamplerParameter("foam_texture_detail");
-                        result.AddFloatParameter("foam_height");
-                        result.AddFloatParameter("foam_pow");
+                        result.AddSamplerParameter("foam_texture", @"levels\shared\bitmaps\nature\water\wave_foam");
+                        result.AddSamplerParameter("foam_texture_detail", @"levels\shared\bitmaps\nature\water\wave_foam");
+                        result.AddFloatParameter("foam_height", 0.01f);
+                        result.AddFloatParameter("foam_pow", 2.0f);
                         rmopName = @"shaders\water_options\foam_auto";
                         break;
                     case Foam.Paint:
-                        result.AddSamplerParameter("foam_texture");
-                        result.AddSamplerParameter("foam_texture_detail");
-                        result.AddSamplerParameter("global_shape_texture");
+                        result.AddSamplerParameter("foam_texture", @"levels\shared\bitmaps\nature\water\wave_foam");
+                        result.AddSamplerParameter("foam_texture_detail", @"levels\shared\bitmaps\nature\water\wave_foam");
+                        result.AddSamplerParameter("global_shape_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\water_options\foam_paint";
                         break;
                     case Foam.Both:
-                        result.AddSamplerParameter("foam_texture");
-                        result.AddSamplerParameter("foam_texture_detail");
-                        result.AddSamplerParameter("global_shape_texture");
-                        result.AddFloatParameter("foam_height");
-                        result.AddFloatParameter("foam_pow");
+                        result.AddSamplerParameter("foam_texture", @"levels\shared\bitmaps\nature\water\wave_foam");
+                        result.AddSamplerParameter("foam_texture_detail", @"levels\shared\bitmaps\nature\water\wave_foam");
+                        result.AddSamplerParameter("global_shape_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloatParameter("foam_height", 0.01f);
+                        result.AddFloatParameter("foam_pow", 2.0f);
                         rmopName = @"shaders\water_options\foam_both";
                         break;
                 }
             }
+
             if (methodName == "reach_compatibility")
             {
                 optionName = ((Reach_Compatibility)option).ToString();
 
                 switch ((Reach_Compatibility)option)
                 {
+                    case Reach_Compatibility.Disabled:
+                        break;
                     case Reach_Compatibility.Enabled:
-                        result.AddFloatParameter("slope_scaler");
-                        result.AddFloatParameter("normal_variation_tweak");
-                        result.AddFloatParameter("fresnel_dark_spot");
-                        result.AddFloatParameter("foam_coefficient");
-                        result.AddFloatParameter("foam_cut");
+                        result.AddFloatParameter("slope_scaler", 1.0f);
+                        result.AddFloatParameter("normal_variation_tweak", 1.0f);
+                        result.AddFloatParameter("fresnel_dark_spot", 1.0f);
+                        result.AddFloatParameter("foam_coefficient", 1.0f);
+                        result.AddFloatParameter("foam_cut", 0.5f);
+                        result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddFloatParameter("detail_slope_scale_x", 10.0f);
+                        result.AddFloatParameter("detail_slope_scale_y", 5.0f);
+                        result.AddFloatParameter("detail_slope_scale_z", 2.0f);
+                        result.AddFloatParameter("detail_slope_steepness", 0.5f);
+                        result.AddFloatParameter("foam_start_side");
+                        rmopName = @"shaders\water_options\reach_compatibility_enabled";
+                        break;
+                    case Reach_Compatibility.Enabled_Detail_Repeat:
+                        result.AddFloatParameter("slope_scaler", 1.0f);
+                        result.AddFloatParameter("normal_variation_tweak", 1.0f);
+                        result.AddFloatParameter("fresnel_dark_spot", 1.0f);
+                        result.AddFloatParameter("foam_coefficient", 1.0f);
+                        result.AddFloatParameter("foam_cut", 0.5f);
+                        result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddFloatParameter("detail_slope_scale_x", 10.0f);
+                        result.AddFloatParameter("detail_slope_scale_y", 5.0f);
+                        result.AddFloatParameter("detail_slope_scale_z", 2.0f);
+                        result.AddFloatParameter("detail_slope_steepness", 0.5f);
+                        result.AddFloatParameter("foam_start_side");
                         rmopName = @"shaders\water_options\reach_compatibility_enabled";
                         break;
                 }
@@ -673,14 +372,262 @@ namespace HaloShaderGenerator.Water
             return null;
         }
 
-        public byte[] ValidateOptions(byte[] options)
+        public Array GetEntryPointOrder()
         {
-            List<byte> optionList = new List<byte>(options);
+            return new ShaderStage[]
+            {
+                ShaderStage.Water_Tessellation,
+                ShaderStage.Static_Per_Pixel,
+                ShaderStage.Static_Per_Vertex,
+                //ShaderStage.Z_Only,
+                //ShaderStage.Lightmap_Debug_Mode,
+                //ShaderStage.Single_Pass_Per_Vertex,
+                //ShaderStage.Single_Pass_Per_Pixel,
+                //ShaderStage.Static_Default,
+                //ShaderStage.Albedo
+            };
+        }
 
-            while (optionList.Count < GetMethodCount())
-                optionList.Add(0);
+        public Array GetVertexTypeOrder()
+        {
+            return new VertexType[]
+            {
+                VertexType.Water
+                //VertexType.World
+            };
+        }
 
-            return optionList.ToArray();
+        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "waveshape")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "watercolor")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "reflection")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "refraction")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "bankalpha")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "appearance")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "global_shape")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "foam")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "reach_compatibility")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+        }
+
+        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "waveshape")
+            {
+                switch ((Waveshape)option)
+                {
+                    case Waveshape.Default:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Waveshape.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Waveshape.Bump:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "watercolor")
+            {
+                switch ((Watercolor)option)
+                {
+                    case Watercolor.Pure:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Watercolor.Texture:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "reflection")
+            {
+                switch ((Reflection)option)
+                {
+                    case Reflection.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Reflection.Static:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Reflection.Dynamic:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Reflection.Static_Ssr:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "refraction")
+            {
+                switch ((Refraction)option)
+                {
+                    case Refraction.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Refraction.Dynamic:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "bankalpha")
+            {
+                switch ((Bankalpha)option)
+                {
+                    case Bankalpha.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Bankalpha.Depth:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Bankalpha.Paint:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Bankalpha.From_Shape_Texture_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "appearance")
+            {
+                switch ((Appearance)option)
+                {
+                    case Appearance.Default:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "global_shape")
+            {
+                switch ((Global_Shape)option)
+                {
+                    case Global_Shape.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Global_Shape.Paint:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Global_Shape.Depth:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "foam")
+            {
+                switch ((Foam)option)
+                {
+                    case Foam.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Foam.Auto:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Foam.Paint:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Foam.Both:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "reach_compatibility")
+            {
+                switch ((Reach_Compatibility)option)
+                {
+                    case Reach_Compatibility.Disabled:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Reach_Compatibility.Enabled:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Reach_Compatibility.Enabled_Detail_Repeat:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
         }
     }
 }
