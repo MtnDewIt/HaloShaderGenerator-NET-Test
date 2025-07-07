@@ -99,7 +99,9 @@ namespace HaloShaderGenerator.Shader
         Cook_Torrance_Two_Color_Spec_Tint,
         Cook_Torrance_Scrolling_Cube_Mask,
         Cook_Torrance_Scrolling_Cube,
-        Cook_Torrance_From_Albedo
+        Cook_Torrance_From_Albedo,
+        Pbr,
+        Pbr_Spec_Gloss
     }
 
     public enum Environment_Mapping
@@ -110,7 +112,9 @@ namespace HaloShaderGenerator.Shader
         From_Flat_Texture,
         Custom_Map,
         Dynamic_Reach,
-        From_Flat_Texture_As_Cubemap
+        From_Flat_Texture_As_Cubemap,
+        Per_Pixel_Mip,
+        Dynamic_Expensive,
     }
 
     public enum Self_Illumination

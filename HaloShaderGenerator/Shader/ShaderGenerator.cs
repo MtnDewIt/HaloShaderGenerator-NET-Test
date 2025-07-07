@@ -872,6 +872,43 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("analytical_anti_shadow_control");
                         rmopName = @"shaders\shader_options\material_cook_torrance_from_albedo";
                         break;
+                    case Material_Model.Pbr:
+                        result.AddBooleanParameter("order3_area_specular");
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddBooleanParameter("use_specular_tints");
+                        result.AddFloat3ColorParameter("normal_specular", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("glancing_specular", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
+                        result.AddFloatParameter("albedo_blend", 1.0f);
+                        result.AddSamplerExternParameter("g_sampler_cc0236", RenderMethodExtern.texture_cook_torrance_cc0236);
+                        result.AddSamplerExternParameter("g_sampler_dd0236", RenderMethodExtern.texture_cook_torrance_dd0236);
+                        result.AddSamplerExternParameter("g_sampler_c78d78", RenderMethodExtern.texture_cook_torrance_c78d78);
+                        result.AddFloatParameter("cubemap_or_area_specular", 1.0f);
+                        result.AddBooleanParameter("convert_material");
+                        result.AddFloatParameter("roughness_bias");
+                        result.AddFloatParameter("roughness_multiplier", 1.0f);
+                        result.AddFloatParameter("metallic_bias");
+                        result.AddFloatParameter("metallic_multiplier", 1.0f);
+                        result.AddBooleanParameter("ct_spec_rough");
+                        rmopName = @"shaders\shader_options\pbr";
+                        break;
+                    case Material_Model.Pbr_Spec_Gloss:
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddBooleanParameter("use_specular_tints");
+                        result.AddFloat3ColorParameter("normal_specular", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("glancing_specular", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("fresnel_curve_steepness", 5.0f);
+                        result.AddFloatParameter("albedo_blend", 1.0f);
+                        result.AddFloatWithColorParameter("gloss_bias", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("gloss_multiplier", 1.0f);
+                        result.AddFloat4ColorParameter("specular_tint", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloatParameter("specular_bias");
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient", 1.0f);
+                        rmopName = @"shaders\shader_options\pbr_spec_gloss";
+                        break;
                 }
             }
 
@@ -932,6 +969,17 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloat4ColorParameter("env_bloom_override", new ShaderColor(255, 0, 0, 0));
                         result.AddFloatParameter("env_bloom_override_intensity", 1.0f);
                         rmopName = @"shaders\shader_options\env_map_from_flat_texture";
+                        break;
+                    case Environment_Mapping.Per_Pixel_Mip:
+                        result.AddSamplerAddressWithColorParameter("environment_map", ShaderOptionParameter.ShaderAddressMode.Clamp, new ShaderColor(0, 255, 255, 255), @"shaders\default_bitmaps\bitmaps\default_dynamic_cube_map");
+                        result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("env_roughness_scale", 1.0f);
+                        rmopName = @"shaders\shader_options\env_map_per_pixel";
+                        break;
+                    case Environment_Mapping.Dynamic_Expensive:
+                        result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerExternAddressParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        rmopName = @"shaders\shader_options\env_map_dynamic_expensive";
                         break;
                 }
             }
@@ -1769,6 +1817,14 @@ namespace HaloShaderGenerator.Shader
                         vertexFunction = "invalid";
                         pixelFunction = "cook_torrance_from_albedo";
                         break;
+                    case Material_Model.Pbr:
+                        vertexFunction = "invalid";
+                        pixelFunction = "pbr";
+                        break;
+                    case Material_Model.Pbr_Spec_Gloss:
+                        vertexFunction = "invalid";
+                        pixelFunction = "pbr_spec_gloss";
+                        break;
                 }
             }
 
@@ -1803,6 +1859,14 @@ namespace HaloShaderGenerator.Shader
                     case Environment_Mapping.From_Flat_Texture_As_Cubemap:
                         vertexFunction = "invalid";
                         pixelFunction = "from_flat_texture_as_cubemap";
+                        break;
+                    case Environment_Mapping.Per_Pixel_Mip:
+                        vertexFunction = "invalid";
+                        pixelFunction = "per_pixel_mip";
+                        break;
+                    case Environment_Mapping.Dynamic_Expensive:
+                        vertexFunction = "invalid";
+                        pixelFunction = "dynamic_expensive";
                         break;
                 }
             }
