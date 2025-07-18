@@ -12,41 +12,20 @@ namespace HaloShaderGenerator.Generator
 {
     static class ShaderGeneratorBase
     {
-        private class IncludeManager : Include
+        private class IncludeManager(string root_directory = "") : Include(root_directory)
         {
-
-            public IncludeManager(string root_directory = "") : base(root_directory)
-            {
-
-            }
+            private readonly string ShaderDirectory = Path.GetDirectoryName(typeof(IncludeManager).Assembly.Location) + "\\halo_online_shaders\\";
 
             public string ReadResource(string filepath, string _parent_directory = null)
             {
                 string parent_directory = _parent_directory ?? base.DirectoryMap[IntPtr.Zero];
-                var assembly = Assembly.GetExecutingAssembly();
+                string filePath = ShaderDirectory + Path.Combine(parent_directory, filepath);
 
-                string relative_path = Path.Combine(parent_directory, filepath);
+                if (!File.Exists(filePath))
+                    throw new Exception($"Couldn't find file {filePath}");
 
-                string directoryPath = Path.GetFullPath("halo_online_shaders\\");
-                if (!Directory.Exists(directoryPath)) // hack for submodule path
-                    directoryPath = Path.GetFullPath("Tools\\halo_online_shaders\\");
-
-                FileInfo file = new FileInfo(directoryPath + relative_path);
-
-                if (!file.Exists)
-                    throw new Exception($"Couldn't find file {relative_path}");
-
-                using (Stream stream = file.OpenRead())
-                {
-                    if(stream == null)
-                    {
-                        throw new Exception($"Couldn't find file {relative_path}");
-                    }
-                    using (StreamReader reader = new StreamReader(stream))
-                    {
-                        return reader.ReadToEnd();
-                    }
-                }
+                using (StreamReader reader = new(filePath))
+                    return reader.ReadToEnd();
             }
 
             protected override int Open(D3D.INCLUDE_TYPE includeType, string filepath, string directory, ref string hlsl_source)
