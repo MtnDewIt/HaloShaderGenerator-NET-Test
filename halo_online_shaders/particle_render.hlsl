@@ -44,6 +44,8 @@ Shaders for particle renders, quad manufacture
 #include "function_utilities.fx"
 #include "particle_state.fx"
 #include "atmosphere.fx"
+#else
+#include "bump_mapping_util.fx"
 #endif
 
 #define _dies_at_rest_bit					0 //_particle_dies_at_rest_bit
@@ -1043,7 +1045,11 @@ s_particle_render_pixel_out default_ps(
 #endif
 )
 		{
-			blended.xy = blended.xy * (255.0f / 127.f) - (128.0f / 127.f);   
+#ifdef DXT5_NORMALS
+			blended.xy = bump_convert_dxt5(BUMP_GET_DXT5NM_CHANNELS(blended));   
+#else
+			blended.xy = BUMP_CONVERT(blended.xy);   
+#endif
 		}
 	#endif
 
