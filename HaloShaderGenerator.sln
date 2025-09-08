@@ -5,11 +5,6 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HaloShaderGenerator", "HaloShaderGenerator\HaloShaderGenerator.csproj", "{17BFEFFB-1619-4647-BA40-3CD1D87FD774}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HaloShaderGeneratorTest", "HaloShaderGeneratorTest\HaloShaderGeneratorTest.csproj", "{CC8C6886-E1C0-41D6-AD74-A194CA0D841A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{17BFEFFB-1619-4647-BA40-3CD1D87FD774} = {17BFEFFB-1619-4647-BA40-3CD1D87FD774}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -26,14 +21,6 @@ Global
 		{17BFEFFB-1619-4647-BA40-3CD1D87FD774}.Release|x64.Build.0 = Release|x64
 		{17BFEFFB-1619-4647-BA40-3CD1D87FD774}.Release|x86.ActiveCfg = Release|x86
 		{17BFEFFB-1619-4647-BA40-3CD1D87FD774}.Release|x86.Build.0 = Release|x86
-		{CC8C6886-E1C0-41D6-AD74-A194CA0D841A}.Debug|x64.ActiveCfg = Debug|x64
-		{CC8C6886-E1C0-41D6-AD74-A194CA0D841A}.Debug|x64.Build.0 = Debug|x64
-		{CC8C6886-E1C0-41D6-AD74-A194CA0D841A}.Debug|x86.ActiveCfg = Debug|x86
-		{CC8C6886-E1C0-41D6-AD74-A194CA0D841A}.Debug|x86.Build.0 = Debug|x86
-		{CC8C6886-E1C0-41D6-AD74-A194CA0D841A}.Release|x64.ActiveCfg = Release|x64
-		{CC8C6886-E1C0-41D6-AD74-A194CA0D841A}.Release|x64.Build.0 = Release|x64
-		{CC8C6886-E1C0-41D6-AD74-A194CA0D841A}.Release|x86.ActiveCfg = Release|x86
-		{CC8C6886-E1C0-41D6-AD74-A194CA0D841A}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

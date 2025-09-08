@@ -1,137 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Particle;
+using HaloShaderGenerator.Shared;
 
 namespace HaloShaderGenerator.Contrail
 {
     public class ContrailGenerator : IShaderGenerator
     {
-        private bool TemplateGenerationValid;
-        private bool ApplyFixes;
-
-        Albedo albedo;
-        Blend_Mode blend_mode;
-        Black_Point black_point;
-        Fog fog;
-
-        /// <summary>
-        /// Generator insantiation for shared shaders. Does not require method options.
-        /// </summary>
-        public ContrailGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
-
-        /// <summary>
-        /// Generator instantiation for method specific shaders.
-        /// </summary>
-        public ContrailGenerator(Albedo albedo, Blend_Mode blend_mode, Black_Point black_point, Fog fog, bool applyFixes = false)
-        {
-            this.albedo = albedo;
-            this.blend_mode = blend_mode;
-            this.black_point = black_point;
-            this.fog = fog;
-
-            ApplyFixes = applyFixes;
-            TemplateGenerationValid = true;
-        }
-
-        public ContrailGenerator(byte[] options, bool applyFixes = false)
-        {
-            options = ValidateOptions(options);
-
-            this.albedo = (Albedo)options[0];
-            this.blend_mode = (Blend_Mode)options[1];
-            this.black_point = (Black_Point)options[2];
-            this.fog = (Fog)options[3];
-
-            ApplyFixes = applyFixes;
-            TemplateGenerationValid = true;
-        }
-
-        public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            Shared.Blend_Mode sBlendMode = (Shared.Blend_Mode)Enum.Parse(typeof(Shared.Blend_Mode), blend_mode.ToString());
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Contrail, entryPoint, sBlendMode, 
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
-
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Albedo>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Blend_Mode>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Black_Point>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Fog>());
-
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("albedo", albedo.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("blend_mode", blend_mode.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("black_point", black_point.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("fog", fog.ToString().ToLower()));
-
-            string entryName = entryPoint.ToString().ToLower() + "_ps";
-            switch (entryPoint)
-            {
-                case ShaderStage.Static_Prt_Linear:
-                case ShaderStage.Static_Prt_Quadratic:
-                case ShaderStage.Static_Prt_Ambient:
-                    entryName = "static_prt_ps";
-                    break;
-                case ShaderStage.Dynamic_Light_Cinematic:
-                    entryName = "dynamic_light_cine_ps";
-                    break;
-            }
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"contrail.fx", macros, entryName, "ps_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
-        {
-            if (!IsEntryPointSupported(entryPoint) || !IsPixelShaderShared(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"glps_contrail.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!IsVertexFormatSupported(vertexType) || !IsEntryPointSupported(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_vertex_transform", vertexType, "calc_vertex_transform_", ""));
-            macros.Add(ShaderGeneratorBase.CreateMacro("transform_unknown_vector", vertexType, "transform_unknown_vector_", ""));
-            macros.Add(ShaderGeneratorBase.CreateVertexMacro("input_vertex_format", vertexType));
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(@"glvs_contrail.hlsl", macros, $"entry_{entryPoint.ToString().ToLower()}", "vs_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-            return null;
-        }
-
         public int GetMethodCount()
         {
-            return System.Enum.GetValues(typeof(ContrailMethods)).Length;
+            return Enum.GetValues(typeof(ContrailMethods)).Length;
         }
 
         public int GetMethodOptionCount(int methodIndex)
@@ -151,98 +31,45 @@ namespace HaloShaderGenerator.Contrail
             return -1;
         }
 
-        public int GetMethodOptionValue(int methodIndex)
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
         {
-            switch ((ContrailMethods)methodIndex)
+            switch (entryPoint)
             {
-                case ContrailMethods.Albedo:
-                    return (int)albedo;
-                case ContrailMethods.Blend_Mode:
-                    return (int)blend_mode;
-                case ContrailMethods.Black_Point:
-                    return (int)black_point;
-                case ContrailMethods.Fog:
-                    return (int)fog;
+                default:
+                    return -1;
             }
-            return -1;
-        }
-
-        public bool IsEntryPointSupported(ShaderStage entryPoint)
-        {
-            return entryPoint == ShaderStage.Default;
-        }
-
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            return false;
-        }
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
-        {
-            return false;
-        }
-
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            return false;
-        }
-
-        public bool IsVertexFormatSupported(VertexType vertexType)
-        {
-            return vertexType == VertexType.Contrail;
-        }
-
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
-        {
-            return true;
-        }
-
-        public ShaderParameters GetPixelShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            switch (albedo)
-            {
-                case Albedo.Diffuse_Only:
-                    result.AddSamplerWithoutXFormParameter("base_map");
-                    break;
-                case Albedo.Palettized:
-                    result.AddSamplerWithoutXFormParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("palette");
-                    break;
-                case Albedo.Palettized_Plus_Alpha:
-                    result.AddSamplerWithoutXFormParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("palette");
-                    result.AddSamplerWithoutXFormParameter("alpha_map");
-                    break;
-            }
-
-            return result;
-        }
-
-        public ShaderParameters GetVertexShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-
-            var result = new ShaderParameters();
-
-            result.AddPrefixedFloat4VertexParameter("blend_mode", "category_");
-            result.AddPrefixedFloat4VertexParameter("fog", "category_");
-
-            return result;
-        }
-
-        public ShaderParameters GetGlobalParameters()
-        {
-            return new ShaderParameters();
         }
 
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
-            throw new NotImplementedException();
+            switch (entryPoint)
+            {
+                default:
+                    return false;
+            }
+        }
+
+        public bool IsPixelShaderShared(ShaderStage entryPoint)
+        {
+            switch (entryPoint)
+            {
+                default:
+                    return false;
+            }
+        }
+
+        public bool IsAutoMacro()
+        {
+            return true;
+        }
+
+        public ShaderParameters GetGlobalParameters(out string rmopName)
+        {
+            var result = new ShaderParameters();
+
+            rmopName = @"shaders\contrail_options\global_contrail_options";
+
+            return result;
         }
 
         public ShaderParameters GetParametersInOption(string methodName, int option, out string rmopName, out string optionName)
@@ -254,36 +81,82 @@ namespace HaloShaderGenerator.Contrail
             if (methodName == "albedo")
             {
                 optionName = ((Albedo)option).ToString();
+
                 switch ((Albedo)option)
                 {
                     case Albedo.Diffuse_Only:
-                        result.AddSamplerWithoutXFormParameter("base_map");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\contrail_options\albedo_diffuse_only";
                         break;
                     case Albedo.Palettized:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\contrail_options\albedo_palettized";
                         break;
                     case Albedo.Palettized_Plus_Alpha:
-                        result.AddSamplerWithoutXFormParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("palette");
-                        result.AddSamplerWithoutXFormParameter("alpha_map");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("alpha_map", @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         rmopName = @"shaders\contrail_options\albedo_palettized_plus_alpha";
                         break;
                 }
             }
+
             if (methodName == "blend_mode")
             {
                 optionName = ((Blend_Mode)option).ToString();
+
+                switch ((Blend_Mode)option)
+                {
+                    case Blend_Mode.Opaque:
+                        break;
+                    case Blend_Mode.Additive:
+                        break;
+                    case Blend_Mode.Multiply:
+                        break;
+                    case Blend_Mode.Alpha_Blend:
+                        break;
+                    case Blend_Mode.Double_Multiply:
+                        break;
+                    case Blend_Mode.Maximum:
+                        break;
+                    case Blend_Mode.Multiply_Add:
+                        break;
+                    case Blend_Mode.Add_Src_Times_Dstalpha:
+                        break;
+                    case Blend_Mode.Add_Src_Times_Srcalpha:
+                        break;
+                    case Blend_Mode.Inv_Alpha_Blend:
+                        break;
+                    case Blend_Mode.Pre_Multiplied_Alpha:
+                        break;
+                }
             }
+
             if (methodName == "black_point")
             {
                 optionName = ((Black_Point)option).ToString();
+
+                switch ((Black_Point)option)
+                {
+                    case Black_Point.Off:
+                        break;
+                    case Black_Point.On:
+                        break;
+                }
             }
+
             if (methodName == "fog")
             {
                 optionName = ((Fog)option).ToString();
+
+                switch ((Fog)option)
+                {
+                    case Fog.Off:
+                        break;
+                    case Fog.On:
+                        break;
+                }
             }
             return result;
         }
@@ -310,14 +183,156 @@ namespace HaloShaderGenerator.Contrail
             return null;
         }
 
-        public byte[] ValidateOptions(byte[] options)
+        public Array GetEntryPointOrder()
         {
-            List<byte> optionList = new List<byte>(options);
+            return new ShaderStage[]
+            {
+                ShaderStage.Default
+            };
+        }
 
-            while (optionList.Count < GetMethodCount())
-                optionList.Add(0);
+        public Array GetVertexTypeOrder()
+        {
+            return new VertexType[]
+            {
+                VertexType.Contrail
+            };
+        }
 
-            return optionList.ToArray();
+        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "albedo")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "blend_mode")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "black_point")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "fog")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+        }
+
+        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "albedo")
+            {
+                switch ((Albedo)option)
+                {
+                    case Albedo.Diffuse_Only:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Palettized:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Palettized_Plus_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "blend_mode")
+            {
+                switch ((Blend_Mode)option)
+                {
+                    case Blend_Mode.Opaque:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Additive:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Multiply:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Alpha_Blend:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Double_Multiply:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Maximum:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Multiply_Add:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Add_Src_Times_Dstalpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Add_Src_Times_Srcalpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Inv_Alpha_Blend:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Pre_Multiplied_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "black_point")
+            {
+                switch ((Black_Point)option)
+                {
+                    case Black_Point.Off:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Black_Point.On:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "fog")
+            {
+                switch ((Fog)option)
+                {
+                    case Fog.Off:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Fog.On:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
         }
     }
 }

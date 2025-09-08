@@ -1,139 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Particle;
+using HaloShaderGenerator.Shared;
 
 namespace HaloShaderGenerator.Screen
 {
     public class ScreenGenerator : IShaderGenerator
     {
-        private bool TemplateGenerationValid;
-        private bool ApplyFixes;
-
-        Warp warp;
-        Base _base;
-        Overlay_A overlay_a;
-        Overlay_B overlay_b;
-        Blend_Mode blend_mode;
-
-        /// <summary>
-        /// Generator insantiation for shared shaders. Does not require method options.
-        /// </summary>
-        public ScreenGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
-
-        /// <summary>
-        /// Generator instantiation for method specific shaders.
-        /// </summary>
-        public ScreenGenerator(Warp warp, Base _base, Overlay_A overlay_a, Overlay_B overlay_b, Blend_Mode blend_mode, bool applyFixes = false)
-        {
-            this.warp = warp;
-            this._base = _base;
-            this.overlay_a = overlay_a;
-            this.overlay_b = overlay_b;
-            this.blend_mode = blend_mode;
-
-            ApplyFixes = applyFixes;
-            TemplateGenerationValid = true;
-        }
-
-        public ScreenGenerator(byte[] options, bool applyFixes = false)
-        {
-            options = ValidateOptions(options);
-
-            this.warp = (Warp)options[0];
-            this._base = (Base)options[1];
-            this.overlay_a = (Overlay_A)options[2];
-            this.overlay_b = (Overlay_B)options[3];
-            this.blend_mode = (Blend_Mode)options[4];
-
-            ApplyFixes = applyFixes;
-            TemplateGenerationValid = true;
-        }
-
-        public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            Shared.Blend_Mode sBlendMode = (Shared.Blend_Mode)Enum.Parse(typeof(Shared.Blend_Mode), blend_mode.ToString());
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Screen, entryPoint, sBlendMode, 
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
-
-            macros.Add(ShaderGeneratorBase.CreateMacro("warp_type", warp.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateMacro("base_type", _base.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateMacro("overlay_a_type", overlay_a.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateMacro("overlay_b_type", overlay_b.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateMacro("blend_type", blend_mode.ToString().ToLower()));
-
-            string entryName = entryPoint.ToString().ToLower() + "_ps";
-            switch (entryPoint)
-            {
-                case ShaderStage.Static_Prt_Linear:
-                case ShaderStage.Static_Prt_Quadratic:
-                case ShaderStage.Static_Prt_Ambient:
-                    entryName = "static_prt_ps";
-                    break;
-                case ShaderStage.Dynamic_Light_Cinematic:
-                    entryName = "dynamic_light_cine_ps";
-                    break;
-            }
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"screen.fx", macros, entryName, "ps_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
-        {
-            if (!IsEntryPointSupported(entryPoint) || !IsPixelShaderShared(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"glps_screen.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!IsVertexFormatSupported(vertexType) || !IsEntryPointSupported(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<Shared.ShaderType>());
-
-            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_vertex_transform", vertexType, "calc_vertex_transform_", ""));
-            macros.Add(ShaderGeneratorBase.CreateMacro("transform_unknown_vector", vertexType, "transform_unknown_vector_", ""));
-            macros.Add(ShaderGeneratorBase.CreateVertexMacro("input_vertex_format", vertexType));
-
-            macros.Add(ShaderGeneratorBase.CreateMacro("shadertype", Shared.ShaderType.Screen, "shadertype_"));
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(@"glvs_screen.hlsl", macros, $"entry_{entryPoint.ToString().ToLower()}", "vs_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-            return null;
-        }
-
         public int GetMethodCount()
         {
-            return System.Enum.GetValues(typeof(ScreenMethods)).Length;
+            return Enum.GetValues(typeof(ScreenMethods)).Length;
         }
 
         public int GetMethodOptionCount(int methodIndex)
@@ -155,132 +33,44 @@ namespace HaloShaderGenerator.Screen
             return -1;
         }
 
-        public int GetMethodOptionValue(int methodIndex)
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
         {
-            switch ((ScreenMethods)methodIndex)
+            switch (entryPoint)
             {
-                case ScreenMethods.Warp:
-                    return (int)warp;
-                case ScreenMethods.Base:
-                    return (int)_base;
-                case ScreenMethods.Overlay_A:
-                    return (int)overlay_a;
-                case ScreenMethods.Overlay_B:
-                    return (int)overlay_b;
-                case ScreenMethods.Blend_Mode:
-                    return (int)blend_mode;
+                default:
+                    return -1;
             }
-            return -1;
-        }
-
-        public bool IsEntryPointSupported(ShaderStage entryPoint)
-        {
-            if (entryPoint == ShaderStage.Default)
-                return true;
-            return false;
-        }
-
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            return false;
         }
 
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
-            return false;
-        }
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
-        {
-            return false;
+            switch (entryPoint)
+            {
+                default:
+                    return false;
+            }
         }
 
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
+            switch (entryPoint)
+            {
+                default:
+                    return false;
+            }
+        }
+
+        public bool IsAutoMacro()
+        {
             return false;
         }
 
-        public bool IsVertexFormatSupported(VertexType vertexType)
-        {
-            return vertexType == VertexType.Screen;
-        }
-
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
-        {
-            return true;
-        }
-
-        public ShaderParameters GetPixelShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            switch (warp)
-            {
-                case Warp.Pixel_Space:
-                case Warp.Screen_Space:
-                    result.AddSamplerParameter("warp_map");
-                    result.AddFloatParameter("warp_amount");
-                    break;
-            }
-            switch (_base)
-            {
-                case Base.Single_Screen_Space:
-                case Base.Single_Pixel_Space:
-                    result.AddSamplerParameter("base_map");
-                    break;
-            }
-            switch (overlay_a)
-            {
-                case Overlay_A.Tint_Add_Color:
-                    result.AddFloat4ColorParameter("tint_color");
-                    result.AddFloat4ColorParameter("add_color");
-                    break;
-                case Overlay_A.Detail_Screen_Space:
-                case Overlay_A.Detail_Pixel_Space:
-                    result.AddSamplerParameter("detail_map_a");
-                    result.AddFloatParameter("detail_fade_a");
-                    result.AddFloatParameter("detail_multiplier_a");
-                    break;
-                case Overlay_A.Detail_Masked_Screen_Space:
-                    result.AddSamplerParameter("detail_map_a");
-                    result.AddSamplerParameter("detail_mask_a");
-                    result.AddFloatParameter("detail_fade_a");
-                    result.AddFloatParameter("detail_multiplier_a");
-                    break;
-            }
-            switch (overlay_b)
-            {
-                case Overlay_B.Tint_Add_Color when overlay_a != Overlay_A.Tint_Add_Color:
-                    result.AddFloat4ColorParameter("tint_color");
-                    result.AddFloat4ColorParameter("add_color");
-                    break;
-            }
-            switch (blend_mode)
-            {
-                case Blend_Mode.Opaque:
-                    break;
-                default:
-                    result.AddFloatParameter("fade");
-                    break;
-            }
-
-            return result;
-        }
-
-        public ShaderParameters GetVertexShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            return result;
-        }
-
-        public ShaderParameters GetGlobalParameters()
+        public ShaderParameters GetGlobalParameters(out string rmopName)
         {
             var result = new ShaderParameters();
+
+            rmopName = @"shaders\screen_options\global_screen_options";
+
             return result;
         }
 
@@ -296,14 +86,21 @@ namespace HaloShaderGenerator.Screen
 
                 switch ((Warp)option)
                 {
+                    case Warp.None:
+                        break;
                     case Warp.Pixel_Space:
+                        result.AddSamplerFilterParameter("warp_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
+                        result.AddFloatParameter("warp_amount", 1.0f);
+                        rmopName = @"shaders\screen_options\warp_simple";
+                        break;
                     case Warp.Screen_Space:
-                        result.AddSamplerParameter("warp_map");
-                        result.AddFloatParameter("warp_amount");
+                        result.AddSamplerFilterParameter("warp_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
+                        result.AddFloatParameter("warp_amount", 1.0f);
                         rmopName = @"shaders\screen_options\warp_simple";
                         break;
                 }
             }
+
             if (methodName == "base")
             {
                 optionName = ((Base)option).ToString();
@@ -311,52 +108,91 @@ namespace HaloShaderGenerator.Screen
                 switch ((Base)option)
                 {
                     case Base.Single_Screen_Space:
-                    case Base.Single_Pixel_Space:
-                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerFilterParameter("base_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
                         rmopName = @"shaders\screen_options\base_single";
+                        break;
+                    case Base.Single_Pixel_Space:
+                        result.AddSamplerFilterParameter("base_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
+                        rmopName = @"shaders\screen_options\base_single";
+                        break;
+                    case Base.Normal_Map_Edge_Shade:
+                        result.AddSamplerFilterAddressParameter("normal_map", ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddSamplerFilterAddressParameter("palette", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
+                        result.AddFloatParameter("palette_v", 1.0f);
+                        rmopName = @"shaders\screen_options\base_normal_map_edge_shade";
+                        break;
+                    case Base.Single_Target_Space:
+                        result.AddSamplerFilterParameter("base_map", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
+                        rmopName = @"shaders\screen_options\base_single";
+                        break;
+                    case Base.Normal_Map_Edge_Stencil:
+                        result.AddSamplerFilterAddressParameter("normal_map", ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddSamplerFilterAddressParameter("palette", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
+                        result.AddFloatParameter("palette_v", 1.0f);
+                        result.AddSamplerFilterAddressParameter("stencil_map", ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\color_white");
+                        rmopName = @"shaders\screen_options\base_normal_map_edge_stencil";
                         break;
                 }
             }
+
             if (methodName == "overlay_a")
             {
                 optionName = ((Overlay_A)option).ToString();
 
                 switch ((Overlay_A)option)
                 {
+                    case Overlay_A.None:
+                        break;
                     case Overlay_A.Tint_Add_Color:
-                        result.AddFloat4ColorParameter("tint_color");
+                        result.AddFloat4ColorWithFloatParameter("tint_color", 1.0f, new ShaderColor(255, 255, 255, 255));
                         result.AddFloat4ColorParameter("add_color");
                         rmopName = @"shaders\screen_options\overlay_tint_add_color";
                         break;
                     case Overlay_A.Detail_Screen_Space:
+                        result.AddSamplerFilterParameter("detail_map_a", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
+                        result.AddFloatParameter("detail_fade_a", 1.0f);
+                        result.AddFloatParameter("detail_multiplier_a", 4.59479f);
+                        rmopName = @"shaders\screen_options\detail_a";
+                        break;
                     case Overlay_A.Detail_Pixel_Space:
-                        result.AddSamplerParameter("detail_map_a");
-                        result.AddFloatParameter("detail_fade_a");
-                        result.AddFloatParameter("detail_multiplier_a");
+                        result.AddSamplerFilterParameter("detail_map_a", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
+                        result.AddFloatParameter("detail_fade_a", 1.0f);
+                        result.AddFloatParameter("detail_multiplier_a", 4.59479f);
                         rmopName = @"shaders\screen_options\detail_a";
                         break;
                     case Overlay_A.Detail_Masked_Screen_Space:
-                        result.AddSamplerParameter("detail_map_a");
-                        result.AddSamplerParameter("detail_mask_a");
-                        result.AddFloatParameter("detail_fade_a");
-                        result.AddFloatParameter("detail_multiplier_a");
+                        result.AddSamplerFilterParameter("detail_map_a", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
+                        result.AddSamplerParameter("detail_mask_a", @"shaders\default_bitmaps\bitmaps\color_red");
+                        result.AddFloatParameter("detail_fade_a", 1.0f);
+                        result.AddFloatParameter("detail_multiplier_a", 4.59479f);
                         rmopName = @"shaders\screen_options\detail_mask_a";
+                        break;
+                    case Overlay_A.Palette_Lookup:
+                        result.AddSamplerFilterParameter("detail_map_a", ShaderOptionParameter.ShaderFilterMode.Bilinear, @"shaders\default_bitmaps\bitmaps\color_black_alpha_black");
+                        result.AddFloatParameter("detail_fade_a", 1.0f);
+                        result.AddFloat3ColorWithFloatParameter("intensity_color_u", 4.59479f, new ShaderColor(0, 255, 0, 0));
+                        result.AddFloat3ColorWithFloatParameter("intensity_color_v", 4.59479f, new ShaderColor(0, 0, 255, 0));
+                        rmopName = @"shaders\screen_options\palette_lookup_a";
                         break;
                 }
             }
+
             if (methodName == "overlay_b")
             {
                 optionName = ((Overlay_B)option).ToString();
 
                 switch ((Overlay_B)option)
                 {
+                    case Overlay_B.None:
+                        break;
                     case Overlay_B.Tint_Add_Color:
-                        result.AddFloat4ColorParameter("tint_color");
+                        result.AddFloat4ColorWithFloatParameter("tint_color", 1.0f, new ShaderColor(255, 255, 255, 255));
                         result.AddFloat4ColorParameter("add_color");
                         rmopName = @"shaders\screen_options\overlay_tint_add_color";
                         break;
                 }
             }
+
             if (methodName == "blend_mode")
             {
                 optionName = ((Blend_Mode)option).ToString();
@@ -365,13 +201,28 @@ namespace HaloShaderGenerator.Screen
                 {
                     case Blend_Mode.Opaque:
                         break;
-                    default:
-                        result.AddFloatParameter("fade");
+                    case Blend_Mode.Additive:
+                        result.AddFloatParameter("fade", 1.0f);
+                        rmopName = @"shaders\screen_options\blend";
+                        break;
+                    case Blend_Mode.Multiply:
+                        result.AddFloatParameter("fade", 1.0f);
+                        rmopName = @"shaders\screen_options\blend";
+                        break;
+                    case Blend_Mode.Alpha_Blend:
+                        result.AddFloatParameter("fade", 1.0f);
+                        rmopName = @"shaders\screen_options\blend";
+                        break;
+                    case Blend_Mode.Double_Multiply:
+                        result.AddFloatParameter("fade", 1.0f);
+                        rmopName = @"shaders\screen_options\blend";
+                        break;
+                    case Blend_Mode.Pre_Multiplied_Alpha:
+                        result.AddFloatParameter("fade", 1.0f);
                         rmopName = @"shaders\screen_options\blend";
                         break;
                 }
             }
-
             return result;
         }
 
@@ -399,14 +250,186 @@ namespace HaloShaderGenerator.Screen
             return null;
         }
 
-        public byte[] ValidateOptions(byte[] options)
+        public Array GetEntryPointOrder()
         {
-            List<byte> optionList = new List<byte>(options);
+            return new ShaderStage[]
+            {
+                ShaderStage.Default
+                //ShaderStage.Albedo
+            };
+        }
 
-            while (optionList.Count < GetMethodCount())
-                optionList.Add(0);
+        public Array GetVertexTypeOrder()
+        {
+            return new VertexType[]
+            {
+                VertexType.Screen
+            };
+        }
 
-            return optionList.ToArray();
+        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "warp")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "warp_type";
+            }
+
+            if (methodName == "base")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "base_type";
+            }
+
+            if (methodName == "overlay_a")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "overlay_a_type";
+            }
+
+            if (methodName == "overlay_b")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "overlay_b_type";
+            }
+
+            if (methodName == "blend_mode")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "blend_type";
+            }
+        }
+
+        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "warp")
+            {
+                switch ((Warp)option)
+                {
+                    case Warp.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "none";
+                        break;
+                    case Warp.Pixel_Space:
+                        vertexFunction = "invalid";
+                        pixelFunction = "pixel_space";
+                        break;
+                    case Warp.Screen_Space:
+                        vertexFunction = "invalid";
+                        pixelFunction = "screen_space";
+                        break;
+                }
+            }
+
+            if (methodName == "base")
+            {
+                switch ((Base)option)
+                {
+                    case Base.Single_Screen_Space:
+                        vertexFunction = "invalid";
+                        pixelFunction = "single_screen_space";
+                        break;
+                    case Base.Single_Pixel_Space:
+                        vertexFunction = "invalid";
+                        pixelFunction = "single_pixel_space";
+                        break;
+                    case Base.Normal_Map_Edge_Shade:
+                        vertexFunction = "invalid";
+                        pixelFunction = "normal_map_edge_shade";
+                        break;
+                    case Base.Single_Target_Space:
+                        vertexFunction = "invalid";
+                        pixelFunction = "single_target_space";
+                        break;
+                    case Base.Normal_Map_Edge_Stencil:
+                        vertexFunction = "invalid";
+                        pixelFunction = "normal_map_edge_stencil";
+                        break;
+                }
+            }
+
+            if (methodName == "overlay_a")
+            {
+                switch ((Overlay_A)option)
+                {
+                    case Overlay_A.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "none";
+                        break;
+                    case Overlay_A.Tint_Add_Color:
+                        vertexFunction = "invalid";
+                        pixelFunction = "tint_add_color";
+                        break;
+                    case Overlay_A.Detail_Screen_Space:
+                        vertexFunction = "invalid";
+                        pixelFunction = "detail_screen_space";
+                        break;
+                    case Overlay_A.Detail_Pixel_Space:
+                        vertexFunction = "invalid";
+                        pixelFunction = "detail_pixel_space";
+                        break;
+                    case Overlay_A.Detail_Masked_Screen_Space:
+                        vertexFunction = "invalid";
+                        pixelFunction = "detail_masked_screen_space";
+                        break;
+                    case Overlay_A.Palette_Lookup:
+                        vertexFunction = "invalid";
+                        pixelFunction = "palette_lookup";
+                        break;
+                }
+            }
+
+            if (methodName == "overlay_b")
+            {
+                switch ((Overlay_B)option)
+                {
+                    case Overlay_B.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "none";
+                        break;
+                    case Overlay_B.Tint_Add_Color:
+                        vertexFunction = "invalid";
+                        pixelFunction = "tint_add_color";
+                        break;
+                }
+            }
+
+            if (methodName == "blend_mode")
+            {
+                switch ((Blend_Mode)option)
+                {
+                    case Blend_Mode.Opaque:
+                        vertexFunction = "invalid";
+                        pixelFunction = "opaque";
+                        break;
+                    case Blend_Mode.Additive:
+                        vertexFunction = "invalid";
+                        pixelFunction = "additive";
+                        break;
+                    case Blend_Mode.Multiply:
+                        vertexFunction = "invalid";
+                        pixelFunction = "multiply";
+                        break;
+                    case Blend_Mode.Alpha_Blend:
+                        vertexFunction = "invalid";
+                        pixelFunction = "alpha_blend";
+                        break;
+                    case Blend_Mode.Double_Multiply:
+                        vertexFunction = "invalid";
+                        pixelFunction = "double_multiply";
+                        break;
+                    case Blend_Mode.Pre_Multiplied_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "pre_multiplied_alpha";
+                        break;
+                }
+            }
         }
     }
 }

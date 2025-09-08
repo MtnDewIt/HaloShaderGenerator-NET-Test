@@ -1,4 +1,3 @@
-﻿
 namespace HaloShaderGenerator.Decal
 {
     public enum DecalMethods
@@ -9,6 +8,8 @@ namespace HaloShaderGenerator.Decal
         Specular,
         Bump_Mapping,
         Tinting,
+        Parallax,
+        Interier
     }
 
     public enum Albedo
@@ -23,6 +24,7 @@ namespace HaloShaderGenerator.Decal
         Palettized_Plus_Alpha_Mask,
         Vector_Alpha,
         Vector_Alpha_Drop_Shadow,
+        Patchy_Emblem
     }
 
     public enum Blend_Mode
@@ -37,26 +39,27 @@ namespace HaloShaderGenerator.Decal
         Add_Src_Times_Dstalpha,
         Add_Src_Times_Srcalpha,
         Inv_Alpha_Blend,
-        Pre_Multiplied_Alpha,
+        Pre_Multiplied_Alpha
     }
 
     public enum Render_Pass
     {
         Pre_Lighting,
         Post_Lighting,
+        Transparent
     }
 
     public enum Specular
     {
         Leave,
-        Modulate,
+        Modulate
     }
 
     public enum Bump_Mapping
     {
         Leave,
         Standard,
-        Standard_Mask,
+        Standard_Mask
     }
 
     public enum Tinting
@@ -64,6 +67,22 @@ namespace HaloShaderGenerator.Decal
         None,
         Unmodulated,
         Partially_Modulated,
-        Fully_Modulated,
+        Fully_Modulated
+    }
+
+    public enum Parallax
+    {
+        Off,
+        Simple,
+        Sphere
+    }
+
+    public enum Interier
+    {
+        Off,
+        Simple,
+        Floor,
+        Hole,
+        Box
     }
 }

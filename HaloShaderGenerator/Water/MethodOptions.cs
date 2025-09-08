@@ -1,4 +1,3 @@
-﻿
 namespace HaloShaderGenerator.Water
 {
     public enum WaterMethods
@@ -12,6 +11,7 @@ namespace HaloShaderGenerator.Water
         Global_Shape,
         Foam,
         Reach_Compatibility
+        //Detail
     }
 
     public enum Waveshape
@@ -31,7 +31,8 @@ namespace HaloShaderGenerator.Water
     {
         None,
         Static,
-        Dynamic
+        Dynamic,
+        Static_Ssr
     }
 
     public enum Refraction
@@ -50,7 +51,7 @@ namespace HaloShaderGenerator.Water
 
     public enum Appearance
     {
-        Default,
+        Default
     }
 
     public enum Global_Shape
@@ -71,6 +72,13 @@ namespace HaloShaderGenerator.Water
     public enum Reach_Compatibility
     {
         Disabled,
-        Enabled
+        Enabled,
+        Enabled_Detail_Repeat
     }
+
+    //public enum Detail
+    //{
+    //    None,
+    //    Repeat
+    //}
 }

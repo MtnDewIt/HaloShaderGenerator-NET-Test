@@ -60,6 +60,8 @@ namespace HaloShaderGenerator.Globals
         emblem_player_shoulder_texture,
         emblem_clan_chest_texture,
         global_depth_constants,
-        global_camera_forward
+        global_camera_forward,
+        z_camera_pixel_size,
+        material_diffuse_power
     }
 }

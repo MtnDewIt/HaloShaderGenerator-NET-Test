@@ -1,4 +1,3 @@
-﻿
 namespace HaloShaderGenerator.Halogram
 {
     public enum HalogramMethods
@@ -11,7 +10,7 @@ namespace HaloShaderGenerator.Halogram
         Overlay,
         Edge_Fade,
         Distortion,
-        Soft_Fade,
+        Soft_Fade
     }
 
     public enum Albedo
@@ -25,7 +24,7 @@ namespace HaloShaderGenerator.Halogram
         Two_Detail_Overlay,
         Two_Detail,
         Color_Mask,
-        Two_Detail_Black_Point,
+        Two_Detail_Black_Point
     }
 
     public enum Self_Illumination
@@ -45,6 +44,8 @@ namespace HaloShaderGenerator.Halogram
         Palettized_Plasma,
         Palettized_Plasma_Change_Color,
         Palettized_Depth_Fade,
+        Plasma_Wide_And_Sharp_Five_Change_Color,
+        Self_Illum_Holograms
     }
 
     public enum Blend_Mode
@@ -53,7 +54,7 @@ namespace HaloShaderGenerator.Halogram
         Additive,
         Multiply,
         Alpha_Blend,
-        Double_Multiply,
+        Double_Multiply
     }
 
     public enum Misc
@@ -61,7 +62,7 @@ namespace HaloShaderGenerator.Halogram
         First_Person_Never,
         First_Person_Sometimes,
         First_Person_Always,
-        First_Person_Never_With_rotating_Bitmaps,
+        First_Person_Never_With_Rotating_Bitmaps,
         Always_Calc_Albedo
     }
 
@@ -69,7 +70,7 @@ namespace HaloShaderGenerator.Halogram
     {
         None,
         From_Texture,
-        Parallax_Simple,
+        Parallax_Simple
     }
 
     public enum Overlay
@@ -78,12 +79,24 @@ namespace HaloShaderGenerator.Halogram
         Additive,
         Additive_Detail,
         Multiply,
-        Multiply_And_Additive_Detail,
+        Multiply_And_Additive_Detail
     }
 
     public enum Edge_Fade
     {
         None,
-        Simple,
+        Simple
+    }
+
+    public enum Distortion
+    {
+        Off,
+        On
+    }
+
+    public enum Soft_Fade
+    {
+        Off,
+        On
     }
 }

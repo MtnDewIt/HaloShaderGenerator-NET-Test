@@ -1,4 +1,3 @@
-﻿
 namespace HaloShaderGenerator.Particle
 {
     public enum ParticleMethods
@@ -13,6 +12,7 @@ namespace HaloShaderGenerator.Particle
         Fog,
         Frame_Blend,
         Self_Illumination,
+        Warp
     }
 
     public enum Albedo
@@ -23,10 +23,10 @@ namespace HaloShaderGenerator.Particle
         Palettized_Plus_Billboard_Alpha,
         Diffuse_Plus_Sprite_Alpha,
         Palettized_Plus_Sprite_Alpha,
-        Diffuse_Modulated, // odst
-        Palettized_Glow, // odst (unsupported)
-        Palettized_Plasma, // odst
-        Palettized_2d_Plasma // reach
+        Diffuse_Modulated,
+        Palettized_Glow,
+        Palettized_Plasma,
+        Palettized_2d_Plasma
     }
 
     public enum Blend_Mode
@@ -41,7 +41,7 @@ namespace HaloShaderGenerator.Particle
         Add_Src_Times_Dstalpha,
         Add_Src_Times_Srcalpha,
         Inv_Alpha_Blend,
-        Pre_Multiplied_Alpha,
+        Pre_Multiplied_Alpha
     }
 
     public enum Specialized_Rendering
@@ -50,7 +50,7 @@ namespace HaloShaderGenerator.Particle
         Distortion,
         Distortion_Expensive,
         Distortion_Diffuse,
-        Distortion_Expensive_Diffuse,
+        Distortion_Expensive_Diffuse
     }
 
     public enum Lighting
@@ -58,41 +58,52 @@ namespace HaloShaderGenerator.Particle
         None,
         Per_Pixel_Ravi_Order_3,
         Per_Vertex_Ravi_Order_0,
+        Per_Pixel_Smooth,
+        Per_Vertex_Ambient,
+        Smoke_Lighting
     }
 
     public enum Render_Targets
     {
         Ldr_And_Hdr,
-        Ldr_Only,
+        Ldr_Only
     }
 
     public enum Depth_Fade
     {
         Off,
         On,
+        Palette_Shift,
+        Low_Res
     }
 
     public enum Black_Point
     {
         Off,
-        On,
+        On
     }
 
     public enum Fog
     {
         Off,
-        On,
+        On
     }
 
     public enum Frame_Blend
     {
         Off,
-        On,
+        On
     }
 
     public enum Self_Illumination
     {
         None,
-        Constant_Color,
+        Constant_Color
+    }
+
+    public enum Warp
+    {
+        None,
+        Sphere
     }
 }

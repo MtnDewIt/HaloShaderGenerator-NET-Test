@@ -1,168 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using HaloShaderGenerator.Decal;
 using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
+using HaloShaderGenerator.Shared;
 
 namespace HaloShaderGenerator.Particle
 {
     public class ParticleGenerator : IShaderGenerator
     {
-        private bool TemplateGenerationValid;
-        private bool ApplyFixes;
-
-        Albedo albedo;
-        Blend_Mode blend_mode;
-        Specialized_Rendering specialized_rendering;
-        Lighting lighting;
-        Render_Targets render_targets;
-        Depth_Fade depth_fade;
-        Black_Point black_point;
-        Fog fog;
-        Frame_Blend frame_blend;
-        Self_Illumination self_illumination;
-
-        /// <summary>
-        /// Generator insantiation for shared shaders. Does not require method options.
-        /// </summary>
-        public ParticleGenerator(bool applyFixes = false) { TemplateGenerationValid = false; ApplyFixes = applyFixes; }
-
-        /// <summary>
-        /// Generator instantiation for method specific shaders.
-        /// </summary>
-        public ParticleGenerator(Albedo albedo, Blend_Mode blend_mode, Specialized_Rendering specialized_rendering, Lighting lighting, Render_Targets render_targets,
-            Depth_Fade depth_fade, Black_Point black_point, Fog fog, Frame_Blend frame_blend, Self_Illumination self_illumination, bool applyFixes = false)
-        {
-            this.albedo = albedo;
-            this.blend_mode = blend_mode;
-            this.specialized_rendering = specialized_rendering;
-            this.lighting = lighting;
-            this.render_targets = render_targets;
-            this.depth_fade = depth_fade;
-            this.black_point = black_point;
-            this.fog = fog;
-            this.frame_blend = frame_blend;
-            this.self_illumination = self_illumination;
-
-            ApplyFixes = applyFixes;
-            TemplateGenerationValid = true;
-        }
-
-        public ParticleGenerator(byte[] options, bool applyFixes = false)
-        {
-            options = ValidateOptions(options);
-
-            this.albedo = (Albedo)options[0];
-            this.blend_mode = (Blend_Mode)options[1];
-            this.specialized_rendering = (Specialized_Rendering)options[2];
-            this.lighting = (Lighting)options[3];
-            this.render_targets = (Render_Targets)options[4];
-            this.depth_fade = (Depth_Fade)options[5];
-            this.black_point = (Black_Point)options[6];
-            this.fog = (Fog)options[7];
-            this.frame_blend = (Frame_Blend)options[8];
-            this.self_illumination = (Self_Illumination)options[9];
-
-            ApplyFixes = applyFixes;
-            TemplateGenerationValid = true;
-        }
-
-        public ShaderGeneratorResult GeneratePixelShader(ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            Shared.Blend_Mode sBlendMode = (Shared.Blend_Mode)Enum.Parse(typeof(Shared.Blend_Mode), blend_mode.ToString());
-
-            TemplateGenerator.TemplateGenerator.CreateGlobalMacros(macros, ShaderType.Particle, entryPoint, sBlendMode, 
-                Shader.Misc.First_Person_Never, Shared.Alpha_Test.None, Shared.Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel, ApplyFixes);
-
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Albedo>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Blend_Mode>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Specialized_Rendering>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Lighting>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Render_Targets>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Depth_Fade>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Black_Point>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Fog>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Frame_Blend>());
-            macros.AddRange(ShaderGeneratorBase.CreateAutoMacroMethodEnumDefinitions<Self_Illumination>());
-
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("albedo", albedo.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("blend_mode", blend_mode.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("specialized_rendering", specialized_rendering.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("lighting", lighting.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("render_targets", render_targets.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("depth_fade", depth_fade.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("black_point", black_point.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("fog", fog.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("frame_blend", frame_blend.ToString().ToLower()));
-            macros.Add(ShaderGeneratorBase.CreateAutoMacro("self_illumination", self_illumination.ToString().ToLower()));
-
-            string entryName = entryPoint.ToString().ToLower() + "_ps";
-            switch (entryPoint)
-            {
-                case ShaderStage.Static_Prt_Linear:
-                case ShaderStage.Static_Prt_Quadratic:
-                case ShaderStage.Static_Prt_Ambient:
-                    entryName = "static_prt_ps";
-                    break;
-                case ShaderStage.Dynamic_Light_Cinematic:
-                    entryName = "dynamic_light_cine_ps";
-                    break;
-            }
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"particle.fx", macros, entryName, "ps_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedPixelShader(ShaderStage entryPoint, int methodIndex, int optionIndex)
-        {
-            if (!IsEntryPointSupported(entryPoint) || !IsPixelShaderShared(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderStage>());
-            macros.AddRange(ShaderGeneratorBase.CreateMethodEnumDefinitions<ShaderType>());
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource($"glps_particle.hlsl", macros, "entry_" + entryPoint.ToString().ToLower(), "ps_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateSharedVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!IsVertexFormatSupported(vertexType) || !IsEntryPointSupported(entryPoint))
-                return null;
-
-            List<D3D.SHADER_MACRO> macros = new List<D3D.SHADER_MACRO>();
-
-            macros.Add(new D3D.SHADER_MACRO { Name = "_DEFINITION_HELPER_HLSLI", Definition = "1" });
-            macros.Add(ShaderGeneratorBase.CreateMacro("calc_vertex_transform", vertexType, "calc_vertex_transform_", ""));
-            macros.Add(ShaderGeneratorBase.CreateMacro("transform_unknown_vector", vertexType, "transform_unknown_vector_", ""));
-            macros.Add(ShaderGeneratorBase.CreateVertexMacro("input_vertex_format", vertexType));
-
-            byte[] shaderBytecode = ShaderGeneratorBase.GenerateSource(@"glvs_particle.hlsl", macros, $"entry_{entryPoint.ToString().ToLower()}", "vs_3_0");
-
-            return new ShaderGeneratorResult(shaderBytecode);
-        }
-
-        public ShaderGeneratorResult GenerateVertexShader(VertexType vertexType, ShaderStage entryPoint)
-        {
-            if (!TemplateGenerationValid)
-                throw new System.Exception("Generator initialized with shared shader constructor. Use template constructor.");
-            return null;
-        }
-
         public int GetMethodCount()
         {
-            return System.Enum.GetValues(typeof(ParticleMethods)).Length;
+            return Enum.GetValues(typeof(ParticleMethods)).Length;
         }
 
         public int GetMethodOptionCount(int methodIndex)
@@ -189,189 +38,53 @@ namespace HaloShaderGenerator.Particle
                     return Enum.GetValues(typeof(Frame_Blend)).Length;
                 case ParticleMethods.Self_Illumination:
                     return Enum.GetValues(typeof(Self_Illumination)).Length;
+                case ParticleMethods.Warp:
+                    return Enum.GetValues(typeof(Warp)).Length;
             }
 
             return -1;
         }
 
-        public int GetMethodOptionValue(int methodIndex)
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
         {
-            switch ((ParticleMethods)methodIndex)
+            switch (entryPoint)
             {
-                case ParticleMethods.Albedo:
-                    return (int)albedo;
-                case ParticleMethods.Blend_Mode:
-                    return (int)blend_mode;
-                case ParticleMethods.Specialized_Rendering:
-                    return (int)specialized_rendering;
-                case ParticleMethods.Lighting:
-                    return (int)lighting;
-                case ParticleMethods.Render_Targets:
-                    return (int)render_targets;
-                case ParticleMethods.Depth_Fade:
-                    return (int)depth_fade;
-                case ParticleMethods.Black_Point:
-                    return (int)black_point;
-                case ParticleMethods.Fog:
-                    return (int)fog;
-                case ParticleMethods.Frame_Blend:
-                    return (int)frame_blend;
-                case ParticleMethods.Self_Illumination:
-                    return (int)self_illumination;
+                default:
+                    return -1;
             }
-            return -1;
-        }
-
-        public bool IsEntryPointSupported(ShaderStage entryPoint)
-        {
-            if (entryPoint == ShaderStage.Default)
-                return true;
-            return false;
-        }
-
-        public bool IsMethodSharedInEntryPoint(ShaderStage entryPoint, int method_index)
-        {
-            return false;
         }
 
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
-            return false;
-        }
-
-        public bool IsSharedPixelShaderWithoutMethod(ShaderStage entryPoint)
-        {
-            return false;
-        }
-
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            return false;
-        }
-
-        public bool IsVertexFormatSupported(VertexType vertexType)
-        {
-            switch (vertexType)
+            switch (entryPoint)
             {
-                case VertexType.Particle:
-                case VertexType.ParticleModel:
-                    return true;
                 default:
                     return false;
             }
         }
 
-        public bool IsVertexShaderShared(ShaderStage entryPoint)
+        public bool IsPixelShaderShared(ShaderStage entryPoint)
+        {
+            switch (entryPoint)
+            {
+                default:
+                    return false;
+            }
+        }
+
+        public bool IsAutoMacro()
         {
             return true;
         }
 
-        public ShaderParameters GetPixelShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            switch (albedo)
-            {
-                case Albedo.Diffuse_Only:
-                    result.AddSamplerParameter("base_map");
-                    break;
-                case Albedo.Diffuse_Plus_Billboard_Alpha:
-                    result.AddSamplerParameter("base_map");
-                    result.AddSamplerParameter("alpha_map");
-                    break;
-                case Albedo.Palettized:
-                    result.AddSamplerParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("palette");
-                    break;
-                case Albedo.Palettized_Plus_Billboard_Alpha:
-                    result.AddSamplerParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("palette");
-                    result.AddSamplerParameter("alpha_map");
-                    break;
-                case Albedo.Diffuse_Plus_Sprite_Alpha:
-                    result.AddSamplerParameter("base_map");
-                    result.AddSamplerParameter("alpha_map");
-                    break;
-                case Albedo.Palettized_Plus_Sprite_Alpha:
-                    result.AddSamplerParameter("base_map");
-                    result.AddSamplerWithoutXFormParameter("palette");
-                    result.AddSamplerParameter("alpha_map");
-                    break;
-                case Albedo.Diffuse_Modulated:
-                    result.AddSamplerParameter("base_map");
-                    result.AddFloat4Parameter("tint_color");
-                    result.AddFloatParameter("modulation_factor");
-                    break;
-                case Albedo.Palettized_Plasma:
-                    result.AddSamplerParameter("base_map");
-                    result.AddSamplerParameter("base_map2");
-                    result.AddSamplerWithoutXFormParameter("palette");
-                    result.AddSamplerParameter("alpha_map");
-                    result.AddFloatParameter("alpha_modulation_factor");
-                    break;
-                case Albedo.Palettized_2d_Plasma:
-                    result.AddSamplerParameter("base_map");
-                    result.AddSamplerParameter("base_map2");
-                    result.AddSamplerWithoutXFormParameter("palette");
-                    result.AddSamplerParameter("alpha_map");
-                    break;
-            }
-            switch (specialized_rendering)
-            {
-                case Specialized_Rendering.Distortion:
-                case Specialized_Rendering.Distortion_Expensive:
-                case Specialized_Rendering.Distortion_Diffuse:
-                case Specialized_Rendering.Distortion_Expensive_Diffuse:
-                    result.AddFloatParameter("distortion_scale");
-                    break;
-            }
-            switch (depth_fade)
-            {
-                case Depth_Fade.On:
-                    result.AddFloatParameter("depth_fade_range");
-                    break;
-            }
-
-            return result;
-        }
-
-        public ShaderParameters GetVertexShaderParameters()
-        {
-            if (!TemplateGenerationValid)
-                return null;
-            var result = new ShaderParameters();
-
-            result.AddPrefixedFloat4VertexParameter("albedo", "category_");
-            result.AddPrefixedFloat4VertexParameter("blend_mode", "category_");
-            result.AddPrefixedFloat4VertexParameter("specialized_rendering", "category_");
-            result.AddPrefixedFloat4VertexParameter("lighting", "category_");
-            result.AddPrefixedFloat4VertexParameter("fog", "category_");
-            switch (frame_blend)
-            {
-                case Frame_Blend.On:
-                    result.AddFloatVertexParameter("starting_uv_scale");
-                    result.AddFloatVertexParameter("ending_uv_scale");
-                    break;
-            }
-            result.AddPrefixedFloat4VertexParameter("frame_blend", "category_");
-            switch (self_illumination)
-            {
-                case Self_Illumination.Constant_Color:
-                    result.AddFloat4VertexParameter("self_illum_color");
-                    break;
-            }
-            result.AddPrefixedFloat4VertexParameter("self_illumination", "category_");
-
-            return result;
-        }
-
-        public ShaderParameters GetGlobalParameters()
+        public ShaderParameters GetGlobalParameters(out string rmopName)
         {
             var result = new ShaderParameters();
-            result.AddSamplerWithoutXFormParameter("depth_buffer", RenderMethodExtern.texture_global_target_z);
-            result.AddFloat4Parameter("screen_constants", RenderMethodExtern.screen_constants);
+
+            result.AddSamplerExternFilterAddressParameter("depth_buffer", RenderMethodExtern.texture_global_target_z, ShaderOptionParameter.ShaderFilterMode.Point, ShaderOptionParameter.ShaderAddressMode.Clamp);
+            result.AddFloat3ColorExternParameter("screen_constants", RenderMethodExtern.screen_constants);
+            rmopName = @"shaders\particle_options\global_particle_options";
+
             return result;
         }
 
@@ -384,132 +97,260 @@ namespace HaloShaderGenerator.Particle
             if (methodName == "albedo")
             {
                 optionName = ((Albedo)option).ToString();
+
                 switch ((Albedo)option)
                 {
                     case Albedo.Diffuse_Only:
-                        result.AddSamplerParameter("base_map");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\particle_options\albedo_diffuse_only";
                         break;
                     case Albedo.Diffuse_Plus_Billboard_Alpha:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerParameter("alpha_map");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         rmopName = @"shaders\particle_options\albedo_diffuse_plus_billboard_alpha";
                         break;
                     case Albedo.Palettized:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("palette");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
                         rmopName = @"shaders\particle_options\albedo_palettized";
                         break;
                     case Albedo.Palettized_Plus_Billboard_Alpha:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("palette");
-                        result.AddSamplerParameter("alpha_map");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         rmopName = @"shaders\particle_options\albedo_palettized_plus_billboard_alpha";
                         break;
                     case Albedo.Diffuse_Plus_Sprite_Alpha:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerParameter("alpha_map");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         rmopName = @"shaders\particle_options\albedo_diffuse_plus_sprite_alpha";
                         break;
                     case Albedo.Palettized_Plus_Sprite_Alpha:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerWithoutXFormParameter("palette");
-                        result.AddSamplerParameter("alpha_map");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("palette", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
                         rmopName = @"shaders\particle_options\albedo_palettized_plus_sprite_alpha";
                         break;
                     case Albedo.Diffuse_Modulated:
-                        result.AddSamplerParameter("base_map");
-                        result.AddFloat4Parameter("tint_color");
-                        result.AddFloatParameter("modulation_factor");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorParameter("tint_color", new ShaderColor(0, 255, 34, 2));
+                        result.AddFloatParameter("modulation_factor", 1.0f);
                         rmopName = @"shaders\particle_options\albedo_diffuse_modulated";
                         break;
                     case Albedo.Palettized_Glow:
-                        result.AddSamplerParameter("base_map");
-                        result.AddFloat4Parameter("tint_color");
+                        result.AddSamplerAddressParameter("base_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddFloat3ColorParameter("tint_color", new ShaderColor(0, 255, 74, 14));
                         rmopName = @"shaders\particle_options\albedo_palettized_glow";
                         break;
                     case Albedo.Palettized_Plasma:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerParameter("base_map2");
-                        result.AddSamplerWithoutXFormParameter("palette");
-                        result.AddSamplerParameter("alpha_map");
-                        result.AddFloatParameter("alpha_modulation_factor");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("base_map2", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerFilterAddressParameter("palette", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddFloatParameter("alpha_modulation_factor", 0.1f);
                         rmopName = @"shaders\particle_options\albedo_palettized_plasma";
                         break;
                     case Albedo.Palettized_2d_Plasma:
-                        result.AddSamplerParameter("base_map");
-                        result.AddSamplerParameter("base_map2");
-                        result.AddSamplerWithoutXFormParameter("palette");
-                        result.AddSamplerParameter("alpha_map");
+                        result.AddSamplerParameter("base_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerParameter("base_map2", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerFilterAddressParameter("palette", ShaderOptionParameter.ShaderFilterMode.Bilinear, ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddSamplerAddressParameter("alpha_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        result.AddFloatParameter("alpha_modulation_factor", 0.1f);
                         rmopName = @"shaders\particle_options\albedo_palettized_plasma";
                         break;
                 }
             }
+
             if (methodName == "blend_mode")
             {
                 optionName = ((Blend_Mode)option).ToString();
-            }
-            if (methodName == "specialized_rendering")
-            {
-                optionName = ((Specialized_Rendering)option).ToString();
-                switch ((Specialized_Rendering)option)
+
+                switch ((Blend_Mode)option)
                 {
-                    case Specialized_Rendering.Distortion:
-                    case Specialized_Rendering.Distortion_Expensive:
-                    case Specialized_Rendering.Distortion_Diffuse:
-                    case Specialized_Rendering.Distortion_Expensive_Diffuse:
-                        result.AddFloatParameter("distortion_scale");
-                        rmopName = @"shaders\particle_options\distortion_diffuse";
+                    case Blend_Mode.Opaque:
+                        break;
+                    case Blend_Mode.Additive:
+                        break;
+                    case Blend_Mode.Multiply:
+                        break;
+                    case Blend_Mode.Alpha_Blend:
+                        break;
+                    case Blend_Mode.Double_Multiply:
+                        break;
+                    case Blend_Mode.Maximum:
+                        break;
+                    case Blend_Mode.Multiply_Add:
+                        break;
+                    case Blend_Mode.Add_Src_Times_Dstalpha:
+                        break;
+                    case Blend_Mode.Add_Src_Times_Srcalpha:
+                        break;
+                    case Blend_Mode.Inv_Alpha_Blend:
+                        break;
+                    case Blend_Mode.Pre_Multiplied_Alpha:
                         break;
                 }
             }
+
+            if (methodName == "specialized_rendering")
+            {
+                optionName = ((Specialized_Rendering)option).ToString();
+
+                switch ((Specialized_Rendering)option)
+                {
+                    case Specialized_Rendering.None:
+                        break;
+                    case Specialized_Rendering.Distortion:
+                        result.AddFloatParameter("distortion_scale", 2.0f);
+                        rmopName = @"shaders\particle_options\specialized_rendering_distortion";
+                        break;
+                    case Specialized_Rendering.Distortion_Expensive:
+                        result.AddFloatParameter("distortion_scale", 2.0f);
+                        rmopName = @"shaders\particle_options\specialized_rendering_distortion";
+                        break;
+                    case Specialized_Rendering.Distortion_Diffuse:
+                        result.AddFloatParameter("distortion_scale", 2.0f);
+                        rmopName = @"shaders\particle_options\specialized_rendering_distortion";
+                        break;
+                    case Specialized_Rendering.Distortion_Expensive_Diffuse:
+                        result.AddFloatParameter("distortion_scale", 2.0f);
+                        rmopName = @"shaders\particle_options\specialized_rendering_distortion";
+                        break;
+                }
+            }
+
             if (methodName == "lighting")
             {
                 optionName = ((Lighting)option).ToString();
+
+                switch ((Lighting)option)
+                {
+                    case Lighting.None:
+                        break;
+                    case Lighting.Per_Pixel_Ravi_Order_3:
+                        break;
+                    case Lighting.Per_Vertex_Ravi_Order_0:
+                        break;
+                    case Lighting.Per_Pixel_Smooth:
+                        result.AddFloatParameter("contrast_scale", 0.5f);
+                        result.AddFloatParameter("contrast_offset", 0.5f);
+                        rmopName = @"shaders\particle_options\smooth_lighting";
+                        break;
+                    case Lighting.Per_Vertex_Ambient:
+                        break;
+                    case Lighting.Smoke_Lighting:
+                        result.AddFloatParameter("bump_contrast", 1.5f);
+                        result.AddFloatParameter("bump_randomness", 0.2f);
+                        rmopName = @"shaders\particle_options\smoke_lighting";
+                        break;
+                }
             }
+
             if (methodName == "render_targets")
             {
                 optionName = ((Render_Targets)option).ToString();
+
+                switch ((Render_Targets)option)
+                {
+                    case Render_Targets.Ldr_And_Hdr:
+                        break;
+                    case Render_Targets.Ldr_Only:
+                        break;
+                }
             }
+
             if (methodName == "depth_fade")
             {
                 optionName = ((Depth_Fade)option).ToString();
+
                 switch ((Depth_Fade)option)
                 {
+                    case Depth_Fade.Off:
+                        break;
                     case Depth_Fade.On:
-                        result.AddFloatParameter("depth_fade_range");
+                        result.AddFloatParameter("depth_fade_range", 0.1f);
+                        rmopName = @"shaders\particle_options\depth_fade_on";
+                        break;
+                    case Depth_Fade.Palette_Shift:
+                        result.AddFloatParameter("depth_fade_range", 0.1f);
+                        result.AddFloatParameter("palette_shift_amount", 0.5f);
+                        rmopName = @"shaders\particle_options\depth_fade_palette_shift";
+                        break;
+                    case Depth_Fade.Low_Res:
+                        result.AddFloatParameter("depth_fade_range", 0.1f);
                         rmopName = @"shaders\particle_options\depth_fade_on";
                         break;
                 }
             }
+
             if (methodName == "black_point")
             {
                 optionName = ((Black_Point)option).ToString();
+
+                switch ((Black_Point)option)
+                {
+                    case Black_Point.Off:
+                        break;
+                    case Black_Point.On:
+                        break;
+                }
             }
+
             if (methodName == "fog")
             {
                 optionName = ((Fog)option).ToString();
+
+                switch ((Fog)option)
+                {
+                    case Fog.Off:
+                        break;
+                    case Fog.On:
+                        break;
+                }
             }
+
             if (methodName == "frame_blend")
             {
                 optionName = ((Frame_Blend)option).ToString();
+
                 switch ((Frame_Blend)option)
                 {
+                    case Frame_Blend.Off:
+                        break;
                     case Frame_Blend.On:
-                        result.AddFloatVertexParameter("starting_uv_scale");
-                        result.AddFloatVertexParameter("ending_uv_scale");
+                        result.AddFloatParameter("starting_uv_scale", 1.0f);
+                        result.AddFloatParameter("ending_uv_scale", 1.0f);
                         rmopName = @"shaders\particle_options\frame_blend_on";
                         break;
                 }
             }
+
             if (methodName == "self_illumination")
             {
                 optionName = ((Self_Illumination)option).ToString();
+
                 switch ((Self_Illumination)option)
                 {
+                    case Self_Illumination.None:
+                        break;
                     case Self_Illumination.Constant_Color:
-                        result.AddFloat4VertexParameter("self_illum_color");
+                        result.AddFloat3ColorParameter("self_illum_color");
                         rmopName = @"shaders\particle_options\self_illumination_constant_color";
+                        break;
+                }
+            }
+
+            if (methodName == "warp")
+            {
+                optionName = ((Warp)option).ToString();
+
+                switch ((Warp)option)
+                {
+                    case Warp.None:
+                        break;
+                    case Warp.Sphere:
+                        result.AddFloatParameter("sphere_warp_scale", 0.41f);
+                        rmopName = @"shaders\particle_options\warp_sphere";
                         break;
                 }
             }
@@ -545,19 +386,376 @@ namespace HaloShaderGenerator.Particle
                     return Enum.GetValues(typeof(Frame_Blend));
                 case ParticleMethods.Self_Illumination:
                     return Enum.GetValues(typeof(Self_Illumination));
+                case ParticleMethods.Warp:
+                    return Enum.GetValues(typeof(Warp));
             }
 
             return null;
         }
 
-        public byte[] ValidateOptions(byte[] options)
+        public Array GetEntryPointOrder()
         {
-            List<byte> optionList = new List<byte>(options);
+            return new ShaderStage[]
+            {
+                ShaderStage.Default,
+                //case ShaderStage.Static_Default
+            };
+        }
 
-            while (optionList.Count < GetMethodCount())
-                optionList.Add(0);
+        public Array GetVertexTypeOrder()
+        {
+            return new VertexType[]
+            {
+                VertexType.Particle,
+                VertexType.ParticleModel
+            };
+        }
 
-            return optionList.ToArray();
+        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "albedo")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "blend_mode")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "specialized_rendering")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "lighting")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "render_targets")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "depth_fade")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "black_point")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "fog")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "frame_blend")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "self_illumination")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+
+            if (methodName == "warp")
+            {
+                vertexFunction = "invalid";
+                pixelFunction = "invalid";
+            }
+        }
+
+        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        {
+            vertexFunction = null;
+            pixelFunction = null;
+
+            if (methodName == "albedo")
+            {
+                switch ((Albedo)option)
+                {
+                    case Albedo.Diffuse_Only:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Diffuse_Plus_Billboard_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Palettized:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Palettized_Plus_Billboard_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Diffuse_Plus_Sprite_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Palettized_Plus_Sprite_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Diffuse_Modulated:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Palettized_Glow:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Palettized_Plasma:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Albedo.Palettized_2d_Plasma:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "blend_mode")
+            {
+                switch ((Blend_Mode)option)
+                {
+                    case Blend_Mode.Opaque:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Additive:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Multiply:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Alpha_Blend:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Double_Multiply:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Maximum:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Multiply_Add:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Add_Src_Times_Dstalpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Add_Src_Times_Srcalpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Inv_Alpha_Blend:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Blend_Mode.Pre_Multiplied_Alpha:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "specialized_rendering")
+            {
+                switch ((Specialized_Rendering)option)
+                {
+                    case Specialized_Rendering.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Specialized_Rendering.Distortion:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Specialized_Rendering.Distortion_Expensive:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Specialized_Rendering.Distortion_Diffuse:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Specialized_Rendering.Distortion_Expensive_Diffuse:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "lighting")
+            {
+                switch ((Lighting)option)
+                {
+                    case Lighting.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Lighting.Per_Pixel_Ravi_Order_3:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Lighting.Per_Vertex_Ravi_Order_0:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Lighting.Per_Pixel_Smooth:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Lighting.Per_Vertex_Ambient:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Lighting.Smoke_Lighting:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "render_targets")
+            {
+                switch ((Render_Targets)option)
+                {
+                    case Render_Targets.Ldr_And_Hdr:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Render_Targets.Ldr_Only:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "depth_fade")
+            {
+                switch ((Depth_Fade)option)
+                {
+                    case Depth_Fade.Off:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Depth_Fade.On:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Depth_Fade.Palette_Shift:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Depth_Fade.Low_Res:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "black_point")
+            {
+                switch ((Black_Point)option)
+                {
+                    case Black_Point.Off:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Black_Point.On:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "fog")
+            {
+                switch ((Fog)option)
+                {
+                    case Fog.Off:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Fog.On:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "frame_blend")
+            {
+                switch ((Frame_Blend)option)
+                {
+                    case Frame_Blend.Off:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Frame_Blend.On:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "self_illumination")
+            {
+                switch ((Self_Illumination)option)
+                {
+                    case Self_Illumination.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Self_Illumination.Constant_Color:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
+
+            if (methodName == "warp")
+            {
+                switch ((Warp)option)
+                {
+                    case Warp.None:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Warp.Sphere:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                }
+            }
         }
     }
 }

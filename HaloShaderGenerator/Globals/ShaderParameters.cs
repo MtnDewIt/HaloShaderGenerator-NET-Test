@@ -1,371 +1,445 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace HaloShaderGenerator.Globals
 {
     public class ShaderParameters
     {
-        public List<ShaderParameter> Parameters;
+        public List<ShaderOptionParameter> Parameters;
 
         public ShaderParameters()
         {
-            Parameters = new List<ShaderParameter>();
+            Parameters = new List<ShaderOptionParameter>();
         }
 
-        //
-        // Pixel shader parameters easy add methods
-        //
-
-        public void AddSamplerWithoutXFormParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
+        #region Sampler Functions
+        public void AddSamplerParameter(string parameterName, string samplerBitmap = null) 
         {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.sampler2D, rmExtern));
-        }
-
-        public void AddSamplerParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.sampler2D, rmExtern));
-            Parameters.Add(new ShaderParameter(parameterName, parameterName + "_xform", HLSLType.Xform_2d, rmExtern));
-        }
-
-        public void AddXFormOnlyParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName + "_xform", HLSLType.Xform_2d, rmExtern, ShaderParameterFlags.IsXFormOnly));
-        }
-
-        public void AddFloat4ColorParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, ShaderParameterFlags.IsColor));
-        }
-
-        public void AddFloat3ColorParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern, ShaderParameterFlags.IsColor));
-        }
-
-        public void AddFloat4Parameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern));
-        }
-
-        public void AddFloat3Parameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern));
-        }
-
-        public void AddFloat2Parameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float2, rmExtern));
-        }
-
-        public void AddFloatParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float, rmExtern));
-        }
-
-        public void AddBooleanParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Bool, rmExtern));
-        }
-
-        public void AddInteger4Parameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Int4, rmExtern));
-        }
-
-        public void AddIntegerParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Int, rmExtern));
-        }
-
-        //
-        // Vertex shader parameters easy add methods
-        //
-
-        public void AddSamplerWithoutXFormVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.sampler2D, rmExtern, ShaderParameterFlags.IsVertexShader));
-        }
-
-        public void AddSamplerVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.sampler2D, rmExtern, ShaderParameterFlags.IsVertexShader));
-            Parameters.Add(new ShaderParameter(parameterName, parameterName + "_xform", HLSLType.Xform_2d, rmExtern, ShaderParameterFlags.IsVertexShader));
-        }
-
-        public void AddFloat4ColorVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, (ShaderParameterFlags.IsVertexShader | ShaderParameterFlags.IsColor)));
-        }
-
-        public void AddFloat3ColorVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern, (ShaderParameterFlags.IsVertexShader | ShaderParameterFlags.IsColor)));
-        }
-
-        public void AddFloat4VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float4, rmExtern, ShaderParameterFlags.IsVertexShader));
-        }
-        public void AddPrefixedFloat4VertexParameter(string parameterName, string prefix, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, prefix + parameterName, HLSLType.Float4, rmExtern, ShaderParameterFlags.IsVertexShader));
-        }
-
-        public void AddCategoryVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, "category_" + parameterName, HLSLType.Float4, rmExtern, ShaderParameterFlags.IsVertexShader | ShaderParameterFlags.IsCategory));
-        }
-
-        public void AddFloat3VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float3, rmExtern, ShaderParameterFlags.IsVertexShader));
-        }
-
-        public void AddFloat2VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float2, rmExtern, ShaderParameterFlags.IsVertexShader));
-        }
-
-        public void AddFloatVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Float, rmExtern, ShaderParameterFlags.IsVertexShader));
-        }
-
-        public void AddBooleanVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Bool, rmExtern, ShaderParameterFlags.IsVertexShader));
-        }
-
-        public void AddInteger4VertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Int4, rmExtern, ShaderParameterFlags.IsVertexShader));
-        }
-
-        public void AddIntegerVertexParameter(string parameterName, RenderMethodExtern rmExtern = RenderMethodExtern.none)
-        {
-            Parameters.Add(new ShaderParameter(parameterName, parameterName, HLSLType.Int, rmExtern, ShaderParameterFlags.IsVertexShader));
-        }
-
-        //
-        // Getters for specific types of paramaters for pixel shaders
-        //
-
-        public List<ShaderParameter> GetSamplerParameters()
-        {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter 
             {
-                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern == RenderMethodExtern.none)
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                SamplerBitmap = samplerBitmap
+            });
         }
 
-        public List<ShaderParameter> GetRealPixelParameters()
+        public void AddSamplerExternParameter(string parameterName, RenderMethodExtern rmExtern, string samplerBitmap = null)
         {
-            var result = new List<ShaderParameter>();
-            foreach(var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern == RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                RenderMethodExtern = rmExtern,
+                SamplerBitmap = samplerBitmap
+            });
         }
 
-        public List<ShaderParameter> GetBooleanPixelParameters()
+        public void AddSamplerExternAddressParameter(string parameterName, RenderMethodExtern rmExtern, ShaderOptionParameter.ShaderAddressMode addressMode, string samplerBitmap = null)
         {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Boolean && parameter.RenderMethodExtern == RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                RenderMethodExtern = rmExtern,
+                AddressMode = addressMode,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        public List<ShaderParameter> GetIntegerPixelParameters()
+        public void AddSamplerExternFilterParameter(string parameterName, RenderMethodExtern rmExtern, ShaderOptionParameter.ShaderFilterMode filterMode, string samplerBitmap = null)
         {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern == RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                RenderMethodExtern = rmExtern,
+                FilterMode = filterMode,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        public List<ShaderParameter> GetSamplerPixelParameters()
+        public void AddSamplerExternFilterAddressParameter(string parameterName, RenderMethodExtern rmExtern, ShaderOptionParameter.ShaderFilterMode filterMode, ShaderOptionParameter.ShaderAddressMode addressMode, string samplerBitmap = null)
         {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern == RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                RenderMethodExtern = rmExtern,
+                FilterMode = filterMode,
+                AddressMode = addressMode,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        public List<ShaderParameter> GetRealExternPixelParameters()
+        public void AddSamplerExternWithColorParameter(string parameterName, RenderMethodExtern rmExtern, ShaderColor colorArgument, string samplerBitmap = null) 
         {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern != RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                RenderMethodExtern = rmExtern,
+                SamplerBitmap = samplerBitmap,
+                ColorArgument = colorArgument,
+            });
         }
 
-        public List<ShaderParameter> GetIntegerExternPixelParameters()
+        public void AddSamplerFilterParameter(string parameterName, ShaderOptionParameter.ShaderFilterMode filterMode, string samplerBitmap = null) 
         {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern != RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                FilterMode = filterMode,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        public List<ShaderParameter> GetSamplerExternPixelParameters()
+        public void AddSamplerFilterWithFloatParameter(string parameterName, ShaderOptionParameter.ShaderFilterMode filterMode, float floatArgument, string samplerBitmap = null)
         {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern != RenderMethodExtern.none && !parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                FilterMode = filterMode,
+                FloatArgument = floatArgument,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        //
-        // Getters for specific types of paramaters for vertex shaders
-        //
-
-        public List<ShaderParameter> GetRealVertexParameters()
+        public void AddSamplerAddressParameter(string parameterName, ShaderOptionParameter.ShaderAddressMode addressMode, string samplerBitmap = null)
         {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-                else if (parameter.RegisterType == RegisterType.Integer && 
-                    parameter.RenderMethodExtern == RenderMethodExtern.none && 
-                    parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader) &&
-                    parameter.Flags.HasFlag(ShaderParameterFlags.IsCategory))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                AddressMode = addressMode,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        public List<ShaderParameter> GetBooleanVertexParameters()
+        public void AddSamplerAddressWithColorParameter(string parameterName, ShaderOptionParameter.ShaderAddressMode addressMode, ShaderColor colorArgument, string samplerBitmap = null) 
         {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Boolean && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                AddressMode = addressMode,
+                ColorArgument = colorArgument,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        public List<ShaderParameter> GetIntegerVertexParameters()
+        public void AddSamplerFilterAddressParameter(string parameterName, ShaderOptionParameter.ShaderFilterMode filterMode, ShaderOptionParameter.ShaderAddressMode addressMode, string samplerBitmap = null) 
         {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                FilterMode = filterMode,
+                AddressMode = addressMode,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        public List<ShaderParameter> GetSamplerVertexParameters()
+        public void AddSamplerWithFloatParameter(string parameterName, float floatArgument, string samplerBitmap = null) 
         {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern == RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                FloatArgument = floatArgument,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        public List<ShaderParameter> GetRealExternVertexParameters()
+        public void AddSamplerWithScaleParameter(string parameterName, float bitmapScale, string samplerBitmap = null)
         {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Vector && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                BitmapScale = bitmapScale,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        public List<ShaderParameter> GetIntegerExternVertexParameters()
+        public void AddSamplerWithFloatAndColorParameter(string parameterName, float floatArgument, ShaderColor colorArgument, string samplerBitmap = null) 
         {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Integer && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                FloatArgument = floatArgument,
+                ColorArgument = colorArgument,
+                SamplerBitmap = samplerBitmap,
+            });
         }
 
-        public List<ShaderParameter> GetSamplerExternVertexParameters()
+        public void AddSamplerFilterWithScaleParameter(string parameterName, ShaderOptionParameter.ShaderFilterMode filterMode, float bitmapScale, string samplerBitmap = null)
         {
-            var result = new List<ShaderParameter>();
-            foreach (var parameter in Parameters)
+            Parameters.Add(new ShaderOptionParameter
             {
-                if (parameter.RegisterType == RegisterType.Sampler && parameter.RenderMethodExtern != RenderMethodExtern.none && parameter.Flags.HasFlag(ShaderParameterFlags.IsVertexShader))
-                    result.Add(parameter);
-            }
-            return result;
+                ParameterName = parameterName,
+                CodeType = HLSLType.sampler2D,
+                FilterMode = filterMode,
+                BitmapScale = bitmapScale,
+                SamplerBitmap = samplerBitmap,
+            });
         }
+        #endregion
+
+        #region Float Functions
+        public void AddFloatParameter(string parameterName, float floatArgument = 0.0f)
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float,
+                FloatArgument = floatArgument,
+            });
+        }
+
+        public void AddFloatExternParameter(string parameterName, RenderMethodExtern rmExtern, float floatArgument = 0.0f) 
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float,
+                RenderMethodExtern = rmExtern,
+                FloatArgument = floatArgument,
+            });
+        }
+
+        public void AddFloatWithColorParameter(string parameterName, ShaderColor colorArgument, float floatArgument = 0.0f)
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float,
+                FloatArgument = floatArgument,
+                ColorArgument = colorArgument,
+            });
+        }
+        #endregion
+
+        #region Boolean Functions
+        public void AddBooleanParameter(string parameterName, uint intBoolArgument = 0) 
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Bool,
+                IntBoolArgument = intBoolArgument,
+            });
+        }
+
+        public void AddBooleanWithFloatParameter(string parameterName, float floatArgument, uint intBoolArgument = 0) 
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Bool,
+                FloatArgument = floatArgument,
+                IntBoolArgument = intBoolArgument,
+            });
+        }
+        #endregion
+
+        #region Integer Functions
+        public void AddIntegerParameter(string parameterName, uint intBoolArgument = 0) 
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Int,
+                IntBoolArgument = intBoolArgument,
+            });
+        }
+
+        public void AddIntegerWithFloatParameter(string parameterName, float floatArgument, uint intBoolArgument = 0) 
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Int,
+                FloatArgument = floatArgument,
+                IntBoolArgument = intBoolArgument,
+            });
+        }
+        #endregion
+
+        #region ARGB Color Functions
+        public void AddFloat4ColorParameter(string parameterName, ShaderColor colorArgument = new ShaderColor()) 
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float4,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat4ColorExternParameter(string parameterName, RenderMethodExtern rmExtern, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float4,
+                RenderMethodExtern = rmExtern,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat4ColorWithFloatParameter(string parameterName, float floatArgument, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float4,
+                FloatArgument = floatArgument,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat4ColorWithFloatAndIntegerParameter(string parameterName, float floatArgument, uint intBoolArgument, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float4,
+                FloatArgument = floatArgument,
+                IntBoolArgument = intBoolArgument,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+        #endregion
+
+        #region RGB Color Functions
+        public void AddFloat3ColorParameter(string parameterName, ShaderColor colorArgument = new ShaderColor()) 
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float3,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat3ColorExternParameter(string parameterName, RenderMethodExtern rmExtern, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float3,
+                RenderMethodExtern = rmExtern,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat3ColorExternWithSamplerParameter(string parameterName, RenderMethodExtern rmExtern, string samplerBitmap, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float3,
+                RenderMethodExtern = rmExtern,
+                SamplerBitmap = samplerBitmap,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat3ColorExternWithFloatParameter(string parameterName, RenderMethodExtern rmExtern, float floatArgument, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float3,
+                RenderMethodExtern = rmExtern,
+                FloatArgument = floatArgument,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat3ColorExternWithFloatAndIntegerParameter(string parameterName, RenderMethodExtern rmExtern, float floatArgument, uint intBoolArgument, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float3,
+                RenderMethodExtern = rmExtern,
+                FloatArgument = floatArgument,
+                IntBoolArgument = intBoolArgument,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+
+        public void AddFloat3ColorWithFloatParameter(string parameterName, float floatArgument, ShaderColor colorArgument = new ShaderColor())
+        {
+            Parameters.Add(new ShaderOptionParameter
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float3,
+                FloatArgument = floatArgument,
+                ColorArgument = colorArgument,
+                Flags = ShaderOptionParameter.ShaderParameterFlags.IsColor,
+            });
+        }
+        #endregion
     }
 
-    public enum ShaderParameterFlags
-    {
-        None = 0,
-        IsVertexShader = 1 << 0,
-        IsColor = 1 << 1,
-        IsXFormOnly = 1 << 2,
-        IsVertexAndPixelSampler = 1 << 3,
-        IsCategory = 1 << 4
-    }
-
-    public class ShaderParameter
+    public class ShaderOptionParameter
     {
         public string ParameterName;
-        public string RegisterName;
-        public string ExternParameterName;
-        public RegisterType RegisterType;
         public HLSLType CodeType;
-        public RenderMethodExtern RenderMethodExtern;
-        //public bool IsVertexShader = false;
-        //public bool IsColor = false;
-        //public bool IsXForm = false;
+        public RegisterType RegisterType => GetRegisterType(CodeType);
+        public RenderMethodExtern RenderMethodExtern = RenderMethodExtern.none;
+        public ShaderFilterMode FilterMode = ShaderFilterMode.Trilinear;
+        public ShaderAddressMode AddressMode = ShaderAddressMode.Wrap;
+        public float BitmapScale = 0.0f;
+        public string SamplerBitmap = null;
+        public float FloatArgument = 0.0f;
+        public uint IntBoolArgument = 0;
+        public ShaderColor ColorArgument = new ShaderColor(0, 0, 0, 0);
         public ShaderParameterFlags Flags = ShaderParameterFlags.None;
 
-        // TODO: add default values
-
-        public ShaderParameter(string parameterName, string registerName, HLSLType type, RenderMethodExtern renderMethodExtern = RenderMethodExtern.none, ShaderParameterFlags flags = ShaderParameterFlags.None)
+        public enum ShaderParameterFlags
         {
-            ParameterName = parameterName;
-            RegisterName = registerName;
-            CodeType = type;
-            RegisterType = GetRegisterType(type);
-            RenderMethodExtern = renderMethodExtern;
-            Flags = flags;
+            None = 0,
+            IsVertexShader = 1 << 0,
+            IsColor = 1 << 1,
+            IsXFormOnly = 1 << 2,
         }
 
-        public string GenerateHLSLCode()
+        public enum ShaderFilterMode 
         {
-            return $"uniform {CodeType.ToString().ToLower()} {RegisterName};\n";
+            Trilinear = 0,
+            Point = 1,
+            Bilinear = 2,
+            Anisotropic1 = 3,
+            Anisotropic2Expensive = 4,
+            Anisotropic3Expensive = 5,
+            Anisotropic4Expensive = 6,
+            LightprobeTextureArray = 7,
+            ComparisonPoint = 9,
+            ComparisonBilinear = 10
+        }
+
+        public enum ShaderAddressMode 
+        {
+            Wrap = 0,
+            Clamp = 1,
+            Mirror = 2,
+            BlackBorder = 3,
+            MirrorOnce = 4,
+            MirrorOnceBorder = 5
         }
 
         public static RegisterType GetRegisterType(HLSLType codeType)
@@ -401,6 +475,5 @@ namespace HaloShaderGenerator.Globals
                     return RegisterType.Vector;
             }
         }
-
     }
 }
