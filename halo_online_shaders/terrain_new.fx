@@ -255,17 +255,11 @@ void calc_bumpmap(
 	in float4 detail_bump_xform,
 	out float3 bump)
 {
-	bump= sample2D(bump_map, transform_texcoord(texcoord, bump_map_xform)).xyz;
-#if DX_VERSION == 9																	
-   bump.xy = BUMP_CONVERT(bump.xy);
-#endif
+	bump= bump_sample_unnormalized(bump_map, transform_texcoord(texcoord, bump_map_xform));
 
 #if DETAIL_BUMP_ENABLED
    if (!bSelfIllum) {
-	float2 detail= sample2D(detail_bump, transform_texcoord(texcoord, detail_bump_xform)).xy;
-	#if DX_VERSION == 9																	
-		detail.xy = BUMP_CONVERT(detail.xy);
-	#endif
+	float2 detail= bump_sample_unnormalized(detail_bump, transform_texcoord(texcoord, detail_bump_xform)).xy;
 	bump.xy += detail.xy;
    }
 #endif
