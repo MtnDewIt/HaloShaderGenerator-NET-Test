@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace HaloShaderGenerator.TemplateGenerator
 {
-    public class TemplateGenerator
+    public class TemplateGenerator : GeneratorBaseNew
     {
         private Shared.Blend_Mode GetBlendMode(List<OptionInfo> currentOptions)
         {
@@ -165,6 +165,8 @@ namespace HaloShaderGenerator.TemplateGenerator
                 string blendSourceMacro = alphaBlendSource.ToString().ToLower().Remove(0, 5); // remove "from_"
                 macros.Add(ShaderGeneratorBase.CreateMacro("alpha_blend_source", blendSourceMacro));
             }
+
+            //AppendUserMacros(macros); // TODO: replace external references to CreateGlobalMacros
         }
 
         private static List<OptionInfo> ValidateOptionInfo(List<OptionInfo> options, bool ps)
@@ -196,6 +198,7 @@ namespace HaloShaderGenerator.TemplateGenerator
 
             CreateGlobalMacros(macros, shaderType, entryPoint, GetBlendMode(currentOptions),
                 GetMisc(currentOptions), GetAlphaTest(currentOptions), GetAlphaBlendSource(currentOptions), applyFixes);
+            AppendUserMacros(macros); // TODO: move to CreateGlobalMacros
 
             foreach (var option in currentOptions)
             {
@@ -221,6 +224,7 @@ namespace HaloShaderGenerator.TemplateGenerator
 
             CreateGlobalMacros(macros, shaderType, entryPoint, GetBlendMode(currentOptions),
                 GetMisc(currentOptions), GetAlphaTest(currentOptions), GetAlphaBlendSource(currentOptions), applyFixes, true, vertexType);
+            AppendUserMacros(macros); // TODO: move to CreateGlobalMacros
 
             foreach (var option in currentOptions)
             {

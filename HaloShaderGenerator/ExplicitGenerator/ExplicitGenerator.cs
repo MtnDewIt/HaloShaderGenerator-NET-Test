@@ -10,7 +10,7 @@ using HaloShaderGenerator.Shared;
 
 namespace HaloShaderGenerator
 {
-    public class ExplicitGenerator
+    public class ExplicitGenerator : GeneratorBaseNew
     {
         public ExplicitShader GetExplicitIndex(string explicitShaderName)
         {
@@ -100,6 +100,8 @@ namespace HaloShaderGenerator
 
             if (applyFixes)
                 macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_FIXES", "1"));
+
+            AppendUserMacros(macros);
         }
 
         public ShaderGeneratorResult GeneratePixelShader(ExplicitShader explicitShader, ShaderStage entryPoint, 
