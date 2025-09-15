@@ -14,12 +14,13 @@ namespace HaloShaderGenerator.Generator
     {
         private class IncludeManager(string root_directory = "") : Include(root_directory)
         {
-            private readonly string ShaderDirectory = Path.GetDirectoryName(typeof(IncludeManager).Assembly.Location) + "\\halo_online_shaders\\";
+            //private readonly string ShaderDirectory = Path.GetDirectoryName(typeof(IncludeManager).Assembly.Location) + "\\halo_online_shaders\\"; // halo_online_shaders should be in the same directory as HaloShaderGenerator.dll
+            private readonly string ShaderDirectory = Path.Combine(AppContext.BaseDirectory, "halo_online_shaders"); // TagTool compatibility
 
             public string ReadResource(string filepath, string _parent_directory = null)
             {
                 string parent_directory = _parent_directory ?? base.DirectoryMap[IntPtr.Zero];
-                string filePath = ShaderDirectory + Path.Combine(parent_directory, filepath);
+                string filePath = Path.Combine(ShaderDirectory, Path.Combine(parent_directory, filepath));
 
                 if (!File.Exists(filePath))
                     throw new Exception($"Couldn't find file {filePath}");

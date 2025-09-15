@@ -9,6 +9,6 @@ namespace HaloShaderGenerator.Shared
     public static class StringIdUtil
     {
         public static readonly string Empty = "";
-        public static readonly string Invalid = "<invalid>";
+        public static readonly string Invalid = "invalid";
     }
 }
