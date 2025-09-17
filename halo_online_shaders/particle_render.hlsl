@@ -1097,6 +1097,7 @@ s_particle_render_pixel_out default_ps(
 	clip(IN.m_color.w*blended.w<alpha_cutoff ? -1 : 1);	// early out if sampled alpha is 0, only helps if all ALU threads take it
 #endif
 
+// TODO: options with _diffuse shouldn't be bump converting...
 	if (IS_DISTORTION_PARTICLE)
 	{
 	#if defined(pc) && (DX_VERSION == 9)
@@ -1111,11 +1112,7 @@ s_particle_render_pixel_out default_ps(
 #endif
 )
 		{
-#ifdef DXT5_NORMALS
-			blended.xy = bump_convert_dxt5(BUMP_GET_DXT5NM_CHANNELS(blended));   
-#else
-			blended.xy = BUMP_CONVERT(blended.xy);   
-#endif
+			blended.xy = BUMP_CONVERT(BUMP_GET_CHANNELS(blended));
 		}
 	#endif
 

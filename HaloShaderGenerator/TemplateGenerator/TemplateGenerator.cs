@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace HaloShaderGenerator.TemplateGenerator
 {
-    public class TemplateGenerator
+    public class TemplateGenerator : GeneratorBaseNew
     {
         private Shared.Blend_Mode GetBlendMode(List<OptionInfo> currentOptions)
         {
@@ -161,6 +161,8 @@ namespace HaloShaderGenerator.TemplateGenerator
 
             if (applyFixes)
                 macros.Add(ShaderGeneratorBase.CreateMacro("APPLY_FIXES", "1"));
+
+            //AppendUserMacros(macros); // TODO: replace external references to CreateGlobalMacros
         }
 
         private static List<OptionInfo> ValidateOptionInfo(List<OptionInfo> options, bool ps)
@@ -169,14 +171,14 @@ namespace HaloShaderGenerator.TemplateGenerator
             foreach (var option in options)
             {
                 // do some debug checks here
-                if ((option.PsMacro == "invalid" && option.PsMacroValue != "invalid") ||
-                    (option.PsMacro != "invalid" && option.PsMacroValue == "invalid"))
+                if ((option.PsMacro == Shared.StringIdUtil.Empty && option.PsMacroValue != Shared.StringIdUtil.Empty) ||
+                    (option.PsMacro != Shared.StringIdUtil.Empty && option.PsMacroValue == Shared.StringIdUtil.Empty))
                     Console.WriteLine($"WARNING: category {option.Category} option not valid ({option.PsMacro}, {option.PsMacroValue})");
-                if ((option.VsMacro == "invalid" && option.VsMacroValue != "invalid") ||
-                    (option.VsMacro != "invalid" && option.VsMacroValue == "invalid"))
+                if ((option.VsMacro == Shared.StringIdUtil.Empty && option.VsMacroValue != Shared.StringIdUtil.Empty) ||
+                    (option.VsMacro != Shared.StringIdUtil.Empty && option.VsMacroValue == Shared.StringIdUtil.Empty))
                     Console.WriteLine($"WARNING: category {option.Category} option not valid ({option.VsMacro}, {option.VsMacroValue})");
 
-                if (option.PsMacro == "invalid" && option.VsMacro == "invalid")
+                if (option.PsMacro == Shared.StringIdUtil.Empty && option.VsMacro == Shared.StringIdUtil.Empty)
                     continue; // we can safely skip, no functions to set
                 newOptions.Add(option);
             }
@@ -192,12 +194,13 @@ namespace HaloShaderGenerator.TemplateGenerator
 
             CreateGlobalMacros(macros, shaderType, entryPoint, GetBlendMode(currentOptions),
                 GetMisc(currentOptions), GetAlphaTest(currentOptions), GetAlphaBlendSource(currentOptions), applyFixes);
+            AppendUserMacros(macros); // TODO: move to CreateGlobalMacros
 
             foreach (var option in currentOptions)
             {
-                if (option.PsMacro != "invalid")
+                if (option.PsMacro != Shared.StringIdUtil.Empty)
                     macros.Add(ShaderGeneratorBase.CreateMacro(option.PsMacro, option.PsMacroValue));
-                if (option.VsMacro != "invalid")
+                if (option.VsMacro != Shared.StringIdUtil.Empty)
                     macros.Add(ShaderGeneratorBase.CreateMacro(option.VsMacro, option.VsMacroValue));
             }
 
@@ -217,12 +220,13 @@ namespace HaloShaderGenerator.TemplateGenerator
 
             CreateGlobalMacros(macros, shaderType, entryPoint, GetBlendMode(currentOptions),
                 GetMisc(currentOptions), GetAlphaTest(currentOptions), GetAlphaBlendSource(currentOptions), applyFixes, true, vertexType);
+            AppendUserMacros(macros); // TODO: move to CreateGlobalMacros
 
             foreach (var option in currentOptions)
             {
-                if (option.PsMacro != "invalid")
+                if (option.PsMacro != Shared.StringIdUtil.Empty)
                     macros.Add(ShaderGeneratorBase.CreateMacro(option.PsMacro, option.PsMacroValue));
-                if (option.VsMacro != "invalid")
+                if (option.VsMacro != Shared.StringIdUtil.Empty)
                     macros.Add(ShaderGeneratorBase.CreateMacro(option.VsMacro, option.VsMacroValue));
             }
 
