@@ -11,8 +11,7 @@ namespace HaloShaderGenerator.Generator
     {
         private class IncludeManager(string root_directory = "") : Include(root_directory)
         {
-            //private readonly string ShaderDirectory = Path.GetDirectoryName(typeof(IncludeManager).Assembly.Location) + "\\halo_online_shaders\\"; // halo_online_shaders should be in the same directory as HaloShaderGenerator.dll
-            private readonly string ShaderDirectory = Path.Combine(AppContext.BaseDirectory, "halo_online_shaders"); // TagTool compatibility
+            private readonly string ShaderDirectory = $"{Path.GetDirectoryName(typeof(IncludeManager).Assembly.Location)}\\halo_online_shaders\\";
 
             public string ReadResource(string filepath, string _parent_directory = null)
             {

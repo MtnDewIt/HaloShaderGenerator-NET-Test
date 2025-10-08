@@ -59,7 +59,9 @@ namespace HaloShaderGenerator.Decal
     {
         Leave,
         Standard,
-        Standard_Mask
+        Standard_Mask,
+        Standard_Diffuse,
+        Standard_Mask_Diffuse,
     }
 
     public enum Tinting

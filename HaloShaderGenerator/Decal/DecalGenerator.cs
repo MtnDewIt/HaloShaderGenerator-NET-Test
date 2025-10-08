@@ -267,6 +267,14 @@ namespace HaloShaderGenerator.Decal
                         result.AddSamplerAddressParameter("bump_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\default_vector");
                         rmopName = @"shaders\decal_options\bump_mapping_standard_mask";
                         break;
+                    case Bump_Mapping.Standard_Diffuse:
+                        result.AddSamplerAddressParameter("bump_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        rmopName = @"shaders\decal_options\bump_mapping_standard";
+                        break;
+                    case Bump_Mapping.Standard_Mask_Diffuse:
+                        result.AddSamplerAddressParameter("bump_map", ShaderOptionParameter.ShaderAddressMode.Clamp, @"shaders\default_bitmaps\bitmaps\default_vector");
+                        rmopName = @"shaders\decal_options\bump_mapping_standard_mask";
+                        break;
                 }
             }
 
@@ -623,6 +631,14 @@ namespace HaloShaderGenerator.Decal
                         pixelFunction = "invalid";
                         break;
                     case Bump_Mapping.Standard_Mask:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Bump_Mapping.Standard_Diffuse:
+                        vertexFunction = "invalid";
+                        pixelFunction = "invalid";
+                        break;
+                    case Bump_Mapping.Standard_Mask_Diffuse:
                         vertexFunction = "invalid";
                         pixelFunction = "invalid";
                         break;
