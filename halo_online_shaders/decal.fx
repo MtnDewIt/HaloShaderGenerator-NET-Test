@@ -383,18 +383,6 @@ float3 sample_bump(float2 texcoord_tile, float2 texcoord, float3x3 tangent_frame
 		calc_bumpmap_default_ps(texcoord_tile, unused, tangent_frame, bump_normal);
 	}
 	
-	IF_CATEGORY_OPTION(bump_mapping, standard_diffuse)
-	{
-		bump_normal= sample_diffuse_as_bumpmap(bump_map, transform_texcoord(texcoord, bump_map_xform));
-		bump_normal= normalize( mul(bump_normal, tangent_frame) );
-	}
-	
-	IF_CATEGORY_OPTION(bump_mapping, standard_mask_diffuse)
-	{
-		bump_normal= sample_diffuse_as_bumpmap(bump_map, transform_texcoord(texcoord_tile, bump_map_xform));
-		bump_normal= normalize( mul(bump_normal, tangent_frame) );
-	}
-	
 	return bump_normal;
 }
 
