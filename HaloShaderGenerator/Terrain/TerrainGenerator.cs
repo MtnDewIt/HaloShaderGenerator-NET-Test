@@ -577,43 +577,43 @@ namespace HaloShaderGenerator.Terrain
 
             if (methodName == "blending")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "blend_type";
             }
 
             if (methodName == "environment_map")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "envmap_type";
             }
 
             if (methodName == "material_0")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "material_0_type";
             }
 
             if (methodName == "material_1")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "material_1_type";
             }
 
             if (methodName == "material_2")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "material_2_type";
             }
 
             if (methodName == "material_3")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "material_3_type";
             }
 
             if (methodName == "wetness")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_wetness_ps";
             }
         }
@@ -628,15 +628,15 @@ namespace HaloShaderGenerator.Terrain
                 switch ((Blending)option)
                 {
                     case Blending.Morph:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "morph";
                         break;
                     case Blending.Dynamic_Morph:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "dynamic";
                         break;
                     case Blending.Distance_Blend_Base:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "distance_blend_base";
                         break;
                 }
@@ -647,19 +647,19 @@ namespace HaloShaderGenerator.Terrain
                 switch ((Environment_Map)option)
                 {
                     case Environment_Map.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "none";
                         break;
                     case Environment_Map.Per_Pixel:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "per_pixel";
                         break;
                     case Environment_Map.Dynamic:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "dynamic";
                         break;
                     case Environment_Map.Dynamic_Reach:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "dynamic_reach";
                         break;
                 }
@@ -670,35 +670,35 @@ namespace HaloShaderGenerator.Terrain
                 switch ((Material_0)option)
                 {
                     case Material_0.Diffuse_Only:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_only";
                         break;
                     case Material_0.Diffuse_Plus_Specular:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_plus_specular";
                         break;
                     case Material_0.Off:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "off";
                         break;
                     case Material_0.Diffuse_Only_Plus_Self_Illum:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_only_plus_self_illum";
                         break;
                     case Material_0.Diffuse_Plus_Specular_Plus_Self_Illum:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_plus_specular_plus_self_illum";
                         break;
                     case Material_0.Diffuse_Plus_Specular_Plus_Heightmap:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_plus_specular_plus_heightmap";
                         break;
                     case Material_0.Diffuse_Plus_Two_Detail:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_plus_two_detail";
                         break;
                     case Material_0.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_plus_specular_plus_up_vector_plus_heightmap";
                         break;
                 }
@@ -709,31 +709,31 @@ namespace HaloShaderGenerator.Terrain
                 switch ((Material_1)option)
                 {
                     case Material_1.Diffuse_Only:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_only";
                         break;
                     case Material_1.Diffuse_Plus_Specular:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_plus_specular";
                         break;
                     case Material_1.Off:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "off";
                         break;
                     case Material_1.Diffuse_Only_Plus_Self_Illum:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_only_plus_self_illum";
                         break;
                     case Material_1.Diffuse_Plus_Specular_Plus_Self_Illum:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_plus_specular_plus_self_illum";
                         break;
                     case Material_1.Diffuse_Plus_Specular_Plus_Heightmap:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_plus_specular_plus_heightmap";
                         break;
                     case Material_1.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_plus_specular_plus_up_vector_plus_heightmap";
                         break;
                 }
@@ -744,23 +744,23 @@ namespace HaloShaderGenerator.Terrain
                 switch ((Material_2)option)
                 {
                     case Material_2.Diffuse_Only:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_only";
                         break;
                     case Material_2.Diffuse_Plus_Specular:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_plus_specular";
                         break;
                     case Material_2.Off:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "off";
                         break;
                     case Material_2.Diffuse_Only_Plus_Self_Illum:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_only_plus_self_illum";
                         break;
                     case Material_2.Diffuse_Plus_Specular_Plus_Self_Illum:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_plus_specular_plus_self_illum";
                         break;
                 }
@@ -771,15 +771,15 @@ namespace HaloShaderGenerator.Terrain
                 switch ((Material_3)option)
                 {
                     case Material_3.Off:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "off";
                         break;
                     case Material_3.Diffuse_Only_Four_Material_Shaders_Disable_Detail_Bump:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_only";
                         break;
                     case Material_3.Diffuse_Plus_Specular_Four_Material_Shaders_Disable_Detail_Bump:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_plus_specular";
                         break;
                 }
@@ -790,19 +790,19 @@ namespace HaloShaderGenerator.Terrain
                 switch ((Wetness)option)
                 {
                     case Wetness.Default:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_default_ps";
                         break;
                     case Wetness.Proof:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_proof_ps";
                         break;
                     case Wetness.Flood:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_flood_ps";
                         break;
                     case Wetness.Ripples:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_ripples_ps";
                         break;
                 }

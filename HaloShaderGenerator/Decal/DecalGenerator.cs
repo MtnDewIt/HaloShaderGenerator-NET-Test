@@ -422,38 +422,38 @@ namespace HaloShaderGenerator.Decal
 
             if (methodName == "albedo")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "blend_mode")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "blend_type";
             }
 
             if (methodName == "render_pass")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "specular")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "bump_mapping")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "tinting")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "parallax")
@@ -479,48 +479,48 @@ namespace HaloShaderGenerator.Decal
                 switch ((Albedo)option)
                 {
                     case Albedo.Diffuse_Only:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Palettized:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Palettized_Plus_Alpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Diffuse_Plus_Alpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Emblem_Change_Color:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Change_Color:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Diffuse_Plus_Alpha_Mask:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Palettized_Plus_Alpha_Mask:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Vector_Alpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Vector_Alpha_Drop_Shadow:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Patchy_Emblem:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -530,47 +530,47 @@ namespace HaloShaderGenerator.Decal
                 switch ((Blend_Mode)option)
                 {
                     case Blend_Mode.Opaque:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "opaque";
                         break;
                     case Blend_Mode.Additive:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "additive";
                         break;
                     case Blend_Mode.Multiply:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "multiply";
                         break;
                     case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "alpha_blend";
                         break;
                     case Blend_Mode.Double_Multiply:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "double_multiply";
                         break;
                     case Blend_Mode.Maximum:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "maximum";
                         break;
                     case Blend_Mode.Multiply_Add:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "multiply_add";
                         break;
                     case Blend_Mode.Add_Src_Times_Dstalpha:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "add_src_times_dstalpha";
                         break;
                     case Blend_Mode.Add_Src_Times_Srcalpha:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "add_src_times_srcalpha";
                         break;
                     case Blend_Mode.Inv_Alpha_Blend:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "inv_alpha_blend";
                         break;
                     case Blend_Mode.Pre_Multiplied_Alpha:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "pre_multiplied_alpha";
                         break;
                 }
@@ -581,16 +581,16 @@ namespace HaloShaderGenerator.Decal
                 switch ((Render_Pass)option)
                 {
                     case Render_Pass.Pre_Lighting:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Render_Pass.Post_Lighting:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Render_Pass.Transparent:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -600,12 +600,12 @@ namespace HaloShaderGenerator.Decal
                 switch ((Specular)option)
                 {
                     case Specular.Leave:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Specular.Modulate:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -615,16 +615,16 @@ namespace HaloShaderGenerator.Decal
                 switch ((Bump_Mapping)option)
                 {
                     case Bump_Mapping.Leave:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Bump_Mapping.Standard:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Bump_Mapping.Standard_Mask:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -634,20 +634,20 @@ namespace HaloShaderGenerator.Decal
                 switch ((Tinting)option)
                 {
                     case Tinting.None:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Tinting.Unmodulated:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Tinting.Partially_Modulated:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Tinting.Fully_Modulated:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }

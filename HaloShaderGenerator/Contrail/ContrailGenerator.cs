@@ -206,26 +206,26 @@ namespace HaloShaderGenerator.Contrail
 
             if (methodName == "albedo")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "blend_mode")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "black_point")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "fog")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
         }
 
@@ -239,16 +239,16 @@ namespace HaloShaderGenerator.Contrail
                 switch ((Albedo)option)
                 {
                     case Albedo.Diffuse_Only:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Palettized:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Palettized_Plus_Alpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -258,48 +258,48 @@ namespace HaloShaderGenerator.Contrail
                 switch ((Blend_Mode)option)
                 {
                     case Blend_Mode.Opaque:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Additive:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Multiply:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Double_Multiply:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Maximum:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Multiply_Add:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Add_Src_Times_Dstalpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Add_Src_Times_Srcalpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Inv_Alpha_Blend:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Pre_Multiplied_Alpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -309,12 +309,12 @@ namespace HaloShaderGenerator.Contrail
                 switch ((Black_Point)option)
                 {
                     case Black_Point.Off:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Black_Point.On:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -324,12 +324,12 @@ namespace HaloShaderGenerator.Contrail
                 switch ((Fog)option)
                 {
                     case Fog.Off:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Fog.On:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }

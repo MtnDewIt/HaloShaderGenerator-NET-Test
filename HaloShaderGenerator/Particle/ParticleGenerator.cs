@@ -418,68 +418,68 @@ namespace HaloShaderGenerator.Particle
 
             if (methodName == "albedo")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "blend_mode")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "specialized_rendering")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "lighting")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "render_targets")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "depth_fade")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "black_point")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "fog")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "frame_blend")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "self_illumination")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "warp")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
         }
 
@@ -493,44 +493,44 @@ namespace HaloShaderGenerator.Particle
                 switch ((Albedo)option)
                 {
                     case Albedo.Diffuse_Only:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Diffuse_Plus_Billboard_Alpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Palettized:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Palettized_Plus_Billboard_Alpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Diffuse_Plus_Sprite_Alpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Palettized_Plus_Sprite_Alpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Diffuse_Modulated:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Palettized_Glow:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Palettized_Plasma:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Palettized_2d_Plasma:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -540,48 +540,48 @@ namespace HaloShaderGenerator.Particle
                 switch ((Blend_Mode)option)
                 {
                     case Blend_Mode.Opaque:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Additive:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Multiply:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Double_Multiply:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Maximum:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Multiply_Add:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Add_Src_Times_Dstalpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Add_Src_Times_Srcalpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Inv_Alpha_Blend:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Pre_Multiplied_Alpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -591,24 +591,24 @@ namespace HaloShaderGenerator.Particle
                 switch ((Specialized_Rendering)option)
                 {
                     case Specialized_Rendering.None:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Specialized_Rendering.Distortion:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Specialized_Rendering.Distortion_Expensive:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Specialized_Rendering.Distortion_Diffuse:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Specialized_Rendering.Distortion_Expensive_Diffuse:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -618,28 +618,28 @@ namespace HaloShaderGenerator.Particle
                 switch ((Lighting)option)
                 {
                     case Lighting.None:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Lighting.Per_Pixel_Ravi_Order_3:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Lighting.Per_Vertex_Ravi_Order_0:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Lighting.Per_Pixel_Smooth:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Lighting.Per_Vertex_Ambient:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Lighting.Smoke_Lighting:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -649,12 +649,12 @@ namespace HaloShaderGenerator.Particle
                 switch ((Render_Targets)option)
                 {
                     case Render_Targets.Ldr_And_Hdr:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Render_Targets.Ldr_Only:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -664,20 +664,20 @@ namespace HaloShaderGenerator.Particle
                 switch ((Depth_Fade)option)
                 {
                     case Depth_Fade.Off:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Depth_Fade.On:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Depth_Fade.Palette_Shift:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Depth_Fade.Low_Res:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -687,12 +687,12 @@ namespace HaloShaderGenerator.Particle
                 switch ((Black_Point)option)
                 {
                     case Black_Point.Off:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Black_Point.On:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -702,12 +702,12 @@ namespace HaloShaderGenerator.Particle
                 switch ((Fog)option)
                 {
                     case Fog.Off:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Fog.On:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -717,12 +717,12 @@ namespace HaloShaderGenerator.Particle
                 switch ((Frame_Blend)option)
                 {
                     case Frame_Blend.Off:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Frame_Blend.On:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -732,12 +732,12 @@ namespace HaloShaderGenerator.Particle
                 switch ((Self_Illumination)option)
                 {
                     case Self_Illumination.None:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Self_Illumination.Constant_Color:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -747,12 +747,12 @@ namespace HaloShaderGenerator.Particle
                 switch ((Warp)option)
                 {
                     case Warp.None:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Warp.Sphere:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }

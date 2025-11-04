@@ -154,7 +154,7 @@ namespace HaloShaderGenerator.FurStencil
 
             if (methodName == "alpha_test")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_alpha_test_ps";
             }
         }
@@ -169,11 +169,11 @@ namespace HaloShaderGenerator.FurStencil
                 switch ((Alpha_Test)option)
                 {
                     case Alpha_Test.Off:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_alpha_test_off_ps";
                         break;
                     case Alpha_Test.On:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_alpha_test_on_ps";
                         break;
                 }

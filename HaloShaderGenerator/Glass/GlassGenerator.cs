@@ -363,25 +363,25 @@ namespace HaloShaderGenerator.Glass
 
             if (methodName == "material_model")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "material_type";
             }
 
             if (methodName == "environment_mapping")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "envmap_type";
             }
 
             if (methodName == "wetness")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_wetness_ps";
             }
 
             if (methodName == "alpha_blend_source")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "alpha_blend_source";
             }
         }
@@ -442,7 +442,7 @@ namespace HaloShaderGenerator.Glass
                 switch ((Material_Model)option)
                 {
                     case Material_Model.Two_Lobe_Phong_Reach:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "two_lobe_phong_reach";
                         break;
                 }
@@ -453,19 +453,19 @@ namespace HaloShaderGenerator.Glass
                 switch ((Environment_Mapping)option)
                 {
                     case Environment_Mapping.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "none";
                         break;
                     case Environment_Mapping.Per_Pixel:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "per_pixel";
                         break;
                     case Environment_Mapping.Dynamic:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "dynamic";
                         break;
                     case Environment_Mapping.From_Flat_Texture:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "from_flat_texture";
                         break;
                 }
@@ -476,11 +476,11 @@ namespace HaloShaderGenerator.Glass
                 switch ((Wetness)option)
                 {
                     case Wetness.Simple:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_simple_ps";
                         break;
                     case Wetness.Flood:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_flood_ps";
                         break;
                 }
@@ -491,23 +491,23 @@ namespace HaloShaderGenerator.Glass
                 switch ((Alpha_Blend_Source)option)
                 {
                     case Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "albedo_alpha_without_fresnel";
                         break;
                     case Alpha_Blend_Source.From_Albedo_Alpha:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "albedo_alpha";
                         break;
                     case Alpha_Blend_Source.From_Opacity_Map_Alpha:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "opacity_map_alpha";
                         break;
                     case Alpha_Blend_Source.From_Opacity_Map_Rgb:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "opacity_map_rgb";
                         break;
                     case Alpha_Blend_Source.From_Opacity_Map_Alpha_And_Albedo_Alpha:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "opacity_map_alpha_and_albedo_alpha";
                         break;
                 }

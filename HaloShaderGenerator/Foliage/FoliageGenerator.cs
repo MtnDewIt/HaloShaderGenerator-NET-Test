@@ -262,19 +262,19 @@ namespace HaloShaderGenerator.Foliage
 
             if (methodName == "alpha_test")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_alpha_test_ps";
             }
 
             if (methodName == "material_model")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calculate_material";
             }
 
             if (methodName == "wetness")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_wetness_ps";
             }
         }
@@ -304,19 +304,19 @@ namespace HaloShaderGenerator.Foliage
                 switch ((Alpha_Test)option)
                 {
                     case Alpha_Test.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_alpha_test_off_ps";
                         break;
                     case Alpha_Test.Simple:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_alpha_test_on_ps";
                         break;
                     case Alpha_Test.From_Albedo_Alpha:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_alpha_test_from_albedo_ps";
                         break;
                     case Alpha_Test.From_Texture:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_alpha_test_texture_ps";
                         break;
                 }
@@ -327,19 +327,19 @@ namespace HaloShaderGenerator.Foliage
                 switch ((Material_Model)option)
                 {
                     case Material_Model.Default:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calculate_material_default";
                         break;
                     case Material_Model.Flat:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "flat";
                         break;
                     case Material_Model.Specular:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "specular";
                         break;
                     case Material_Model.Translucent:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "translucent";
                         break;
                 }
@@ -350,11 +350,11 @@ namespace HaloShaderGenerator.Foliage
                 switch ((Wetness)option)
                 {
                     case Wetness.Simple:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_simple_ps";
                         break;
                     case Wetness.Proof:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_proof_ps";
                         break;
                 }

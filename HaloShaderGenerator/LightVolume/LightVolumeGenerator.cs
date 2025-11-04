@@ -204,26 +204,26 @@ namespace HaloShaderGenerator.LightVolume
 
             if (methodName == "albedo")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "blend_mode")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "fog")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "depth_fade")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
         }
 
@@ -237,12 +237,12 @@ namespace HaloShaderGenerator.LightVolume
                 switch ((Albedo)option)
                 {
                     case Albedo.Diffuse_Only:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Albedo.Circular:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -252,48 +252,48 @@ namespace HaloShaderGenerator.LightVolume
                 switch ((Blend_Mode)option)
                 {
                     case Blend_Mode.Opaque:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Additive:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Multiply:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Double_Multiply:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Maximum:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Multiply_Add:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Add_Src_Times_Dstalpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Add_Src_Times_Srcalpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Inv_Alpha_Blend:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Blend_Mode.Pre_Multiplied_Alpha:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -303,12 +303,12 @@ namespace HaloShaderGenerator.LightVolume
                 switch ((Fog)option)
                 {
                     case Fog.Off:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Fog.On:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -318,16 +318,16 @@ namespace HaloShaderGenerator.LightVolume
                 switch ((Depth_Fade)option)
                 {
                     case Depth_Fade.Off:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Depth_Fade.On:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                     case Depth_Fade.Biased:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }

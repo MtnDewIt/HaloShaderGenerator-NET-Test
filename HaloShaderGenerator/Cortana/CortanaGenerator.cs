@@ -327,56 +327,56 @@ namespace HaloShaderGenerator.Cortana
 
             if (methodName == "albedo")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "bump_mapping")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "alpha_test")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_alpha_test_ps";
             }
 
             if (methodName == "material_model")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "environment_mapping")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "envmap_type";
             }
 
             if (methodName == "warp")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "lighting")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "scanlines")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
 
             if (methodName == "transparency")
             {
-                vertexFunction = "invalid";
-                pixelFunction = "invalid";
+                vertexFunction = "";
+                pixelFunction = "";
             }
         }
 
@@ -390,8 +390,8 @@ namespace HaloShaderGenerator.Cortana
                 switch ((Albedo)option)
                 {
                     case Albedo.Default:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -401,8 +401,8 @@ namespace HaloShaderGenerator.Cortana
                 switch ((Bump_Mapping)option)
                 {
                     case Bump_Mapping.Standard:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -412,11 +412,11 @@ namespace HaloShaderGenerator.Cortana
                 switch ((Alpha_Test)option)
                 {
                     case Alpha_Test.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_alpha_test_off_ps";
                         break;
                     case Alpha_Test.Simple:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_alpha_test_on_ps";
                         break;
                 }
@@ -427,8 +427,8 @@ namespace HaloShaderGenerator.Cortana
                 switch ((Material_Model)option)
                 {
                     case Material_Model.Cook_Torrance:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -438,15 +438,15 @@ namespace HaloShaderGenerator.Cortana
                 switch ((Environment_Mapping)option)
                 {
                     case Environment_Mapping.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "none";
                         break;
                     case Environment_Mapping.Per_Pixel:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "per_pixel";
                         break;
                     case Environment_Mapping.Dynamic:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "dynamic";
                         break;
                 }
@@ -457,8 +457,8 @@ namespace HaloShaderGenerator.Cortana
                 switch ((Warp)option)
                 {
                     case Warp.Default:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -468,8 +468,8 @@ namespace HaloShaderGenerator.Cortana
                 switch ((Lighting)option)
                 {
                     case Lighting.Default:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -479,8 +479,8 @@ namespace HaloShaderGenerator.Cortana
                 switch ((Scanlines)option)
                 {
                     case Scanlines.Default:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }
@@ -490,8 +490,8 @@ namespace HaloShaderGenerator.Cortana
                 switch ((Transparency)option)
                 {
                     case Transparency.Default:
-                        vertexFunction = "invalid";
-                        pixelFunction = "invalid";
+                        vertexFunction = "";
+                        pixelFunction = "";
                         break;
                 }
             }

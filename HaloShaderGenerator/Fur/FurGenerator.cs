@@ -262,31 +262,31 @@ namespace HaloShaderGenerator.Fur
 
             if (methodName == "albedo")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_albedo_ps";
             }
 
             if (methodName == "warp")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_parallax_ps";
             }
 
             if (methodName == "overlay")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_overlay_ps";
             }
 
             if (methodName == "edge_fade")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_edge_fade_ps";
             }
 
             if (methodName == "blend_mode")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "blend_type";
             }
         }
@@ -301,7 +301,7 @@ namespace HaloShaderGenerator.Fur
                 switch ((Albedo)option)
                 {
                     case Albedo.Fur_Multilayer:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_albedo_multilayer_ps";
                         break;
                 }
@@ -312,15 +312,15 @@ namespace HaloShaderGenerator.Fur
                 switch ((Warp)option)
                 {
                     case Warp.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_parallax_off_ps";
                         break;
                     case Warp.From_Texture:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_warp_from_texture_ps";
                         break;
                     case Warp.Parallax_Simple:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_parallax_simple_ps";
                         break;
                 }
@@ -331,23 +331,23 @@ namespace HaloShaderGenerator.Fur
                 switch ((Overlay)option)
                 {
                     case Overlay.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_overlay_none_ps";
                         break;
                     case Overlay.Additive:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_overlay_additive_ps";
                         break;
                     case Overlay.Additive_Detail:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_overlay_additive_detail_ps";
                         break;
                     case Overlay.Multiply:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_overlay_multiply_ps";
                         break;
                     case Overlay.Multiply_And_Additive_Detail:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_overlay_multiply_and_additive_detail_ps";
                         break;
                 }
@@ -358,11 +358,11 @@ namespace HaloShaderGenerator.Fur
                 switch ((Edge_Fade)option)
                 {
                     case Edge_Fade.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_edge_fade_none_ps";
                         break;
                     case Edge_Fade.Simple:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_edge_fade_simple_ps";
                         break;
                 }
@@ -373,11 +373,11 @@ namespace HaloShaderGenerator.Fur
                 switch ((Blend_Mode)option)
                 {
                     case Blend_Mode.Opaque:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "opaque";
                         break;
                     case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "alpha_blend";
                         break;
                 }

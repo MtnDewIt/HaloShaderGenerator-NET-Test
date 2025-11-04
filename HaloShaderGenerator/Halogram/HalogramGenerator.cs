@@ -591,49 +591,49 @@ namespace HaloShaderGenerator.Halogram
 
             if (methodName == "self_illumination")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_self_illumination_ps";
             }
 
             if (methodName == "blend_mode")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "blend_type";
             }
 
             if (methodName == "misc")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "bitmap_rotation";
             }
 
             if (methodName == "warp")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_parallax_ps";
             }
 
             if (methodName == "overlay")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_overlay_ps";
             }
 
             if (methodName == "edge_fade")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_edge_fade_ps";
             }
 
             if (methodName == "distortion")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "distort_proc_ps";
             }
 
             if (methodName == "soft_fade")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "apply_soft_fade";
             }
         }
@@ -695,71 +695,71 @@ namespace HaloShaderGenerator.Halogram
                 switch ((Self_Illumination)option)
                 {
                     case Self_Illumination.Off:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_none_ps";
                         break;
                     case Self_Illumination.Simple:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_simple_ps";
                         break;
                     case Self_Illumination._3_Channel_Self_Illum:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_three_channel_ps";
                         break;
                     case Self_Illumination.Plasma:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_plasma_ps";
                         break;
                     case Self_Illumination.From_Diffuse:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_from_albedo_ps";
                         break;
                     case Self_Illumination.Illum_Detail:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_detail_ps";
                         break;
                     case Self_Illumination.Meter:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_meter_ps";
                         break;
                     case Self_Illumination.Self_Illum_Times_Diffuse:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_times_diffuse_ps";
                         break;
                     case Self_Illumination.Multilayer_Additive:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_multilayer_ps";
                         break;
                     case Self_Illumination.Ml_Add_Four_Change_Color:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_multilayer_ps";
                         break;
                     case Self_Illumination.Ml_Add_Five_Change_Color:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_multilayer_ps";
                         break;
                     case Self_Illumination.Scope_Blur:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_scope_blur_ps";
                         break;
                     case Self_Illumination.Palettized_Plasma:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_palettized_plasma_ps";
                         break;
                     case Self_Illumination.Palettized_Plasma_Change_Color:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_palettized_plasma_ps";
                         break;
                     case Self_Illumination.Palettized_Depth_Fade:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_palettized_depth_fade_ps";
                         break;
                     case Self_Illumination.Plasma_Wide_And_Sharp_Five_Change_Color:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_plasma_wide_and_sharp_five_change_color_ps";
                         break;
                     case Self_Illumination.Self_Illum_Holograms:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_holograms_ps";
                         break;
                 }
@@ -770,23 +770,23 @@ namespace HaloShaderGenerator.Halogram
                 switch ((Blend_Mode)option)
                 {
                     case Blend_Mode.Opaque:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "opaque";
                         break;
                     case Blend_Mode.Additive:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "additive";
                         break;
                     case Blend_Mode.Multiply:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "multiply";
                         break;
                     case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "alpha_blend";
                         break;
                     case Blend_Mode.Double_Multiply:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "double_multiply";
                         break;
                 }
@@ -797,23 +797,23 @@ namespace HaloShaderGenerator.Halogram
                 switch ((Misc)option)
                 {
                     case Misc.First_Person_Never:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "0";
                         break;
                     case Misc.First_Person_Sometimes:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "0";
                         break;
                     case Misc.First_Person_Always:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "0";
                         break;
                     case Misc.First_Person_Never_With_Rotating_Bitmaps:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "1";
                         break;
                     case Misc.Always_Calc_Albedo:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "2";
                         break;
                 }
@@ -824,15 +824,15 @@ namespace HaloShaderGenerator.Halogram
                 switch ((Warp)option)
                 {
                     case Warp.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_parallax_off_ps";
                         break;
                     case Warp.From_Texture:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_warp_from_texture_ps";
                         break;
                     case Warp.Parallax_Simple:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_parallax_simple_ps";
                         break;
                 }
@@ -843,23 +843,23 @@ namespace HaloShaderGenerator.Halogram
                 switch ((Overlay)option)
                 {
                     case Overlay.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_overlay_none_ps";
                         break;
                     case Overlay.Additive:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_overlay_additive_ps";
                         break;
                     case Overlay.Additive_Detail:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_overlay_additive_detail_ps";
                         break;
                     case Overlay.Multiply:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_overlay_multiply_ps";
                         break;
                     case Overlay.Multiply_And_Additive_Detail:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_overlay_multiply_and_additive_detail_ps";
                         break;
                 }
@@ -870,11 +870,11 @@ namespace HaloShaderGenerator.Halogram
                 switch ((Edge_Fade)option)
                 {
                     case Edge_Fade.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_edge_fade_none_ps";
                         break;
                     case Edge_Fade.Simple:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_edge_fade_simple_ps";
                         break;
                 }
@@ -885,11 +885,11 @@ namespace HaloShaderGenerator.Halogram
                 switch ((Distortion)option)
                 {
                     case Distortion.Off:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "distort_off_ps";
                         break;
                     case Distortion.On:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "distort_on_ps";
                         break;
                 }
@@ -900,11 +900,11 @@ namespace HaloShaderGenerator.Halogram
                 switch ((Soft_Fade)option)
                 {
                     case Soft_Fade.Off:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "apply_soft_fade_off";
                         break;
                     case Soft_Fade.On:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "apply_soft_fade_on";
                         break;
                 }

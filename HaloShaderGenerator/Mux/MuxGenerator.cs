@@ -321,43 +321,43 @@ namespace HaloShaderGenerator.Mux
 
             if (methodName == "blending")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "material_blend";
             }
 
             if (methodName == "albedo")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_albedo_ps";
             }
 
             if (methodName == "bump")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_bumpmap_ps";
             }
 
             if (methodName == "materials")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "material_type";
             }
 
             if (methodName == "environment_mapping")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "envmap_type";
             }
 
             if (methodName == "parallax")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_parallax_ps";
             }
 
             if (methodName == "wetness")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_wetness_ps";
             }
         }
@@ -372,7 +372,7 @@ namespace HaloShaderGenerator.Mux
                 switch ((Blending)option)
                 {
                     case Blending.Standard:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "standard";
                         break;
                 }
@@ -383,11 +383,11 @@ namespace HaloShaderGenerator.Mux
                 switch ((Albedo)option)
                 {
                     case Albedo.Base_Only:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_albedo_base_ps";
                         break;
                     case Albedo.Base_And_Detail:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_albedo_detail_ps";
                         break;
                 }
@@ -398,11 +398,11 @@ namespace HaloShaderGenerator.Mux
                 switch ((Bump)option)
                 {
                     case Bump.Base_Only:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_bumpmap_default_ps";
                         break;
                     case Bump.Base_And_Detail:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_bumpmap_detail_ps";
                         break;
                 }
@@ -413,11 +413,11 @@ namespace HaloShaderGenerator.Mux
                 switch ((Materials)option)
                 {
                     case Materials.Diffuse_Only:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_only";
                         break;
                     case Materials.Single_Lobe_Phong:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "single_lobe_phong";
                         break;
                 }
@@ -428,15 +428,15 @@ namespace HaloShaderGenerator.Mux
                 switch ((Environment_Mapping)option)
                 {
                     case Environment_Mapping.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "none";
                         break;
                     case Environment_Mapping.Per_Pixel:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "per_pixel";
                         break;
                     case Environment_Mapping.Dynamic:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "dynamic";
                         break;
                 }
@@ -447,11 +447,11 @@ namespace HaloShaderGenerator.Mux
                 switch ((Parallax)option)
                 {
                     case Parallax.Off:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_parallax_off_ps";
                         break;
                     case Parallax.Simple:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_parallax_simple_ps";
                         break;
                 }
@@ -462,19 +462,19 @@ namespace HaloShaderGenerator.Mux
                 switch ((Wetness)option)
                 {
                     case Wetness.Default:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_default_ps";
                         break;
                     case Wetness.Flood:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_flood_ps";
                         break;
                     case Wetness.Proof:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_proof_ps";
                         break;
                     case Wetness.Ripples:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_ripples_ps";
                         break;
                 }

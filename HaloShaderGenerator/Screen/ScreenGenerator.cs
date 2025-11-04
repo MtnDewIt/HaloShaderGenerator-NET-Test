@@ -274,31 +274,31 @@ namespace HaloShaderGenerator.Screen
 
             if (methodName == "warp")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "warp_type";
             }
 
             if (methodName == "base")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "base_type";
             }
 
             if (methodName == "overlay_a")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "overlay_a_type";
             }
 
             if (methodName == "overlay_b")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "overlay_b_type";
             }
 
             if (methodName == "blend_mode")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "blend_type";
             }
         }
@@ -313,15 +313,15 @@ namespace HaloShaderGenerator.Screen
                 switch ((Warp)option)
                 {
                     case Warp.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "none";
                         break;
                     case Warp.Pixel_Space:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "pixel_space";
                         break;
                     case Warp.Screen_Space:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "screen_space";
                         break;
                 }
@@ -332,23 +332,23 @@ namespace HaloShaderGenerator.Screen
                 switch ((Base)option)
                 {
                     case Base.Single_Screen_Space:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "single_screen_space";
                         break;
                     case Base.Single_Pixel_Space:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "single_pixel_space";
                         break;
                     case Base.Normal_Map_Edge_Shade:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "normal_map_edge_shade";
                         break;
                     case Base.Single_Target_Space:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "single_target_space";
                         break;
                     case Base.Normal_Map_Edge_Stencil:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "normal_map_edge_stencil";
                         break;
                 }
@@ -359,27 +359,27 @@ namespace HaloShaderGenerator.Screen
                 switch ((Overlay_A)option)
                 {
                     case Overlay_A.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "none";
                         break;
                     case Overlay_A.Tint_Add_Color:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "tint_add_color";
                         break;
                     case Overlay_A.Detail_Screen_Space:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "detail_screen_space";
                         break;
                     case Overlay_A.Detail_Pixel_Space:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "detail_pixel_space";
                         break;
                     case Overlay_A.Detail_Masked_Screen_Space:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "detail_masked_screen_space";
                         break;
                     case Overlay_A.Palette_Lookup:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "palette_lookup";
                         break;
                 }
@@ -390,11 +390,11 @@ namespace HaloShaderGenerator.Screen
                 switch ((Overlay_B)option)
                 {
                     case Overlay_B.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "none";
                         break;
                     case Overlay_B.Tint_Add_Color:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "tint_add_color";
                         break;
                 }
@@ -405,27 +405,27 @@ namespace HaloShaderGenerator.Screen
                 switch ((Blend_Mode)option)
                 {
                     case Blend_Mode.Opaque:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "opaque";
                         break;
                     case Blend_Mode.Additive:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "additive";
                         break;
                     case Blend_Mode.Multiply:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "multiply";
                         break;
                     case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "alpha_blend";
                         break;
                     case Blend_Mode.Double_Multiply:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "double_multiply";
                         break;
                     case Blend_Mode.Pre_Multiplied_Alpha:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "pre_multiplied_alpha";
                         break;
                 }

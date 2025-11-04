@@ -678,31 +678,31 @@ namespace HaloShaderGenerator.Custom
 
             if (methodName == "specular_mask")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_specular_mask_ps";
             }
 
             if (methodName == "material_model")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "material_type";
             }
 
             if (methodName == "environment_mapping")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "envmap_type";
             }
 
             if (methodName == "self_illumination")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_self_illumination_ps";
             }
 
             if (methodName == "blend_mode")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "blend_type";
             }
 
@@ -714,13 +714,13 @@ namespace HaloShaderGenerator.Custom
 
             if (methodName == "misc")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "bitmap_rotation";
             }
 
             if (methodName == "wetness")
             {
-                vertexFunction = "invalid";
+                vertexFunction = "";
                 pixelFunction = "calc_wetness_ps";
             }
         }
@@ -832,23 +832,23 @@ namespace HaloShaderGenerator.Custom
                 switch ((Specular_Mask)option)
                 {
                     case Specular_Mask.No_Specular_Mask:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_specular_mask_no_specular_mask_ps";
                         break;
                     case Specular_Mask.Specular_Mask_From_Diffuse:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_specular_mask_from_diffuse_ps";
                         break;
                     case Specular_Mask.Specular_Mask_From_Texture:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_specular_mask_texture_ps";
                         break;
                     case Specular_Mask.Specular_Mask_From_Color_Texture:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_specular_mask_color_texture_ps";
                         break;
                     case Specular_Mask.Specular_Mask_Mult_Diffuse:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_specular_mask_mult_texture_ps";
                         break;
                 }
@@ -859,27 +859,27 @@ namespace HaloShaderGenerator.Custom
                 switch ((Material_Model)option)
                 {
                     case Material_Model.Diffuse_Only:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "diffuse_only";
                         break;
                     case Material_Model.Two_Lobe_Phong:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "two_lobe_phong";
                         break;
                     case Material_Model.Foliage:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "foliage";
                         break;
                     case Material_Model.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "none";
                         break;
                     case Material_Model.Custom_Specular:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "custom_specular";
                         break;
                     case Material_Model.Two_Lobe_Phong_Reach:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "two_lobe_phong_reach";
                         break;
                 }
@@ -890,27 +890,27 @@ namespace HaloShaderGenerator.Custom
                 switch ((Environment_Mapping)option)
                 {
                     case Environment_Mapping.None:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "none";
                         break;
                     case Environment_Mapping.Per_Pixel:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "per_pixel";
                         break;
                     case Environment_Mapping.Dynamic:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "dynamic";
                         break;
                     case Environment_Mapping.From_Flat_Texture:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "from_flat_texture";
                         break;
                     case Environment_Mapping.Per_Pixel_Mip:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "per_pixel_mip";
                         break;
                     case Environment_Mapping.Dynamic_Reach:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "dynamic_reach";
                         break;
                 }
@@ -921,39 +921,39 @@ namespace HaloShaderGenerator.Custom
                 switch ((Self_Illumination)option)
                 {
                     case Self_Illumination.Off:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_none_ps";
                         break;
                     case Self_Illumination.Simple:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_simple_ps";
                         break;
                     case Self_Illumination._3_Channel_Self_Illum:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_three_channel_ps";
                         break;
                     case Self_Illumination.Plasma:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_plasma_ps";
                         break;
                     case Self_Illumination.From_Diffuse:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_from_albedo_ps";
                         break;
                     case Self_Illumination.Illum_Detail:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_detail_ps";
                         break;
                     case Self_Illumination.Meter:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_meter_ps";
                         break;
                     case Self_Illumination.Self_Illum_Times_Diffuse:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_times_diffuse_ps";
                         break;
                     case Self_Illumination.Window_Room:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_self_illumination_window_room_ps";
                         break;
                 }
@@ -964,23 +964,23 @@ namespace HaloShaderGenerator.Custom
                 switch ((Blend_Mode)option)
                 {
                     case Blend_Mode.Opaque:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "opaque";
                         break;
                     case Blend_Mode.Additive:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "additive";
                         break;
                     case Blend_Mode.Multiply:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "multiply";
                         break;
                     case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "alpha_blend";
                         break;
                     case Blend_Mode.Double_Multiply:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "double_multiply";
                         break;
                 }
@@ -1014,31 +1014,31 @@ namespace HaloShaderGenerator.Custom
                 switch ((Misc)option)
                 {
                     case Misc.First_Person_Never:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "0";
                         break;
                     case Misc.First_Person_Sometimes:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "0";
                         break;
                     case Misc.First_Person_Always:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "0";
                         break;
                     case Misc.First_Person_Never_With_Rotating_Bitmaps:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "1";
                         break;
                     case Misc.Always_Calc_Albedo:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "2";
                         break;
                     case Misc.Default:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "0";
                         break;
                     case Misc.Rotating_Bitmaps_Super_Slow:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "1";
                         break;
                 }
@@ -1049,19 +1049,19 @@ namespace HaloShaderGenerator.Custom
                 switch ((Wetness)option)
                 {
                     case Wetness.Default:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_default_ps";
                         break;
                     case Wetness.Flood:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_flood_ps";
                         break;
                     case Wetness.Proof:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_proof_ps";
                         break;
                     case Wetness.Ripples:
-                        vertexFunction = "invalid";
+                        vertexFunction = "";
                         pixelFunction = "calc_wetness_ripples_ps";
                         break;
                 }
