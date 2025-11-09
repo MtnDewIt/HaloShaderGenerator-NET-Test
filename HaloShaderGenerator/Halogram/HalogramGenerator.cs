@@ -1,79 +1,44 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Halogram
 {
     public class HalogramGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(HalogramMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(HalogramMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((HalogramMethods)methodIndex)
+            return (HalogramMethods)methodIndex switch
             {
-                case HalogramMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo)).Length;
-                case HalogramMethods.Self_Illumination:
-                    return Enum.GetValues(typeof(Self_Illumination)).Length;
-                case HalogramMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode)).Length;
-                case HalogramMethods.Misc:
-                    return Enum.GetValues(typeof(Misc)).Length;
-                case HalogramMethods.Warp:
-                    return Enum.GetValues(typeof(Warp)).Length;
-                case HalogramMethods.Overlay:
-                    return Enum.GetValues(typeof(Overlay)).Length;
-                case HalogramMethods.Edge_Fade:
-                    return Enum.GetValues(typeof(Edge_Fade)).Length;
-                case HalogramMethods.Distortion:
-                    return Enum.GetValues(typeof(Distortion)).Length;
-                case HalogramMethods.Soft_Fade:
-                    return Enum.GetValues(typeof(Soft_Fade)).Length;
-            }
-
-            return -1;
+                HalogramMethods.Albedo => Enum.GetValues(typeof(Albedo)).Length,
+                HalogramMethods.Self_Illumination => Enum.GetValues(typeof(Self_Illumination)).Length,
+                HalogramMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)).Length,
+                HalogramMethods.Misc => Enum.GetValues(typeof(Misc)).Length,
+                HalogramMethods.Warp => Enum.GetValues(typeof(Warp)).Length,
+                HalogramMethods.Overlay => Enum.GetValues(typeof(Overlay)).Length,
+                HalogramMethods.Edge_Fade => Enum.GetValues(typeof(Edge_Fade)).Length,
+                HalogramMethods.Distortion => Enum.GetValues(typeof(Distortion)).Length,
+                HalogramMethods.Soft_Fade => Enum.GetValues(typeof(Soft_Fade)).Length,
+                _ => -1,
+            };
         }
 
-        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return -1;
-            }
-        }
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint) => -1;
 
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
 
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Shadow_Generate:
-                    return true;
-                default:
-                    return false;
-            }
+                ShaderStage.Shadow_Generate => true,
+                _ => false,
+            };
         }
 
-        public bool IsAutoMacro()
-        {
-            return false;
-        }
+        public bool IsAutoMacro() => false;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -515,36 +480,23 @@ namespace HaloShaderGenerator.Halogram
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(HalogramMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(HalogramMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((HalogramMethods)methodIndex)
+            return (HalogramMethods)methodIndex switch
             {
-                case HalogramMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo));
-                case HalogramMethods.Self_Illumination:
-                    return Enum.GetValues(typeof(Self_Illumination));
-                case HalogramMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode));
-                case HalogramMethods.Misc:
-                    return Enum.GetValues(typeof(Misc));
-                case HalogramMethods.Warp:
-                    return Enum.GetValues(typeof(Warp));
-                case HalogramMethods.Overlay:
-                    return Enum.GetValues(typeof(Overlay));
-                case HalogramMethods.Edge_Fade:
-                    return Enum.GetValues(typeof(Edge_Fade));
-                case HalogramMethods.Distortion:
-                    return Enum.GetValues(typeof(Distortion));
-                case HalogramMethods.Soft_Fade:
-                    return Enum.GetValues(typeof(Soft_Fade));
-            }
-
-            return null;
+                HalogramMethods.Albedo => Enum.GetValues(typeof(Albedo)),
+                HalogramMethods.Self_Illumination => Enum.GetValues(typeof(Self_Illumination)),
+                HalogramMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)),
+                HalogramMethods.Misc => Enum.GetValues(typeof(Misc)),
+                HalogramMethods.Warp => Enum.GetValues(typeof(Warp)),
+                HalogramMethods.Overlay => Enum.GetValues(typeof(Overlay)),
+                HalogramMethods.Edge_Fade => Enum.GetValues(typeof(Edge_Fade)),
+                HalogramMethods.Distortion => Enum.GetValues(typeof(Distortion)),
+                HalogramMethods.Soft_Fade => Enum.GetValues(typeof(Soft_Fade)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -578,337 +530,228 @@ namespace HaloShaderGenerator.Halogram
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (HalogramMethods)category switch
             {
-                vertexFunction = "calc_albedo_vs";
-                pixelFunction = "calc_albedo_ps";
-            }
-
-            if (methodName == "self_illumination")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_self_illumination_ps";
-            }
-
-            if (methodName == "blend_mode")
-            {
-                vertexFunction = "";
-                pixelFunction = "blend_type";
-            }
-
-            if (methodName == "misc")
-            {
-                vertexFunction = "";
-                pixelFunction = "bitmap_rotation";
-            }
-
-            if (methodName == "warp")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_parallax_ps";
-            }
-
-            if (methodName == "overlay")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_overlay_ps";
-            }
-
-            if (methodName == "edge_fade")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_edge_fade_ps";
-            }
-
-            if (methodName == "distortion")
-            {
-                vertexFunction = "";
-                pixelFunction = "distort_proc_ps";
-            }
-
-            if (methodName == "soft_fade")
-            {
-                vertexFunction = "";
-                pixelFunction = "apply_soft_fade";
-            }
+                HalogramMethods.Albedo => "calc_albedo_ps",
+                HalogramMethods.Self_Illumination => "calc_self_illumination_ps",
+                HalogramMethods.Blend_Mode => "blend_type",
+                HalogramMethods.Misc => "bitmap_rotation",
+                HalogramMethods.Warp => "calc_parallax_ps",
+                HalogramMethods.Overlay => "calc_overlay_ps",
+                HalogramMethods.Edge_Fade => "calc_edge_fade_ps",
+                HalogramMethods.Distortion => "distort_proc_ps",
+                HalogramMethods.Soft_Fade => "apply_soft_fade",
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (HalogramMethods)category switch
             {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Default:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_default_ps";
-                        break;
-                    case Albedo.Detail_Blend:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_detail_blend_ps";
-                        break;
-                    case Albedo.Constant_Color:
-                        vertexFunction = "calc_albedo_constant_color_vs";
-                        pixelFunction = "calc_albedo_constant_color_ps";
-                        break;
-                    case Albedo.Two_Change_Color:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_change_color_ps";
-                        break;
-                    case Albedo.Four_Change_Color:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_four_change_color_ps";
-                        break;
-                    case Albedo.Three_Detail_Blend:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_three_detail_blend_ps";
-                        break;
-                    case Albedo.Two_Detail_Overlay:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_detail_overlay_ps";
-                        break;
-                    case Albedo.Two_Detail:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_detail_ps";
-                        break;
-                    case Albedo.Color_Mask:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_color_mask_ps";
-                        break;
-                    case Albedo.Two_Detail_Black_Point:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_detail_black_point_ps";
-                        break;
-                }
-            }
+                HalogramMethods.Albedo => "calc_albedo_vs",
+                HalogramMethods.Self_Illumination => string.Empty,
+                HalogramMethods.Blend_Mode => string.Empty,
+                HalogramMethods.Misc => string.Empty,
+                HalogramMethods.Warp => string.Empty,
+                HalogramMethods.Overlay => string.Empty,
+                HalogramMethods.Edge_Fade => string.Empty,
+                HalogramMethods.Distortion => string.Empty,
+                HalogramMethods.Soft_Fade => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "self_illumination")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (HalogramMethods)category switch
             {
-                switch ((Self_Illumination)option)
+                HalogramMethods.Albedo => (Albedo)option switch
                 {
-                    case Self_Illumination.Off:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_none_ps";
-                        break;
-                    case Self_Illumination.Simple:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_simple_ps";
-                        break;
-                    case Self_Illumination._3_Channel_Self_Illum:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_three_channel_ps";
-                        break;
-                    case Self_Illumination.Plasma:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_plasma_ps";
-                        break;
-                    case Self_Illumination.From_Diffuse:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_from_albedo_ps";
-                        break;
-                    case Self_Illumination.Illum_Detail:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_detail_ps";
-                        break;
-                    case Self_Illumination.Meter:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_meter_ps";
-                        break;
-                    case Self_Illumination.Self_Illum_Times_Diffuse:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_times_diffuse_ps";
-                        break;
-                    case Self_Illumination.Multilayer_Additive:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_multilayer_ps";
-                        break;
-                    case Self_Illumination.Ml_Add_Four_Change_Color:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_multilayer_ps";
-                        break;
-                    case Self_Illumination.Ml_Add_Five_Change_Color:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_multilayer_ps";
-                        break;
-                    case Self_Illumination.Scope_Blur:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_scope_blur_ps";
-                        break;
-                    case Self_Illumination.Palettized_Plasma:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_palettized_plasma_ps";
-                        break;
-                    case Self_Illumination.Palettized_Plasma_Change_Color:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_palettized_plasma_ps";
-                        break;
-                    case Self_Illumination.Palettized_Depth_Fade:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_palettized_depth_fade_ps";
-                        break;
-                    case Self_Illumination.Plasma_Wide_And_Sharp_Five_Change_Color:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_plasma_wide_and_sharp_five_change_color_ps";
-                        break;
-                    case Self_Illumination.Self_Illum_Holograms:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_holograms_ps";
-                        break;
-                }
-            }
+                    Albedo.Default => "calc_albedo_default_ps",
+                    Albedo.Detail_Blend => "calc_albedo_detail_blend_ps",
+                    Albedo.Constant_Color => "calc_albedo_constant_color_ps",
+                    Albedo.Two_Change_Color => "calc_albedo_two_change_color_ps",
+                    Albedo.Four_Change_Color => "calc_albedo_four_change_color_ps",
+                    Albedo.Three_Detail_Blend => "calc_albedo_three_detail_blend_ps",
+                    Albedo.Two_Detail_Overlay => "calc_albedo_two_detail_overlay_ps",
+                    Albedo.Two_Detail => "calc_albedo_two_detail_ps",
+                    Albedo.Color_Mask => "calc_albedo_color_mask_ps",
+                    Albedo.Two_Detail_Black_Point => "calc_albedo_two_detail_black_point_ps",
+                    _ => null,
+                },
+                HalogramMethods.Self_Illumination => (Self_Illumination)option switch
+                {
+                    Self_Illumination.Off => "calc_self_illumination_none_ps",
+                    Self_Illumination.Simple => "calc_self_illumination_simple_ps",
+                    Self_Illumination._3_Channel_Self_Illum => "calc_self_illumination_three_channel_ps",
+                    Self_Illumination.Plasma => "calc_self_illumination_plasma_ps",
+                    Self_Illumination.From_Diffuse => "calc_self_illumination_from_albedo_ps",
+                    Self_Illumination.Illum_Detail => "calc_self_illumination_detail_ps",
+                    Self_Illumination.Meter => "calc_self_illumination_meter_ps",
+                    Self_Illumination.Self_Illum_Times_Diffuse => "calc_self_illumination_times_diffuse_ps",
+                    Self_Illumination.Multilayer_Additive => "calc_self_illumination_multilayer_ps",
+                    Self_Illumination.Ml_Add_Four_Change_Color => "calc_self_illumination_multilayer_ps",
+                    Self_Illumination.Ml_Add_Five_Change_Color => "calc_self_illumination_multilayer_ps",
+                    Self_Illumination.Scope_Blur => "calc_self_illumination_scope_blur_ps",
+                    Self_Illumination.Palettized_Plasma => "calc_self_illumination_palettized_plasma_ps",
+                    Self_Illumination.Palettized_Plasma_Change_Color => "calc_self_illumination_palettized_plasma_ps",
+                    Self_Illumination.Palettized_Depth_Fade => "calc_self_illumination_palettized_depth_fade_ps",
+                    Self_Illumination.Plasma_Wide_And_Sharp_Five_Change_Color => "calc_self_illumination_plasma_wide_and_sharp_five_change_color_ps",
+                    Self_Illumination.Self_Illum_Holograms => "calc_self_illumination_holograms_ps",
+                    _ => null,
+                },
+                HalogramMethods.Blend_Mode => (Blend_Mode)option switch
+                {
+                    Blend_Mode.Opaque => "opaque",
+                    Blend_Mode.Additive => "additive",
+                    Blend_Mode.Multiply => "multiply",
+                    Blend_Mode.Alpha_Blend => "alpha_blend",
+                    Blend_Mode.Double_Multiply => "double_multiply",
+                    _ => null,
+                },
+                HalogramMethods.Misc => (Misc)option switch
+                {
+                    Misc.First_Person_Never => "0",
+                    Misc.First_Person_Sometimes => "0",
+                    Misc.First_Person_Always => "0",
+                    Misc.First_Person_Never_With_Rotating_Bitmaps => "1",
+                    Misc.Always_Calc_Albedo => "2",
+                    _ => null,
+                },
+                HalogramMethods.Warp => (Warp)option switch
+                {
+                    Warp.None => "calc_parallax_off_ps",
+                    Warp.From_Texture => "calc_warp_from_texture_ps",
+                    Warp.Parallax_Simple => "calc_parallax_simple_ps",
+                    _ => null,
+                },
+                HalogramMethods.Overlay => (Overlay)option switch
+                {
+                    Overlay.None => "calc_overlay_none_ps",
+                    Overlay.Additive => "calc_overlay_additive_ps",
+                    Overlay.Additive_Detail => "calc_overlay_additive_detail_ps",
+                    Overlay.Multiply => "calc_overlay_multiply_ps",
+                    Overlay.Multiply_And_Additive_Detail => "calc_overlay_multiply_and_additive_detail_ps",
+                    _ => null,
+                },
+                HalogramMethods.Edge_Fade => (Edge_Fade)option switch
+                {
+                    Edge_Fade.None => "calc_edge_fade_none_ps",
+                    Edge_Fade.Simple => "calc_edge_fade_simple_ps",
+                    _ => null,
+                },
+                HalogramMethods.Distortion => (Distortion)option switch
+                {
+                    Distortion.Off => "distort_off_ps",
+                    Distortion.On => "distort_on_ps",
+                    _ => null,
+                },
+                HalogramMethods.Soft_Fade => (Soft_Fade)option switch
+                {
+                    Soft_Fade.Off => "apply_soft_fade_off",
+                    Soft_Fade.On => "apply_soft_fade_on",
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "blend_mode")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (HalogramMethods)category switch
             {
-                switch ((Blend_Mode)option)
+                HalogramMethods.Albedo => (Albedo)option switch
                 {
-                    case Blend_Mode.Opaque:
-                        vertexFunction = "";
-                        pixelFunction = "opaque";
-                        break;
-                    case Blend_Mode.Additive:
-                        vertexFunction = "";
-                        pixelFunction = "additive";
-                        break;
-                    case Blend_Mode.Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "multiply";
-                        break;
-                    case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "";
-                        pixelFunction = "alpha_blend";
-                        break;
-                    case Blend_Mode.Double_Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "double_multiply";
-                        break;
-                }
-            }
-
-            if (methodName == "misc")
-            {
-                switch ((Misc)option)
+                    Albedo.Default => "calc_albedo_default_vs",
+                    Albedo.Detail_Blend => "calc_albedo_default_vs",
+                    Albedo.Constant_Color => "calc_albedo_constant_color_vs",
+                    Albedo.Two_Change_Color => "calc_albedo_default_vs",
+                    Albedo.Four_Change_Color => "calc_albedo_default_vs",
+                    Albedo.Three_Detail_Blend => "calc_albedo_default_vs",
+                    Albedo.Two_Detail_Overlay => "calc_albedo_default_vs",
+                    Albedo.Two_Detail => "calc_albedo_default_vs",
+                    Albedo.Color_Mask => "calc_albedo_default_vs",
+                    Albedo.Two_Detail_Black_Point => "calc_albedo_default_vs",
+                    _ => null,
+                },
+                HalogramMethods.Self_Illumination => (Self_Illumination)option switch
                 {
-                    case Misc.First_Person_Never:
-                        vertexFunction = "";
-                        pixelFunction = "0";
-                        break;
-                    case Misc.First_Person_Sometimes:
-                        vertexFunction = "";
-                        pixelFunction = "0";
-                        break;
-                    case Misc.First_Person_Always:
-                        vertexFunction = "";
-                        pixelFunction = "0";
-                        break;
-                    case Misc.First_Person_Never_With_Rotating_Bitmaps:
-                        vertexFunction = "";
-                        pixelFunction = "1";
-                        break;
-                    case Misc.Always_Calc_Albedo:
-                        vertexFunction = "";
-                        pixelFunction = "2";
-                        break;
-                }
-            }
-
-            if (methodName == "warp")
-            {
-                switch ((Warp)option)
+                    Self_Illumination.Off => string.Empty,
+                    Self_Illumination.Simple => string.Empty,
+                    Self_Illumination._3_Channel_Self_Illum => string.Empty,
+                    Self_Illumination.Plasma => string.Empty,
+                    Self_Illumination.From_Diffuse => string.Empty,
+                    Self_Illumination.Illum_Detail => string.Empty,
+                    Self_Illumination.Meter => string.Empty,
+                    Self_Illumination.Self_Illum_Times_Diffuse => string.Empty,
+                    Self_Illumination.Multilayer_Additive => string.Empty,
+                    Self_Illumination.Ml_Add_Four_Change_Color => string.Empty,
+                    Self_Illumination.Ml_Add_Five_Change_Color => string.Empty,
+                    Self_Illumination.Scope_Blur => string.Empty,
+                    Self_Illumination.Palettized_Plasma => string.Empty,
+                    Self_Illumination.Palettized_Plasma_Change_Color => string.Empty,
+                    Self_Illumination.Palettized_Depth_Fade => string.Empty,
+                    Self_Illumination.Plasma_Wide_And_Sharp_Five_Change_Color => string.Empty,
+                    Self_Illumination.Self_Illum_Holograms => string.Empty,
+                    _ => null,
+                },
+                HalogramMethods.Blend_Mode => (Blend_Mode)option switch
                 {
-                    case Warp.None:
-                        vertexFunction = "";
-                        pixelFunction = "calc_parallax_off_ps";
-                        break;
-                    case Warp.From_Texture:
-                        vertexFunction = "";
-                        pixelFunction = "calc_warp_from_texture_ps";
-                        break;
-                    case Warp.Parallax_Simple:
-                        vertexFunction = "";
-                        pixelFunction = "calc_parallax_simple_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "overlay")
-            {
-                switch ((Overlay)option)
+                    Blend_Mode.Opaque => string.Empty,
+                    Blend_Mode.Additive => string.Empty,
+                    Blend_Mode.Multiply => string.Empty,
+                    Blend_Mode.Alpha_Blend => string.Empty,
+                    Blend_Mode.Double_Multiply => string.Empty,
+                    _ => null,
+                },
+                HalogramMethods.Misc => (Misc)option switch
                 {
-                    case Overlay.None:
-                        vertexFunction = "";
-                        pixelFunction = "calc_overlay_none_ps";
-                        break;
-                    case Overlay.Additive:
-                        vertexFunction = "";
-                        pixelFunction = "calc_overlay_additive_ps";
-                        break;
-                    case Overlay.Additive_Detail:
-                        vertexFunction = "";
-                        pixelFunction = "calc_overlay_additive_detail_ps";
-                        break;
-                    case Overlay.Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "calc_overlay_multiply_ps";
-                        break;
-                    case Overlay.Multiply_And_Additive_Detail:
-                        vertexFunction = "";
-                        pixelFunction = "calc_overlay_multiply_and_additive_detail_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "edge_fade")
-            {
-                switch ((Edge_Fade)option)
+                    Misc.First_Person_Never => string.Empty,
+                    Misc.First_Person_Sometimes => string.Empty,
+                    Misc.First_Person_Always => string.Empty,
+                    Misc.First_Person_Never_With_Rotating_Bitmaps => string.Empty,
+                    Misc.Always_Calc_Albedo => string.Empty,
+                    _ => null,
+                },
+                HalogramMethods.Warp => (Warp)option switch
                 {
-                    case Edge_Fade.None:
-                        vertexFunction = "";
-                        pixelFunction = "calc_edge_fade_none_ps";
-                        break;
-                    case Edge_Fade.Simple:
-                        vertexFunction = "";
-                        pixelFunction = "calc_edge_fade_simple_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "distortion")
-            {
-                switch ((Distortion)option)
+                    Warp.None => string.Empty,
+                    Warp.From_Texture => string.Empty,
+                    Warp.Parallax_Simple => string.Empty,
+                    _ => null,
+                },
+                HalogramMethods.Overlay => (Overlay)option switch
                 {
-                    case Distortion.Off:
-                        vertexFunction = "";
-                        pixelFunction = "distort_off_ps";
-                        break;
-                    case Distortion.On:
-                        vertexFunction = "";
-                        pixelFunction = "distort_on_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "soft_fade")
-            {
-                switch ((Soft_Fade)option)
+                    Overlay.None => string.Empty,
+                    Overlay.Additive => string.Empty,
+                    Overlay.Additive_Detail => string.Empty,
+                    Overlay.Multiply => string.Empty,
+                    Overlay.Multiply_And_Additive_Detail => string.Empty,
+                    _ => null,
+                },
+                HalogramMethods.Edge_Fade => (Edge_Fade)option switch
                 {
-                    case Soft_Fade.Off:
-                        vertexFunction = "";
-                        pixelFunction = "apply_soft_fade_off";
-                        break;
-                    case Soft_Fade.On:
-                        vertexFunction = "";
-                        pixelFunction = "apply_soft_fade_on";
-                        break;
-                }
-            }
+                    Edge_Fade.None => string.Empty,
+                    Edge_Fade.Simple => string.Empty,
+                    _ => null,
+                },
+                HalogramMethods.Distortion => (Distortion)option switch
+                {
+                    Distortion.Off => string.Empty,
+                    Distortion.On => string.Empty,
+                    _ => null,
+                },
+                HalogramMethods.Soft_Fade => (Soft_Fade)option switch
+                {
+                    Soft_Fade.Off => string.Empty,
+                    Soft_Fade.On => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

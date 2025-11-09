@@ -1,67 +1,32 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.LightVolume
 {
     public class LightVolumeGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(LightVolumeMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(LightVolumeMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((LightVolumeMethods)methodIndex)
+            return (LightVolumeMethods)methodIndex switch
             {
-                case LightVolumeMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo)).Length;
-                case LightVolumeMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode)).Length;
-                case LightVolumeMethods.Fog:
-                    return Enum.GetValues(typeof(Fog)).Length;
-                case LightVolumeMethods.Depth_Fade:
-                    return Enum.GetValues(typeof(Depth_Fade)).Length;
-            }
-
-            return -1;
+                LightVolumeMethods.Albedo => Enum.GetValues(typeof(Albedo)).Length,
+                LightVolumeMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)).Length,
+                LightVolumeMethods.Fog => Enum.GetValues(typeof(Fog)).Length,
+                LightVolumeMethods.Depth_Fade => Enum.GetValues(typeof(Depth_Fade)).Length,
+                _ => -1,
+            };
         }
 
-        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return -1;
-            }
-        }
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint) => -1;
 
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
 
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsPixelShaderShared(ShaderStage entryPoint) => false;
 
-        public bool IsAutoMacro()
-        {
-            return true;
-        }
+        public bool IsAutoMacro() => true;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -159,26 +124,18 @@ namespace HaloShaderGenerator.LightVolume
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(LightVolumeMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(LightVolumeMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((LightVolumeMethods)methodIndex)
+            return (LightVolumeMethods)methodIndex switch
             {
-                case LightVolumeMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo));
-                case LightVolumeMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode));
-                case LightVolumeMethods.Fog:
-                    return Enum.GetValues(typeof(Fog));
-                case LightVolumeMethods.Depth_Fade:
-                    return Enum.GetValues(typeof(Depth_Fade));
-            }
-
-            return null;
+                LightVolumeMethods.Albedo => Enum.GetValues(typeof(Albedo)),
+                LightVolumeMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)),
+                LightVolumeMethods.Fog => Enum.GetValues(typeof(Fog)),
+                LightVolumeMethods.Depth_Fade => Enum.GetValues(typeof(Depth_Fade)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -197,140 +154,112 @@ namespace HaloShaderGenerator.LightVolume
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (LightVolumeMethods)category switch
             {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "blend_mode")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "fog")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "depth_fade")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
+                LightVolumeMethods.Albedo => string.Empty,
+                LightVolumeMethods.Blend_Mode => string.Empty,
+                LightVolumeMethods.Fog => string.Empty,
+                LightVolumeMethods.Depth_Fade => string.Empty,
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (LightVolumeMethods)category switch
             {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Diffuse_Only:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Circular:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                LightVolumeMethods.Albedo => string.Empty,
+                LightVolumeMethods.Blend_Mode => string.Empty,
+                LightVolumeMethods.Fog => string.Empty,
+                LightVolumeMethods.Depth_Fade => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "blend_mode")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (LightVolumeMethods)category switch
             {
-                switch ((Blend_Mode)option)
+                LightVolumeMethods.Albedo => (Albedo)option switch
                 {
-                    case Blend_Mode.Opaque:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Additive:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Double_Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Maximum:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Multiply_Add:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Add_Src_Times_Dstalpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Add_Src_Times_Srcalpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Inv_Alpha_Blend:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Pre_Multiplied_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                    Albedo.Diffuse_Only => string.Empty,
+                    Albedo.Circular => string.Empty,
+                    _ => null,
+                },
+                LightVolumeMethods.Blend_Mode => (Blend_Mode)option switch
+                {
+                    Blend_Mode.Opaque => string.Empty,
+                    Blend_Mode.Additive => string.Empty,
+                    Blend_Mode.Multiply => string.Empty,
+                    Blend_Mode.Alpha_Blend => string.Empty,
+                    Blend_Mode.Double_Multiply => string.Empty,
+                    Blend_Mode.Maximum => string.Empty,
+                    Blend_Mode.Multiply_Add => string.Empty,
+                    Blend_Mode.Add_Src_Times_Dstalpha => string.Empty,
+                    Blend_Mode.Add_Src_Times_Srcalpha => string.Empty,
+                    Blend_Mode.Inv_Alpha_Blend => string.Empty,
+                    Blend_Mode.Pre_Multiplied_Alpha => string.Empty,
+                    _ => null,
+                },
+                LightVolumeMethods.Fog => (Fog)option switch
+                {
+                    Fog.Off => string.Empty,
+                    Fog.On => string.Empty,
+                    _ => null,
+                },
+                LightVolumeMethods.Depth_Fade => (Depth_Fade)option switch
+                {
+                    Depth_Fade.Off => string.Empty,
+                    Depth_Fade.On => string.Empty,
+                    Depth_Fade.Biased => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "fog")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (LightVolumeMethods)category switch
             {
-                switch ((Fog)option)
+                LightVolumeMethods.Albedo => (Albedo)option switch
                 {
-                    case Fog.Off:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Fog.On:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "depth_fade")
-            {
-                switch ((Depth_Fade)option)
+                    Albedo.Diffuse_Only => string.Empty,
+                    Albedo.Circular => string.Empty,
+                    _ => null,
+                },
+                LightVolumeMethods.Blend_Mode => (Blend_Mode)option switch
                 {
-                    case Depth_Fade.Off:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Depth_Fade.On:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Depth_Fade.Biased:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                    Blend_Mode.Opaque => string.Empty,
+                    Blend_Mode.Additive => string.Empty,
+                    Blend_Mode.Multiply => string.Empty,
+                    Blend_Mode.Alpha_Blend => string.Empty,
+                    Blend_Mode.Double_Multiply => string.Empty,
+                    Blend_Mode.Maximum => string.Empty,
+                    Blend_Mode.Multiply_Add => string.Empty,
+                    Blend_Mode.Add_Src_Times_Dstalpha => string.Empty,
+                    Blend_Mode.Add_Src_Times_Srcalpha => string.Empty,
+                    Blend_Mode.Inv_Alpha_Blend => string.Empty,
+                    Blend_Mode.Pre_Multiplied_Alpha => string.Empty,
+                    _ => null,
+                },
+                LightVolumeMethods.Fog => (Fog)option switch
+                {
+                    Fog.Off => string.Empty,
+                    Fog.On => string.Empty,
+                    _ => null,
+                },
+                LightVolumeMethods.Depth_Fade => (Depth_Fade)option switch
+                {
+                    Depth_Fade.Off => string.Empty,
+                    Depth_Fade.On => string.Empty,
+                    Depth_Fade.Biased => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

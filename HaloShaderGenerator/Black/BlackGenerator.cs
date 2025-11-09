@@ -1,55 +1,22 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Black
 {
     public class BlackGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(BlackMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(BlackMethods)).Length;
 
-        public int GetMethodOptionCount(int methodIndex)
-        {
-            return 1;
-        }
+        public int GetMethodOptionCount(int methodIndex) => 1;
 
-        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return -1;
-            }
-        }
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint) => -1;
 
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
 
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsPixelShaderShared(ShaderStage entryPoint) => false;
 
-        public bool IsAutoMacro()
-        {
-            return false;
-        }
+        public bool IsAutoMacro() => false;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -83,15 +50,9 @@ namespace HaloShaderGenerator.Black
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(BlackMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(BlackMethods));
 
-        public Array GetMethodOptionNames(int methodIndex)
-        {
-            return null;
-        }
+        public Array GetMethodOptionNames(int methodIndex) => null;
 
         public Array GetEntryPointOrder() 
         {
@@ -112,16 +73,12 @@ namespace HaloShaderGenerator.Black
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
-        {
-            vertexFunction = null;
-            pixelFunction = null;
-        }
+        public string GetCategoryPixelFunction(int category) => null;
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
-        {
-            vertexFunction = null;
-            pixelFunction = null;
-        }
+        public string GetCategoryVertexFunction(int category) => null;
+
+        public string GetOptionPixelFunction(int category, int option) => null;
+
+        public string GetOptionVertexFunction(int category, int option) => null;
     }
 }

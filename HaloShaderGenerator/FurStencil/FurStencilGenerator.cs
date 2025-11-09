@@ -1,70 +1,53 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.FurStencil
 {
     public class FurStencilGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(FurStencilMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(FurStencilMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((FurStencilMethods)methodIndex)
+            return (FurStencilMethods)methodIndex switch
             {
-                case FurStencilMethods.Alpha_Test:
-                    return Enum.GetValues(typeof(Alpha_Test)).Length;
-            }
-
-            return -1;
+                FurStencilMethods.Alpha_Test => Enum.GetValues(typeof(Alpha_Test)).Length,
+                _ => -1,
+            };
         }
 
         public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Default:
-                case ShaderStage.Shadow_Generate:
-                    return 0;
-                default:
-                    return -1;
-            }
+                ShaderStage.Default or 
+                ShaderStage.Shadow_Generate => 0,
+                _ => -1,
+            };
         }
 
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Default:
-                case ShaderStage.Shadow_Generate:
-                    return true;
-                default:
-                    return false;
-            }
+                ShaderStage.Default or 
+                ShaderStage.Shadow_Generate => true,
+                _ => false,
+            };
         }
 
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Default:
-                case ShaderStage.Shadow_Generate:
-                    return true;
-                default:
-                    return false;
-            }
+                ShaderStage.Default or 
+                ShaderStage.Shadow_Generate => true,
+                _ => false,
+            };
         }
 
-        public bool IsAutoMacro()
-        {
-            return false;
-        }
+        public bool IsAutoMacro() => false;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -113,20 +96,15 @@ namespace HaloShaderGenerator.FurStencil
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(FurStencilMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(FurStencilMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((FurStencilMethods)methodIndex)
+            return (FurStencilMethods)methodIndex switch
             {
-                case FurStencilMethods.Alpha_Test:
-                    return Enum.GetValues(typeof(Alpha_Test));
-            }
-
-            return null;
+                FurStencilMethods.Alpha_Test => Enum.GetValues(typeof(Alpha_Test)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -147,37 +125,50 @@ namespace HaloShaderGenerator.FurStencil
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "alpha_test")
+            return (FurStencilMethods)category switch
             {
-                vertexFunction = "";
-                pixelFunction = "calc_alpha_test_ps";
-            }
+                FurStencilMethods.Alpha_Test => "calc_alpha_test_ps",
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "alpha_test")
+            return (FurStencilMethods)category switch
             {
-                switch ((Alpha_Test)option)
+                FurStencilMethods.Alpha_Test => string.Empty,
+                _ => null,
+            };
+        }
+
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (FurStencilMethods)category switch
+            {
+                FurStencilMethods.Alpha_Test => (Alpha_Test)option switch
                 {
-                    case Alpha_Test.Off:
-                        vertexFunction = "";
-                        pixelFunction = "calc_alpha_test_off_ps";
-                        break;
-                    case Alpha_Test.On:
-                        vertexFunction = "";
-                        pixelFunction = "calc_alpha_test_on_ps";
-                        break;
-                }
-            }
+                    Alpha_Test.Off => "calc_alpha_test_off_ps",
+                    Alpha_Test.On => "calc_alpha_test_on_ps",
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
+
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (FurStencilMethods)category switch
+            {
+                FurStencilMethods.Alpha_Test => (Alpha_Test)option switch
+                {
+                    Alpha_Test.Off => string.Empty,
+                    Alpha_Test.On => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

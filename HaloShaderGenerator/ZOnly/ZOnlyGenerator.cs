@@ -1,61 +1,29 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.ZOnly
 {
     public class ZOnlyGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(ZOnlyMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(ZOnlyMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((ZOnlyMethods)methodIndex)
+            return (ZOnlyMethods)methodIndex switch
             {
-                case ZOnlyMethods.Test:
-                    return Enum.GetValues(typeof(Test)).Length;
-            }
-
-            return -1;
+                ZOnlyMethods.Test => Enum.GetValues(typeof(Test)).Length,
+                _ => -1,
+            };
         }
 
-        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return -1;
-            }
-        }
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint) => -1;
 
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
 
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsPixelShaderShared(ShaderStage entryPoint) => false;
 
-        public bool IsAutoMacro()
-        {
-            return true;
-        }
+        public bool IsAutoMacro() => true;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -104,20 +72,15 @@ namespace HaloShaderGenerator.ZOnly
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(ZOnlyMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(ZOnlyMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((ZOnlyMethods)methodIndex)
+            return (ZOnlyMethods)methodIndex switch
             {
-                case ZOnlyMethods.Test:
-                    return Enum.GetValues(typeof(Test));
-            }
-
-            return null;
+                ZOnlyMethods.Test => Enum.GetValues(typeof(Test)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -138,33 +101,48 @@ namespace HaloShaderGenerator.ZOnly
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "test")
+            return (ZOnlyMethods)category switch
             {
-                vertexFunction = "test_vs";
-                pixelFunction = "test_ps";
-            }
+                ZOnlyMethods.Test => "test_ps",
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "test")
+            return (ZOnlyMethods)category switch
             {
-                switch ((Test)option)
+                ZOnlyMethods.Test => "test_vs",
+                _ => null,
+            };
+        }
+
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (ZOnlyMethods)category switch
+            {
+                ZOnlyMethods.Test => (Test)option switch
                 {
-                    case Test.Default:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_default_ps";
-                        break;
-                }
-            }
+                    Test.Default => "calc_albedo_default_ps",
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
+
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (ZOnlyMethods)category switch
+            {
+                ZOnlyMethods.Test => (Test)option switch
+                {
+                    Test.Default => "calc_albedo_default_vs",
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

@@ -1,81 +1,39 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Particle
 {
     public class ParticleGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(ParticleMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(ParticleMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((ParticleMethods)methodIndex)
+            return (ParticleMethods)methodIndex switch
             {
-                case ParticleMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo)).Length;
-                case ParticleMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode)).Length;
-                case ParticleMethods.Specialized_Rendering:
-                    return Enum.GetValues(typeof(Specialized_Rendering)).Length;
-                case ParticleMethods.Lighting:
-                    return Enum.GetValues(typeof(Lighting)).Length;
-                case ParticleMethods.Render_Targets:
-                    return Enum.GetValues(typeof(Render_Targets)).Length;
-                case ParticleMethods.Depth_Fade:
-                    return Enum.GetValues(typeof(Depth_Fade)).Length;
-                case ParticleMethods.Black_Point:
-                    return Enum.GetValues(typeof(Black_Point)).Length;
-                case ParticleMethods.Fog:
-                    return Enum.GetValues(typeof(Fog)).Length;
-                case ParticleMethods.Frame_Blend:
-                    return Enum.GetValues(typeof(Frame_Blend)).Length;
-                case ParticleMethods.Self_Illumination:
-                    return Enum.GetValues(typeof(Self_Illumination)).Length;
-                case ParticleMethods.Warp:
-                    return Enum.GetValues(typeof(Warp)).Length;
-            }
-
-            return -1;
+                ParticleMethods.Albedo => Enum.GetValues(typeof(Albedo)).Length,
+                ParticleMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)).Length,
+                ParticleMethods.Specialized_Rendering => Enum.GetValues(typeof(Specialized_Rendering)).Length,
+                ParticleMethods.Lighting => Enum.GetValues(typeof(Lighting)).Length,
+                ParticleMethods.Render_Targets => Enum.GetValues(typeof(Render_Targets)).Length,
+                ParticleMethods.Depth_Fade => Enum.GetValues(typeof(Depth_Fade)).Length,
+                ParticleMethods.Black_Point => Enum.GetValues(typeof(Black_Point)).Length,
+                ParticleMethods.Fog => Enum.GetValues(typeof(Fog)).Length,
+                ParticleMethods.Frame_Blend => Enum.GetValues(typeof(Frame_Blend)).Length,
+                ParticleMethods.Self_Illumination => Enum.GetValues(typeof(Self_Illumination)).Length,
+                ParticleMethods.Warp => Enum.GetValues(typeof(Warp)).Length,
+                _ => -1,
+            };
         }
 
-        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return -1;
-            }
-        }
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint) => -1;
 
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
 
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsPixelShaderShared(ShaderStage entryPoint) => false;
 
-        public bool IsAutoMacro()
-        {
-            return true;
-        }
+        public bool IsAutoMacro() => true;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -357,40 +315,25 @@ namespace HaloShaderGenerator.Particle
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(ParticleMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(ParticleMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((ParticleMethods)methodIndex)
+            return (ParticleMethods)methodIndex switch
             {
-                case ParticleMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo));
-                case ParticleMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode));
-                case ParticleMethods.Specialized_Rendering:
-                    return Enum.GetValues(typeof(Specialized_Rendering));
-                case ParticleMethods.Lighting:
-                    return Enum.GetValues(typeof(Lighting));
-                case ParticleMethods.Render_Targets:
-                    return Enum.GetValues(typeof(Render_Targets));
-                case ParticleMethods.Depth_Fade:
-                    return Enum.GetValues(typeof(Depth_Fade));
-                case ParticleMethods.Black_Point:
-                    return Enum.GetValues(typeof(Black_Point));
-                case ParticleMethods.Fog:
-                    return Enum.GetValues(typeof(Fog));
-                case ParticleMethods.Frame_Blend:
-                    return Enum.GetValues(typeof(Frame_Blend));
-                case ParticleMethods.Self_Illumination:
-                    return Enum.GetValues(typeof(Self_Illumination));
-                case ParticleMethods.Warp:
-                    return Enum.GetValues(typeof(Warp));
-            }
-
-            return null;
+                ParticleMethods.Albedo => Enum.GetValues(typeof(Albedo)),
+                ParticleMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)),
+                ParticleMethods.Specialized_Rendering => Enum.GetValues(typeof(Specialized_Rendering)),
+                ParticleMethods.Lighting => Enum.GetValues(typeof(Lighting)),
+                ParticleMethods.Render_Targets => Enum.GetValues(typeof(Render_Targets)),
+                ParticleMethods.Depth_Fade => Enum.GetValues(typeof(Depth_Fade)),
+                ParticleMethods.Black_Point => Enum.GetValues(typeof(Black_Point)),
+                ParticleMethods.Fog => Enum.GetValues(typeof(Fog)),
+                ParticleMethods.Frame_Blend => Enum.GetValues(typeof(Frame_Blend)),
+                ParticleMethods.Self_Illumination => Enum.GetValues(typeof(Self_Illumination)),
+                ParticleMethods.Warp => Enum.GetValues(typeof(Warp)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -411,351 +354,242 @@ namespace HaloShaderGenerator.Particle
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (ParticleMethods)category switch
             {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "blend_mode")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "specialized_rendering")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "lighting")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "render_targets")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "depth_fade")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "black_point")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "fog")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "frame_blend")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "self_illumination")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "warp")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
+                ParticleMethods.Albedo => string.Empty,
+                ParticleMethods.Blend_Mode => string.Empty,
+                ParticleMethods.Specialized_Rendering => string.Empty,
+                ParticleMethods.Lighting => string.Empty,
+                ParticleMethods.Render_Targets => string.Empty,
+                ParticleMethods.Depth_Fade => string.Empty,
+                ParticleMethods.Black_Point => string.Empty,
+                ParticleMethods.Fog => string.Empty,
+                ParticleMethods.Frame_Blend => string.Empty,
+                ParticleMethods.Self_Illumination => string.Empty,
+                ParticleMethods.Warp => string.Empty,
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (ParticleMethods)category switch
             {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Diffuse_Only:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Diffuse_Plus_Billboard_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Palettized:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Palettized_Plus_Billboard_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Diffuse_Plus_Sprite_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Palettized_Plus_Sprite_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Diffuse_Modulated:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Palettized_Glow:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Palettized_Plasma:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Palettized_2d_Plasma:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                ParticleMethods.Albedo => string.Empty,
+                ParticleMethods.Blend_Mode => string.Empty,
+                ParticleMethods.Specialized_Rendering => string.Empty,
+                ParticleMethods.Lighting => string.Empty,
+                ParticleMethods.Render_Targets => string.Empty,
+                ParticleMethods.Depth_Fade => string.Empty,
+                ParticleMethods.Black_Point => string.Empty,
+                ParticleMethods.Fog => string.Empty,
+                ParticleMethods.Frame_Blend => string.Empty,
+                ParticleMethods.Self_Illumination => string.Empty,
+                ParticleMethods.Warp => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "blend_mode")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (ParticleMethods)category switch
             {
-                switch ((Blend_Mode)option)
+                ParticleMethods.Albedo => (Albedo)option switch
                 {
-                    case Blend_Mode.Opaque:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Additive:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Double_Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Maximum:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Multiply_Add:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Add_Src_Times_Dstalpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Add_Src_Times_Srcalpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Inv_Alpha_Blend:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Pre_Multiplied_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                    Albedo.Diffuse_Only => string.Empty,
+                    Albedo.Diffuse_Plus_Billboard_Alpha => string.Empty,
+                    Albedo.Palettized => string.Empty,
+                    Albedo.Palettized_Plus_Billboard_Alpha => string.Empty,
+                    Albedo.Diffuse_Plus_Sprite_Alpha => string.Empty,
+                    Albedo.Palettized_Plus_Sprite_Alpha => string.Empty,
+                    Albedo.Diffuse_Modulated => string.Empty,
+                    Albedo.Palettized_Glow => string.Empty,
+                    Albedo.Palettized_Plasma => string.Empty,
+                    Albedo.Palettized_2d_Plasma => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Blend_Mode => (Blend_Mode)option switch
+                {
+                    Blend_Mode.Opaque => string.Empty,
+                    Blend_Mode.Additive => string.Empty,
+                    Blend_Mode.Multiply => string.Empty,
+                    Blend_Mode.Alpha_Blend => string.Empty,
+                    Blend_Mode.Double_Multiply => string.Empty,
+                    Blend_Mode.Maximum => string.Empty,
+                    Blend_Mode.Multiply_Add => string.Empty,
+                    Blend_Mode.Add_Src_Times_Dstalpha => string.Empty,
+                    Blend_Mode.Add_Src_Times_Srcalpha => string.Empty,
+                    Blend_Mode.Inv_Alpha_Blend => string.Empty,
+                    Blend_Mode.Pre_Multiplied_Alpha => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Specialized_Rendering => (Specialized_Rendering)option switch
+                {
+                    Specialized_Rendering.None => string.Empty,
+                    Specialized_Rendering.Distortion => string.Empty,
+                    Specialized_Rendering.Distortion_Expensive => string.Empty,
+                    Specialized_Rendering.Distortion_Diffuse => string.Empty,
+                    Specialized_Rendering.Distortion_Expensive_Diffuse => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Lighting => (Lighting)option switch
+                {
+                    Lighting.None => string.Empty,
+                    Lighting.Per_Pixel_Ravi_Order_3 => string.Empty,
+                    Lighting.Per_Vertex_Ravi_Order_0 => string.Empty,
+                    Lighting.Per_Pixel_Smooth => string.Empty,
+                    Lighting.Per_Vertex_Ambient => string.Empty,
+                    Lighting.Smoke_Lighting => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Render_Targets => (Render_Targets)option switch
+                {
+                    Render_Targets.Ldr_And_Hdr => string.Empty,
+                    Render_Targets.Ldr_Only => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Depth_Fade => (Depth_Fade)option switch
+                {
+                    Depth_Fade.Off => string.Empty,
+                    Depth_Fade.On => string.Empty,
+                    Depth_Fade.Palette_Shift => string.Empty,
+                    Depth_Fade.Low_Res => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Black_Point => (Black_Point)option switch
+                {
+                    Black_Point.Off => string.Empty,
+                    Black_Point.On => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Fog => (Fog)option switch
+                {
+                    Fog.Off => string.Empty,
+                    Fog.On => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Frame_Blend => (Frame_Blend)option switch
+                {
+                    Frame_Blend.Off => string.Empty,
+                    Frame_Blend.On => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Self_Illumination => (Self_Illumination)option switch
+                {
+                    Self_Illumination.None => string.Empty,
+                    Self_Illumination.Constant_Color => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Warp => (Warp)option switch
+                {
+                    Warp.None => string.Empty,
+                    Warp.Sphere => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "specialized_rendering")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (ParticleMethods)category switch
             {
-                switch ((Specialized_Rendering)option)
+                ParticleMethods.Albedo => (Albedo)option switch
                 {
-                    case Specialized_Rendering.None:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Specialized_Rendering.Distortion:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Specialized_Rendering.Distortion_Expensive:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Specialized_Rendering.Distortion_Diffuse:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Specialized_Rendering.Distortion_Expensive_Diffuse:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "lighting")
-            {
-                switch ((Lighting)option)
+                    Albedo.Diffuse_Only => string.Empty,
+                    Albedo.Diffuse_Plus_Billboard_Alpha => string.Empty,
+                    Albedo.Palettized => string.Empty,
+                    Albedo.Palettized_Plus_Billboard_Alpha => string.Empty,
+                    Albedo.Diffuse_Plus_Sprite_Alpha => string.Empty,
+                    Albedo.Palettized_Plus_Sprite_Alpha => string.Empty,
+                    Albedo.Diffuse_Modulated => string.Empty,
+                    Albedo.Palettized_Glow => string.Empty,
+                    Albedo.Palettized_Plasma => string.Empty,
+                    Albedo.Palettized_2d_Plasma => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Blend_Mode => (Blend_Mode)option switch
                 {
-                    case Lighting.None:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Lighting.Per_Pixel_Ravi_Order_3:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Lighting.Per_Vertex_Ravi_Order_0:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Lighting.Per_Pixel_Smooth:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Lighting.Per_Vertex_Ambient:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Lighting.Smoke_Lighting:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "render_targets")
-            {
-                switch ((Render_Targets)option)
+                    Blend_Mode.Opaque => string.Empty,
+                    Blend_Mode.Additive => string.Empty,
+                    Blend_Mode.Multiply => string.Empty,
+                    Blend_Mode.Alpha_Blend => string.Empty,
+                    Blend_Mode.Double_Multiply => string.Empty,
+                    Blend_Mode.Maximum => string.Empty,
+                    Blend_Mode.Multiply_Add => string.Empty,
+                    Blend_Mode.Add_Src_Times_Dstalpha => string.Empty,
+                    Blend_Mode.Add_Src_Times_Srcalpha => string.Empty,
+                    Blend_Mode.Inv_Alpha_Blend => string.Empty,
+                    Blend_Mode.Pre_Multiplied_Alpha => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Specialized_Rendering => (Specialized_Rendering)option switch
                 {
-                    case Render_Targets.Ldr_And_Hdr:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Render_Targets.Ldr_Only:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "depth_fade")
-            {
-                switch ((Depth_Fade)option)
+                    Specialized_Rendering.None => string.Empty,
+                    Specialized_Rendering.Distortion => string.Empty,
+                    Specialized_Rendering.Distortion_Expensive => string.Empty,
+                    Specialized_Rendering.Distortion_Diffuse => string.Empty,
+                    Specialized_Rendering.Distortion_Expensive_Diffuse => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Lighting => (Lighting)option switch
                 {
-                    case Depth_Fade.Off:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Depth_Fade.On:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Depth_Fade.Palette_Shift:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Depth_Fade.Low_Res:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "black_point")
-            {
-                switch ((Black_Point)option)
+                    Lighting.None => string.Empty,
+                    Lighting.Per_Pixel_Ravi_Order_3 => string.Empty,
+                    Lighting.Per_Vertex_Ravi_Order_0 => string.Empty,
+                    Lighting.Per_Pixel_Smooth => string.Empty,
+                    Lighting.Per_Vertex_Ambient => string.Empty,
+                    Lighting.Smoke_Lighting => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Render_Targets => (Render_Targets)option switch
                 {
-                    case Black_Point.Off:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Black_Point.On:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "fog")
-            {
-                switch ((Fog)option)
+                    Render_Targets.Ldr_And_Hdr => string.Empty,
+                    Render_Targets.Ldr_Only => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Depth_Fade => (Depth_Fade)option switch
                 {
-                    case Fog.Off:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Fog.On:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "frame_blend")
-            {
-                switch ((Frame_Blend)option)
+                    Depth_Fade.Off => string.Empty,
+                    Depth_Fade.On => string.Empty,
+                    Depth_Fade.Palette_Shift => string.Empty,
+                    Depth_Fade.Low_Res => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Black_Point => (Black_Point)option switch
                 {
-                    case Frame_Blend.Off:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Frame_Blend.On:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "self_illumination")
-            {
-                switch ((Self_Illumination)option)
+                    Black_Point.Off => string.Empty,
+                    Black_Point.On => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Fog => (Fog)option switch
                 {
-                    case Self_Illumination.None:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Self_Illumination.Constant_Color:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "warp")
-            {
-                switch ((Warp)option)
+                    Fog.Off => string.Empty,
+                    Fog.On => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Frame_Blend => (Frame_Blend)option switch
                 {
-                    case Warp.None:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Warp.Sphere:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                    Frame_Blend.Off => string.Empty,
+                    Frame_Blend.On => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Self_Illumination => (Self_Illumination)option switch
+                {
+                    Self_Illumination.None => string.Empty,
+                    Self_Illumination.Constant_Color => string.Empty,
+                    _ => null,
+                },
+                ParticleMethods.Warp => (Warp)option switch
+                {
+                    Warp.None => string.Empty,
+                    Warp.Sphere => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

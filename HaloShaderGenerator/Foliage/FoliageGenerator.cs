@@ -1,73 +1,53 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Foliage
 {
     public class FoliageGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(FoliageMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(FoliageMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((FoliageMethods)methodIndex)
+            return (FoliageMethods)methodIndex switch
             {
-                case FoliageMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo)).Length;
-                case FoliageMethods.Alpha_Test:
-                    return Enum.GetValues(typeof(Alpha_Test)).Length;
-                case FoliageMethods.Material_Model:
-                    return Enum.GetValues(typeof(Material_Model)).Length;
-                case FoliageMethods.Wetness:
-                    return Enum.GetValues(typeof(Wetness)).Length;
-            }
-
-            return -1;
+                FoliageMethods.Albedo => Enum.GetValues(typeof(Albedo)).Length,
+                FoliageMethods.Alpha_Test => Enum.GetValues(typeof(Alpha_Test)).Length,
+                FoliageMethods.Material_Model => Enum.GetValues(typeof(Material_Model)).Length,
+                FoliageMethods.Wetness => Enum.GetValues(typeof(Wetness)).Length,
+                _ => -1,
+            };
         }
 
         public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Shadow_Generate:
-                    return 1;
-                default:
-                    return -1;
-            }
+                ShaderStage.Shadow_Generate => 1,
+                _ => -1,
+            };
         }
 
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Shadow_Generate:
-                    return true;
-                default:
-                    return false;
-            }
+                ShaderStage.Shadow_Generate => true,
+                _ => false,
+            };
         }
 
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Shadow_Generate:
-                    return true;
-                default:
-                    return false;
-            }
+                ShaderStage.Shadow_Generate => true,
+                _ => false,
+            };
         }
 
-        public bool IsAutoMacro()
-        {
-            return false;
-        }
+        public bool IsAutoMacro() => false;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -195,26 +175,18 @@ namespace HaloShaderGenerator.Foliage
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(FoliageMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(FoliageMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((FoliageMethods)methodIndex)
+            return (FoliageMethods)methodIndex switch
             {
-                case FoliageMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo));
-                case FoliageMethods.Alpha_Test:
-                    return Enum.GetValues(typeof(Alpha_Test));
-                case FoliageMethods.Material_Model:
-                    return Enum.GetValues(typeof(Material_Model));
-                case FoliageMethods.Wetness:
-                    return Enum.GetValues(typeof(Wetness));
-            }
-
-            return null;
+                FoliageMethods.Albedo => Enum.GetValues(typeof(Albedo)),
+                FoliageMethods.Alpha_Test => Enum.GetValues(typeof(Alpha_Test)),
+                FoliageMethods.Material_Model => Enum.GetValues(typeof(Material_Model)),
+                FoliageMethods.Wetness => Enum.GetValues(typeof(Wetness)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -249,116 +221,100 @@ namespace HaloShaderGenerator.Foliage
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (FoliageMethods)category switch
             {
-                vertexFunction = "calc_albedo_vs";
-                pixelFunction = "calc_albedo_ps";
-            }
-
-            if (methodName == "alpha_test")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_alpha_test_ps";
-            }
-
-            if (methodName == "material_model")
-            {
-                vertexFunction = "";
-                pixelFunction = "calculate_material";
-            }
-
-            if (methodName == "wetness")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_wetness_ps";
-            }
+                FoliageMethods.Albedo => "calc_albedo_ps",
+                FoliageMethods.Alpha_Test => "calc_alpha_test_ps",
+                FoliageMethods.Material_Model => "calculate_material",
+                FoliageMethods.Wetness => "calc_wetness_ps",
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (FoliageMethods)category switch
             {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Simple:
-                        vertexFunction = "calc_albedo_simple_vs";
-                        pixelFunction = "calc_albedo_simple_ps";
-                        break;
-                    case Albedo.Default:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_default_ps";
-                        break;
-                }
-            }
+                FoliageMethods.Albedo => "calc_albedo_vs",
+                FoliageMethods.Alpha_Test => string.Empty,
+                FoliageMethods.Material_Model => string.Empty,
+                FoliageMethods.Wetness => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "alpha_test")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (FoliageMethods)category switch
             {
-                switch ((Alpha_Test)option)
+                FoliageMethods.Albedo => (Albedo)option switch
                 {
-                    case Alpha_Test.None:
-                        vertexFunction = "";
-                        pixelFunction = "calc_alpha_test_off_ps";
-                        break;
-                    case Alpha_Test.Simple:
-                        vertexFunction = "";
-                        pixelFunction = "calc_alpha_test_on_ps";
-                        break;
-                    case Alpha_Test.From_Albedo_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "calc_alpha_test_from_albedo_ps";
-                        break;
-                    case Alpha_Test.From_Texture:
-                        vertexFunction = "";
-                        pixelFunction = "calc_alpha_test_texture_ps";
-                        break;
-                }
-            }
+                    Albedo.Simple => "calc_albedo_simple_ps",
+                    Albedo.Default => "calc_albedo_default_ps",
+                    _ => null,
+                },
+                FoliageMethods.Alpha_Test => (Alpha_Test)option switch
+                {
+                    Alpha_Test.None => "calc_alpha_test_off_ps",
+                    Alpha_Test.Simple => "calc_alpha_test_on_ps",
+                    Alpha_Test.From_Albedo_Alpha => "calc_alpha_test_from_albedo_ps",
+                    Alpha_Test.From_Texture => "calc_alpha_test_texture_ps",
+                    _ => null,
+                },
+                FoliageMethods.Material_Model => (Material_Model)option switch
+                {
+                    Material_Model.Default => "calculate_material_default",
+                    Material_Model.Flat => "flat",
+                    Material_Model.Specular => "specular",
+                    Material_Model.Translucent => "translucent",
+                    _ => null,
+                },
+                FoliageMethods.Wetness => (Wetness)option switch
+                {
+                    Wetness.Simple => "calc_wetness_simple_ps",
+                    Wetness.Proof => "calc_wetness_proof_ps",
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "material_model")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (FoliageMethods)category switch
             {
-                switch ((Material_Model)option)
+                FoliageMethods.Albedo => (Albedo)option switch
                 {
-                    case Material_Model.Default:
-                        vertexFunction = "";
-                        pixelFunction = "calculate_material_default";
-                        break;
-                    case Material_Model.Flat:
-                        vertexFunction = "";
-                        pixelFunction = "flat";
-                        break;
-                    case Material_Model.Specular:
-                        vertexFunction = "";
-                        pixelFunction = "specular";
-                        break;
-                    case Material_Model.Translucent:
-                        vertexFunction = "";
-                        pixelFunction = "translucent";
-                        break;
-                }
-            }
-
-            if (methodName == "wetness")
-            {
-                switch ((Wetness)option)
+                    Albedo.Simple => "calc_albedo_simple_vs",
+                    Albedo.Default => "calc_albedo_default_vs",
+                    _ => null,
+                },
+                FoliageMethods.Alpha_Test => (Alpha_Test)option switch
                 {
-                    case Wetness.Simple:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_simple_ps";
-                        break;
-                    case Wetness.Proof:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_proof_ps";
-                        break;
-                }
-            }
+                    Alpha_Test.None => string.Empty,
+                    Alpha_Test.Simple => string.Empty,
+                    Alpha_Test.From_Albedo_Alpha => string.Empty,
+                    Alpha_Test.From_Texture => string.Empty,
+                    _ => null,
+                },
+                FoliageMethods.Material_Model => (Material_Model)option switch
+                {
+                    Material_Model.Default => string.Empty,
+                    Material_Model.Flat => string.Empty,
+                    Material_Model.Specular => string.Empty,
+                    Material_Model.Translucent => string.Empty,
+                    _ => null,
+                },
+                FoliageMethods.Wetness => (Wetness)option switch
+                {
+                    Wetness.Simple => string.Empty,
+                    Wetness.Proof => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

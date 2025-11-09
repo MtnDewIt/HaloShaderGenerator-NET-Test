@@ -1,75 +1,42 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Terrain
 {
     public class TerrainGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(TerrainMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(TerrainMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((TerrainMethods)methodIndex)
+            return (TerrainMethods)methodIndex switch
             {
-                case TerrainMethods.Blending:
-                    return Enum.GetValues(typeof(Blending)).Length;
-                case TerrainMethods.Environment_Map:
-                    return Enum.GetValues(typeof(Environment_Map)).Length;
-                case TerrainMethods.Material_0:
-                    return Enum.GetValues(typeof(Material_0)).Length;
-                case TerrainMethods.Material_1:
-                    return Enum.GetValues(typeof(Material_1)).Length;
-                case TerrainMethods.Material_2:
-                    return Enum.GetValues(typeof(Material_2)).Length;
-                case TerrainMethods.Material_3:
-                    return Enum.GetValues(typeof(Material_3)).Length;
-                case TerrainMethods.Wetness:
-                    return Enum.GetValues(typeof(Wetness)).Length;
-            }
-
-            return -1;
+                TerrainMethods.Blending => Enum.GetValues(typeof(Blending)).Length,
+                TerrainMethods.Environment_Map => Enum.GetValues(typeof(Environment_Map)).Length,
+                TerrainMethods.Material_0 => Enum.GetValues(typeof(Material_0)).Length,
+                TerrainMethods.Material_1 => Enum.GetValues(typeof(Material_1)).Length,
+                TerrainMethods.Material_2 => Enum.GetValues(typeof(Material_2)).Length,
+                TerrainMethods.Material_3 => Enum.GetValues(typeof(Material_3)).Length,
+                TerrainMethods.Wetness => Enum.GetValues(typeof(Wetness)).Length,
+                _ => -1,
+            };
         }
 
-        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return -1;
-            }
-        }
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint) => -1;
 
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
 
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Shadow_Generate:
-                    return true;
-                default:
-                    return false;
-            }
+                ShaderStage.Shadow_Generate => true,
+                _ => false,
+            };
         }
 
-        public bool IsAutoMacro()
-        {
-            return false;
-        }
+        public bool IsAutoMacro() => false;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -511,32 +478,21 @@ namespace HaloShaderGenerator.Terrain
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(TerrainMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(TerrainMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((TerrainMethods)methodIndex)
+            return (TerrainMethods)methodIndex switch
             {
-                case TerrainMethods.Blending:
-                    return Enum.GetValues(typeof(Blending));
-                case TerrainMethods.Environment_Map:
-                    return Enum.GetValues(typeof(Environment_Map));
-                case TerrainMethods.Material_0:
-                    return Enum.GetValues(typeof(Material_0));
-                case TerrainMethods.Material_1:
-                    return Enum.GetValues(typeof(Material_1));
-                case TerrainMethods.Material_2:
-                    return Enum.GetValues(typeof(Material_2));
-                case TerrainMethods.Material_3:
-                    return Enum.GetValues(typeof(Material_3));
-                case TerrainMethods.Wetness:
-                    return Enum.GetValues(typeof(Wetness));
-            }
-
-            return null;
+                TerrainMethods.Blending => Enum.GetValues(typeof(Blending)),
+                TerrainMethods.Environment_Map => Enum.GetValues(typeof(Environment_Map)),
+                TerrainMethods.Material_0 => Enum.GetValues(typeof(Material_0)),
+                TerrainMethods.Material_1 => Enum.GetValues(typeof(Material_1)),
+                TerrainMethods.Material_2 => Enum.GetValues(typeof(Material_2)),
+                TerrainMethods.Material_3 => Enum.GetValues(typeof(Material_3)),
+                TerrainMethods.Wetness => Enum.GetValues(typeof(Wetness)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -570,243 +526,174 @@ namespace HaloShaderGenerator.Terrain
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "blending")
+            return (TerrainMethods)category switch
             {
-                vertexFunction = "";
-                pixelFunction = "blend_type";
-            }
-
-            if (methodName == "environment_map")
-            {
-                vertexFunction = "";
-                pixelFunction = "envmap_type";
-            }
-
-            if (methodName == "material_0")
-            {
-                vertexFunction = "";
-                pixelFunction = "material_0_type";
-            }
-
-            if (methodName == "material_1")
-            {
-                vertexFunction = "";
-                pixelFunction = "material_1_type";
-            }
-
-            if (methodName == "material_2")
-            {
-                vertexFunction = "";
-                pixelFunction = "material_2_type";
-            }
-
-            if (methodName == "material_3")
-            {
-                vertexFunction = "";
-                pixelFunction = "material_3_type";
-            }
-
-            if (methodName == "wetness")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_wetness_ps";
-            }
+                TerrainMethods.Blending => "blend_type",
+                TerrainMethods.Environment_Map => "envmap_type",
+                TerrainMethods.Material_0 => "material_0_type",
+                TerrainMethods.Material_1 => "material_1_type",
+                TerrainMethods.Material_2 => "material_2_type",
+                TerrainMethods.Material_3 => "material_3_type",
+                TerrainMethods.Wetness => "calc_wetness_ps",
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "blending")
+            return (TerrainMethods)category switch
             {
-                switch ((Blending)option)
-                {
-                    case Blending.Morph:
-                        vertexFunction = "";
-                        pixelFunction = "morph";
-                        break;
-                    case Blending.Dynamic_Morph:
-                        vertexFunction = "";
-                        pixelFunction = "dynamic";
-                        break;
-                    case Blending.Distance_Blend_Base:
-                        vertexFunction = "";
-                        pixelFunction = "distance_blend_base";
-                        break;
-                }
-            }
+                TerrainMethods.Blending => string.Empty,
+                TerrainMethods.Environment_Map => string.Empty,
+                TerrainMethods.Material_0 => string.Empty,
+                TerrainMethods.Material_1 => string.Empty,
+                TerrainMethods.Material_2 => string.Empty,
+                TerrainMethods.Material_3 => string.Empty,
+                TerrainMethods.Wetness => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "environment_map")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (TerrainMethods)category switch
             {
-                switch ((Environment_Map)option)
+                TerrainMethods.Blending => (Blending)option switch
                 {
-                    case Environment_Map.None:
-                        vertexFunction = "";
-                        pixelFunction = "none";
-                        break;
-                    case Environment_Map.Per_Pixel:
-                        vertexFunction = "";
-                        pixelFunction = "per_pixel";
-                        break;
-                    case Environment_Map.Dynamic:
-                        vertexFunction = "";
-                        pixelFunction = "dynamic";
-                        break;
-                    case Environment_Map.Dynamic_Reach:
-                        vertexFunction = "";
-                        pixelFunction = "dynamic_reach";
-                        break;
-                }
-            }
+                    Blending.Morph => "morph",
+                    Blending.Dynamic_Morph => "dynamic",
+                    Blending.Distance_Blend_Base => "distance_blend_base",
+                    _ => null,
+                },
+                TerrainMethods.Environment_Map => (Environment_Map)option switch
+                {
+                    Environment_Map.None => "none",
+                    Environment_Map.Per_Pixel => "per_pixel",
+                    Environment_Map.Dynamic => "dynamic",
+                    Environment_Map.Dynamic_Reach => "dynamic_reach",
+                    _ => null,
+                },
+                TerrainMethods.Material_0 => (Material_0)option switch
+                {
+                    Material_0.Diffuse_Only => "diffuse_only",
+                    Material_0.Diffuse_Plus_Specular => "diffuse_plus_specular",
+                    Material_0.Off => "off",
+                    Material_0.Diffuse_Only_Plus_Self_Illum => "diffuse_only_plus_self_illum",
+                    Material_0.Diffuse_Plus_Specular_Plus_Self_Illum => "diffuse_plus_specular_plus_self_illum",
+                    Material_0.Diffuse_Plus_Specular_Plus_Heightmap => "diffuse_plus_specular_plus_heightmap",
+                    Material_0.Diffuse_Plus_Two_Detail => "diffuse_plus_two_detail",
+                    Material_0.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap => "diffuse_plus_specular_plus_up_vector_plus_heightmap",
+                    _ => null,
+                },
+                TerrainMethods.Material_1 => (Material_1)option switch
+                {
+                    Material_1.Diffuse_Only => "diffuse_only",
+                    Material_1.Diffuse_Plus_Specular => "diffuse_plus_specular",
+                    Material_1.Off => "off",
+                    Material_1.Diffuse_Only_Plus_Self_Illum => "diffuse_only_plus_self_illum",
+                    Material_1.Diffuse_Plus_Specular_Plus_Self_Illum => "diffuse_plus_specular_plus_self_illum",
+                    Material_1.Diffuse_Plus_Specular_Plus_Heightmap => "diffuse_plus_specular_plus_heightmap",
+                    Material_1.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap => "diffuse_plus_specular_plus_up_vector_plus_heightmap",
+                    _ => null,
+                },
+                TerrainMethods.Material_2 => (Material_2)option switch
+                {
+                    Material_2.Diffuse_Only => "diffuse_only",
+                    Material_2.Diffuse_Plus_Specular => "diffuse_plus_specular",
+                    Material_2.Off => "off",
+                    Material_2.Diffuse_Only_Plus_Self_Illum => "diffuse_only_plus_self_illum",
+                    Material_2.Diffuse_Plus_Specular_Plus_Self_Illum => "diffuse_plus_specular_plus_self_illum",
+                    _ => null,
+                },
+                TerrainMethods.Material_3 => (Material_3)option switch
+                {
+                    Material_3.Off => "off",
+                    Material_3.Diffuse_Only_Four_Material_Shaders_Disable_Detail_Bump => "diffuse_only",
+                    Material_3.Diffuse_Plus_Specular_Four_Material_Shaders_Disable_Detail_Bump => "diffuse_plus_specular",
+                    _ => null,
+                },
+                TerrainMethods.Wetness => (Wetness)option switch
+                {
+                    Wetness.Default => "calc_wetness_default_ps",
+                    Wetness.Proof => "calc_wetness_proof_ps",
+                    Wetness.Flood => "calc_wetness_flood_ps",
+                    Wetness.Ripples => "calc_wetness_ripples_ps",
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "material_0")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (TerrainMethods)category switch
             {
-                switch ((Material_0)option)
+                TerrainMethods.Blending => (Blending)option switch
                 {
-                    case Material_0.Diffuse_Only:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_only";
-                        break;
-                    case Material_0.Diffuse_Plus_Specular:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_plus_specular";
-                        break;
-                    case Material_0.Off:
-                        vertexFunction = "";
-                        pixelFunction = "off";
-                        break;
-                    case Material_0.Diffuse_Only_Plus_Self_Illum:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_only_plus_self_illum";
-                        break;
-                    case Material_0.Diffuse_Plus_Specular_Plus_Self_Illum:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_plus_specular_plus_self_illum";
-                        break;
-                    case Material_0.Diffuse_Plus_Specular_Plus_Heightmap:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_plus_specular_plus_heightmap";
-                        break;
-                    case Material_0.Diffuse_Plus_Two_Detail:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_plus_two_detail";
-                        break;
-                    case Material_0.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_plus_specular_plus_up_vector_plus_heightmap";
-                        break;
-                }
-            }
-
-            if (methodName == "material_1")
-            {
-                switch ((Material_1)option)
+                    Blending.Morph => string.Empty,
+                    Blending.Dynamic_Morph => string.Empty,
+                    Blending.Distance_Blend_Base => string.Empty,
+                    _ => null,
+                },
+                TerrainMethods.Environment_Map => (Environment_Map)option switch
                 {
-                    case Material_1.Diffuse_Only:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_only";
-                        break;
-                    case Material_1.Diffuse_Plus_Specular:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_plus_specular";
-                        break;
-                    case Material_1.Off:
-                        vertexFunction = "";
-                        pixelFunction = "off";
-                        break;
-                    case Material_1.Diffuse_Only_Plus_Self_Illum:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_only_plus_self_illum";
-                        break;
-                    case Material_1.Diffuse_Plus_Specular_Plus_Self_Illum:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_plus_specular_plus_self_illum";
-                        break;
-                    case Material_1.Diffuse_Plus_Specular_Plus_Heightmap:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_plus_specular_plus_heightmap";
-                        break;
-                    case Material_1.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_plus_specular_plus_up_vector_plus_heightmap";
-                        break;
-                }
-            }
-
-            if (methodName == "material_2")
-            {
-                switch ((Material_2)option)
+                    Environment_Map.None => string.Empty,
+                    Environment_Map.Per_Pixel => string.Empty,
+                    Environment_Map.Dynamic => string.Empty,
+                    Environment_Map.Dynamic_Reach => string.Empty,
+                    _ => null,
+                },
+                TerrainMethods.Material_0 => (Material_0)option switch
                 {
-                    case Material_2.Diffuse_Only:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_only";
-                        break;
-                    case Material_2.Diffuse_Plus_Specular:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_plus_specular";
-                        break;
-                    case Material_2.Off:
-                        vertexFunction = "";
-                        pixelFunction = "off";
-                        break;
-                    case Material_2.Diffuse_Only_Plus_Self_Illum:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_only_plus_self_illum";
-                        break;
-                    case Material_2.Diffuse_Plus_Specular_Plus_Self_Illum:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_plus_specular_plus_self_illum";
-                        break;
-                }
-            }
-
-            if (methodName == "material_3")
-            {
-                switch ((Material_3)option)
+                    Material_0.Diffuse_Only => string.Empty,
+                    Material_0.Diffuse_Plus_Specular => string.Empty,
+                    Material_0.Off => string.Empty,
+                    Material_0.Diffuse_Only_Plus_Self_Illum => string.Empty,
+                    Material_0.Diffuse_Plus_Specular_Plus_Self_Illum => string.Empty,
+                    Material_0.Diffuse_Plus_Specular_Plus_Heightmap => string.Empty,
+                    Material_0.Diffuse_Plus_Two_Detail => string.Empty,
+                    Material_0.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap => string.Empty,
+                    _ => null,
+                },
+                TerrainMethods.Material_1 => (Material_1)option switch
                 {
-                    case Material_3.Off:
-                        vertexFunction = "";
-                        pixelFunction = "off";
-                        break;
-                    case Material_3.Diffuse_Only_Four_Material_Shaders_Disable_Detail_Bump:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_only";
-                        break;
-                    case Material_3.Diffuse_Plus_Specular_Four_Material_Shaders_Disable_Detail_Bump:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_plus_specular";
-                        break;
-                }
-            }
-
-            if (methodName == "wetness")
-            {
-                switch ((Wetness)option)
+                    Material_1.Diffuse_Only => string.Empty,
+                    Material_1.Diffuse_Plus_Specular => string.Empty,
+                    Material_1.Off => string.Empty,
+                    Material_1.Diffuse_Only_Plus_Self_Illum => string.Empty,
+                    Material_1.Diffuse_Plus_Specular_Plus_Self_Illum => string.Empty,
+                    Material_1.Diffuse_Plus_Specular_Plus_Heightmap => string.Empty,
+                    Material_1.Diffuse_Plus_Specular_Plus_Up_Vector_Plus_Heightmap => string.Empty,
+                    _ => null,
+                },
+                TerrainMethods.Material_2 => (Material_2)option switch
                 {
-                    case Wetness.Default:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_default_ps";
-                        break;
-                    case Wetness.Proof:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_proof_ps";
-                        break;
-                    case Wetness.Flood:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_flood_ps";
-                        break;
-                    case Wetness.Ripples:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_ripples_ps";
-                        break;
-                }
-            }
+                    Material_2.Diffuse_Only => string.Empty,
+                    Material_2.Diffuse_Plus_Specular => string.Empty,
+                    Material_2.Off => string.Empty,
+                    Material_2.Diffuse_Only_Plus_Self_Illum => string.Empty,
+                    Material_2.Diffuse_Plus_Specular_Plus_Self_Illum => string.Empty,
+                    _ => null,
+                },
+                TerrainMethods.Material_3 => (Material_3)option switch
+                {
+                    Material_3.Off => string.Empty,
+                    Material_3.Diffuse_Only_Four_Material_Shaders_Disable_Detail_Bump => string.Empty,
+                    Material_3.Diffuse_Plus_Specular_Four_Material_Shaders_Disable_Detail_Bump => string.Empty,
+                    _ => null,
+                },
+                TerrainMethods.Wetness => (Wetness)option switch
+                {
+                    Wetness.Default => string.Empty,
+                    Wetness.Proof => string.Empty,
+                    Wetness.Flood => string.Empty,
+                    Wetness.Ripples => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

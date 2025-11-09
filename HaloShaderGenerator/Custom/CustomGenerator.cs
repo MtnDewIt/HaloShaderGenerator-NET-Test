@@ -1,88 +1,60 @@
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Custom
 {
     public class CustomGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(CustomMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(CustomMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((CustomMethods)methodIndex)
+            return (CustomMethods)methodIndex switch
             {
-                case CustomMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo)).Length;
-                case CustomMethods.Bump_Mapping:
-                    return Enum.GetValues(typeof(Bump_Mapping)).Length;
-                case CustomMethods.Alpha_Test:
-                    return Enum.GetValues(typeof(Alpha_Test)).Length;
-                case CustomMethods.Specular_Mask:
-                    return Enum.GetValues(typeof(Specular_Mask)).Length;
-                case CustomMethods.Material_Model:
-                    return Enum.GetValues(typeof(Material_Model)).Length;
-                case CustomMethods.Environment_Mapping:
-                    return Enum.GetValues(typeof(Environment_Mapping)).Length;
-                case CustomMethods.Self_Illumination:
-                    return Enum.GetValues(typeof(Self_Illumination)).Length;
-                case CustomMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode)).Length;
-                case CustomMethods.Parallax:
-                    return Enum.GetValues(typeof(Parallax)).Length;
-                case CustomMethods.Misc:
-                    return Enum.GetValues(typeof(Misc)).Length;
-                case CustomMethods.Wetness:
-                    return Enum.GetValues(typeof(Wetness)).Length;
-            }
-
-            return -1;
+                CustomMethods.Albedo => Enum.GetValues(typeof(Albedo)).Length,
+                CustomMethods.Bump_Mapping => Enum.GetValues(typeof(Bump_Mapping)).Length,
+                CustomMethods.Alpha_Test => Enum.GetValues(typeof(Alpha_Test)).Length,
+                CustomMethods.Specular_Mask => Enum.GetValues(typeof(Specular_Mask)).Length,
+                CustomMethods.Material_Model => Enum.GetValues(typeof(Material_Model)).Length,
+                CustomMethods.Environment_Mapping => Enum.GetValues(typeof(Environment_Mapping)).Length,
+                CustomMethods.Self_Illumination => Enum.GetValues(typeof(Self_Illumination)).Length,
+                CustomMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)).Length,
+                CustomMethods.Parallax => Enum.GetValues(typeof(Parallax)).Length,
+                CustomMethods.Misc => Enum.GetValues(typeof(Misc)).Length,
+                CustomMethods.Wetness => Enum.GetValues(typeof(Wetness)).Length,
+                _ => -1,
+            };
         }
 
         public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Shadow_Generate:
-                    return 2;
-                default:
-                    return -1;
-            }
+                ShaderStage.Shadow_Generate => 2,
+                _ => -1,
+            };
         }
 
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Shadow_Generate:
-                    return true;
-                default:
-                    return false;
-            }
+                ShaderStage.Shadow_Generate => true,
+                _ => false,
+            };
         }
 
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Shadow_Generate:
-                    return true;
-                default:
-                    return false;
-            }
+                ShaderStage.Shadow_Generate => true,
+                _ => false,
+            };
         }
 
-        public bool IsAutoMacro()
-        {
-            return false;
-        }
+        public bool IsAutoMacro() => false;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -582,40 +554,25 @@ namespace HaloShaderGenerator.Custom
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(CustomMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(CustomMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((CustomMethods)methodIndex)
+            return (CustomMethods)methodIndex switch
             {
-                case CustomMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo));
-                case CustomMethods.Bump_Mapping:
-                    return Enum.GetValues(typeof(Bump_Mapping));
-                case CustomMethods.Alpha_Test:
-                    return Enum.GetValues(typeof(Alpha_Test));
-                case CustomMethods.Specular_Mask:
-                    return Enum.GetValues(typeof(Specular_Mask));
-                case CustomMethods.Material_Model:
-                    return Enum.GetValues(typeof(Material_Model));
-                case CustomMethods.Environment_Mapping:
-                    return Enum.GetValues(typeof(Environment_Mapping));
-                case CustomMethods.Self_Illumination:
-                    return Enum.GetValues(typeof(Self_Illumination));
-                case CustomMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode));
-                case CustomMethods.Parallax:
-                    return Enum.GetValues(typeof(Parallax));
-                case CustomMethods.Misc:
-                    return Enum.GetValues(typeof(Misc));
-                case CustomMethods.Wetness:
-                    return Enum.GetValues(typeof(Wetness));
-            }
-
-            return null;
+                CustomMethods.Albedo => Enum.GetValues(typeof(Albedo)),
+                CustomMethods.Bump_Mapping => Enum.GetValues(typeof(Bump_Mapping)),
+                CustomMethods.Alpha_Test => Enum.GetValues(typeof(Alpha_Test)),
+                CustomMethods.Specular_Mask => Enum.GetValues(typeof(Specular_Mask)),
+                CustomMethods.Material_Model => Enum.GetValues(typeof(Material_Model)),
+                CustomMethods.Environment_Mapping => Enum.GetValues(typeof(Environment_Mapping)),
+                CustomMethods.Self_Illumination => Enum.GetValues(typeof(Self_Illumination)),
+                CustomMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)),
+                CustomMethods.Parallax => Enum.GetValues(typeof(Parallax)),
+                CustomMethods.Misc => Enum.GetValues(typeof(Misc)),
+                CustomMethods.Wetness => Enum.GetValues(typeof(Wetness)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -653,419 +610,276 @@ namespace HaloShaderGenerator.Custom
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (CustomMethods)category switch
             {
-                vertexFunction = "calc_albedo_vs";
-                pixelFunction = "calc_albedo_ps";
-            }
-
-            if (methodName == "bump_mapping")
-            {
-                vertexFunction = "calc_bumpmap_vs";
-                pixelFunction = "calc_bumpmap_ps";
-            }
-
-            if (methodName == "alpha_test")
-            {
-                vertexFunction = "alpha_test";
-                pixelFunction = "calc_alpha_test_ps";
-            }
-
-            if (methodName == "specular_mask")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_specular_mask_ps";
-            }
-
-            if (methodName == "material_model")
-            {
-                vertexFunction = "";
-                pixelFunction = "material_type";
-            }
-
-            if (methodName == "environment_mapping")
-            {
-                vertexFunction = "";
-                pixelFunction = "envmap_type";
-            }
-
-            if (methodName == "self_illumination")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_self_illumination_ps";
-            }
-
-            if (methodName == "blend_mode")
-            {
-                vertexFunction = "";
-                pixelFunction = "blend_type";
-            }
-
-            if (methodName == "parallax")
-            {
-                vertexFunction = "calc_parallax_vs";
-                pixelFunction = "calc_parallax_ps";
-            }
-
-            if (methodName == "misc")
-            {
-                vertexFunction = "";
-                pixelFunction = "bitmap_rotation";
-            }
-
-            if (methodName == "wetness")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_wetness_ps";
-            }
+                CustomMethods.Albedo => "calc_albedo_ps",
+                CustomMethods.Bump_Mapping => "calc_bumpmap_ps",
+                CustomMethods.Alpha_Test => "calc_alpha_test_ps",
+                CustomMethods.Specular_Mask => "calc_specular_mask_ps",
+                CustomMethods.Material_Model => "material_type",
+                CustomMethods.Environment_Mapping => "envmap_type",
+                CustomMethods.Self_Illumination => "calc_self_illumination_ps",
+                CustomMethods.Blend_Mode => "blend_type",
+                CustomMethods.Parallax => "calc_parallax_ps",
+                CustomMethods.Misc => "bitmap_rotation",
+                CustomMethods.Wetness => "calc_wetness_ps",
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (CustomMethods)category switch
             {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Default:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_default_ps";
-                        break;
-                    case Albedo.Detail_Blend:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_detail_blend_ps";
-                        break;
-                    case Albedo.Constant_Color:
-                        vertexFunction = "calc_albedo_constant_color_vs";
-                        pixelFunction = "calc_albedo_constant_color_ps";
-                        break;
-                    case Albedo.Two_Change_Color:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_change_color_ps";
-                        break;
-                    case Albedo.Four_Change_Color:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_four_change_color_ps";
-                        break;
-                    case Albedo.Three_Detail_Blend:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_three_detail_blend_ps";
-                        break;
-                    case Albedo.Two_Detail_Overlay:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_detail_overlay_ps";
-                        break;
-                    case Albedo.Two_Detail:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_detail_ps";
-                        break;
-                    case Albedo.Color_Mask:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_color_mask_ps";
-                        break;
-                    case Albedo.Two_Detail_Black_Point:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_detail_black_point_ps";
-                        break;
-                    case Albedo.Waterfall:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_waterfall_ps";
-                        break;
-                    case Albedo.Multiply_Map:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_multiply_map_ps";
-                        break;
-                    case Albedo.Simple:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_simple_ps";
-                        break;
-                }
-            }
+                CustomMethods.Albedo => "calc_albedo_vs",
+                CustomMethods.Bump_Mapping => "calc_bumpmap_vs",
+                CustomMethods.Alpha_Test => "alpha_test",
+                CustomMethods.Specular_Mask => string.Empty,
+                CustomMethods.Material_Model => string.Empty,
+                CustomMethods.Environment_Mapping => string.Empty,
+                CustomMethods.Self_Illumination => string.Empty,
+                CustomMethods.Blend_Mode => string.Empty,
+                CustomMethods.Parallax => "calc_parallax_vs",
+                CustomMethods.Misc => string.Empty,
+                CustomMethods.Wetness => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "bump_mapping")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (CustomMethods)category switch
             {
-                switch ((Bump_Mapping)option)
+                CustomMethods.Albedo => (Albedo)option switch
                 {
-                    case Bump_Mapping.Off:
-                        vertexFunction = "calc_bumpmap_off_vs";
-                        pixelFunction = "calc_bumpmap_off_ps";
-                        break;
-                    case Bump_Mapping.Standard:
-                        vertexFunction = "calc_bumpmap_default_vs";
-                        pixelFunction = "calc_bumpmap_default_ps";
-                        break;
-                    case Bump_Mapping.Detail:
-                        vertexFunction = "calc_bumpmap_detail_vs";
-                        pixelFunction = "calc_bumpmap_detail_ps";
-                        break;
-                }
-            }
+                    Albedo.Default => "calc_albedo_default_ps",
+                    Albedo.Detail_Blend => "calc_albedo_detail_blend_ps",
+                    Albedo.Constant_Color => "calc_albedo_constant_color_ps",
+                    Albedo.Two_Change_Color => "calc_albedo_two_change_color_ps",
+                    Albedo.Four_Change_Color => "calc_albedo_four_change_color_ps",
+                    Albedo.Three_Detail_Blend => "calc_albedo_three_detail_blend_ps",
+                    Albedo.Two_Detail_Overlay => "calc_albedo_two_detail_overlay_ps",
+                    Albedo.Two_Detail => "calc_albedo_two_detail_ps",
+                    Albedo.Color_Mask => "calc_albedo_color_mask_ps",
+                    Albedo.Two_Detail_Black_Point => "calc_albedo_two_detail_black_point_ps",
+                    Albedo.Waterfall => "calc_albedo_waterfall_ps",
+                    Albedo.Multiply_Map => "calc_albedo_multiply_map_ps",
+                    Albedo.Simple => "calc_albedo_simple_ps",
+                    _ => null,
+                },
+                CustomMethods.Bump_Mapping => (Bump_Mapping)option switch
+                {
+                    Bump_Mapping.Off => "calc_bumpmap_off_ps",
+                    Bump_Mapping.Standard => "calc_bumpmap_default_ps",
+                    Bump_Mapping.Detail => "calc_bumpmap_detail_ps",
+                    _ => null,
+                },
+                CustomMethods.Alpha_Test => (Alpha_Test)option switch
+                {
+                    Alpha_Test.None => "calc_alpha_test_off_ps",
+                    Alpha_Test.Simple => "calc_alpha_test_on_ps",
+                    Alpha_Test.Multiply_Map => "calc_alpha_test_multiply_map_ps",
+                    _ => null,
+                },
+                CustomMethods.Specular_Mask => (Specular_Mask)option switch
+                {
+                    Specular_Mask.No_Specular_Mask => "calc_specular_mask_no_specular_mask_ps",
+                    Specular_Mask.Specular_Mask_From_Diffuse => "calc_specular_mask_from_diffuse_ps",
+                    Specular_Mask.Specular_Mask_From_Texture => "calc_specular_mask_texture_ps",
+                    Specular_Mask.Specular_Mask_From_Color_Texture => "calc_specular_mask_color_texture_ps",
+                    Specular_Mask.Specular_Mask_Mult_Diffuse => "calc_specular_mask_mult_texture_ps",
+                    _ => null,
+                },
+                CustomMethods.Material_Model => (Material_Model)option switch
+                {
+                    Material_Model.Diffuse_Only => "diffuse_only",
+                    Material_Model.Two_Lobe_Phong => "two_lobe_phong",
+                    Material_Model.Foliage => "foliage",
+                    Material_Model.None => "none",
+                    Material_Model.Custom_Specular => "custom_specular",
+                    Material_Model.Two_Lobe_Phong_Reach => "two_lobe_phong_reach",
+                    _ => null,
+                },
+                CustomMethods.Environment_Mapping => (Environment_Mapping)option switch
+                {
+                    Environment_Mapping.None => "none",
+                    Environment_Mapping.Per_Pixel => "per_pixel",
+                    Environment_Mapping.Dynamic => "dynamic",
+                    Environment_Mapping.From_Flat_Texture => "from_flat_texture",
+                    Environment_Mapping.Per_Pixel_Mip => "per_pixel_mip",
+                    Environment_Mapping.Dynamic_Reach => "dynamic_reach",
+                    _ => null,
+                },
+                CustomMethods.Self_Illumination => (Self_Illumination)option switch
+                {
+                    Self_Illumination.Off => "calc_self_illumination_none_ps",
+                    Self_Illumination.Simple => "calc_self_illumination_simple_ps",
+                    Self_Illumination._3_Channel_Self_Illum => "calc_self_illumination_three_channel_ps",
+                    Self_Illumination.Plasma => "calc_self_illumination_plasma_ps",
+                    Self_Illumination.From_Diffuse => "calc_self_illumination_from_albedo_ps",
+                    Self_Illumination.Illum_Detail => "calc_self_illumination_detail_ps",
+                    Self_Illumination.Meter => "calc_self_illumination_meter_ps",
+                    Self_Illumination.Self_Illum_Times_Diffuse => "calc_self_illumination_times_diffuse_ps",
+                    Self_Illumination.Window_Room => "calc_self_illumination_window_room_ps",
+                    _ => null,
+                },
+                CustomMethods.Blend_Mode => (Blend_Mode)option switch
+                {
+                    Blend_Mode.Opaque => "opaque",
+                    Blend_Mode.Additive => "additive",
+                    Blend_Mode.Multiply => "multiply",
+                    Blend_Mode.Alpha_Blend => "alpha_blend",
+                    Blend_Mode.Double_Multiply => "double_multiply",
+                    _ => null,
+                },
+                CustomMethods.Parallax => (Parallax)option switch
+                {
+                    Parallax.Off => "calc_parallax_off_ps",
+                    Parallax.Simple => "calc_parallax_simple_ps",
+                    Parallax.Interpolated => "calc_parallax_interpolated_ps",
+                    Parallax.Simple_Detail => "calc_parallax_simple_detail_ps",
+                    _ => null,
+                },
+                CustomMethods.Misc => (Misc)option switch
+                {
+                    Misc.First_Person_Never => "0",
+                    Misc.First_Person_Sometimes => "0",
+                    Misc.First_Person_Always => "0",
+                    Misc.First_Person_Never_With_Rotating_Bitmaps => "1",
+                    Misc.Always_Calc_Albedo => "2",
+                    Misc.Default => "0",
+                    Misc.Rotating_Bitmaps_Super_Slow => "1",
+                    _ => null,
+                },
+                CustomMethods.Wetness => (Wetness)option switch
+                {
+                    Wetness.Default => "calc_wetness_default_ps",
+                    Wetness.Flood => "calc_wetness_flood_ps",
+                    Wetness.Proof => "calc_wetness_proof_ps",
+                    Wetness.Ripples => "calc_wetness_ripples_ps",
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "alpha_test")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (CustomMethods)category switch
             {
-                switch ((Alpha_Test)option)
+                CustomMethods.Albedo => (Albedo)option switch
                 {
-                    case Alpha_Test.None:
-                        vertexFunction = "off";
-                        pixelFunction = "calc_alpha_test_off_ps";
-                        break;
-                    case Alpha_Test.Simple:
-                        vertexFunction = "on";
-                        pixelFunction = "calc_alpha_test_on_ps";
-                        break;
-                    case Alpha_Test.Multiply_Map:
-                        vertexFunction = "multmap";
-                        pixelFunction = "calc_alpha_test_multiply_map_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "specular_mask")
-            {
-                switch ((Specular_Mask)option)
+                    Albedo.Default => "calc_albedo_default_vs",
+                    Albedo.Detail_Blend => "calc_albedo_default_vs",
+                    Albedo.Constant_Color => "calc_albedo_constant_color_vs",
+                    Albedo.Two_Change_Color => "calc_albedo_default_vs",
+                    Albedo.Four_Change_Color => "calc_albedo_default_vs",
+                    Albedo.Three_Detail_Blend => "calc_albedo_default_vs",
+                    Albedo.Two_Detail_Overlay => "calc_albedo_default_vs",
+                    Albedo.Two_Detail => "calc_albedo_default_vs",
+                    Albedo.Color_Mask => "calc_albedo_default_vs",
+                    Albedo.Two_Detail_Black_Point => "calc_albedo_default_vs",
+                    Albedo.Waterfall => "calc_albedo_default_vs",
+                    Albedo.Multiply_Map => "calc_albedo_default_vs",
+                    Albedo.Simple => "calc_albedo_default_vs",
+                    _ => null,
+                },
+                CustomMethods.Bump_Mapping => (Bump_Mapping)option switch
                 {
-                    case Specular_Mask.No_Specular_Mask:
-                        vertexFunction = "";
-                        pixelFunction = "calc_specular_mask_no_specular_mask_ps";
-                        break;
-                    case Specular_Mask.Specular_Mask_From_Diffuse:
-                        vertexFunction = "";
-                        pixelFunction = "calc_specular_mask_from_diffuse_ps";
-                        break;
-                    case Specular_Mask.Specular_Mask_From_Texture:
-                        vertexFunction = "";
-                        pixelFunction = "calc_specular_mask_texture_ps";
-                        break;
-                    case Specular_Mask.Specular_Mask_From_Color_Texture:
-                        vertexFunction = "";
-                        pixelFunction = "calc_specular_mask_color_texture_ps";
-                        break;
-                    case Specular_Mask.Specular_Mask_Mult_Diffuse:
-                        vertexFunction = "";
-                        pixelFunction = "calc_specular_mask_mult_texture_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "material_model")
-            {
-                switch ((Material_Model)option)
+                    Bump_Mapping.Off => "calc_bumpmap_off_vs",
+                    Bump_Mapping.Standard => "calc_bumpmap_default_vs",
+                    Bump_Mapping.Detail => "calc_bumpmap_detail_vs",
+                    _ => null,
+                },
+                CustomMethods.Alpha_Test => (Alpha_Test)option switch
                 {
-                    case Material_Model.Diffuse_Only:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_only";
-                        break;
-                    case Material_Model.Two_Lobe_Phong:
-                        vertexFunction = "";
-                        pixelFunction = "two_lobe_phong";
-                        break;
-                    case Material_Model.Foliage:
-                        vertexFunction = "";
-                        pixelFunction = "foliage";
-                        break;
-                    case Material_Model.None:
-                        vertexFunction = "";
-                        pixelFunction = "none";
-                        break;
-                    case Material_Model.Custom_Specular:
-                        vertexFunction = "";
-                        pixelFunction = "custom_specular";
-                        break;
-                    case Material_Model.Two_Lobe_Phong_Reach:
-                        vertexFunction = "";
-                        pixelFunction = "two_lobe_phong_reach";
-                        break;
-                }
-            }
-
-            if (methodName == "environment_mapping")
-            {
-                switch ((Environment_Mapping)option)
+                    Alpha_Test.None => "off",
+                    Alpha_Test.Simple => "on",
+                    Alpha_Test.Multiply_Map => "multmap",
+                    _ => null,
+                },
+                CustomMethods.Specular_Mask => (Specular_Mask)option switch
                 {
-                    case Environment_Mapping.None:
-                        vertexFunction = "";
-                        pixelFunction = "none";
-                        break;
-                    case Environment_Mapping.Per_Pixel:
-                        vertexFunction = "";
-                        pixelFunction = "per_pixel";
-                        break;
-                    case Environment_Mapping.Dynamic:
-                        vertexFunction = "";
-                        pixelFunction = "dynamic";
-                        break;
-                    case Environment_Mapping.From_Flat_Texture:
-                        vertexFunction = "";
-                        pixelFunction = "from_flat_texture";
-                        break;
-                    case Environment_Mapping.Per_Pixel_Mip:
-                        vertexFunction = "";
-                        pixelFunction = "per_pixel_mip";
-                        break;
-                    case Environment_Mapping.Dynamic_Reach:
-                        vertexFunction = "";
-                        pixelFunction = "dynamic_reach";
-                        break;
-                }
-            }
-
-            if (methodName == "self_illumination")
-            {
-                switch ((Self_Illumination)option)
+                    Specular_Mask.No_Specular_Mask => string.Empty,
+                    Specular_Mask.Specular_Mask_From_Diffuse => string.Empty,
+                    Specular_Mask.Specular_Mask_From_Texture => string.Empty,
+                    Specular_Mask.Specular_Mask_From_Color_Texture => string.Empty,
+                    Specular_Mask.Specular_Mask_Mult_Diffuse => string.Empty,
+                    _ => null,
+                },
+                CustomMethods.Material_Model => (Material_Model)option switch
                 {
-                    case Self_Illumination.Off:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_none_ps";
-                        break;
-                    case Self_Illumination.Simple:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_simple_ps";
-                        break;
-                    case Self_Illumination._3_Channel_Self_Illum:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_three_channel_ps";
-                        break;
-                    case Self_Illumination.Plasma:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_plasma_ps";
-                        break;
-                    case Self_Illumination.From_Diffuse:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_from_albedo_ps";
-                        break;
-                    case Self_Illumination.Illum_Detail:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_detail_ps";
-                        break;
-                    case Self_Illumination.Meter:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_meter_ps";
-                        break;
-                    case Self_Illumination.Self_Illum_Times_Diffuse:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_times_diffuse_ps";
-                        break;
-                    case Self_Illumination.Window_Room:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_window_room_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "blend_mode")
-            {
-                switch ((Blend_Mode)option)
+                    Material_Model.Diffuse_Only => string.Empty,
+                    Material_Model.Two_Lobe_Phong => string.Empty,
+                    Material_Model.Foliage => string.Empty,
+                    Material_Model.None => string.Empty,
+                    Material_Model.Custom_Specular => string.Empty,
+                    Material_Model.Two_Lobe_Phong_Reach => string.Empty,
+                    _ => null,
+                },
+                CustomMethods.Environment_Mapping => (Environment_Mapping)option switch
                 {
-                    case Blend_Mode.Opaque:
-                        vertexFunction = "";
-                        pixelFunction = "opaque";
-                        break;
-                    case Blend_Mode.Additive:
-                        vertexFunction = "";
-                        pixelFunction = "additive";
-                        break;
-                    case Blend_Mode.Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "multiply";
-                        break;
-                    case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "";
-                        pixelFunction = "alpha_blend";
-                        break;
-                    case Blend_Mode.Double_Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "double_multiply";
-                        break;
-                }
-            }
-
-            if (methodName == "parallax")
-            {
-                switch ((Parallax)option)
+                    Environment_Mapping.None => string.Empty,
+                    Environment_Mapping.Per_Pixel => string.Empty,
+                    Environment_Mapping.Dynamic => string.Empty,
+                    Environment_Mapping.From_Flat_Texture => string.Empty,
+                    Environment_Mapping.Per_Pixel_Mip => string.Empty,
+                    Environment_Mapping.Dynamic_Reach => string.Empty,
+                    _ => null,
+                },
+                CustomMethods.Self_Illumination => (Self_Illumination)option switch
                 {
-                    case Parallax.Off:
-                        vertexFunction = "calc_parallax_off_vs";
-                        pixelFunction = "calc_parallax_off_ps";
-                        break;
-                    case Parallax.Simple:
-                        vertexFunction = "calc_parallax_simple_vs";
-                        pixelFunction = "calc_parallax_simple_ps";
-                        break;
-                    case Parallax.Interpolated:
-                        vertexFunction = "calc_parallax_interpolated_vs";
-                        pixelFunction = "calc_parallax_interpolated_ps";
-                        break;
-                    case Parallax.Simple_Detail:
-                        vertexFunction = "calc_parallax_simple_vs";
-                        pixelFunction = "calc_parallax_simple_detail_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "misc")
-            {
-                switch ((Misc)option)
+                    Self_Illumination.Off => string.Empty,
+                    Self_Illumination.Simple => string.Empty,
+                    Self_Illumination._3_Channel_Self_Illum => string.Empty,
+                    Self_Illumination.Plasma => string.Empty,
+                    Self_Illumination.From_Diffuse => string.Empty,
+                    Self_Illumination.Illum_Detail => string.Empty,
+                    Self_Illumination.Meter => string.Empty,
+                    Self_Illumination.Self_Illum_Times_Diffuse => string.Empty,
+                    Self_Illumination.Window_Room => string.Empty,
+                    _ => null,
+                },
+                CustomMethods.Blend_Mode => (Blend_Mode)option switch
                 {
-                    case Misc.First_Person_Never:
-                        vertexFunction = "";
-                        pixelFunction = "0";
-                        break;
-                    case Misc.First_Person_Sometimes:
-                        vertexFunction = "";
-                        pixelFunction = "0";
-                        break;
-                    case Misc.First_Person_Always:
-                        vertexFunction = "";
-                        pixelFunction = "0";
-                        break;
-                    case Misc.First_Person_Never_With_Rotating_Bitmaps:
-                        vertexFunction = "";
-                        pixelFunction = "1";
-                        break;
-                    case Misc.Always_Calc_Albedo:
-                        vertexFunction = "";
-                        pixelFunction = "2";
-                        break;
-                    case Misc.Default:
-                        vertexFunction = "";
-                        pixelFunction = "0";
-                        break;
-                    case Misc.Rotating_Bitmaps_Super_Slow:
-                        vertexFunction = "";
-                        pixelFunction = "1";
-                        break;
-                }
-            }
-
-            if (methodName == "wetness")
-            {
-                switch ((Wetness)option)
+                    Blend_Mode.Opaque => string.Empty,
+                    Blend_Mode.Additive => string.Empty,
+                    Blend_Mode.Multiply => string.Empty,
+                    Blend_Mode.Alpha_Blend => string.Empty,
+                    Blend_Mode.Double_Multiply => string.Empty,
+                    _ => null,
+                },
+                CustomMethods.Parallax => (Parallax)option switch
                 {
-                    case Wetness.Default:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_default_ps";
-                        break;
-                    case Wetness.Flood:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_flood_ps";
-                        break;
-                    case Wetness.Proof:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_proof_ps";
-                        break;
-                    case Wetness.Ripples:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_ripples_ps";
-                        break;
-                }
-            }
+                    Parallax.Off => "calc_parallax_off_vs",
+                    Parallax.Simple => "calc_parallax_simple_vs",
+                    Parallax.Interpolated => "calc_parallax_interpolated_vs",
+                    Parallax.Simple_Detail => "calc_parallax_simple_vs",
+                    _ => null,
+                },
+                CustomMethods.Misc => (Misc)option switch
+                {
+                    Misc.First_Person_Never => string.Empty,
+                    Misc.First_Person_Sometimes => string.Empty,
+                    Misc.First_Person_Always => string.Empty,
+                    Misc.First_Person_Never_With_Rotating_Bitmaps => string.Empty,
+                    Misc.Always_Calc_Albedo => string.Empty,
+                    Misc.Default => string.Empty,
+                    Misc.Rotating_Bitmaps_Super_Slow => string.Empty,
+                    _ => null,
+                },
+                CustomMethods.Wetness => (Wetness)option switch
+                {
+                    Wetness.Default => string.Empty,
+                    Wetness.Flood => string.Empty,
+                    Wetness.Proof => string.Empty,
+                    Wetness.Ripples => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

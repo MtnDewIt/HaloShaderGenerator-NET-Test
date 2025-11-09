@@ -1,77 +1,37 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Water
 {
     public class WaterGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(WaterMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(WaterMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((WaterMethods)methodIndex)
+            return (WaterMethods)methodIndex switch
             {
-                case WaterMethods.Waveshape:
-                    return Enum.GetValues(typeof(Waveshape)).Length;
-                case WaterMethods.Watercolor:
-                    return Enum.GetValues(typeof(Watercolor)).Length;
-                case WaterMethods.Reflection:
-                    return Enum.GetValues(typeof(Reflection)).Length;
-                case WaterMethods.Refraction:
-                    return Enum.GetValues(typeof(Refraction)).Length;
-                case WaterMethods.Bankalpha:
-                    return Enum.GetValues(typeof(Bankalpha)).Length;
-                case WaterMethods.Appearance:
-                    return Enum.GetValues(typeof(Appearance)).Length;
-                case WaterMethods.Global_Shape:
-                    return Enum.GetValues(typeof(Global_Shape)).Length;
-                case WaterMethods.Foam:
-                    return Enum.GetValues(typeof(Foam)).Length;
-                case WaterMethods.Reach_Compatibility:
-                    return Enum.GetValues(typeof(Reach_Compatibility)).Length;
-            }
-
-            return -1;
+                WaterMethods.Waveshape => Enum.GetValues(typeof(Waveshape)).Length,
+                WaterMethods.Watercolor => Enum.GetValues(typeof(Watercolor)).Length,
+                WaterMethods.Reflection => Enum.GetValues(typeof(Reflection)).Length,
+                WaterMethods.Refraction => Enum.GetValues(typeof(Refraction)).Length,
+                WaterMethods.Bankalpha => Enum.GetValues(typeof(Bankalpha)).Length,
+                WaterMethods.Appearance => Enum.GetValues(typeof(Appearance)).Length,
+                WaterMethods.Global_Shape => Enum.GetValues(typeof(Global_Shape)).Length,
+                WaterMethods.Foam => Enum.GetValues(typeof(Foam)).Length,
+                WaterMethods.Reach_Compatibility => Enum.GetValues(typeof(Reach_Compatibility)).Length,
+                _ => -1,
+            };
         }
 
-        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return -1;
-            }
-        }
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint) => -1;
 
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
 
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsPixelShaderShared(ShaderStage entryPoint) => false;
 
-        public bool IsAutoMacro()
-        {
-            return true;
-        }
+        public bool IsAutoMacro() => true;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -340,36 +300,23 @@ namespace HaloShaderGenerator.Water
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(WaterMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(WaterMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((WaterMethods)methodIndex)
+            return (WaterMethods)methodIndex switch
             {
-                case WaterMethods.Waveshape:
-                    return Enum.GetValues(typeof(Waveshape));
-                case WaterMethods.Watercolor:
-                    return Enum.GetValues(typeof(Watercolor));
-                case WaterMethods.Reflection:
-                    return Enum.GetValues(typeof(Reflection));
-                case WaterMethods.Refraction:
-                    return Enum.GetValues(typeof(Refraction));
-                case WaterMethods.Bankalpha:
-                    return Enum.GetValues(typeof(Bankalpha));
-                case WaterMethods.Appearance:
-                    return Enum.GetValues(typeof(Appearance));
-                case WaterMethods.Global_Shape:
-                    return Enum.GetValues(typeof(Global_Shape));
-                case WaterMethods.Foam:
-                    return Enum.GetValues(typeof(Foam));
-                case WaterMethods.Reach_Compatibility:
-                    return Enum.GetValues(typeof(Reach_Compatibility));
-            }
-
-            return null;
+                WaterMethods.Waveshape => Enum.GetValues(typeof(Waveshape)),
+                WaterMethods.Watercolor => Enum.GetValues(typeof(Watercolor)),
+                WaterMethods.Reflection => Enum.GetValues(typeof(Reflection)),
+                WaterMethods.Refraction => Enum.GetValues(typeof(Refraction)),
+                WaterMethods.Bankalpha => Enum.GetValues(typeof(Bankalpha)),
+                WaterMethods.Appearance => Enum.GetValues(typeof(Appearance)),
+                WaterMethods.Global_Shape => Enum.GetValues(typeof(Global_Shape)),
+                WaterMethods.Foam => Enum.GetValues(typeof(Foam)),
+                WaterMethods.Reach_Compatibility => Enum.GetValues(typeof(Reach_Compatibility)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -397,237 +344,178 @@ namespace HaloShaderGenerator.Water
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "waveshape")
+            return (WaterMethods)category switch
             {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "watercolor")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "reflection")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "refraction")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "bankalpha")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "appearance")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "global_shape")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "foam")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "reach_compatibility")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
+                WaterMethods.Waveshape => string.Empty,
+                WaterMethods.Watercolor => string.Empty,
+                WaterMethods.Reflection => string.Empty,
+                WaterMethods.Refraction => string.Empty,
+                WaterMethods.Bankalpha => string.Empty,
+                WaterMethods.Appearance => string.Empty,
+                WaterMethods.Global_Shape => string.Empty,
+                WaterMethods.Foam => string.Empty,
+                WaterMethods.Reach_Compatibility => string.Empty,
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "waveshape")
+            return (WaterMethods)category switch
             {
-                switch ((Waveshape)option)
-                {
-                    case Waveshape.Default:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Waveshape.None:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Waveshape.Bump:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                WaterMethods.Waveshape => string.Empty,
+                WaterMethods.Watercolor => string.Empty,
+                WaterMethods.Reflection => string.Empty,
+                WaterMethods.Refraction => string.Empty,
+                WaterMethods.Bankalpha => string.Empty,
+                WaterMethods.Appearance => string.Empty,
+                WaterMethods.Global_Shape => string.Empty,
+                WaterMethods.Foam => string.Empty,
+                WaterMethods.Reach_Compatibility => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "watercolor")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (WaterMethods)category switch
             {
-                switch ((Watercolor)option)
+                WaterMethods.Waveshape => (Waveshape)option switch
                 {
-                    case Watercolor.Pure:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Watercolor.Texture:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                    Waveshape.Default => string.Empty,
+                    Waveshape.None => string.Empty,
+                    Waveshape.Bump => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Watercolor => (Watercolor)option switch
+                {
+                    Watercolor.Pure => string.Empty,
+                    Watercolor.Texture => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Reflection => (Reflection)option switch
+                {
+                    Reflection.None => string.Empty,
+                    Reflection.Static => string.Empty,
+                    Reflection.Dynamic => string.Empty,
+                    Reflection.Static_Ssr => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Refraction => (Refraction)option switch
+                {
+                    Refraction.None => string.Empty,
+                    Refraction.Dynamic => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Bankalpha => (Bankalpha)option switch
+                {
+                    Bankalpha.None => string.Empty,
+                    Bankalpha.Depth => string.Empty,
+                    Bankalpha.Paint => string.Empty,
+                    Bankalpha.From_Shape_Texture_Alpha => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Appearance => (Appearance)option switch
+                {
+                    Appearance.Default => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Global_Shape => (Global_Shape)option switch
+                {
+                    Global_Shape.None => string.Empty,
+                    Global_Shape.Paint => string.Empty,
+                    Global_Shape.Depth => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Foam => (Foam)option switch
+                {
+                    Foam.None => string.Empty,
+                    Foam.Auto => string.Empty,
+                    Foam.Paint => string.Empty,
+                    Foam.Both => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Reach_Compatibility => (Reach_Compatibility)option switch
+                {
+                    Reach_Compatibility.Disabled => string.Empty,
+                    Reach_Compatibility.Enabled => string.Empty,
+                    Reach_Compatibility.Enabled_Detail_Repeat => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "reflection")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (WaterMethods)category switch
             {
-                switch ((Reflection)option)
+                WaterMethods.Waveshape => (Waveshape)option switch
                 {
-                    case Reflection.None:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Reflection.Static:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Reflection.Dynamic:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Reflection.Static_Ssr:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "refraction")
-            {
-                switch ((Refraction)option)
+                    Waveshape.Default => string.Empty,
+                    Waveshape.None => string.Empty,
+                    Waveshape.Bump => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Watercolor => (Watercolor)option switch
                 {
-                    case Refraction.None:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Refraction.Dynamic:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "bankalpha")
-            {
-                switch ((Bankalpha)option)
+                    Watercolor.Pure => string.Empty,
+                    Watercolor.Texture => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Reflection => (Reflection)option switch
                 {
-                    case Bankalpha.None:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Bankalpha.Depth:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Bankalpha.Paint:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Bankalpha.From_Shape_Texture_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "appearance")
-            {
-                switch ((Appearance)option)
+                    Reflection.None => string.Empty,
+                    Reflection.Static => string.Empty,
+                    Reflection.Dynamic => string.Empty,
+                    Reflection.Static_Ssr => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Refraction => (Refraction)option switch
                 {
-                    case Appearance.Default:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "global_shape")
-            {
-                switch ((Global_Shape)option)
+                    Refraction.None => string.Empty,
+                    Refraction.Dynamic => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Bankalpha => (Bankalpha)option switch
                 {
-                    case Global_Shape.None:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Global_Shape.Paint:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Global_Shape.Depth:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "foam")
-            {
-                switch ((Foam)option)
+                    Bankalpha.None => string.Empty,
+                    Bankalpha.Depth => string.Empty,
+                    Bankalpha.Paint => string.Empty,
+                    Bankalpha.From_Shape_Texture_Alpha => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Appearance => (Appearance)option switch
                 {
-                    case Foam.None:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Foam.Auto:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Foam.Paint:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Foam.Both:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "reach_compatibility")
-            {
-                switch ((Reach_Compatibility)option)
+                    Appearance.Default => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Global_Shape => (Global_Shape)option switch
                 {
-                    case Reach_Compatibility.Disabled:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Reach_Compatibility.Enabled:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Reach_Compatibility.Enabled_Detail_Repeat:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                    Global_Shape.None => string.Empty,
+                    Global_Shape.Paint => string.Empty,
+                    Global_Shape.Depth => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Foam => (Foam)option switch
+                {
+                    Foam.None => string.Empty,
+                    Foam.Auto => string.Empty,
+                    Foam.Paint => string.Empty,
+                    Foam.Both => string.Empty,
+                    _ => null,
+                },
+                WaterMethods.Reach_Compatibility => (Reach_Compatibility)option switch
+                {
+                    Reach_Compatibility.Disabled => string.Empty,
+                    Reach_Compatibility.Enabled => string.Empty,
+                    Reach_Compatibility.Enabled_Detail_Repeat => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

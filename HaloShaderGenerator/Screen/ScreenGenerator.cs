@@ -1,69 +1,33 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Screen
 {
     public class ScreenGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(ScreenMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(ScreenMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((ScreenMethods)methodIndex)
+            return (ScreenMethods)methodIndex switch
             {
-                case ScreenMethods.Warp:
-                    return Enum.GetValues(typeof(Warp)).Length;
-                case ScreenMethods.Base:
-                    return Enum.GetValues(typeof(Base)).Length;
-                case ScreenMethods.Overlay_A:
-                    return Enum.GetValues(typeof(Overlay_A)).Length;
-                case ScreenMethods.Overlay_B:
-                    return Enum.GetValues(typeof(Overlay_B)).Length;
-                case ScreenMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode)).Length;
-            }
-
-            return -1;
+                ScreenMethods.Warp => Enum.GetValues(typeof(Warp)).Length,
+                ScreenMethods.Base => Enum.GetValues(typeof(Base)).Length,
+                ScreenMethods.Overlay_A => Enum.GetValues(typeof(Overlay_A)).Length,
+                ScreenMethods.Overlay_B => Enum.GetValues(typeof(Overlay_B)).Length,
+                ScreenMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)).Length,
+                _ => -1,
+            };
         }
 
-        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return -1;
-            }
-        }
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint) => -1;
 
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
 
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsPixelShaderShared(ShaderStage entryPoint) => false;
 
-        public bool IsAutoMacro()
-        {
-            return false;
-        }
+        public bool IsAutoMacro() => false;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -226,28 +190,19 @@ namespace HaloShaderGenerator.Screen
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(ScreenMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(ScreenMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((ScreenMethods)methodIndex)
+            return (ScreenMethods)methodIndex switch
             {
-                case ScreenMethods.Warp:
-                    return Enum.GetValues(typeof(Warp));
-                case ScreenMethods.Base:
-                    return Enum.GetValues(typeof(Base));
-                case ScreenMethods.Overlay_A:
-                    return Enum.GetValues(typeof(Overlay_A));
-                case ScreenMethods.Overlay_B:
-                    return Enum.GetValues(typeof(Overlay_B));
-                case ScreenMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode));
-            }
-
-            return null;
+                ScreenMethods.Warp => Enum.GetValues(typeof(Warp)),
+                ScreenMethods.Base => Enum.GetValues(typeof(Base)),
+                ScreenMethods.Overlay_A => Enum.GetValues(typeof(Overlay_A)),
+                ScreenMethods.Overlay_B => Enum.GetValues(typeof(Overlay_B)),
+                ScreenMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -267,169 +222,130 @@ namespace HaloShaderGenerator.Screen
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "warp")
+            return (ScreenMethods)category switch
             {
-                vertexFunction = "";
-                pixelFunction = "warp_type";
-            }
-
-            if (methodName == "base")
-            {
-                vertexFunction = "";
-                pixelFunction = "base_type";
-            }
-
-            if (methodName == "overlay_a")
-            {
-                vertexFunction = "";
-                pixelFunction = "overlay_a_type";
-            }
-
-            if (methodName == "overlay_b")
-            {
-                vertexFunction = "";
-                pixelFunction = "overlay_b_type";
-            }
-
-            if (methodName == "blend_mode")
-            {
-                vertexFunction = "";
-                pixelFunction = "blend_type";
-            }
+                ScreenMethods.Warp => "warp_type",
+                ScreenMethods.Base => "base_type",
+                ScreenMethods.Overlay_A => "overlay_a_type",
+                ScreenMethods.Overlay_B => "overlay_b_type",
+                ScreenMethods.Blend_Mode => "blend_type",
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "warp")
+            return (ScreenMethods)category switch
             {
-                switch ((Warp)option)
-                {
-                    case Warp.None:
-                        vertexFunction = "";
-                        pixelFunction = "none";
-                        break;
-                    case Warp.Pixel_Space:
-                        vertexFunction = "";
-                        pixelFunction = "pixel_space";
-                        break;
-                    case Warp.Screen_Space:
-                        vertexFunction = "";
-                        pixelFunction = "screen_space";
-                        break;
-                }
-            }
+                ScreenMethods.Warp => string.Empty,
+                ScreenMethods.Base => string.Empty,
+                ScreenMethods.Overlay_A => string.Empty,
+                ScreenMethods.Overlay_B => string.Empty,
+                ScreenMethods.Blend_Mode => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "base")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (ScreenMethods)category switch
             {
-                switch ((Base)option)
+                ScreenMethods.Warp => (Warp)option switch
                 {
-                    case Base.Single_Screen_Space:
-                        vertexFunction = "";
-                        pixelFunction = "single_screen_space";
-                        break;
-                    case Base.Single_Pixel_Space:
-                        vertexFunction = "";
-                        pixelFunction = "single_pixel_space";
-                        break;
-                    case Base.Normal_Map_Edge_Shade:
-                        vertexFunction = "";
-                        pixelFunction = "normal_map_edge_shade";
-                        break;
-                    case Base.Single_Target_Space:
-                        vertexFunction = "";
-                        pixelFunction = "single_target_space";
-                        break;
-                    case Base.Normal_Map_Edge_Stencil:
-                        vertexFunction = "";
-                        pixelFunction = "normal_map_edge_stencil";
-                        break;
-                }
-            }
+                    Warp.None => "none",
+                    Warp.Pixel_Space => "pixel_space",
+                    Warp.Screen_Space => "screen_space",
+                    _ => null,
+                },
+                ScreenMethods.Base => (Base)option switch
+                {
+                    Base.Single_Screen_Space => "single_screen_space",
+                    Base.Single_Pixel_Space => "single_pixel_space",
+                    Base.Normal_Map_Edge_Shade => "normal_map_edge_shade",
+                    Base.Single_Target_Space => "single_target_space",
+                    Base.Normal_Map_Edge_Stencil => "normal_map_edge_stencil",
+                    _ => null,
+                },
+                ScreenMethods.Overlay_A => (Overlay_A)option switch
+                {
+                    Overlay_A.None => "none",
+                    Overlay_A.Tint_Add_Color => "tint_add_color",
+                    Overlay_A.Detail_Screen_Space => "detail_screen_space",
+                    Overlay_A.Detail_Pixel_Space => "detail_pixel_space",
+                    Overlay_A.Detail_Masked_Screen_Space => "detail_masked_screen_space",
+                    Overlay_A.Palette_Lookup => "palette_lookup",
+                    _ => null,
+                },
+                ScreenMethods.Overlay_B => (Overlay_B)option switch
+                {
+                    Overlay_B.None => "none",
+                    Overlay_B.Tint_Add_Color => "tint_add_color",
+                    _ => null,
+                },
+                ScreenMethods.Blend_Mode => (Blend_Mode)option switch
+                {
+                    Blend_Mode.Opaque => "opaque",
+                    Blend_Mode.Additive => "additive",
+                    Blend_Mode.Multiply => "multiply",
+                    Blend_Mode.Alpha_Blend => "alpha_blend",
+                    Blend_Mode.Double_Multiply => "double_multiply",
+                    Blend_Mode.Pre_Multiplied_Alpha => "pre_multiplied_alpha",
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "overlay_a")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (ScreenMethods)category switch
             {
-                switch ((Overlay_A)option)
+                ScreenMethods.Warp => (Warp)option switch
                 {
-                    case Overlay_A.None:
-                        vertexFunction = "";
-                        pixelFunction = "none";
-                        break;
-                    case Overlay_A.Tint_Add_Color:
-                        vertexFunction = "";
-                        pixelFunction = "tint_add_color";
-                        break;
-                    case Overlay_A.Detail_Screen_Space:
-                        vertexFunction = "";
-                        pixelFunction = "detail_screen_space";
-                        break;
-                    case Overlay_A.Detail_Pixel_Space:
-                        vertexFunction = "";
-                        pixelFunction = "detail_pixel_space";
-                        break;
-                    case Overlay_A.Detail_Masked_Screen_Space:
-                        vertexFunction = "";
-                        pixelFunction = "detail_masked_screen_space";
-                        break;
-                    case Overlay_A.Palette_Lookup:
-                        vertexFunction = "";
-                        pixelFunction = "palette_lookup";
-                        break;
-                }
-            }
-
-            if (methodName == "overlay_b")
-            {
-                switch ((Overlay_B)option)
+                    Warp.None => string.Empty,
+                    Warp.Pixel_Space => string.Empty,
+                    Warp.Screen_Space => string.Empty,
+                    _ => null,
+                },
+                ScreenMethods.Base => (Base)option switch
                 {
-                    case Overlay_B.None:
-                        vertexFunction = "";
-                        pixelFunction = "none";
-                        break;
-                    case Overlay_B.Tint_Add_Color:
-                        vertexFunction = "";
-                        pixelFunction = "tint_add_color";
-                        break;
-                }
-            }
-
-            if (methodName == "blend_mode")
-            {
-                switch ((Blend_Mode)option)
+                    Base.Single_Screen_Space => string.Empty,
+                    Base.Single_Pixel_Space => string.Empty,
+                    Base.Normal_Map_Edge_Shade => string.Empty,
+                    Base.Single_Target_Space => string.Empty,
+                    Base.Normal_Map_Edge_Stencil => string.Empty,
+                    _ => null,
+                },
+                ScreenMethods.Overlay_A => (Overlay_A)option switch
                 {
-                    case Blend_Mode.Opaque:
-                        vertexFunction = "";
-                        pixelFunction = "opaque";
-                        break;
-                    case Blend_Mode.Additive:
-                        vertexFunction = "";
-                        pixelFunction = "additive";
-                        break;
-                    case Blend_Mode.Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "multiply";
-                        break;
-                    case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "";
-                        pixelFunction = "alpha_blend";
-                        break;
-                    case Blend_Mode.Double_Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "double_multiply";
-                        break;
-                    case Blend_Mode.Pre_Multiplied_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "pre_multiplied_alpha";
-                        break;
-                }
-            }
+                    Overlay_A.None => string.Empty,
+                    Overlay_A.Tint_Add_Color => string.Empty,
+                    Overlay_A.Detail_Screen_Space => string.Empty,
+                    Overlay_A.Detail_Pixel_Space => string.Empty,
+                    Overlay_A.Detail_Masked_Screen_Space => string.Empty,
+                    Overlay_A.Palette_Lookup => string.Empty,
+                    _ => null,
+                },
+                ScreenMethods.Overlay_B => (Overlay_B)option switch
+                {
+                    Overlay_B.None => string.Empty,
+                    Overlay_B.Tint_Add_Color => string.Empty,
+                    _ => null,
+                },
+                ScreenMethods.Blend_Mode => (Blend_Mode)option switch
+                {
+                    Blend_Mode.Opaque => string.Empty,
+                    Blend_Mode.Additive => string.Empty,
+                    Blend_Mode.Multiply => string.Empty,
+                    Blend_Mode.Alpha_Blend => string.Empty,
+                    Blend_Mode.Double_Multiply => string.Empty,
+                    Blend_Mode.Pre_Multiplied_Alpha => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

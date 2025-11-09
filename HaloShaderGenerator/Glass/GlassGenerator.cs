@@ -1,71 +1,34 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Glass
 {
     public class GlassGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(GlassMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(GlassMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((GlassMethods)methodIndex)
+            return (GlassMethods)methodIndex switch
             {
-                case GlassMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo)).Length;
-                case GlassMethods.Bump_Mapping:
-                    return Enum.GetValues(typeof(Bump_Mapping)).Length;
-                case GlassMethods.Material_Model:
-                    return Enum.GetValues(typeof(Material_Model)).Length;
-                case GlassMethods.Environment_Mapping:
-                    return Enum.GetValues(typeof(Environment_Mapping)).Length;
-                case GlassMethods.Wetness:
-                    return Enum.GetValues(typeof(Wetness)).Length;
-                case GlassMethods.Alpha_Blend_Source:
-                    return Enum.GetValues(typeof(Alpha_Blend_Source)).Length;
-            }
-
-            return -1;
+                GlassMethods.Albedo => Enum.GetValues(typeof(Albedo)).Length,
+                GlassMethods.Bump_Mapping => Enum.GetValues(typeof(Bump_Mapping)).Length,
+                GlassMethods.Material_Model => Enum.GetValues(typeof(Material_Model)).Length,
+                GlassMethods.Environment_Mapping => Enum.GetValues(typeof(Environment_Mapping)).Length,
+                GlassMethods.Wetness => Enum.GetValues(typeof(Wetness)).Length,
+                GlassMethods.Alpha_Blend_Source => Enum.GetValues(typeof(Alpha_Blend_Source)).Length,
+                _ => -1,
+            };
         }
 
-        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return -1;
-            }
-        }
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint) => -1;
 
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
 
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsPixelShaderShared(ShaderStage entryPoint) => false;
 
-        public bool IsAutoMacro()
-        {
-            return false;
-        }
+        public bool IsAutoMacro() => false;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -296,30 +259,20 @@ namespace HaloShaderGenerator.Glass
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(GlassMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(GlassMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((GlassMethods)methodIndex)
+            return (GlassMethods)methodIndex switch
             {
-                case GlassMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo));
-                case GlassMethods.Bump_Mapping:
-                    return Enum.GetValues(typeof(Bump_Mapping));
-                case GlassMethods.Material_Model:
-                    return Enum.GetValues(typeof(Material_Model));
-                case GlassMethods.Environment_Mapping:
-                    return Enum.GetValues(typeof(Environment_Mapping));
-                case GlassMethods.Wetness:
-                    return Enum.GetValues(typeof(Wetness));
-                case GlassMethods.Alpha_Blend_Source:
-                    return Enum.GetValues(typeof(Alpha_Blend_Source));
-            }
-
-            return null;
+                GlassMethods.Albedo => Enum.GetValues(typeof(Albedo)),
+                GlassMethods.Bump_Mapping => Enum.GetValues(typeof(Bump_Mapping)),
+                GlassMethods.Material_Model => Enum.GetValues(typeof(Material_Model)),
+                GlassMethods.Environment_Mapping => Enum.GetValues(typeof(Environment_Mapping)),
+                GlassMethods.Wetness => Enum.GetValues(typeof(Wetness)),
+                GlassMethods.Alpha_Blend_Source => Enum.GetValues(typeof(Alpha_Blend_Source)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -344,174 +297,136 @@ namespace HaloShaderGenerator.Glass
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (GlassMethods)category switch
             {
-                vertexFunction = "calc_albedo_vs";
-                pixelFunction = "calc_albedo_ps";
-            }
-
-            if (methodName == "bump_mapping")
-            {
-                vertexFunction = "calc_bumpmap_vs";
-                pixelFunction = "calc_bumpmap_ps";
-            }
-
-            if (methodName == "material_model")
-            {
-                vertexFunction = "";
-                pixelFunction = "material_type";
-            }
-
-            if (methodName == "environment_mapping")
-            {
-                vertexFunction = "";
-                pixelFunction = "envmap_type";
-            }
-
-            if (methodName == "wetness")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_wetness_ps";
-            }
-
-            if (methodName == "alpha_blend_source")
-            {
-                vertexFunction = "";
-                pixelFunction = "alpha_blend_source";
-            }
+                GlassMethods.Albedo => "calc_albedo_ps",
+                GlassMethods.Bump_Mapping => "calc_bumpmap_ps",
+                GlassMethods.Material_Model => "material_type",
+                GlassMethods.Environment_Mapping => "envmap_type",
+                GlassMethods.Wetness => "calc_wetness_ps",
+                GlassMethods.Alpha_Blend_Source => "alpha_blend_source",
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (GlassMethods)category switch
             {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Map:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_default_ps";
-                        break;
-                }
-            }
+                GlassMethods.Albedo => "calc_albedo_vs",
+                GlassMethods.Bump_Mapping => "calc_bumpmap_vs",
+                GlassMethods.Material_Model => string.Empty,
+                GlassMethods.Environment_Mapping => string.Empty,
+                GlassMethods.Wetness => string.Empty,
+                GlassMethods.Alpha_Blend_Source => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "bump_mapping")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (GlassMethods)category switch
             {
-                switch ((Bump_Mapping)option)
+                GlassMethods.Albedo => (Albedo)option switch
                 {
-                    case Bump_Mapping.Off:
-                        vertexFunction = "calc_bumpmap_off_vs";
-                        pixelFunction = "calc_bumpmap_off_ps";
-                        break;
-                    case Bump_Mapping.Standard:
-                        vertexFunction = "calc_bumpmap_default_vs";
-                        pixelFunction = "calc_bumpmap_default_ps";
-                        break;
-                    case Bump_Mapping.Detail:
-                        vertexFunction = "calc_bumpmap_detail_vs";
-                        pixelFunction = "calc_bumpmap_detail_ps";
-                        break;
-                    case Bump_Mapping.Detail_Blend:
-                        vertexFunction = "calc_bumpmap_detail_blend_vs";
-                        pixelFunction = "calc_bumpmap_detail_blend_ps";
-                        break;
-                    case Bump_Mapping.Three_Detail_Blend:
-                        vertexFunction = "calc_bumpmap_three_detail_blend_vs";
-                        pixelFunction = "calc_bumpmap_three_detail_blend_ps";
-                        break;
-                    case Bump_Mapping.Standard_Wrinkle:
-                        vertexFunction = "calc_bumpmap_default_wrinkle_vs";
-                        pixelFunction = "calc_bumpmap_default_wrinkle_ps";
-                        break;
-                    case Bump_Mapping.Detail_Wrinkle:
-                        vertexFunction = "calc_bumpmap_detail_wrinkle_vs";
-                        pixelFunction = "calc_bumpmap_detail_wrinkle_ps";
-                        break;
-                }
-            }
+                    Albedo.Map => "calc_albedo_default_ps",
+                    _ => null,
+                },
+                GlassMethods.Bump_Mapping => (Bump_Mapping)option switch
+                {
+                    Bump_Mapping.Off => "calc_bumpmap_off_ps",
+                    Bump_Mapping.Standard => "calc_bumpmap_default_ps",
+                    Bump_Mapping.Detail => "calc_bumpmap_detail_ps",
+                    Bump_Mapping.Detail_Blend => "calc_bumpmap_detail_blend_ps",
+                    Bump_Mapping.Three_Detail_Blend => "calc_bumpmap_three_detail_blend_ps",
+                    Bump_Mapping.Standard_Wrinkle => "calc_bumpmap_default_wrinkle_ps",
+                    Bump_Mapping.Detail_Wrinkle => "calc_bumpmap_detail_wrinkle_ps",
+                    _ => null,
+                },
+                GlassMethods.Material_Model => (Material_Model)option switch
+                {
+                    Material_Model.Two_Lobe_Phong_Reach => "two_lobe_phong_reach",
+                    _ => null,
+                },
+                GlassMethods.Environment_Mapping => (Environment_Mapping)option switch
+                {
+                    Environment_Mapping.None => "none",
+                    Environment_Mapping.Per_Pixel => "per_pixel",
+                    Environment_Mapping.Dynamic => "dynamic",
+                    Environment_Mapping.From_Flat_Texture => "from_flat_texture",
+                    _ => null,
+                },
+                GlassMethods.Wetness => (Wetness)option switch
+                {
+                    Wetness.Simple => "calc_wetness_simple_ps",
+                    Wetness.Flood => "calc_wetness_flood_ps",
+                    _ => null,
+                },
+                GlassMethods.Alpha_Blend_Source => (Alpha_Blend_Source)option switch
+                {
+                    Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel => "albedo_alpha_without_fresnel",
+                    Alpha_Blend_Source.From_Albedo_Alpha => "albedo_alpha",
+                    Alpha_Blend_Source.From_Opacity_Map_Alpha => "opacity_map_alpha",
+                    Alpha_Blend_Source.From_Opacity_Map_Rgb => "opacity_map_rgb",
+                    Alpha_Blend_Source.From_Opacity_Map_Alpha_And_Albedo_Alpha => "opacity_map_alpha_and_albedo_alpha",
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "material_model")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (GlassMethods)category switch
             {
-                switch ((Material_Model)option)
+                GlassMethods.Albedo => (Albedo)option switch
                 {
-                    case Material_Model.Two_Lobe_Phong_Reach:
-                        vertexFunction = "";
-                        pixelFunction = "two_lobe_phong_reach";
-                        break;
-                }
-            }
-
-            if (methodName == "environment_mapping")
-            {
-                switch ((Environment_Mapping)option)
+                    Albedo.Map => "calc_albedo_default_vs",
+                    _ => null,
+                },
+                GlassMethods.Bump_Mapping => (Bump_Mapping)option switch
                 {
-                    case Environment_Mapping.None:
-                        vertexFunction = "";
-                        pixelFunction = "none";
-                        break;
-                    case Environment_Mapping.Per_Pixel:
-                        vertexFunction = "";
-                        pixelFunction = "per_pixel";
-                        break;
-                    case Environment_Mapping.Dynamic:
-                        vertexFunction = "";
-                        pixelFunction = "dynamic";
-                        break;
-                    case Environment_Mapping.From_Flat_Texture:
-                        vertexFunction = "";
-                        pixelFunction = "from_flat_texture";
-                        break;
-                }
-            }
-
-            if (methodName == "wetness")
-            {
-                switch ((Wetness)option)
+                    Bump_Mapping.Off => "calc_bumpmap_off_vs",
+                    Bump_Mapping.Standard => "calc_bumpmap_default_vs",
+                    Bump_Mapping.Detail => "calc_bumpmap_detail_vs",
+                    Bump_Mapping.Detail_Blend => "calc_bumpmap_detail_blend_vs",
+                    Bump_Mapping.Three_Detail_Blend => "calc_bumpmap_three_detail_blend_vs",
+                    Bump_Mapping.Standard_Wrinkle => "calc_bumpmap_default_wrinkle_vs",
+                    Bump_Mapping.Detail_Wrinkle => "calc_bumpmap_detail_wrinkle_vs",
+                    _ => null,
+                },
+                GlassMethods.Material_Model => (Material_Model)option switch
                 {
-                    case Wetness.Simple:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_simple_ps";
-                        break;
-                    case Wetness.Flood:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_flood_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "alpha_blend_source")
-            {
-                switch ((Alpha_Blend_Source)option)
+                    Material_Model.Two_Lobe_Phong_Reach => string.Empty,
+                    _ => null,
+                },
+                GlassMethods.Environment_Mapping => (Environment_Mapping)option switch
                 {
-                    case Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel:
-                        vertexFunction = "";
-                        pixelFunction = "albedo_alpha_without_fresnel";
-                        break;
-                    case Alpha_Blend_Source.From_Albedo_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "albedo_alpha";
-                        break;
-                    case Alpha_Blend_Source.From_Opacity_Map_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "opacity_map_alpha";
-                        break;
-                    case Alpha_Blend_Source.From_Opacity_Map_Rgb:
-                        vertexFunction = "";
-                        pixelFunction = "opacity_map_rgb";
-                        break;
-                    case Alpha_Blend_Source.From_Opacity_Map_Alpha_And_Albedo_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "opacity_map_alpha_and_albedo_alpha";
-                        break;
-                }
-            }
+                    Environment_Mapping.None => string.Empty,
+                    Environment_Mapping.Per_Pixel => string.Empty,
+                    Environment_Mapping.Dynamic => string.Empty,
+                    Environment_Mapping.From_Flat_Texture => string.Empty,
+                    _ => null,
+                },
+                GlassMethods.Wetness => (Wetness)option switch
+                {
+                    Wetness.Simple => string.Empty,
+                    Wetness.Flood => string.Empty,
+                    _ => null,
+                },
+                GlassMethods.Alpha_Blend_Source => (Alpha_Blend_Source)option switch
+                {
+                    Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel => string.Empty,
+                    Alpha_Blend_Source.From_Albedo_Alpha => string.Empty,
+                    Alpha_Blend_Source.From_Opacity_Map_Alpha => string.Empty,
+                    Alpha_Blend_Source.From_Opacity_Map_Rgb => string.Empty,
+                    Alpha_Blend_Source.From_Opacity_Map_Alpha_And_Albedo_Alpha => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

@@ -9,5 +9,15 @@ namespace HaloShaderGenerator.TemplateGenerator
         public string VsMacro;
         public string PsMacroValue;
         public string VsMacroValue;
+
+        public enum OptionType 
+        {
+            Category,
+            Option,
+            PsMacro,
+            VsMacro,
+            PsMacroValue,
+            VsMacroValue,
+        }
     }
 }

@@ -1,9 +1,5 @@
 ﻿using HaloShaderGenerator.Globals;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HaloShaderGenerator.Generator
 {
@@ -33,9 +29,13 @@ namespace HaloShaderGenerator.Generator
 
         Array GetVertexTypeOrder();
 
-        void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction);
+        public string GetCategoryPixelFunction(int category);
 
-        void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction);
+        public string GetCategoryVertexFunction(int category);
+
+        public string GetOptionPixelFunction(int category, int option);
+
+        public string GetOptionVertexFunction(int category, int option);
     }
 
 }

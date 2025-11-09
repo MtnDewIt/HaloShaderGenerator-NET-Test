@@ -1,77 +1,37 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Cortana
 {
     public class CortanaGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(CortanaMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(CortanaMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((CortanaMethods)methodIndex)
+            return (CortanaMethods)methodIndex switch
             {
-                case CortanaMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo)).Length;
-                case CortanaMethods.Bump_Mapping:
-                    return Enum.GetValues(typeof(Bump_Mapping)).Length;
-                case CortanaMethods.Alpha_Test:
-                    return Enum.GetValues(typeof(Alpha_Test)).Length;
-                case CortanaMethods.Material_Model:
-                    return Enum.GetValues(typeof(Material_Model)).Length;
-                case CortanaMethods.Environment_Mapping:
-                    return Enum.GetValues(typeof(Environment_Mapping)).Length;
-                case CortanaMethods.Warp:
-                    return Enum.GetValues(typeof(Warp)).Length;
-                case CortanaMethods.Lighting:
-                    return Enum.GetValues(typeof(Lighting)).Length;
-                case CortanaMethods.Scanlines:
-                    return Enum.GetValues(typeof(Scanlines)).Length;
-                case CortanaMethods.Transparency:
-                    return Enum.GetValues(typeof(Transparency)).Length;
-            }
-
-            return -1;
+                CortanaMethods.Albedo => Enum.GetValues(typeof(Albedo)).Length,
+                CortanaMethods.Bump_Mapping => Enum.GetValues(typeof(Bump_Mapping)).Length,
+                CortanaMethods.Alpha_Test => Enum.GetValues(typeof(Alpha_Test)).Length,
+                CortanaMethods.Material_Model => Enum.GetValues(typeof(Material_Model)).Length,
+                CortanaMethods.Environment_Mapping => Enum.GetValues(typeof(Environment_Mapping)).Length,
+                CortanaMethods.Warp => Enum.GetValues(typeof(Warp)).Length,
+                CortanaMethods.Lighting => Enum.GetValues(typeof(Lighting)).Length,
+                CortanaMethods.Scanlines => Enum.GetValues(typeof(Scanlines)).Length,
+                CortanaMethods.Transparency => Enum.GetValues(typeof(Transparency)).Length,
+                _ => -1,
+            };
         }
 
-        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return -1;
-            }
-        }
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint) => -1;
 
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
 
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsPixelShaderShared(ShaderStage entryPoint) => false;
 
-        public bool IsAutoMacro()
-        {
-            return false;
-        }
+        public bool IsAutoMacro() => false;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -267,36 +227,23 @@ namespace HaloShaderGenerator.Cortana
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(CortanaMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(CortanaMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((CortanaMethods)methodIndex)
+            return (CortanaMethods)methodIndex switch
             {
-                case CortanaMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo));
-                case CortanaMethods.Bump_Mapping:
-                    return Enum.GetValues(typeof(Bump_Mapping));
-                case CortanaMethods.Alpha_Test:
-                    return Enum.GetValues(typeof(Alpha_Test));
-                case CortanaMethods.Material_Model:
-                    return Enum.GetValues(typeof(Material_Model));
-                case CortanaMethods.Environment_Mapping:
-                    return Enum.GetValues(typeof(Environment_Mapping));
-                case CortanaMethods.Warp:
-                    return Enum.GetValues(typeof(Warp));
-                case CortanaMethods.Lighting:
-                    return Enum.GetValues(typeof(Lighting));
-                case CortanaMethods.Scanlines:
-                    return Enum.GetValues(typeof(Scanlines));
-                case CortanaMethods.Transparency:
-                    return Enum.GetValues(typeof(Transparency));
-            }
-
-            return null;
+                CortanaMethods.Albedo => Enum.GetValues(typeof(Albedo)),
+                CortanaMethods.Bump_Mapping => Enum.GetValues(typeof(Bump_Mapping)),
+                CortanaMethods.Alpha_Test => Enum.GetValues(typeof(Alpha_Test)),
+                CortanaMethods.Material_Model => Enum.GetValues(typeof(Material_Model)),
+                CortanaMethods.Environment_Mapping => Enum.GetValues(typeof(Environment_Mapping)),
+                CortanaMethods.Warp => Enum.GetValues(typeof(Warp)),
+                CortanaMethods.Lighting => Enum.GetValues(typeof(Lighting)),
+                CortanaMethods.Scanlines => Enum.GetValues(typeof(Scanlines)),
+                CortanaMethods.Transparency => Enum.GetValues(typeof(Transparency)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -320,181 +267,150 @@ namespace HaloShaderGenerator.Cortana
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (CortanaMethods)category switch
             {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "bump_mapping")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "alpha_test")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_alpha_test_ps";
-            }
-
-            if (methodName == "material_model")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "environment_mapping")
-            {
-                vertexFunction = "";
-                pixelFunction = "envmap_type";
-            }
-
-            if (methodName == "warp")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "lighting")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "scanlines")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "transparency")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
+                CortanaMethods.Albedo => string.Empty,
+                CortanaMethods.Bump_Mapping => string.Empty,
+                CortanaMethods.Alpha_Test => "calc_alpha_test_ps",
+                CortanaMethods.Material_Model => string.Empty,
+                CortanaMethods.Environment_Mapping => "envmap_type",
+                CortanaMethods.Warp => string.Empty,
+                CortanaMethods.Lighting => string.Empty,
+                CortanaMethods.Scanlines => string.Empty,
+                CortanaMethods.Transparency => string.Empty,
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (CortanaMethods)category switch
             {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Default:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                CortanaMethods.Albedo => string.Empty,
+                CortanaMethods.Bump_Mapping => string.Empty,
+                CortanaMethods.Alpha_Test => string.Empty,
+                CortanaMethods.Material_Model => string.Empty,
+                CortanaMethods.Environment_Mapping => string.Empty,
+                CortanaMethods.Warp => string.Empty,
+                CortanaMethods.Lighting => string.Empty,
+                CortanaMethods.Scanlines => string.Empty,
+                CortanaMethods.Transparency => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "bump_mapping")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (CortanaMethods)category switch
             {
-                switch ((Bump_Mapping)option)
+                CortanaMethods.Albedo => (Albedo)option switch
                 {
-                    case Bump_Mapping.Standard:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                    Albedo.Default => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Bump_Mapping => (Bump_Mapping)option switch
+                {
+                    Bump_Mapping.Standard => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Alpha_Test => (Alpha_Test)option switch
+                {
+                    Alpha_Test.None => "calc_alpha_test_off_ps",
+                    Alpha_Test.Simple => "calc_alpha_test_on_ps",
+                    _ => null,
+                },
+                CortanaMethods.Material_Model => (Material_Model)option switch
+                {
+                    Material_Model.Cook_Torrance => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Environment_Mapping => (Environment_Mapping)option switch
+                {
+                    Environment_Mapping.None => "none",
+                    Environment_Mapping.Per_Pixel => "per_pixel",
+                    Environment_Mapping.Dynamic => "dynamic",
+                    _ => null,
+                },
+                CortanaMethods.Warp => (Warp)option switch
+                {
+                    Warp.Default => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Lighting => (Lighting)option switch
+                {
+                    Lighting.Default => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Scanlines => (Scanlines)option switch
+                {
+                    Scanlines.Default => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Transparency => (Transparency)option switch
+                {
+                    Transparency.Default => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "alpha_test")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (CortanaMethods)category switch
             {
-                switch ((Alpha_Test)option)
+                CortanaMethods.Albedo => (Albedo)option switch
                 {
-                    case Alpha_Test.None:
-                        vertexFunction = "";
-                        pixelFunction = "calc_alpha_test_off_ps";
-                        break;
-                    case Alpha_Test.Simple:
-                        vertexFunction = "";
-                        pixelFunction = "calc_alpha_test_on_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "material_model")
-            {
-                switch ((Material_Model)option)
+                    Albedo.Default => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Bump_Mapping => (Bump_Mapping)option switch
                 {
-                    case Material_Model.Cook_Torrance:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "environment_mapping")
-            {
-                switch ((Environment_Mapping)option)
+                    Bump_Mapping.Standard => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Alpha_Test => (Alpha_Test)option switch
                 {
-                    case Environment_Mapping.None:
-                        vertexFunction = "";
-                        pixelFunction = "none";
-                        break;
-                    case Environment_Mapping.Per_Pixel:
-                        vertexFunction = "";
-                        pixelFunction = "per_pixel";
-                        break;
-                    case Environment_Mapping.Dynamic:
-                        vertexFunction = "";
-                        pixelFunction = "dynamic";
-                        break;
-                }
-            }
-
-            if (methodName == "warp")
-            {
-                switch ((Warp)option)
+                    Alpha_Test.None => string.Empty,
+                    Alpha_Test.Simple => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Material_Model => (Material_Model)option switch
                 {
-                    case Warp.Default:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "lighting")
-            {
-                switch ((Lighting)option)
+                    Material_Model.Cook_Torrance => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Environment_Mapping => (Environment_Mapping)option switch
                 {
-                    case Lighting.Default:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "scanlines")
-            {
-                switch ((Scanlines)option)
+                    Environment_Mapping.None => string.Empty,
+                    Environment_Mapping.Per_Pixel => string.Empty,
+                    Environment_Mapping.Dynamic => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Warp => (Warp)option switch
                 {
-                    case Scanlines.Default:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "transparency")
-            {
-                switch ((Transparency)option)
+                    Warp.Default => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Lighting => (Lighting)option switch
                 {
-                    case Transparency.Default:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                    Lighting.Default => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Scanlines => (Scanlines)option switch
+                {
+                    Scanlines.Default => string.Empty,
+                    _ => null,
+                },
+                CortanaMethods.Transparency => (Transparency)option switch
+                {
+                    Transparency.Default => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

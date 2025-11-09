@@ -1,97 +1,66 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Shader
 {
     public class ShaderGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(ShaderMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(ShaderMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((ShaderMethods)methodIndex)
+            return (ShaderMethods)methodIndex switch
             {
-                case ShaderMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo)).Length;
-                case ShaderMethods.Bump_Mapping:
-                    return Enum.GetValues(typeof(Bump_Mapping)).Length;
-                case ShaderMethods.Alpha_Test:
-                    return Enum.GetValues(typeof(Alpha_Test)).Length;
-                case ShaderMethods.Specular_Mask:
-                    return Enum.GetValues(typeof(Specular_Mask)).Length;
-                case ShaderMethods.Material_Model:
-                    return Enum.GetValues(typeof(Material_Model)).Length;
-                case ShaderMethods.Environment_Mapping:
-                    return Enum.GetValues(typeof(Environment_Mapping)).Length;
-                case ShaderMethods.Self_Illumination:
-                    return Enum.GetValues(typeof(Self_Illumination)).Length;
-                case ShaderMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode)).Length;
-                case ShaderMethods.Parallax:
-                    return Enum.GetValues(typeof(Parallax)).Length;
-                case ShaderMethods.Misc:
-                    return Enum.GetValues(typeof(Misc)).Length;
-                case ShaderMethods.Distortion:
-                    return Enum.GetValues(typeof(Distortion)).Length;
-                case ShaderMethods.Soft_Fade:
-                    return Enum.GetValues(typeof(Soft_Fade)).Length;
-                case ShaderMethods.Misc_Attr_Animation:
-                    return Enum.GetValues(typeof(Misc_Attr_Animation)).Length;
-                case ShaderMethods.Wetness:
-                    return Enum.GetValues(typeof(Wetness)).Length;
-                case ShaderMethods.Alpha_Blend_Source:
-                    return Enum.GetValues(typeof(Alpha_Blend_Source)).Length;
-            }
-
-            return -1;
+                ShaderMethods.Albedo => Enum.GetValues(typeof(Albedo)).Length,
+                ShaderMethods.Bump_Mapping => Enum.GetValues(typeof(Bump_Mapping)).Length,
+                ShaderMethods.Alpha_Test => Enum.GetValues(typeof(Alpha_Test)).Length,
+                ShaderMethods.Specular_Mask => Enum.GetValues(typeof(Specular_Mask)).Length,
+                ShaderMethods.Material_Model => Enum.GetValues(typeof(Material_Model)).Length,
+                ShaderMethods.Environment_Mapping => Enum.GetValues(typeof(Environment_Mapping)).Length,
+                ShaderMethods.Self_Illumination => Enum.GetValues(typeof(Self_Illumination)).Length,
+                ShaderMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)).Length,
+                ShaderMethods.Parallax => Enum.GetValues(typeof(Parallax)).Length,
+                ShaderMethods.Misc => Enum.GetValues(typeof(Misc)).Length,
+                ShaderMethods.Distortion => Enum.GetValues(typeof(Distortion)).Length,
+                ShaderMethods.Soft_Fade => Enum.GetValues(typeof(Soft_Fade)).Length,
+                ShaderMethods.Misc_Attr_Animation => Enum.GetValues(typeof(Misc_Attr_Animation)).Length,
+                ShaderMethods.Wetness => Enum.GetValues(typeof(Wetness)).Length,
+                ShaderMethods.Alpha_Blend_Source => Enum.GetValues(typeof(Alpha_Blend_Source)).Length,
+                _ => -1,
+            };
         }
 
         public int GetSharedPixelShaderCategory(ShaderStage entryPoint) 
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Shadow_Generate:
-                case ShaderStage.Dynamic_Light_Cinematic:
-                    return 2;
-                default:
-                    return -1;
-            }
+                ShaderStage.Shadow_Generate or 
+                ShaderStage.Dynamic_Light_Cinematic => 2,
+                _ => -1,
+            };
         }
 
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Shadow_Generate:
-                case ShaderStage.Dynamic_Light_Cinematic:
-                    return true;
-                default:
-                    return false;
-            }
+                ShaderStage.Shadow_Generate or 
+                ShaderStage.Dynamic_Light_Cinematic => true,
+                _ => false,
+            };
         }
 
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Shadow_Generate:
-                    return true;
-                default:
-                    return false;
-            }
+                ShaderStage.Shadow_Generate => true,
+                _ => false,
+            };
         }
 
-        public bool IsAutoMacro()
-        {
-            return false;
-        }
+        public bool IsAutoMacro() => false;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -1349,48 +1318,29 @@ namespace HaloShaderGenerator.Shader
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(ShaderMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(ShaderMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((ShaderMethods)methodIndex)
+            return (ShaderMethods)methodIndex switch
             {
-                case ShaderMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo));
-                case ShaderMethods.Bump_Mapping:
-                    return Enum.GetValues(typeof(Bump_Mapping));
-                case ShaderMethods.Alpha_Test:
-                    return Enum.GetValues(typeof(Alpha_Test));
-                case ShaderMethods.Specular_Mask:
-                    return Enum.GetValues(typeof(Specular_Mask));
-                case ShaderMethods.Material_Model:
-                    return Enum.GetValues(typeof(Material_Model));
-                case ShaderMethods.Environment_Mapping:
-                    return Enum.GetValues(typeof(Environment_Mapping));
-                case ShaderMethods.Self_Illumination:
-                    return Enum.GetValues(typeof(Self_Illumination));
-                case ShaderMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode));
-                case ShaderMethods.Parallax:
-                    return Enum.GetValues(typeof(Parallax));
-                case ShaderMethods.Misc:
-                    return Enum.GetValues(typeof(Misc));
-                case ShaderMethods.Distortion:
-                    return Enum.GetValues(typeof(Distortion));
-                case ShaderMethods.Soft_Fade:
-                    return Enum.GetValues(typeof(Soft_Fade));
-                case ShaderMethods.Misc_Attr_Animation:
-                    return Enum.GetValues(typeof(Misc_Attr_Animation));
-                case ShaderMethods.Wetness:
-                    return Enum.GetValues(typeof(Wetness));
-                case ShaderMethods.Alpha_Blend_Source:
-                    return Enum.GetValues(typeof(Alpha_Blend_Source));
-            }
-
-            return null;
+                ShaderMethods.Albedo => Enum.GetValues(typeof(Albedo)),
+                ShaderMethods.Bump_Mapping => Enum.GetValues(typeof(Bump_Mapping)),
+                ShaderMethods.Alpha_Test => Enum.GetValues(typeof(Alpha_Test)),
+                ShaderMethods.Specular_Mask => Enum.GetValues(typeof(Specular_Mask)),
+                ShaderMethods.Material_Model => Enum.GetValues(typeof(Material_Model)),
+                ShaderMethods.Environment_Mapping => Enum.GetValues(typeof(Environment_Mapping)),
+                ShaderMethods.Self_Illumination => Enum.GetValues(typeof(Self_Illumination)),
+                ShaderMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)),
+                ShaderMethods.Parallax => Enum.GetValues(typeof(Parallax)),
+                ShaderMethods.Misc => Enum.GetValues(typeof(Misc)),
+                ShaderMethods.Distortion => Enum.GetValues(typeof(Distortion)),
+                ShaderMethods.Soft_Fade => Enum.GetValues(typeof(Soft_Fade)),
+                ShaderMethods.Misc_Attr_Animation => Enum.GetValues(typeof(Misc_Attr_Animation)),
+                ShaderMethods.Wetness => Enum.GetValues(typeof(Wetness)),
+                ShaderMethods.Alpha_Blend_Source => Enum.GetValues(typeof(Alpha_Blend_Source)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -1432,707 +1382,434 @@ namespace HaloShaderGenerator.Shader
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (ShaderMethods)category switch
             {
-                vertexFunction = "calc_albedo_vs";
-                pixelFunction = "calc_albedo_ps";
-            }
-
-            if (methodName == "bump_mapping")
-            {
-                vertexFunction = "calc_bumpmap_vs";
-                pixelFunction = "calc_bumpmap_ps";
-            }
-
-            if (methodName == "alpha_test")
-            {
-                vertexFunction = "alpha_test";
-                pixelFunction = "calc_alpha_test_ps";
-            }
-
-            if (methodName == "specular_mask")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_specular_mask_ps";
-            }
-
-            if (methodName == "material_model")
-            {
-                vertexFunction = "";
-                pixelFunction = "material_type";
-            }
-
-            if (methodName == "environment_mapping")
-            {
-                vertexFunction = "";
-                pixelFunction = "envmap_type";
-            }
-
-            if (methodName == "self_illumination")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_self_illumination_ps";
-            }
-
-            if (methodName == "blend_mode")
-            {
-                vertexFunction = "";
-                pixelFunction = "blend_type";
-            }
-
-            if (methodName == "parallax")
-            {
-                vertexFunction = "calc_parallax_vs";
-                pixelFunction = "calc_parallax_ps";
-            }
-
-            if (methodName == "misc")
-            {
-                vertexFunction = "";
-                pixelFunction = "bitmap_rotation";
-            }
-
-            if (methodName == "distortion")
-            {
-                vertexFunction = "distort_proc_vs";
-                pixelFunction = "distort_proc_ps";
-            }
-
-            if (methodName == "soft_fade")
-            {
-                vertexFunction = "";
-                pixelFunction = "apply_soft_fade";
-            }
-
-            if (methodName == "misc_attr_animation")
-            {
-                vertexFunction = ""; // misc_attr_define (We ran out of output registers :/)
-                pixelFunction = "";
-            }
-
-            if (methodName == "wetness")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_wetness_ps";
-            }
-
-            if (methodName == "alpha_blend_source")
-            {
-                vertexFunction = "";
-                pixelFunction = "alpha_blend_source";
-            }
+                ShaderMethods.Albedo => "calc_albedo_ps",
+                ShaderMethods.Bump_Mapping => "calc_bumpmap_ps",
+                ShaderMethods.Alpha_Test => "calc_alpha_test_ps",
+                ShaderMethods.Specular_Mask => "calc_specular_mask_ps",
+                ShaderMethods.Material_Model => "material_type",
+                ShaderMethods.Environment_Mapping => "envmap_type",
+                ShaderMethods.Self_Illumination => "calc_self_illumination_ps",
+                ShaderMethods.Blend_Mode => "blend_type",
+                ShaderMethods.Parallax => "calc_parallax_ps",
+                ShaderMethods.Misc => "bitmap_rotation",
+                ShaderMethods.Distortion => "distort_proc_ps",
+                ShaderMethods.Soft_Fade => "apply_soft_fade",
+                ShaderMethods.Misc_Attr_Animation => string.Empty,
+                ShaderMethods.Wetness => "calc_wetness_ps",
+                ShaderMethods.Alpha_Blend_Source => "alpha_blend_source",
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (ShaderMethods)category switch
             {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Default:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_default_ps";
-                        break;
-                    case Albedo.Detail_Blend:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_detail_blend_ps";
-                        break;
-                    case Albedo.Constant_Color:
-                        vertexFunction = "calc_albedo_constant_color_vs";
-                        pixelFunction = "calc_albedo_constant_color_ps";
-                        break;
-                    case Albedo.Two_Change_Color:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_change_color_ps";
-                        break;
-                    case Albedo.Four_Change_Color:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_four_change_color_ps";
-                        break;
-                    case Albedo.Three_Detail_Blend:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_three_detail_blend_ps";
-                        break;
-                    case Albedo.Two_Detail_Overlay:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_detail_overlay_ps";
-                        break;
-                    case Albedo.Two_Detail:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_detail_ps";
-                        break;
-                    case Albedo.Color_Mask:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_color_mask_ps";
-                        break;
-                    case Albedo.Two_Detail_Black_Point:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_detail_black_point_ps";
-                        break;
-                    case Albedo.Two_Change_Color_Anim_Overlay:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_change_color_anim_ps";
-                        break;
-                    case Albedo.Chameleon:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_chameleon_ps";
-                        break;
-                    case Albedo.Two_Change_Color_Chameleon:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_change_color_chameleon_ps";
-                        break;
-                    case Albedo.Chameleon_Masked:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_chameleon_masked_ps";
-                        break;
-                    case Albedo.Color_Mask_Hard_Light:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_color_mask_hard_light_ps";
-                        break;
-                    case Albedo.Four_Change_Color_Applying_To_Specular:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_four_change_color_applying_to_specular_ps";
-                        break;
-                    case Albedo.Simple:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_simple_ps";
-                        break;
-                    case Albedo.Two_Change_Color_Tex_Overlay:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_change_color_tex_overlay_ps";
-                        break;
-                    case Albedo.Chameleon_Albedo_Masked:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_chameleon_albedo_masked_ps";
-                        break;
-                    case Albedo.Custom_Cube:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_custom_cube_ps";
-                        break;
-                    case Albedo.Two_Color:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_two_color_ps";
-                        break;
-                    case Albedo.Emblem:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_emblem_ps";
-                        break;
-                    case Albedo.Scrolling_Cube_Mask:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_scrolling_cube_mask_ps";
-                        break;
-                    case Albedo.Scrolling_Cube:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_scrolling_cube_ps";
-                        break;
-                    case Albedo.Scrolling_Texture_Uv:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_scrolling_texture_uv_ps";
-                        break;
-                    case Albedo.Texture_From_Misc:
-                        vertexFunction = "calc_albedo_default_vs";
-                        pixelFunction = "calc_albedo_texture_from_misc_ps";
-                        break;
-                }
-            }
+                ShaderMethods.Albedo => "calc_albedo_vs",
+                ShaderMethods.Bump_Mapping => "calc_bumpmap_vs",
+                ShaderMethods.Alpha_Test => "alpha_test",
+                ShaderMethods.Specular_Mask => string.Empty,
+                ShaderMethods.Material_Model => string.Empty,
+                ShaderMethods.Environment_Mapping => string.Empty,
+                ShaderMethods.Self_Illumination => string.Empty,
+                ShaderMethods.Blend_Mode => string.Empty,
+                ShaderMethods.Parallax => "calc_parallax_vs",
+                ShaderMethods.Misc => string.Empty,
+                ShaderMethods.Distortion => "distort_proc_vs",
+                ShaderMethods.Soft_Fade => string.Empty,
+                ShaderMethods.Misc_Attr_Animation => string.Empty,
+                ShaderMethods.Wetness => string.Empty,
+                ShaderMethods.Alpha_Blend_Source => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "bump_mapping")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (ShaderMethods)category switch
             {
-                switch ((Bump_Mapping)option)
+                ShaderMethods.Albedo => (Albedo)option switch
                 {
-                    case Bump_Mapping.Off:
-                        vertexFunction = "calc_bumpmap_off_vs";
-                        pixelFunction = "calc_bumpmap_off_ps";
-                        break;
-                    case Bump_Mapping.Standard:
-                        vertexFunction = "calc_bumpmap_default_vs";
-                        pixelFunction = "calc_bumpmap_default_ps";
-                        break;
-                    case Bump_Mapping.Detail:
-                        vertexFunction = "calc_bumpmap_detail_vs";
-                        pixelFunction = "calc_bumpmap_detail_ps";
-                        break;
-                    case Bump_Mapping.Detail_Masked:
-                        vertexFunction = "calc_bumpmap_detail_vs";
-                        pixelFunction = "calc_bumpmap_detail_masked_ps";
-                        break;
-                    case Bump_Mapping.Detail_Plus_Detail_Masked:
-                        vertexFunction = "calc_bumpmap_default_vs";
-                        pixelFunction = "calc_bumpmap_detail_plus_detail_masked_ps";
-                        break;
-                    case Bump_Mapping.Detail_Unorm:
-                        vertexFunction = "calc_bumpmap_default_vs";
-                        pixelFunction = "calc_bumpmap_detail_unorm_ps";
-                        break;
-                    case Bump_Mapping.Detail_Blend:
-                        vertexFunction = "calc_bumpmap_detail_blend_vs";
-                        pixelFunction = "calc_bumpmap_detail_blend_ps";
-                        break;
-                    case Bump_Mapping.Three_Detail_Blend:
-                        vertexFunction = "calc_bumpmap_three_detail_blend_vs";
-                        pixelFunction = "calc_bumpmap_three_detail_blend_ps";
-                        break;
-                    case Bump_Mapping.Standard_Wrinkle:
-                        vertexFunction = "calc_bumpmap_default_wrinkle_vs";
-                        pixelFunction = "calc_bumpmap_default_wrinkle_ps";
-                        break;
-                    case Bump_Mapping.Detail_Wrinkle:
-                        vertexFunction = "calc_bumpmap_detail_wrinkle_vs";
-                        pixelFunction = "calc_bumpmap_detail_wrinkle_ps";
-                        break;
-                }
-            }
+                    Albedo.Default => "calc_albedo_default_ps",
+                    Albedo.Detail_Blend => "calc_albedo_detail_blend_ps",
+                    Albedo.Constant_Color => "calc_albedo_constant_color_ps",
+                    Albedo.Two_Change_Color => "calc_albedo_two_change_color_ps",
+                    Albedo.Four_Change_Color => "calc_albedo_four_change_color_ps",
+                    Albedo.Three_Detail_Blend => "calc_albedo_three_detail_blend_ps",
+                    Albedo.Two_Detail_Overlay => "calc_albedo_two_detail_overlay_ps",
+                    Albedo.Two_Detail => "calc_albedo_two_detail_ps",
+                    Albedo.Color_Mask => "calc_albedo_color_mask_ps",
+                    Albedo.Two_Detail_Black_Point => "calc_albedo_two_detail_black_point_ps",
+                    Albedo.Two_Change_Color_Anim_Overlay => "calc_albedo_two_change_color_anim_ps",
+                    Albedo.Chameleon => "calc_albedo_chameleon_ps",
+                    Albedo.Two_Change_Color_Chameleon => "calc_albedo_two_change_color_chameleon_ps",
+                    Albedo.Chameleon_Masked => "calc_albedo_chameleon_masked_ps",
+                    Albedo.Color_Mask_Hard_Light => "calc_albedo_color_mask_hard_light_ps",
+                    Albedo.Four_Change_Color_Applying_To_Specular => "calc_albedo_four_change_color_applying_to_specular_ps",
+                    Albedo.Simple => "calc_albedo_simple_ps",
+                    Albedo.Two_Change_Color_Tex_Overlay => "calc_albedo_two_change_color_tex_overlay_ps",
+                    Albedo.Chameleon_Albedo_Masked => "calc_albedo_chameleon_albedo_masked_ps",
+                    Albedo.Custom_Cube => "calc_albedo_custom_cube_ps",
+                    Albedo.Two_Color => "calc_albedo_two_color_ps",
+                    Albedo.Emblem => "calc_albedo_emblem_ps",
+                    Albedo.Scrolling_Cube_Mask => "calc_albedo_scrolling_cube_mask_ps",
+                    Albedo.Scrolling_Cube => "calc_albedo_scrolling_cube_ps",
+                    Albedo.Scrolling_Texture_Uv => "calc_albedo_scrolling_texture_uv_ps",
+                    Albedo.Texture_From_Misc => "calc_albedo_texture_from_misc_ps",
+                    _ => null,
+                },
+                ShaderMethods.Bump_Mapping => (Bump_Mapping)option switch
+                {
+                    Bump_Mapping.Off => "calc_bumpmap_off_ps",
+                    Bump_Mapping.Standard => "calc_bumpmap_default_ps",
+                    Bump_Mapping.Detail => "calc_bumpmap_detail_ps",
+                    Bump_Mapping.Detail_Masked => "calc_bumpmap_detail_masked_ps",
+                    Bump_Mapping.Detail_Plus_Detail_Masked => "calc_bumpmap_detail_plus_detail_masked_ps",
+                    Bump_Mapping.Detail_Unorm => "calc_bumpmap_detail_unorm_ps",
+                    Bump_Mapping.Detail_Blend => "calc_bumpmap_detail_blend_ps",
+                    Bump_Mapping.Three_Detail_Blend => "calc_bumpmap_three_detail_blend_ps",
+                    Bump_Mapping.Standard_Wrinkle => "calc_bumpmap_default_wrinkle_ps",
+                    Bump_Mapping.Detail_Wrinkle => "calc_bumpmap_detail_wrinkle_ps",
+                    _ => null,
+                },
+                ShaderMethods.Alpha_Test => (Alpha_Test)option switch
+                {
+                    Alpha_Test.None => "calc_alpha_test_off_ps",
+                    Alpha_Test.Simple => "calc_alpha_test_on_ps",
+                    _ => null,
+                },
+                ShaderMethods.Specular_Mask => (Specular_Mask)option switch
+                {
+                    Specular_Mask.No_Specular_Mask => "calc_specular_mask_no_specular_mask_ps",
+                    Specular_Mask.Specular_Mask_From_Diffuse => "calc_specular_mask_from_diffuse_ps",
+                    Specular_Mask.Specular_Mask_From_Texture => "calc_specular_mask_texture_ps",
+                    Specular_Mask.Specular_Mask_From_Color_Texture => "calc_specular_mask_color_texture_ps",
+                    Specular_Mask.Specular_Mask_Mult_Diffuse => "calc_specular_mask_mult_texture_ps",
+                    _ => null,
+                },
+                ShaderMethods.Material_Model => (Material_Model)option switch
+                {
+                    Material_Model.Diffuse_Only => "diffuse_only",
+                    Material_Model.Cook_Torrance_Rim_Fresnel => "cook_torrance_rim_fresnel",
+                    Material_Model.Two_Lobe_Phong => "two_lobe_phong",
+                    Material_Model.Foliage => "foliage",
+                    Material_Model.None => "none",
+                    Material_Model.Glass => "glass",
+                    Material_Model.Organism => "organism",
+                    Material_Model.Single_Lobe_Phong => "single_lobe_phong",
+                    Material_Model.Car_Paint => "car_paint",
+                    Material_Model.Hair => "hair",
+                    Material_Model.Cook_Torrance => "cook_torrance",
+                    Material_Model.Cook_Torrance_Pbr_Maps => "cook_torrance_pbr_maps",
+                    Material_Model.Two_Lobe_Phong_Tint_Map => "two_lobe_phong_tint_map",
+                    Material_Model.Cook_Torrance_Reach => "cook_torrance_reach",
+                    Material_Model.Two_Lobe_Phong_Reach => "two_lobe_phong_reach",
+                    Material_Model.Cook_Torrance_Custom_Cube => "cook_torrance_custom_cube",
+                    Material_Model.Cook_Torrance_Two_Color_Spec_Tint => "cook_torrance_two_color_spec_tint",
+                    Material_Model.Cook_Torrance_Scrolling_Cube_Mask => "cook_torrance_scrolling_cube_mask",
+                    Material_Model.Cook_Torrance_Scrolling_Cube => "cook_torrance_scrolling_cube",
+                    Material_Model.Cook_Torrance_From_Albedo => "cook_torrance_from_albedo",
+                    Material_Model.Pbr => "pbr",
+                    Material_Model.Pbr_Spec_Gloss => "pbr_spec_gloss",
+                    _ => null,
+                },
+                ShaderMethods.Environment_Mapping => (Environment_Mapping)option switch
+                {
+                    Environment_Mapping.None => "none",
+                    Environment_Mapping.Per_Pixel => "per_pixel",
+                    Environment_Mapping.Dynamic => "dynamic",
+                    Environment_Mapping.From_Flat_Texture => "from_flat_texture",
+                    Environment_Mapping.Custom_Map => "custom_map",
+                    Environment_Mapping.Dynamic_Reach => "dynamic_reach",
+                    Environment_Mapping.From_Flat_Texture_As_Cubemap => "from_flat_texture_as_cubemap",
+                    Environment_Mapping.Per_Pixel_Mip => "per_pixel_mip",
+                    Environment_Mapping.Dynamic_Expensive => "dynamic_expensive",
+                    _ => null,
+                },
+                ShaderMethods.Self_Illumination => (Self_Illumination)option switch
+                {
+                    Self_Illumination.Off => "calc_self_illumination_none_ps",
+                    Self_Illumination.Simple => "calc_self_illumination_simple_ps",
+                    Self_Illumination._3_Channel_Self_Illum => "calc_self_illumination_three_channel_ps",
+                    Self_Illumination.Plasma => "calc_self_illumination_plasma_ps",
+                    Self_Illumination.From_Diffuse => "calc_self_illumination_from_albedo_ps",
+                    Self_Illumination.Illum_Detail => "calc_self_illumination_detail_ps",
+                    Self_Illumination.Meter => "calc_self_illumination_meter_ps",
+                    Self_Illumination.Self_Illum_Times_Diffuse => "calc_self_illumination_times_diffuse_ps",
+                    Self_Illumination.Simple_With_Alpha_Mask => "calc_self_illumination_simple_with_alpha_mask_ps",
+                    Self_Illumination.Simple_Four_Change_Color => "calc_self_illumination_simple_ps",
+                    Self_Illumination.Illum_Change_Color => "calc_self_illumination_change_color_ps",
+                    Self_Illumination.Multilayer_Additive => "calc_self_illumination_multilayer_ps",
+                    Self_Illumination.Palettized_Plasma => "calc_self_illumination_palettized_plasma_ps",
+                    Self_Illumination.Change_Color_Detail => "calc_self_illumination_change_color_detail_ps",
+                    Self_Illumination.Illum_Detail_World_Space_Four_Cc => "calc_self_illumination_detail_world_space_ps",
+                    Self_Illumination.Change_Color => "calc_self_illumination_change_color_ps",
+                    _ => null,
+                },
+                ShaderMethods.Blend_Mode => (Blend_Mode)option switch
+                {
+                    Blend_Mode.Opaque => "opaque",
+                    Blend_Mode.Additive => "additive",
+                    Blend_Mode.Multiply => "multiply",
+                    Blend_Mode.Alpha_Blend => "alpha_blend",
+                    Blend_Mode.Double_Multiply => "double_multiply",
+                    Blend_Mode.Pre_Multiplied_Alpha => "pre_multiplied_alpha",
+                    _ => null,
+                },
+                ShaderMethods.Parallax => (Parallax)option switch
+                {
+                    Parallax.Off => "calc_parallax_off_ps",
+                    Parallax.Simple => "calc_parallax_simple_ps",
+                    Parallax.Interpolated => "calc_parallax_interpolated_ps",
+                    Parallax.Simple_Detail => "calc_parallax_simple_detail_ps",
+                    _ => null,
+                },
+                ShaderMethods.Misc => (Misc)option switch
+                {
+                    Misc.First_Person_Never => "0",
+                    Misc.First_Person_Sometimes => "0",
+                    Misc.First_Person_Always => "0",
+                    Misc.First_Person_Never_With_Rotating_Bitmaps => "1",
+                    Misc.Always_Calc_Albedo => "0",
+                    Misc.Default => "0",
+                    Misc.Rotating_Bitmaps_Super_Slow => "1",
+                    _ => null,
+                },
+                ShaderMethods.Distortion => (Distortion)option switch
+                {
+                    Distortion.Off => "distort_off_ps",
+                    Distortion.On => "distort_on_ps",
+                    _ => null,
+                },
+                ShaderMethods.Soft_Fade => (Soft_Fade)option switch
+                {
+                    Soft_Fade.Off => "apply_soft_fade_off",
+                    Soft_Fade.On => "apply_soft_fade_on",
+                    _ => null,
+                },
+                ShaderMethods.Misc_Attr_Animation => (Misc_Attr_Animation)option switch
+                {
+                    Misc_Attr_Animation.Off => string.Empty,
+                    Misc_Attr_Animation.Scrolling_Cube => string.Empty,
+                    Misc_Attr_Animation.Scrolling_Projected => string.Empty,
+                    _ => null,
+                },
+                ShaderMethods.Wetness => (Wetness)option switch
+                {
+                    Wetness.Default => "calc_wetness_default_ps",
+                    Wetness.Flood => "calc_wetness_flood_ps",
+                    Wetness.Proof => "calc_wetness_proof_ps",
+                    Wetness.Simple => "calc_wetness_simple_ps",
+                    Wetness.Ripples => "calc_wetness_ripples_ps",
+                    _ => null,
+                },
+                ShaderMethods.Alpha_Blend_Source => (Alpha_Blend_Source)option switch
+                {
+                    Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel => "albedo_alpha_without_fresnel",
+                    Alpha_Blend_Source.From_Albedo_Alpha => "albedo_alpha",
+                    Alpha_Blend_Source.From_Opacity_Map_Alpha => "opacity_map_alpha",
+                    Alpha_Blend_Source.From_Opacity_Map_Rgb => "opacity_map_rgb",
+                    Alpha_Blend_Source.From_Opacity_Map_Alpha_And_Albedo_Alpha => "opacity_map_alpha_and_albedo_alpha",
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "alpha_test")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (ShaderMethods)category switch
             {
-                switch ((Alpha_Test)option)
+                ShaderMethods.Albedo => (Albedo)option switch
                 {
-                    case Alpha_Test.None:
-                        vertexFunction = "off";
-                        pixelFunction = "calc_alpha_test_off_ps";
-                        break;
-                    case Alpha_Test.Simple:
-                        vertexFunction = "on";
-                        pixelFunction = "calc_alpha_test_on_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "specular_mask")
-            {
-                switch ((Specular_Mask)option)
+                    Albedo.Default => "calc_albedo_default_vs",
+                    Albedo.Detail_Blend => "calc_albedo_default_vs",
+                    Albedo.Constant_Color => "calc_albedo_constant_color_vs",
+                    Albedo.Two_Change_Color => "calc_albedo_default_vs",
+                    Albedo.Four_Change_Color => "calc_albedo_default_vs",
+                    Albedo.Three_Detail_Blend => "calc_albedo_default_vs",
+                    Albedo.Two_Detail_Overlay => "calc_albedo_default_vs",
+                    Albedo.Two_Detail => "calc_albedo_default_vs",
+                    Albedo.Color_Mask => "calc_albedo_default_vs",
+                    Albedo.Two_Detail_Black_Point => "calc_albedo_default_vs",
+                    Albedo.Two_Change_Color_Anim_Overlay => "calc_albedo_default_vs",
+                    Albedo.Chameleon => "calc_albedo_default_vs",
+                    Albedo.Two_Change_Color_Chameleon => "calc_albedo_default_vs",
+                    Albedo.Chameleon_Masked => "calc_albedo_default_vs",
+                    Albedo.Color_Mask_Hard_Light => "calc_albedo_default_vs",
+                    Albedo.Four_Change_Color_Applying_To_Specular => "calc_albedo_default_vs",
+                    Albedo.Simple => "calc_albedo_default_vs",
+                    Albedo.Two_Change_Color_Tex_Overlay => "calc_albedo_default_vs",
+                    Albedo.Chameleon_Albedo_Masked => "calc_albedo_default_vs",
+                    Albedo.Custom_Cube => "calc_albedo_default_vs",
+                    Albedo.Two_Color => "calc_albedo_default_vs",
+                    Albedo.Emblem => "calc_albedo_default_vs",
+                    Albedo.Scrolling_Cube_Mask => "calc_albedo_default_vs",
+                    Albedo.Scrolling_Cube => "calc_albedo_default_vs",
+                    Albedo.Scrolling_Texture_Uv => "calc_albedo_default_vs",
+                    Albedo.Texture_From_Misc => "calc_albedo_default_vs",
+                    _ => null,
+                },
+                ShaderMethods.Bump_Mapping => (Bump_Mapping)option switch
                 {
-                    case Specular_Mask.No_Specular_Mask:
-                        vertexFunction = "";
-                        pixelFunction = "calc_specular_mask_no_specular_mask_ps";
-                        break;
-                    case Specular_Mask.Specular_Mask_From_Diffuse:
-                        vertexFunction = "";
-                        pixelFunction = "calc_specular_mask_from_diffuse_ps";
-                        break;
-                    case Specular_Mask.Specular_Mask_From_Texture:
-                        vertexFunction = "";
-                        pixelFunction = "calc_specular_mask_texture_ps";
-                        break;
-                    case Specular_Mask.Specular_Mask_From_Color_Texture:
-                        vertexFunction = "";
-                        pixelFunction = "calc_specular_mask_color_texture_ps";
-                        break;
-                    case Specular_Mask.Specular_Mask_Mult_Diffuse:
-                        vertexFunction = "";
-                        pixelFunction = "calc_specular_mask_mult_texture_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "material_model")
-            {
-                switch ((Material_Model)option)
+                    Bump_Mapping.Off => "calc_bumpmap_off_vs",
+                    Bump_Mapping.Standard => "calc_bumpmap_default_vs",
+                    Bump_Mapping.Detail => "calc_bumpmap_detail_vs",
+                    Bump_Mapping.Detail_Masked => "calc_bumpmap_detail_vs",
+                    Bump_Mapping.Detail_Plus_Detail_Masked => "calc_bumpmap_default_vs",
+                    Bump_Mapping.Detail_Unorm => "calc_bumpmap_default_vs",
+                    Bump_Mapping.Detail_Blend => "calc_bumpmap_detail_blend_vs",
+                    Bump_Mapping.Three_Detail_Blend => "calc_bumpmap_three_detail_blend_vs",
+                    Bump_Mapping.Standard_Wrinkle => "calc_bumpmap_default_wrinkle_vs",
+                    Bump_Mapping.Detail_Wrinkle => "calc_bumpmap_detail_wrinkle_vs",
+                    _ => null,
+                },
+                ShaderMethods.Alpha_Test => (Alpha_Test)option switch
                 {
-                    case Material_Model.Diffuse_Only:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_only";
-                        break;
-                    case Material_Model.Cook_Torrance_Rim_Fresnel:
-                        vertexFunction = "";
-                        pixelFunction = "cook_torrance_rim_fresnel";
-                        break;
-                    case Material_Model.Two_Lobe_Phong:
-                        vertexFunction = "";
-                        pixelFunction = "two_lobe_phong";
-                        break;
-                    case Material_Model.Foliage:
-                        vertexFunction = "";
-                        pixelFunction = "foliage";
-                        break;
-                    case Material_Model.None:
-                        vertexFunction = "";
-                        pixelFunction = "none";
-                        break;
-                    case Material_Model.Glass:
-                        vertexFunction = "";
-                        pixelFunction = "glass";
-                        break;
-                    case Material_Model.Organism:
-                        vertexFunction = "";
-                        pixelFunction = "organism";
-                        break;
-                    case Material_Model.Single_Lobe_Phong:
-                        vertexFunction = "";
-                        pixelFunction = "single_lobe_phong";
-                        break;
-                    case Material_Model.Car_Paint:
-                        vertexFunction = "";
-                        pixelFunction = "car_paint";
-                        break;
-                    case Material_Model.Hair:
-                        vertexFunction = "";
-                        pixelFunction = "hair";
-                        break;
-                    case Material_Model.Cook_Torrance:
-                        vertexFunction = "";
-                        pixelFunction = "cook_torrance";
-                        break;
-                    case Material_Model.Cook_Torrance_Pbr_Maps:
-                        vertexFunction = "";
-                        pixelFunction = "cook_torrance_pbr_maps";
-                        break;
-                    case Material_Model.Two_Lobe_Phong_Tint_Map:
-                        vertexFunction = "";
-                        pixelFunction = "two_lobe_phong_tint_map";
-                        break;
-                    case Material_Model.Cook_Torrance_Reach:
-                        vertexFunction = "";
-                        pixelFunction = "cook_torrance_reach";
-                        break;
-                    case Material_Model.Two_Lobe_Phong_Reach:
-                        vertexFunction = "";
-                        pixelFunction = "two_lobe_phong_reach";
-                        break;
-                    case Material_Model.Cook_Torrance_Custom_Cube:
-                        vertexFunction = "";
-                        pixelFunction = "cook_torrance_custom_cube";
-                        break;
-                    case Material_Model.Cook_Torrance_Two_Color_Spec_Tint:
-                        vertexFunction = "";
-                        pixelFunction = "cook_torrance_two_color_spec_tint";
-                        break;
-                    case Material_Model.Cook_Torrance_Scrolling_Cube_Mask:
-                        vertexFunction = "";
-                        pixelFunction = "cook_torrance_scrolling_cube_mask";
-                        break;
-                    case Material_Model.Cook_Torrance_Scrolling_Cube:
-                        vertexFunction = "";
-                        pixelFunction = "cook_torrance_scrolling_cube";
-                        break;
-                    case Material_Model.Cook_Torrance_From_Albedo:
-                        vertexFunction = "";
-                        pixelFunction = "cook_torrance_from_albedo";
-                        break;
-                    case Material_Model.Pbr:
-                        vertexFunction = "";
-                        pixelFunction = "pbr";
-                        break;
-                    case Material_Model.Pbr_Spec_Gloss:
-                        vertexFunction = "";
-                        pixelFunction = "pbr_spec_gloss";
-                        break;
-                }
-            }
-
-            if (methodName == "environment_mapping")
-            {
-                switch ((Environment_Mapping)option)
+                    Alpha_Test.None => "off",
+                    Alpha_Test.Simple => "on",
+                    _ => null,
+                },
+                ShaderMethods.Specular_Mask => (Specular_Mask)option switch
                 {
-                    case Environment_Mapping.None:
-                        vertexFunction = "";
-                        pixelFunction = "none";
-                        break;
-                    case Environment_Mapping.Per_Pixel:
-                        vertexFunction = "";
-                        pixelFunction = "per_pixel";
-                        break;
-                    case Environment_Mapping.Dynamic:
-                        vertexFunction = "";
-                        pixelFunction = "dynamic";
-                        break;
-                    case Environment_Mapping.From_Flat_Texture:
-                        vertexFunction = "";
-                        pixelFunction = "from_flat_texture";
-                        break;
-                    case Environment_Mapping.Custom_Map:
-                        vertexFunction = "";
-                        pixelFunction = "custom_map";
-                        break;
-                    case Environment_Mapping.Dynamic_Reach:
-                        vertexFunction = "";
-                        pixelFunction = "dynamic_reach";
-                        break;
-                    case Environment_Mapping.From_Flat_Texture_As_Cubemap:
-                        vertexFunction = "";
-                        pixelFunction = "from_flat_texture_as_cubemap";
-                        break;
-                    case Environment_Mapping.Per_Pixel_Mip:
-                        vertexFunction = "";
-                        pixelFunction = "per_pixel_mip";
-                        break;
-                    case Environment_Mapping.Dynamic_Expensive:
-                        vertexFunction = "";
-                        pixelFunction = "dynamic_expensive";
-                        break;
-                }
-            }
-
-            if (methodName == "self_illumination")
-            {
-                switch ((Self_Illumination)option)
+                    Specular_Mask.No_Specular_Mask => string.Empty,
+                    Specular_Mask.Specular_Mask_From_Diffuse => string.Empty,
+                    Specular_Mask.Specular_Mask_From_Texture => string.Empty,
+                    Specular_Mask.Specular_Mask_From_Color_Texture => string.Empty,
+                    Specular_Mask.Specular_Mask_Mult_Diffuse => string.Empty,
+                    _ => null,
+                },
+                ShaderMethods.Material_Model => (Material_Model)option switch
                 {
-                    case Self_Illumination.Off:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_none_ps";
-                        break;
-                    case Self_Illumination.Simple:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_simple_ps";
-                        break;
-                    case Self_Illumination._3_Channel_Self_Illum:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_three_channel_ps";
-                        break;
-                    case Self_Illumination.Plasma:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_plasma_ps";
-                        break;
-                    case Self_Illumination.From_Diffuse:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_from_albedo_ps";
-                        break;
-                    case Self_Illumination.Illum_Detail:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_detail_ps";
-                        break;
-                    case Self_Illumination.Meter:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_meter_ps";
-                        break;
-                    case Self_Illumination.Self_Illum_Times_Diffuse:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_times_diffuse_ps";
-                        break;
-                    case Self_Illumination.Simple_With_Alpha_Mask:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_simple_with_alpha_mask_ps";
-                        break;
-                    case Self_Illumination.Simple_Four_Change_Color:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_simple_ps";
-                        break;
-                    case Self_Illumination.Illum_Change_Color:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_change_color_ps";
-                        break;
-                    case Self_Illumination.Multilayer_Additive:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_multilayer_ps";
-                        break;
-                    case Self_Illumination.Palettized_Plasma:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_palettized_plasma_ps";
-                        break;
-                    case Self_Illumination.Change_Color_Detail:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_change_color_detail_ps";
-                        break;
-                    case Self_Illumination.Illum_Detail_World_Space_Four_Cc:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_detail_world_space_ps";
-                        break;
-                    case Self_Illumination.Change_Color:
-                        vertexFunction = "";
-                        pixelFunction = "calc_self_illumination_change_color_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "blend_mode")
-            {
-                switch ((Blend_Mode)option)
+                    Material_Model.Diffuse_Only => string.Empty,
+                    Material_Model.Cook_Torrance_Rim_Fresnel => string.Empty,
+                    Material_Model.Two_Lobe_Phong => string.Empty,
+                    Material_Model.Foliage => string.Empty,
+                    Material_Model.None => string.Empty,
+                    Material_Model.Glass => string.Empty,
+                    Material_Model.Organism => string.Empty,
+                    Material_Model.Single_Lobe_Phong => string.Empty,
+                    Material_Model.Car_Paint => string.Empty,
+                    Material_Model.Hair => string.Empty,
+                    Material_Model.Cook_Torrance => string.Empty,
+                    Material_Model.Cook_Torrance_Pbr_Maps => string.Empty,
+                    Material_Model.Two_Lobe_Phong_Tint_Map => string.Empty,
+                    Material_Model.Cook_Torrance_Reach => string.Empty,
+                    Material_Model.Two_Lobe_Phong_Reach => string.Empty,
+                    Material_Model.Cook_Torrance_Custom_Cube => string.Empty,
+                    Material_Model.Cook_Torrance_Two_Color_Spec_Tint => string.Empty,
+                    Material_Model.Cook_Torrance_Scrolling_Cube_Mask => string.Empty,
+                    Material_Model.Cook_Torrance_Scrolling_Cube => string.Empty,
+                    Material_Model.Cook_Torrance_From_Albedo => string.Empty,
+                    Material_Model.Pbr => string.Empty,
+                    Material_Model.Pbr_Spec_Gloss => string.Empty,
+                    _ => null,
+                },
+                ShaderMethods.Environment_Mapping => (Environment_Mapping)option switch
                 {
-                    case Blend_Mode.Opaque:
-                        vertexFunction = "";
-                        pixelFunction = "opaque";
-                        break;
-                    case Blend_Mode.Additive:
-                        vertexFunction = "";
-                        pixelFunction = "additive";
-                        break;
-                    case Blend_Mode.Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "multiply";
-                        break;
-                    case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "";
-                        pixelFunction = "alpha_blend";
-                        break;
-                    case Blend_Mode.Double_Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "double_multiply";
-                        break;
-                    case Blend_Mode.Pre_Multiplied_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "pre_multiplied_alpha";
-                        break;
-                }
-            }
-
-            if (methodName == "parallax")
-            {
-                switch ((Parallax)option)
+                    Environment_Mapping.None => string.Empty,
+                    Environment_Mapping.Per_Pixel => string.Empty,
+                    Environment_Mapping.Dynamic => string.Empty,
+                    Environment_Mapping.From_Flat_Texture => string.Empty,
+                    Environment_Mapping.Custom_Map => string.Empty,
+                    Environment_Mapping.Dynamic_Reach => string.Empty,
+                    Environment_Mapping.From_Flat_Texture_As_Cubemap => string.Empty,
+                    Environment_Mapping.Per_Pixel_Mip => string.Empty,
+                    Environment_Mapping.Dynamic_Expensive => string.Empty,
+                    _ => null,
+                },
+                ShaderMethods.Self_Illumination => (Self_Illumination)option switch
                 {
-                    case Parallax.Off:
-                        vertexFunction = "calc_parallax_off_vs";
-                        pixelFunction = "calc_parallax_off_ps";
-                        break;
-                    case Parallax.Simple:
-                        vertexFunction = "calc_parallax_simple_vs";
-                        pixelFunction = "calc_parallax_simple_ps";
-                        break;
-                    case Parallax.Interpolated:
-                        vertexFunction = "calc_parallax_interpolated_vs";
-                        pixelFunction = "calc_parallax_interpolated_ps";
-                        break;
-                    case Parallax.Simple_Detail:
-                        vertexFunction = "calc_parallax_simple_vs";
-                        pixelFunction = "calc_parallax_simple_detail_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "misc")
-            {
-                switch ((Misc)option)
+                    Self_Illumination.Off => string.Empty,
+                    Self_Illumination.Simple => string.Empty,
+                    Self_Illumination._3_Channel_Self_Illum => string.Empty,
+                    Self_Illumination.Plasma => string.Empty,
+                    Self_Illumination.From_Diffuse => string.Empty,
+                    Self_Illumination.Illum_Detail => string.Empty,
+                    Self_Illumination.Meter => string.Empty,
+                    Self_Illumination.Self_Illum_Times_Diffuse => string.Empty,
+                    Self_Illumination.Simple_With_Alpha_Mask => string.Empty,
+                    Self_Illumination.Simple_Four_Change_Color => string.Empty,
+                    Self_Illumination.Illum_Change_Color => string.Empty,
+                    Self_Illumination.Multilayer_Additive => string.Empty,
+                    Self_Illumination.Palettized_Plasma => string.Empty,
+                    Self_Illumination.Change_Color_Detail => string.Empty,
+                    Self_Illumination.Illum_Detail_World_Space_Four_Cc => string.Empty,
+                    Self_Illumination.Change_Color => string.Empty,
+                    _ => null,
+                },
+                ShaderMethods.Blend_Mode => (Blend_Mode)option switch
                 {
-                    case Misc.First_Person_Never:
-                        vertexFunction = "";
-                        pixelFunction = "0";
-                        break;
-                    case Misc.First_Person_Sometimes:
-                        vertexFunction = "";
-                        pixelFunction = "0";
-                        break;
-                    case Misc.First_Person_Always:
-                        vertexFunction = "";
-                        pixelFunction = "0";
-                        break;
-                    case Misc.First_Person_Never_With_Rotating_Bitmaps:
-                        vertexFunction = "";
-                        pixelFunction = "1";
-                        break;
-                    case Misc.Always_Calc_Albedo:
-                        vertexFunction = "";
-                        pixelFunction = "0";
-                        break;
-                    case Misc.Default:
-                        vertexFunction = "";
-                        pixelFunction = "0";
-                        break;
-                    case Misc.Rotating_Bitmaps_Super_Slow:
-                        vertexFunction = "";
-                        pixelFunction = "1";
-                        break;
-                }
-            }
-
-            if (methodName == "distortion")
-            {
-                switch ((Distortion)option)
+                    Blend_Mode.Opaque => string.Empty,
+                    Blend_Mode.Additive => string.Empty,
+                    Blend_Mode.Multiply => string.Empty,
+                    Blend_Mode.Alpha_Blend => string.Empty,
+                    Blend_Mode.Double_Multiply => string.Empty,
+                    Blend_Mode.Pre_Multiplied_Alpha => string.Empty,
+                    _ => null,
+                },
+                ShaderMethods.Parallax => (Parallax)option switch
                 {
-                    case Distortion.Off:
-                        vertexFunction = "distort_nocolor_vs";
-                        pixelFunction = "distort_off_ps";
-                        break;
-                    case Distortion.On:
-                        vertexFunction = "distort_nocolor_vs";
-                        pixelFunction = "distort_on_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "soft_fade")
-            {
-                switch ((Soft_Fade)option)
+                    Parallax.Off => "calc_parallax_off_vs",
+                    Parallax.Simple => "calc_parallax_simple_vs",
+                    Parallax.Interpolated => "calc_parallax_interpolated_vs",
+                    Parallax.Simple_Detail => "calc_parallax_simple_vs",
+                    _ => null,
+                },
+                ShaderMethods.Misc => (Misc)option switch
                 {
-                    case Soft_Fade.Off:
-                        vertexFunction = "";
-                        pixelFunction = "apply_soft_fade_off";
-                        break;
-                    case Soft_Fade.On:
-                        vertexFunction = "";
-                        pixelFunction = "apply_soft_fade_on";
-                        break;
-                }
-            }
-
-            if (methodName == "misc_attr_animation")
-            {
-                switch ((Misc_Attr_Animation)option)
+                    Misc.First_Person_Never => string.Empty,
+                    Misc.First_Person_Sometimes => string.Empty,
+                    Misc.First_Person_Always => string.Empty,
+                    Misc.First_Person_Never_With_Rotating_Bitmaps => string.Empty,
+                    Misc.Always_Calc_Albedo => string.Empty,
+                    Misc.Default => string.Empty,
+                    Misc.Rotating_Bitmaps_Super_Slow => string.Empty,
+                    _ => null,
+                },
+                ShaderMethods.Distortion => (Distortion)option switch
                 {
-                    case Misc_Attr_Animation.Off:
-                        vertexFunction = ""; // off (We ran out of output registers :/)
-                        pixelFunction = "";
-                        break;
-                    case Misc_Attr_Animation.Scrolling_Cube:
-                        vertexFunction = ""; // misc_attr_exist (We ran out of output registers :/)
-                        pixelFunction = "";
-                        break;
-                    case Misc_Attr_Animation.Scrolling_Projected:
-                        vertexFunction = ""; // misc_attr_exist (We ran out of output registers :/)
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "wetness")
-            {
-                switch ((Wetness)option)
+                    Distortion.Off => "distort_nocolor_vs",
+                    Distortion.On => "distort_nocolor_vs",
+                    _ => null,
+                },
+                ShaderMethods.Soft_Fade => (Soft_Fade)option switch
                 {
-                    case Wetness.Default:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_default_ps";
-                        break;
-                    case Wetness.Flood:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_flood_ps";
-                        break;
-                    case Wetness.Proof:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_proof_ps";
-                        break;
-                    case Wetness.Simple:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_simple_ps";
-                        break;
-                    case Wetness.Ripples:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_ripples_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "alpha_blend_source")
-            {
-                switch ((Alpha_Blend_Source)option)
+                    Soft_Fade.Off => string.Empty,
+                    Soft_Fade.On => string.Empty,
+                    _ => null,
+                },
+                ShaderMethods.Misc_Attr_Animation => (Misc_Attr_Animation)option switch
                 {
-                    case Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel:
-                        vertexFunction = "";
-                        pixelFunction = "albedo_alpha_without_fresnel";
-                        break;
-                    case Alpha_Blend_Source.From_Albedo_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "albedo_alpha";
-                        break;
-                    case Alpha_Blend_Source.From_Opacity_Map_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "opacity_map_alpha";
-                        break;
-                    case Alpha_Blend_Source.From_Opacity_Map_Rgb:
-                        vertexFunction = "";
-                        pixelFunction = "opacity_map_rgb";
-                        break;
-                    case Alpha_Blend_Source.From_Opacity_Map_Alpha_And_Albedo_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "opacity_map_alpha_and_albedo_alpha";
-                        break;
-                }
-            }
+                    Misc_Attr_Animation.Off => string.Empty,
+                    Misc_Attr_Animation.Scrolling_Cube => string.Empty,
+                    Misc_Attr_Animation.Scrolling_Projected => string.Empty,
+                    _ => null,
+                },
+                ShaderMethods.Wetness => (Wetness)option switch
+                {
+                    Wetness.Default => string.Empty,
+                    Wetness.Flood => string.Empty,
+                    Wetness.Proof => string.Empty,
+                    Wetness.Simple => string.Empty,
+                    Wetness.Ripples => string.Empty,
+                    _ => null,
+                },
+                ShaderMethods.Alpha_Blend_Source => (Alpha_Blend_Source)option switch
+                {
+                    Alpha_Blend_Source.From_Albedo_Alpha_Without_Fresnel => string.Empty,
+                    Alpha_Blend_Source.From_Albedo_Alpha => string.Empty,
+                    Alpha_Blend_Source.From_Opacity_Map_Alpha => string.Empty,
+                    Alpha_Blend_Source.From_Opacity_Map_Rgb => string.Empty,
+                    Alpha_Blend_Source.From_Opacity_Map_Alpha_And_Albedo_Alpha => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

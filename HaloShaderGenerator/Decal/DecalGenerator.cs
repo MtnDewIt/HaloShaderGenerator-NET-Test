@@ -1,79 +1,50 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Decal
 {
     public class DecalGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(DecalMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(DecalMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((DecalMethods)methodIndex)
+            return (DecalMethods)methodIndex switch
             {
-                case DecalMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo)).Length;
-                case DecalMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode)).Length;
-                case DecalMethods.Render_Pass:
-                    return Enum.GetValues(typeof(Render_Pass)).Length;
-                case DecalMethods.Specular:
-                    return Enum.GetValues(typeof(Specular)).Length;
-                case DecalMethods.Bump_Mapping:
-                    return Enum.GetValues(typeof(Bump_Mapping)).Length;
-                case DecalMethods.Tinting:
-                    return Enum.GetValues(typeof(Tinting)).Length;
-                case DecalMethods.Parallax:
-                    return Enum.GetValues(typeof(Parallax)).Length;
-                case DecalMethods.Interier:
-                    return Enum.GetValues(typeof(Interier)).Length;
-            }
-
-            return -1;
+                DecalMethods.Albedo => Enum.GetValues(typeof(Albedo)).Length,
+                DecalMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)).Length,
+                DecalMethods.Render_Pass => Enum.GetValues(typeof(Render_Pass)).Length,
+                DecalMethods.Specular => Enum.GetValues(typeof(Specular)).Length,
+                DecalMethods.Bump_Mapping => Enum.GetValues(typeof(Bump_Mapping)).Length,
+                DecalMethods.Tinting => Enum.GetValues(typeof(Tinting)).Length,
+                DecalMethods.Parallax => Enum.GetValues(typeof(Parallax)).Length,
+                DecalMethods.Interier => Enum.GetValues(typeof(Interier)).Length,
+                _ => -1,
+            };
         }
 
         public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Default:
-                    return 4;
-                default:
-                    return -1;
-            }
+                ShaderStage.Default => 4,
+                _ => -1,
+            };
         }
 
         public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Default:
-                    return true;
-                default:
-                    return false;
-            }
+                ShaderStage.Default => true,
+                _ => false,
+            };
         }
 
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsPixelShaderShared(ShaderStage entryPoint) => false;
 
-        public bool IsAutoMacro()
-        {
-            return true;
-        }
+        public bool IsAutoMacro() => true;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -364,34 +335,22 @@ namespace HaloShaderGenerator.Decal
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(DecalMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(DecalMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((DecalMethods)methodIndex)
+            return (DecalMethods)methodIndex switch
             {
-                case DecalMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo));
-                case DecalMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode));
-                case DecalMethods.Render_Pass:
-                    return Enum.GetValues(typeof(Render_Pass));
-                case DecalMethods.Specular:
-                    return Enum.GetValues(typeof(Specular));
-                case DecalMethods.Bump_Mapping:
-                    return Enum.GetValues(typeof(Bump_Mapping));
-                case DecalMethods.Tinting:
-                    return Enum.GetValues(typeof(Tinting));
-                case DecalMethods.Parallax:
-                    return Enum.GetValues(typeof(Parallax));
-                case DecalMethods.Interier:
-                    return Enum.GetValues(typeof(Interier));
-            }
-
-            return null;
+                DecalMethods.Albedo => Enum.GetValues(typeof(Albedo)),
+                DecalMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)),
+                DecalMethods.Render_Pass => Enum.GetValues(typeof(Render_Pass)),
+                DecalMethods.Specular => Enum.GetValues(typeof(Specular)),
+                DecalMethods.Bump_Mapping => Enum.GetValues(typeof(Bump_Mapping)),
+                DecalMethods.Tinting => Enum.GetValues(typeof(Tinting)),
+                DecalMethods.Parallax => Enum.GetValues(typeof(Parallax)),
+                DecalMethods.Interier => Enum.GetValues(typeof(Interier)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -415,288 +374,200 @@ namespace HaloShaderGenerator.Decal
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (DecalMethods)category switch
             {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "blend_mode")
-            {
-                vertexFunction = "";
-                pixelFunction = "blend_type";
-            }
-
-            if (methodName == "render_pass")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "specular")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "bump_mapping")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "tinting")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "parallax")
-            {
-                vertexFunction = "calc_parallax_vs";
-                pixelFunction = "calc_parallax_ps";
-            }
-
-            if (methodName == "interier")
-            {
-                vertexFunction = "update_interier_layer_vs";
-                pixelFunction = "update_interier_layer_ps";
-            }
+                DecalMethods.Albedo => string.Empty,
+                DecalMethods.Blend_Mode => "blend_type",
+                DecalMethods.Render_Pass => string.Empty,
+                DecalMethods.Specular => string.Empty,
+                DecalMethods.Bump_Mapping => string.Empty,
+                DecalMethods.Tinting => string.Empty,
+                DecalMethods.Parallax => "calc_parallax_ps",
+                DecalMethods.Interier => "update_interier_layer_ps",
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (DecalMethods)category switch
             {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Diffuse_Only:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Palettized:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Palettized_Plus_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Diffuse_Plus_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Emblem_Change_Color:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Change_Color:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Diffuse_Plus_Alpha_Mask:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Palettized_Plus_Alpha_Mask:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Vector_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Vector_Alpha_Drop_Shadow:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Patchy_Emblem:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                DecalMethods.Albedo => string.Empty,
+                DecalMethods.Blend_Mode => string.Empty,
+                DecalMethods.Render_Pass => string.Empty,
+                DecalMethods.Specular => string.Empty,
+                DecalMethods.Bump_Mapping => string.Empty,
+                DecalMethods.Tinting => string.Empty,
+                DecalMethods.Parallax => "calc_parallax_vs",
+                DecalMethods.Interier => "update_interier_layer_vs",
+                _ => null,
+            };
+        }
 
-            if (methodName == "blend_mode")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (DecalMethods)category switch
             {
-                switch ((Blend_Mode)option)
+                DecalMethods.Albedo => (Albedo)option switch
                 {
-                    case Blend_Mode.Opaque:
-                        vertexFunction = "";
-                        pixelFunction = "opaque";
-                        break;
-                    case Blend_Mode.Additive:
-                        vertexFunction = "";
-                        pixelFunction = "additive";
-                        break;
-                    case Blend_Mode.Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "multiply";
-                        break;
-                    case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "";
-                        pixelFunction = "alpha_blend";
-                        break;
-                    case Blend_Mode.Double_Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "double_multiply";
-                        break;
-                    case Blend_Mode.Maximum:
-                        vertexFunction = "";
-                        pixelFunction = "maximum";
-                        break;
-                    case Blend_Mode.Multiply_Add:
-                        vertexFunction = "";
-                        pixelFunction = "multiply_add";
-                        break;
-                    case Blend_Mode.Add_Src_Times_Dstalpha:
-                        vertexFunction = "";
-                        pixelFunction = "add_src_times_dstalpha";
-                        break;
-                    case Blend_Mode.Add_Src_Times_Srcalpha:
-                        vertexFunction = "";
-                        pixelFunction = "add_src_times_srcalpha";
-                        break;
-                    case Blend_Mode.Inv_Alpha_Blend:
-                        vertexFunction = "";
-                        pixelFunction = "inv_alpha_blend";
-                        break;
-                    case Blend_Mode.Pre_Multiplied_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "pre_multiplied_alpha";
-                        break;
-                }
-            }
+                    Albedo.Diffuse_Only => string.Empty,
+                    Albedo.Palettized => string.Empty,
+                    Albedo.Palettized_Plus_Alpha => string.Empty,
+                    Albedo.Diffuse_Plus_Alpha => string.Empty,
+                    Albedo.Emblem_Change_Color => string.Empty,
+                    Albedo.Change_Color => string.Empty,
+                    Albedo.Diffuse_Plus_Alpha_Mask => string.Empty,
+                    Albedo.Palettized_Plus_Alpha_Mask => string.Empty,
+                    Albedo.Vector_Alpha => string.Empty,
+                    Albedo.Vector_Alpha_Drop_Shadow => string.Empty,
+                    Albedo.Patchy_Emblem => string.Empty,
+                    _ => null,
+                },
+                DecalMethods.Blend_Mode => (Blend_Mode)option switch
+                {
+                    Blend_Mode.Opaque => "opaque",
+                    Blend_Mode.Additive => "additive",
+                    Blend_Mode.Multiply => "multiply",
+                    Blend_Mode.Alpha_Blend => "alpha_blend",
+                    Blend_Mode.Double_Multiply => "double_multiply",
+                    Blend_Mode.Maximum => "maximum",
+                    Blend_Mode.Multiply_Add => "multiply_add",
+                    Blend_Mode.Add_Src_Times_Dstalpha => "add_src_times_dstalpha",
+                    Blend_Mode.Add_Src_Times_Srcalpha => "add_src_times_srcalpha",
+                    Blend_Mode.Inv_Alpha_Blend => "inv_alpha_blend",
+                    Blend_Mode.Pre_Multiplied_Alpha => "pre_multiplied_alpha",
+                    _ => null,
+                },
+                DecalMethods.Render_Pass => (Render_Pass)option switch
+                {
+                    Render_Pass.Pre_Lighting => string.Empty,
+                    Render_Pass.Post_Lighting => string.Empty,
+                    Render_Pass.Transparent => string.Empty,
+                    _ => null,
+                },
+                DecalMethods.Specular => (Specular)option switch
+                {
+                    Specular.Leave => string.Empty,
+                    Specular.Modulate => string.Empty,
+                    _ => null,
+                },
+                DecalMethods.Bump_Mapping => (Bump_Mapping)option switch
+                {
+                    Bump_Mapping.Leave => string.Empty,
+                    Bump_Mapping.Standard => string.Empty,
+                    Bump_Mapping.Standard_Mask => string.Empty,
+                    _ => null,
+                },
+                DecalMethods.Tinting => (Tinting)option switch
+                {
+                    Tinting.None => string.Empty,
+                    Tinting.Unmodulated => string.Empty,
+                    Tinting.Partially_Modulated => string.Empty,
+                    Tinting.Fully_Modulated => string.Empty,
+                    _ => null,
+                },
+                DecalMethods.Parallax => (Parallax)option switch
+                {
+                    Parallax.Off => "calc_parallax_off_ps",
+                    Parallax.Simple => "calc_parallax_simple_ps",
+                    Parallax.Sphere => "calc_parallax_sphere_ps",
+                    _ => null,
+                },
+                DecalMethods.Interier => (Interier)option switch
+                {
+                    Interier.Off => "update_interier_layer_off_ps",
+                    Interier.Simple => "update_interier_layer_simple_ps",
+                    Interier.Floor => "update_interier_layer_floor_ps",
+                    Interier.Hole => "update_interier_layer_hole_ps",
+                    Interier.Box => "update_interier_layer_box_ps",
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "render_pass")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (DecalMethods)category switch
             {
-                switch ((Render_Pass)option)
+                DecalMethods.Albedo => (Albedo)option switch
                 {
-                    case Render_Pass.Pre_Lighting:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Render_Pass.Post_Lighting:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Render_Pass.Transparent:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "specular")
-            {
-                switch ((Specular)option)
+                    Albedo.Diffuse_Only => string.Empty,
+                    Albedo.Palettized => string.Empty,
+                    Albedo.Palettized_Plus_Alpha => string.Empty,
+                    Albedo.Diffuse_Plus_Alpha => string.Empty,
+                    Albedo.Emblem_Change_Color => string.Empty,
+                    Albedo.Change_Color => string.Empty,
+                    Albedo.Diffuse_Plus_Alpha_Mask => string.Empty,
+                    Albedo.Palettized_Plus_Alpha_Mask => string.Empty,
+                    Albedo.Vector_Alpha => string.Empty,
+                    Albedo.Vector_Alpha_Drop_Shadow => string.Empty,
+                    Albedo.Patchy_Emblem => string.Empty,
+                    _ => null,
+                },
+                DecalMethods.Blend_Mode => (Blend_Mode)option switch
                 {
-                    case Specular.Leave:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Specular.Modulate:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "bump_mapping")
-            {
-                switch ((Bump_Mapping)option)
+                    Blend_Mode.Opaque => string.Empty,
+                    Blend_Mode.Additive => string.Empty,
+                    Blend_Mode.Multiply => string.Empty,
+                    Blend_Mode.Alpha_Blend => string.Empty,
+                    Blend_Mode.Double_Multiply => string.Empty,
+                    Blend_Mode.Maximum => string.Empty,
+                    Blend_Mode.Multiply_Add => string.Empty,
+                    Blend_Mode.Add_Src_Times_Dstalpha => string.Empty,
+                    Blend_Mode.Add_Src_Times_Srcalpha => string.Empty,
+                    Blend_Mode.Inv_Alpha_Blend => string.Empty,
+                    Blend_Mode.Pre_Multiplied_Alpha => string.Empty,
+                    _ => null,
+                },
+                DecalMethods.Render_Pass => (Render_Pass)option switch
                 {
-                    case Bump_Mapping.Leave:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Bump_Mapping.Standard:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Bump_Mapping.Standard_Mask:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "tinting")
-            {
-                switch ((Tinting)option)
+                    Render_Pass.Pre_Lighting => string.Empty,
+                    Render_Pass.Post_Lighting => string.Empty,
+                    Render_Pass.Transparent => string.Empty,
+                    _ => null,
+                },
+                DecalMethods.Specular => (Specular)option switch
                 {
-                    case Tinting.None:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Tinting.Unmodulated:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Tinting.Partially_Modulated:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Tinting.Fully_Modulated:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "parallax")
-            {
-                switch ((Parallax)option)
+                    Specular.Leave => string.Empty,
+                    Specular.Modulate => string.Empty,
+                    _ => null,
+                },
+                DecalMethods.Bump_Mapping => (Bump_Mapping)option switch
                 {
-                    case Parallax.Off:
-                        vertexFunction = "calc_parallax_off_vs";
-                        pixelFunction = "calc_parallax_off_ps";
-                        break;
-                    case Parallax.Simple:
-                        vertexFunction = "calc_parallax_simple_vs";
-                        pixelFunction = "calc_parallax_simple_ps";
-                        break;
-                    case Parallax.Sphere:
-                        vertexFunction = "calc_parallax_sphere_vs";
-                        pixelFunction = "calc_parallax_sphere_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "interier")
-            {
-                switch ((Interier)option)
+                    Bump_Mapping.Leave => string.Empty,
+                    Bump_Mapping.Standard => string.Empty,
+                    Bump_Mapping.Standard_Mask => string.Empty,
+                    _ => null,
+                },
+                DecalMethods.Tinting => (Tinting)option switch
                 {
-                    case Interier.Off:
-                        vertexFunction = "update_interier_layer_off_vs";
-                        pixelFunction = "update_interier_layer_off_ps";
-                        break;
-                    case Interier.Simple:
-                        vertexFunction = "update_interier_layer_simple_vs";
-                        pixelFunction = "update_interier_layer_simple_ps";
-                        break;
-                    case Interier.Floor:
-                        vertexFunction = "update_interier_layer_floor_vs";
-                        pixelFunction = "update_interier_layer_floor_ps";
-                        break;
-                    case Interier.Hole:
-                        vertexFunction = "update_interier_layer_hole_vs";
-                        pixelFunction = "update_interier_layer_hole_ps";
-                        break;
-                    case Interier.Box:
-                        vertexFunction = "update_interier_layer_box_vs";
-                        pixelFunction = "update_interier_layer_box_ps";
-                        break;
-                }
-            }
+                    Tinting.None => string.Empty,
+                    Tinting.Unmodulated => string.Empty,
+                    Tinting.Partially_Modulated => string.Empty,
+                    Tinting.Fully_Modulated => string.Empty,
+                    _ => null,
+                },
+                DecalMethods.Parallax => (Parallax)option switch
+                {
+                    Parallax.Off => "calc_parallax_off_vs",
+                    Parallax.Simple => "calc_parallax_simple_vs",
+                    Parallax.Sphere => "calc_parallax_sphere_vs",
+                    _ => null,
+                },
+                DecalMethods.Interier => (Interier)option switch
+                {
+                    Interier.Off => "update_interier_layer_off_vs",
+                    Interier.Simple => "update_interier_layer_simple_vs",
+                    Interier.Floor => "update_interier_layer_floor_vs",
+                    Interier.Hole => "update_interier_layer_hole_vs",
+                    Interier.Box => "update_interier_layer_box_vs",
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

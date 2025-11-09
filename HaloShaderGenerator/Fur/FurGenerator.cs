@@ -1,69 +1,33 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Fur
 {
     public class FurGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(FurMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(FurMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((FurMethods)methodIndex)
+            return (FurMethods)methodIndex switch
             {
-                case FurMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo)).Length;
-                case FurMethods.Warp:
-                    return Enum.GetValues(typeof(Warp)).Length;
-                case FurMethods.Overlay:
-                    return Enum.GetValues(typeof(Overlay)).Length;
-                case FurMethods.Edge_Fade:
-                    return Enum.GetValues(typeof(Edge_Fade)).Length;
-                case FurMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode)).Length;
-            }
-
-            return -1;
+                FurMethods.Albedo => Enum.GetValues(typeof(Albedo)).Length,
+                FurMethods.Warp => Enum.GetValues(typeof(Warp)).Length,
+                FurMethods.Overlay => Enum.GetValues(typeof(Overlay)).Length,
+                FurMethods.Edge_Fade => Enum.GetValues(typeof(Edge_Fade)).Length,
+                FurMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)).Length,
+                _ => -1,
+            };
         }
 
-        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return -1;
-            }
-        }
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint) => -1;
 
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
 
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsPixelShaderShared(ShaderStage entryPoint) => false;
 
-        public bool IsAutoMacro()
-        {
-            return false;
-        }
+        public bool IsAutoMacro() => false;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -209,28 +173,19 @@ namespace HaloShaderGenerator.Fur
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(FurMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(FurMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((FurMethods)methodIndex)
+            return (FurMethods)methodIndex switch
             {
-                case FurMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo));
-                case FurMethods.Warp:
-                    return Enum.GetValues(typeof(Warp));
-                case FurMethods.Overlay:
-                    return Enum.GetValues(typeof(Overlay));
-                case FurMethods.Edge_Fade:
-                    return Enum.GetValues(typeof(Edge_Fade));
-                case FurMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode));
-            }
-
-            return null;
+                FurMethods.Albedo => Enum.GetValues(typeof(Albedo)),
+                FurMethods.Warp => Enum.GetValues(typeof(Warp)),
+                FurMethods.Overlay => Enum.GetValues(typeof(Overlay)),
+                FurMethods.Edge_Fade => Enum.GetValues(typeof(Edge_Fade)),
+                FurMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -255,133 +210,112 @@ namespace HaloShaderGenerator.Fur
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (FurMethods)category switch
             {
-                vertexFunction = "";
-                pixelFunction = "calc_albedo_ps";
-            }
-
-            if (methodName == "warp")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_parallax_ps";
-            }
-
-            if (methodName == "overlay")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_overlay_ps";
-            }
-
-            if (methodName == "edge_fade")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_edge_fade_ps";
-            }
-
-            if (methodName == "blend_mode")
-            {
-                vertexFunction = "";
-                pixelFunction = "blend_type";
-            }
+                FurMethods.Albedo => "calc_albedo_ps",
+                FurMethods.Warp => "calc_parallax_ps",
+                FurMethods.Overlay => "calc_overlay_ps",
+                FurMethods.Edge_Fade => "calc_edge_fade_ps",
+                FurMethods.Blend_Mode => "blend_type",
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (FurMethods)category switch
             {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Fur_Multilayer:
-                        vertexFunction = "";
-                        pixelFunction = "calc_albedo_multilayer_ps";
-                        break;
-                }
-            }
+                FurMethods.Albedo => string.Empty,
+                FurMethods.Warp => string.Empty,
+                FurMethods.Overlay => string.Empty,
+                FurMethods.Edge_Fade => string.Empty,
+                FurMethods.Blend_Mode => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "warp")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (FurMethods)category switch
             {
-                switch ((Warp)option)
+                FurMethods.Albedo => (Albedo)option switch
                 {
-                    case Warp.None:
-                        vertexFunction = "";
-                        pixelFunction = "calc_parallax_off_ps";
-                        break;
-                    case Warp.From_Texture:
-                        vertexFunction = "";
-                        pixelFunction = "calc_warp_from_texture_ps";
-                        break;
-                    case Warp.Parallax_Simple:
-                        vertexFunction = "";
-                        pixelFunction = "calc_parallax_simple_ps";
-                        break;
-                }
-            }
+                    Albedo.Fur_Multilayer => "calc_albedo_multilayer_ps",
+                    _ => null,
+                },
+                FurMethods.Warp => (Warp)option switch
+                {
+                    Warp.None => "calc_parallax_off_ps",
+                    Warp.From_Texture => "calc_warp_from_texture_ps",
+                    Warp.Parallax_Simple => "calc_parallax_simple_ps",
+                    _ => null,
+                },
+                FurMethods.Overlay => (Overlay)option switch
+                {
+                    Overlay.None => "calc_overlay_none_ps",
+                    Overlay.Additive => "calc_overlay_additive_ps",
+                    Overlay.Additive_Detail => "calc_overlay_additive_detail_ps",
+                    Overlay.Multiply => "calc_overlay_multiply_ps",
+                    Overlay.Multiply_And_Additive_Detail => "calc_overlay_multiply_and_additive_detail_ps",
+                    _ => null,
+                },
+                FurMethods.Edge_Fade => (Edge_Fade)option switch
+                {
+                    Edge_Fade.None => "calc_edge_fade_none_ps",
+                    Edge_Fade.Simple => "calc_edge_fade_simple_ps",
+                    _ => null,
+                },
+                FurMethods.Blend_Mode => (Blend_Mode)option switch
+                {
+                    Blend_Mode.Opaque => "opaque",
+                    Blend_Mode.Alpha_Blend => "alpha_blend",
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "overlay")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (FurMethods)category switch
             {
-                switch ((Overlay)option)
+                FurMethods.Albedo => (Albedo)option switch
                 {
-                    case Overlay.None:
-                        vertexFunction = "";
-                        pixelFunction = "calc_overlay_none_ps";
-                        break;
-                    case Overlay.Additive:
-                        vertexFunction = "";
-                        pixelFunction = "calc_overlay_additive_ps";
-                        break;
-                    case Overlay.Additive_Detail:
-                        vertexFunction = "";
-                        pixelFunction = "calc_overlay_additive_detail_ps";
-                        break;
-                    case Overlay.Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "calc_overlay_multiply_ps";
-                        break;
-                    case Overlay.Multiply_And_Additive_Detail:
-                        vertexFunction = "";
-                        pixelFunction = "calc_overlay_multiply_and_additive_detail_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "edge_fade")
-            {
-                switch ((Edge_Fade)option)
+                    Albedo.Fur_Multilayer => string.Empty,
+                    _ => null,
+                },
+                FurMethods.Warp => (Warp)option switch
                 {
-                    case Edge_Fade.None:
-                        vertexFunction = "";
-                        pixelFunction = "calc_edge_fade_none_ps";
-                        break;
-                    case Edge_Fade.Simple:
-                        vertexFunction = "";
-                        pixelFunction = "calc_edge_fade_simple_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "blend_mode")
-            {
-                switch ((Blend_Mode)option)
+                    Warp.None => string.Empty,
+                    Warp.From_Texture => string.Empty,
+                    Warp.Parallax_Simple => string.Empty,
+                    _ => null,
+                },
+                FurMethods.Overlay => (Overlay)option switch
                 {
-                    case Blend_Mode.Opaque:
-                        vertexFunction = "";
-                        pixelFunction = "opaque";
-                        break;
-                    case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "";
-                        pixelFunction = "alpha_blend";
-                        break;
-                }
-            }
+                    Overlay.None => string.Empty,
+                    Overlay.Additive => string.Empty,
+                    Overlay.Additive_Detail => string.Empty,
+                    Overlay.Multiply => string.Empty,
+                    Overlay.Multiply_And_Additive_Detail => string.Empty,
+                    _ => null,
+                },
+                FurMethods.Edge_Fade => (Edge_Fade)option switch
+                {
+                    Edge_Fade.None => string.Empty,
+                    Edge_Fade.Simple => string.Empty,
+                    _ => null,
+                },
+                FurMethods.Blend_Mode => (Blend_Mode)option switch
+                {
+                    Blend_Mode.Opaque => string.Empty,
+                    Blend_Mode.Alpha_Blend => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

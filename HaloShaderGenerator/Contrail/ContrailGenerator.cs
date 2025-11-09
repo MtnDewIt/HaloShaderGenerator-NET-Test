@@ -1,67 +1,32 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Contrail
 {
     public class ContrailGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(ContrailMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(ContrailMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((ContrailMethods)methodIndex)
+            return (ContrailMethods)methodIndex switch
             {
-                case ContrailMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo)).Length;
-                case ContrailMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode)).Length;
-                case ContrailMethods.Black_Point:
-                    return Enum.GetValues(typeof(Black_Point)).Length;
-                case ContrailMethods.Fog:
-                    return Enum.GetValues(typeof(Fog)).Length;
-            }
-
-            return -1;
+                ContrailMethods.Albedo => Enum.GetValues(typeof(Albedo)).Length,
+                ContrailMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)).Length,
+                ContrailMethods.Black_Point => Enum.GetValues(typeof(Black_Point)).Length,
+                ContrailMethods.Fog => Enum.GetValues(typeof(Fog)).Length,
+                _ => -1,
+            };
         }
 
-        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return -1;
-            }
-        }
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint) => -1;
 
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
 
-        public bool IsPixelShaderShared(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsPixelShaderShared(ShaderStage entryPoint) => false;
 
-        public bool IsAutoMacro()
-        {
-            return true;
-        }
+        public bool IsAutoMacro() => true;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -161,26 +126,18 @@ namespace HaloShaderGenerator.Contrail
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(ContrailMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(ContrailMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((ContrailMethods)methodIndex)
+            return (ContrailMethods)methodIndex switch
             {
-                case ContrailMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo));
-                case ContrailMethods.Blend_Mode:
-                    return Enum.GetValues(typeof(Blend_Mode));
-                case ContrailMethods.Black_Point:
-                    return Enum.GetValues(typeof(Black_Point));
-                case ContrailMethods.Fog:
-                    return Enum.GetValues(typeof(Fog));
-            }
-
-            return null;
+                ContrailMethods.Albedo => Enum.GetValues(typeof(Albedo)),
+                ContrailMethods.Blend_Mode => Enum.GetValues(typeof(Blend_Mode)),
+                ContrailMethods.Black_Point => Enum.GetValues(typeof(Black_Point)),
+                ContrailMethods.Fog => Enum.GetValues(typeof(Fog)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -199,140 +156,112 @@ namespace HaloShaderGenerator.Contrail
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (ContrailMethods)category switch
             {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "blend_mode")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "black_point")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
-
-            if (methodName == "fog")
-            {
-                vertexFunction = "";
-                pixelFunction = "";
-            }
+                ContrailMethods.Albedo => string.Empty,
+                ContrailMethods.Blend_Mode => string.Empty,
+                ContrailMethods.Black_Point => string.Empty,
+                ContrailMethods.Fog => string.Empty,
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "albedo")
+            return (ContrailMethods)category switch
             {
-                switch ((Albedo)option)
-                {
-                    case Albedo.Diffuse_Only:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Palettized:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Albedo.Palettized_Plus_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                ContrailMethods.Albedo => string.Empty,
+                ContrailMethods.Blend_Mode => string.Empty,
+                ContrailMethods.Black_Point => string.Empty,
+                ContrailMethods.Fog => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "blend_mode")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (ContrailMethods)category switch
             {
-                switch ((Blend_Mode)option)
+                ContrailMethods.Albedo => (Albedo)option switch
                 {
-                    case Blend_Mode.Opaque:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Additive:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Alpha_Blend:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Double_Multiply:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Maximum:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Multiply_Add:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Add_Src_Times_Dstalpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Add_Src_Times_Srcalpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Inv_Alpha_Blend:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Blend_Mode.Pre_Multiplied_Alpha:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                    Albedo.Diffuse_Only => string.Empty,
+                    Albedo.Palettized => string.Empty,
+                    Albedo.Palettized_Plus_Alpha => string.Empty,
+                    _ => null,
+                },
+                ContrailMethods.Blend_Mode => (Blend_Mode)option switch
+                {
+                    Blend_Mode.Opaque => string.Empty,
+                    Blend_Mode.Additive => string.Empty,
+                    Blend_Mode.Multiply => string.Empty,
+                    Blend_Mode.Alpha_Blend => string.Empty,
+                    Blend_Mode.Double_Multiply => string.Empty,
+                    Blend_Mode.Maximum => string.Empty,
+                    Blend_Mode.Multiply_Add => string.Empty,
+                    Blend_Mode.Add_Src_Times_Dstalpha => string.Empty,
+                    Blend_Mode.Add_Src_Times_Srcalpha => string.Empty,
+                    Blend_Mode.Inv_Alpha_Blend => string.Empty,
+                    Blend_Mode.Pre_Multiplied_Alpha => string.Empty,
+                    _ => null,
+                },
+                ContrailMethods.Black_Point => (Black_Point)option switch
+                {
+                    Black_Point.Off => string.Empty,
+                    Black_Point.On => string.Empty,
+                    _ => null,
+                },
+                ContrailMethods.Fog => (Fog)option switch
+                {
+                    Fog.Off => string.Empty,
+                    Fog.On => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "black_point")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (ContrailMethods)category switch
             {
-                switch ((Black_Point)option)
+                ContrailMethods.Albedo => (Albedo)option switch
                 {
-                    case Black_Point.Off:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Black_Point.On:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
-
-            if (methodName == "fog")
-            {
-                switch ((Fog)option)
+                    Albedo.Diffuse_Only => string.Empty,
+                    Albedo.Palettized => string.Empty,
+                    Albedo.Palettized_Plus_Alpha => string.Empty,
+                    _ => null,
+                },
+                ContrailMethods.Blend_Mode => (Blend_Mode)option switch
                 {
-                    case Fog.Off:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                    case Fog.On:
-                        vertexFunction = "";
-                        pixelFunction = "";
-                        break;
-                }
-            }
+                    Blend_Mode.Opaque => string.Empty,
+                    Blend_Mode.Additive => string.Empty,
+                    Blend_Mode.Multiply => string.Empty,
+                    Blend_Mode.Alpha_Blend => string.Empty,
+                    Blend_Mode.Double_Multiply => string.Empty,
+                    Blend_Mode.Maximum => string.Empty,
+                    Blend_Mode.Multiply_Add => string.Empty,
+                    Blend_Mode.Add_Src_Times_Dstalpha => string.Empty,
+                    Blend_Mode.Add_Src_Times_Srcalpha => string.Empty,
+                    Blend_Mode.Inv_Alpha_Blend => string.Empty,
+                    Blend_Mode.Pre_Multiplied_Alpha => string.Empty,
+                    _ => null,
+                },
+                ContrailMethods.Black_Point => (Black_Point)option switch
+                {
+                    Black_Point.Off => string.Empty,
+                    Black_Point.On => string.Empty,
+                    _ => null,
+                },
+                ContrailMethods.Fog => (Fog)option switch
+                {
+                    Fog.Off => string.Empty,
+                    Fog.On => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }

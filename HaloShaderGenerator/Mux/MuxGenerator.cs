@@ -1,75 +1,42 @@
-using System;
-using System.Collections.Generic;
-using HaloShaderGenerator.DirectX;
 using HaloShaderGenerator.Generator;
 using HaloShaderGenerator.Globals;
-using HaloShaderGenerator.Shared;
+using System;
 
 namespace HaloShaderGenerator.Mux
 {
     public class MuxGenerator : IShaderGenerator
     {
-        public int GetMethodCount()
-        {
-            return Enum.GetValues(typeof(MuxMethods)).Length;
-        }
+        public int GetMethodCount() => Enum.GetValues(typeof(MuxMethods)).Length;
 
         public int GetMethodOptionCount(int methodIndex)
         {
-            switch ((MuxMethods)methodIndex)
+            return (MuxMethods)methodIndex switch
             {
-                case MuxMethods.Blending:
-                    return Enum.GetValues(typeof(Blending)).Length;
-                case MuxMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo)).Length;
-                case MuxMethods.Bump:
-                    return Enum.GetValues(typeof(Bump)).Length;
-                case MuxMethods.Materials:
-                    return Enum.GetValues(typeof(Materials)).Length;
-                case MuxMethods.Environment_Mapping:
-                    return Enum.GetValues(typeof(Environment_Mapping)).Length;
-                case MuxMethods.Parallax:
-                    return Enum.GetValues(typeof(Parallax)).Length;
-                case MuxMethods.Wetness:
-                    return Enum.GetValues(typeof(Wetness)).Length;
-            }
-
-            return -1;
+                MuxMethods.Blending => Enum.GetValues(typeof(Blending)).Length,
+                MuxMethods.Albedo => Enum.GetValues(typeof(Albedo)).Length,
+                MuxMethods.Bump => Enum.GetValues(typeof(Bump)).Length,
+                MuxMethods.Materials => Enum.GetValues(typeof(Materials)).Length,
+                MuxMethods.Environment_Mapping => Enum.GetValues(typeof(Environment_Mapping)).Length,
+                MuxMethods.Parallax => Enum.GetValues(typeof(Parallax)).Length,
+                MuxMethods.Wetness => Enum.GetValues(typeof(Wetness)).Length,
+                _ => -1,
+            };
         }
 
-        public int GetSharedPixelShaderCategory(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return -1;
-            }
-        }
+        public int GetSharedPixelShaderCategory(ShaderStage entryPoint) => -1;
 
-        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint)
-        {
-            switch (entryPoint)
-            {
-                default:
-                    return false;
-            }
-        }
+        public bool IsSharedPixelShaderUsingMethods(ShaderStage entryPoint) => false;
 
         public bool IsPixelShaderShared(ShaderStage entryPoint)
         {
-            switch (entryPoint)
+            return entryPoint switch
             {
-                case ShaderStage.Shadow_Generate:
-                    return true;
-                default:
-                    return false;
-            }
+                ShaderStage.Shadow_Generate => true,
+                _ => false,
+            };
         }
 
-        public bool IsAutoMacro()
-        {
-            return false;
-        }
+        public bool IsAutoMacro() => false;
 
         public ShaderParameters GetGlobalParameters(out string rmopName)
         {
@@ -260,32 +227,21 @@ namespace HaloShaderGenerator.Mux
             return result;
         }
 
-        public Array GetMethodNames()
-        {
-            return Enum.GetValues(typeof(MuxMethods));
-        }
+        public Array GetMethodNames() => Enum.GetValues(typeof(MuxMethods));
 
         public Array GetMethodOptionNames(int methodIndex)
         {
-            switch ((MuxMethods)methodIndex)
+            return (MuxMethods)methodIndex switch
             {
-                case MuxMethods.Blending:
-                    return Enum.GetValues(typeof(Blending));
-                case MuxMethods.Albedo:
-                    return Enum.GetValues(typeof(Albedo));
-                case MuxMethods.Bump:
-                    return Enum.GetValues(typeof(Bump));
-                case MuxMethods.Materials:
-                    return Enum.GetValues(typeof(Materials));
-                case MuxMethods.Environment_Mapping:
-                    return Enum.GetValues(typeof(Environment_Mapping));
-                case MuxMethods.Parallax:
-                    return Enum.GetValues(typeof(Parallax));
-                case MuxMethods.Wetness:
-                    return Enum.GetValues(typeof(Wetness));
-            }
-
-            return null;
+                MuxMethods.Blending => Enum.GetValues(typeof(Blending)),
+                MuxMethods.Albedo => Enum.GetValues(typeof(Albedo)),
+                MuxMethods.Bump => Enum.GetValues(typeof(Bump)),
+                MuxMethods.Materials => Enum.GetValues(typeof(Materials)),
+                MuxMethods.Environment_Mapping => Enum.GetValues(typeof(Environment_Mapping)),
+                MuxMethods.Parallax => Enum.GetValues(typeof(Parallax)),
+                MuxMethods.Wetness => Enum.GetValues(typeof(Wetness)),
+                _ => null,
+            };
         }
 
         public Array GetEntryPointOrder()
@@ -314,171 +270,138 @@ namespace HaloShaderGenerator.Mux
             };
         }
 
-        public void GetCategoryFunctions(string methodName, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryPixelFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "blending")
+            return (MuxMethods)category switch
             {
-                vertexFunction = "";
-                pixelFunction = "material_blend";
-            }
-
-            if (methodName == "albedo")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_albedo_ps";
-            }
-
-            if (methodName == "bump")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_bumpmap_ps";
-            }
-
-            if (methodName == "materials")
-            {
-                vertexFunction = "";
-                pixelFunction = "material_type";
-            }
-
-            if (methodName == "environment_mapping")
-            {
-                vertexFunction = "";
-                pixelFunction = "envmap_type";
-            }
-
-            if (methodName == "parallax")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_parallax_ps";
-            }
-
-            if (methodName == "wetness")
-            {
-                vertexFunction = "";
-                pixelFunction = "calc_wetness_ps";
-            }
+                MuxMethods.Blending => "material_blend",
+                MuxMethods.Albedo => "calc_albedo_ps",
+                MuxMethods.Bump => "calc_bumpmap_ps",
+                MuxMethods.Materials => "material_type",
+                MuxMethods.Environment_Mapping => "envmap_type",
+                MuxMethods.Parallax => "calc_parallax_ps",
+                MuxMethods.Wetness => "calc_wetness_ps",
+                _ => null,
+            };
         }
 
-        public void GetOptionFunctions(string methodName, int option, out string vertexFunction, out string pixelFunction)
+        public string GetCategoryVertexFunction(int category)
         {
-            vertexFunction = null;
-            pixelFunction = null;
-
-            if (methodName == "blending")
+            return (MuxMethods)category switch
             {
-                switch ((Blending)option)
-                {
-                    case Blending.Standard:
-                        vertexFunction = "";
-                        pixelFunction = "standard";
-                        break;
-                }
-            }
+                MuxMethods.Blending => string.Empty,
+                MuxMethods.Albedo => string.Empty,
+                MuxMethods.Bump => string.Empty,
+                MuxMethods.Materials => string.Empty,
+                MuxMethods.Environment_Mapping => string.Empty,
+                MuxMethods.Parallax => string.Empty,
+                MuxMethods.Wetness => string.Empty,
+                _ => null,
+            };
+        }
 
-            if (methodName == "albedo")
+        public string GetOptionPixelFunction(int category, int option)
+        {
+            return (MuxMethods)category switch
             {
-                switch ((Albedo)option)
+                MuxMethods.Blending => (Blending)option switch
                 {
-                    case Albedo.Base_Only:
-                        vertexFunction = "";
-                        pixelFunction = "calc_albedo_base_ps";
-                        break;
-                    case Albedo.Base_And_Detail:
-                        vertexFunction = "";
-                        pixelFunction = "calc_albedo_detail_ps";
-                        break;
-                }
-            }
+                    Blending.Standard => "standard",
+                    _ => null,
+                },
+                MuxMethods.Albedo => (Albedo)option switch
+                {
+                    Albedo.Base_Only => "calc_albedo_base_ps",
+                    Albedo.Base_And_Detail => "calc_albedo_detail_ps",
+                    _ => null,
+                },
+                MuxMethods.Bump => (Bump)option switch
+                {
+                    Bump.Base_Only => "calc_bumpmap_default_ps",
+                    Bump.Base_And_Detail => "calc_bumpmap_detail_ps",
+                    _ => null,
+                },
+                MuxMethods.Materials => (Materials)option switch
+                {
+                    Materials.Diffuse_Only => "diffuse_only",
+                    Materials.Single_Lobe_Phong => "single_lobe_phong",
+                    _ => null,
+                },
+                MuxMethods.Environment_Mapping => (Environment_Mapping)option switch
+                {
+                    Environment_Mapping.None => "none",
+                    Environment_Mapping.Per_Pixel => "per_pixel",
+                    Environment_Mapping.Dynamic => "dynamic",
+                    _ => null,
+                },
+                MuxMethods.Parallax => (Parallax)option switch
+                {
+                    Parallax.Off => "calc_parallax_off_ps",
+                    Parallax.Simple => "calc_parallax_simple_ps",
+                    _ => null,
+                },
+                MuxMethods.Wetness => (Wetness)option switch
+                {
+                    Wetness.Default => "calc_wetness_default_ps",
+                    Wetness.Flood => "calc_wetness_flood_ps",
+                    Wetness.Proof => "calc_wetness_proof_ps",
+                    Wetness.Ripples => "calc_wetness_ripples_ps",
+                    _ => null,
+                },
+                _ => null,
+            };
+        }
 
-            if (methodName == "bump")
+        public string GetOptionVertexFunction(int category, int option)
+        {
+            return (MuxMethods)category switch
             {
-                switch ((Bump)option)
+                MuxMethods.Blending => (Blending)option switch
                 {
-                    case Bump.Base_Only:
-                        vertexFunction = "";
-                        pixelFunction = "calc_bumpmap_default_ps";
-                        break;
-                    case Bump.Base_And_Detail:
-                        vertexFunction = "";
-                        pixelFunction = "calc_bumpmap_detail_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "materials")
-            {
-                switch ((Materials)option)
+                    Blending.Standard => string.Empty,
+                    _ => null,
+                },
+                MuxMethods.Albedo => (Albedo)option switch
                 {
-                    case Materials.Diffuse_Only:
-                        vertexFunction = "";
-                        pixelFunction = "diffuse_only";
-                        break;
-                    case Materials.Single_Lobe_Phong:
-                        vertexFunction = "";
-                        pixelFunction = "single_lobe_phong";
-                        break;
-                }
-            }
-
-            if (methodName == "environment_mapping")
-            {
-                switch ((Environment_Mapping)option)
+                    Albedo.Base_Only => string.Empty,
+                    Albedo.Base_And_Detail => string.Empty,
+                    _ => null,
+                },
+                MuxMethods.Bump => (Bump)option switch
                 {
-                    case Environment_Mapping.None:
-                        vertexFunction = "";
-                        pixelFunction = "none";
-                        break;
-                    case Environment_Mapping.Per_Pixel:
-                        vertexFunction = "";
-                        pixelFunction = "per_pixel";
-                        break;
-                    case Environment_Mapping.Dynamic:
-                        vertexFunction = "";
-                        pixelFunction = "dynamic";
-                        break;
-                }
-            }
-
-            if (methodName == "parallax")
-            {
-                switch ((Parallax)option)
+                    Bump.Base_Only => string.Empty,
+                    Bump.Base_And_Detail => string.Empty,
+                    _ => null,
+                },
+                MuxMethods.Materials => (Materials)option switch
                 {
-                    case Parallax.Off:
-                        vertexFunction = "";
-                        pixelFunction = "calc_parallax_off_ps";
-                        break;
-                    case Parallax.Simple:
-                        vertexFunction = "";
-                        pixelFunction = "calc_parallax_simple_ps";
-                        break;
-                }
-            }
-
-            if (methodName == "wetness")
-            {
-                switch ((Wetness)option)
+                    Materials.Diffuse_Only => string.Empty,
+                    Materials.Single_Lobe_Phong => string.Empty,
+                    _ => null,
+                },
+                MuxMethods.Environment_Mapping => (Environment_Mapping)option switch
                 {
-                    case Wetness.Default:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_default_ps";
-                        break;
-                    case Wetness.Flood:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_flood_ps";
-                        break;
-                    case Wetness.Proof:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_proof_ps";
-                        break;
-                    case Wetness.Ripples:
-                        vertexFunction = "";
-                        pixelFunction = "calc_wetness_ripples_ps";
-                        break;
-                }
-            }
+                    Environment_Mapping.None => string.Empty,
+                    Environment_Mapping.Per_Pixel => string.Empty,
+                    Environment_Mapping.Dynamic => string.Empty,
+                    _ => null,
+                },
+                MuxMethods.Parallax => (Parallax)option switch
+                {
+                    Parallax.Off => string.Empty,
+                    Parallax.Simple => string.Empty,
+                    _ => null,
+                },
+                MuxMethods.Wetness => (Wetness)option switch
+                {
+                    Wetness.Default => string.Empty,
+                    Wetness.Flood => string.Empty,
+                    Wetness.Proof => string.Empty,
+                    Wetness.Ripples => string.Empty,
+                    _ => null,
+                },
+                _ => null,
+            };
         }
     }
 }
