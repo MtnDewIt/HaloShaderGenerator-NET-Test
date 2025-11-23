@@ -101,7 +101,8 @@ namespace HaloShaderGenerator.Shader
         Cook_Torrance_Scrolling_Cube,
         Cook_Torrance_From_Albedo,
         Pbr,
-        Pbr_Spec_Gloss
+        Pbr_Spec_Gloss,
+        Phong_H2,
     }
 
     public enum Environment_Mapping

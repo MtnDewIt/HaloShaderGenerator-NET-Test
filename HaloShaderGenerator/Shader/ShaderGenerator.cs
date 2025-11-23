@@ -878,6 +878,23 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("specular_coefficient", 1.0f);
                         rmopName = @"shaders\shader_options\pbr_spec_gloss";
                         break;
+                    case Material_Model.Phong_H2:
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddIntegerParameter("light_type", 1);
+                        result.AddFloat3ColorParameter("normal_specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("glancing_specular_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddFloat3ColorParameter("normal_env_tint", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("glancing_env_tint");
+                        result.AddFloatParameter("normal_env_brightness", 1.0f);
+                        result.AddFloatParameter("glancing_env_brightness", 0.5f);
+                        result.AddBooleanParameter("order3_area_specular");
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        rmopName = @"shaders\shader_options\phong_h2";
+                        break;
                 }
             }
 
@@ -1515,6 +1532,7 @@ namespace HaloShaderGenerator.Shader
                     Material_Model.Cook_Torrance_From_Albedo => "cook_torrance_from_albedo",
                     Material_Model.Pbr => "pbr",
                     Material_Model.Pbr_Spec_Gloss => "pbr_spec_gloss",
+                    Material_Model.Phong_H2 => "phong_h2",
                     _ => null,
                 },
                 ShaderMethods.Environment_Mapping => (Environment_Mapping)option switch
@@ -1707,6 +1725,7 @@ namespace HaloShaderGenerator.Shader
                     Material_Model.Cook_Torrance_From_Albedo => string.Empty,
                     Material_Model.Pbr => string.Empty,
                     Material_Model.Pbr_Spec_Gloss => string.Empty,
+                    Material_Model.Phong_H2 => string.Empty,
                     _ => null,
                 },
                 ShaderMethods.Environment_Mapping => (Environment_Mapping)option switch
