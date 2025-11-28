@@ -1,12 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <ProjectGuid>{17BFEFFB-1619-4647-BA40-3CD1D87FD774}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>HaloShaderGenerator</RootNamespace>
-    <AssemblyName>HaloShaderGenerator</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <LangVersion>12</LangVersion>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <LangVersion>14</LangVersion>
     <Platforms>x64;x86</Platforms>
     <Configuration>Release</Configuration> <!--Default value-->
     <Platform>x64</Platform> <!--Default value-->
