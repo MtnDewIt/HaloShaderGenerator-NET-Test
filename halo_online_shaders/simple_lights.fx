@@ -346,7 +346,7 @@ void calc_simple_lights_uma(
         float NdotL = smoothstep(0.0, 0.03f, dot(surface_normal, fragment_to_light));
 		float NdotV = dot(surface_normal, view_dir);
 
-		specularly_reflected_light += saturate(spec_mask * 50 * (NdotV - 0.6)) * (albedo / PI) * NdotL;
+		specularly_reflected_light += saturate(spec_mask * 50 * (NdotV - 0.6)) * (albedo / PI) * NdotL * light_radiance;
 		
 		diffusely_reflected_light	+= NdotL * light_radiance * (albedo / PI);
 	}
