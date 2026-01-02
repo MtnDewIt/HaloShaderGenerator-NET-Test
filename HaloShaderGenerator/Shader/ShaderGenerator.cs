@@ -895,6 +895,16 @@ namespace HaloShaderGenerator.Shader
                         result.AddBooleanParameter("no_dynamic_lights");
                         rmopName = @"shaders\shader_options\phong_h2";
                         break;
+                    case Material_Model.Umamusume:
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddSamplerAddressParameter("uma_shaded_map", ShaderOptionParameter.ShaderAddressMode.Mirror, @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddSamplerParameter("uma_base_map", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddIntegerParameter("uma_material_mode");
+                        result.AddIntegerParameter("eye_select");
+                        result.AddFloatParameter("eye_highlight_0");
+                        result.AddFloatParameter("eye_highlight_1");
+                        rmopName = @"shaders\shader_options\umamusume";
+                        break;
                 }
             }
 
@@ -1533,6 +1543,7 @@ namespace HaloShaderGenerator.Shader
                     Material_Model.Pbr => "pbr",
                     Material_Model.Pbr_Spec_Gloss => "pbr_spec_gloss",
                     Material_Model.Phong_H2 => "phong_h2",
+                    Material_Model.Umamusume => "umamusume",
                     _ => null,
                 },
                 ShaderMethods.Environment_Mapping => (Environment_Mapping)option switch
@@ -1726,6 +1737,7 @@ namespace HaloShaderGenerator.Shader
                     Material_Model.Pbr => string.Empty,
                     Material_Model.Pbr_Spec_Gloss => string.Empty,
                     Material_Model.Phong_H2 => string.Empty,
+                    Material_Model.Umamusume => string.Empty,
                     _ => null,
                 },
                 ShaderMethods.Environment_Mapping => (Environment_Mapping)option switch
