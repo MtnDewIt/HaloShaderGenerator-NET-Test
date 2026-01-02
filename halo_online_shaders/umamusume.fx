@@ -138,7 +138,7 @@ void calc_material_analytic_specular_umamusume_ps(
         material_parameters= saturate(sample2D(material_texture, transform_texcoord(texcoord, material_texture_xform)));
 		float4 shaded_texture = sample2D(uma_shaded_map, transform_texcoord(texcoord, material_texture_xform));
 		float4 base_texture = sample2D(uma_base_map, transform_texcoord(texcoord, material_texture_xform));
-
+		material_parameters.w = base_texture.g;
 		float shadowLerp = saturate(1 + ((base_texture.r * 2 * halfLambert - 0.2) * 100));
 		float3 shadedDiff = lerp(shaded_texture.rgb, diffuse_albedo_color, shadowLerp) * light_irradiance;
 
@@ -154,7 +154,7 @@ void calc_material_analytic_specular_umamusume_ps(
         material_parameters= saturate(sample2D(material_texture, transform_texcoord(texcoord, material_texture_xform)));
 		float4 shaded_texture = sample2D(uma_shaded_map, transform_texcoord(texcoord, material_texture_xform));
 		float4 base_texture = sample2D(uma_base_map, transform_texcoord(texcoord, material_texture_xform));
-
+		material_parameters.w = 0;
 		float3 shadedDiff = lerp(shaded_texture.rgb, diffuse_albedo_color, base_texture.r) * light_irradiance;
 		float rimLerp = (1 - saturate(facing * 8)) * material_parameters.b;
 		float3 rimColor = diffuse_albedo_color * 10;
@@ -165,6 +165,7 @@ void calc_material_analytic_specular_umamusume_ps(
     {
         float2 eye_uv = float2(texcoord.x * 0.25 + (eye_select * 0.25), texcoord.y);
 		material_parameters= saturate(sample2D(material_texture, transform_texcoord(eye_uv, material_texture_xform)));
+		material_parameters.w = 0;
 
 		float2 altUv = float2(texcoord.x, texcoord.y * 2);
 		float4 shaded_texture = sample2D(uma_shaded_map, transform_texcoord(altUv, material_texture_xform));
@@ -181,7 +182,7 @@ void calc_material_analytic_specular_umamusume_ps(
         material_parameters= saturate(sample2D(material_texture, transform_texcoord(texcoord, material_texture_xform)));
 		float4 shaded_texture = sample2D(uma_shaded_map, transform_texcoord(texcoord, material_texture_xform));
 		float4 base_texture = sample2D(uma_base_map, transform_texcoord(texcoord, material_texture_xform));
-
+		material_parameters.w = base_texture.g;
 		float shadowLerp = saturate(1 + ((base_texture.r * 2 * halfLambert - 0.2) * 100));
 		float3 shadedDiff = lerp(shaded_texture.rgb, diffuse_albedo_color, shadowLerp) * light_irradiance;
 
@@ -251,6 +252,9 @@ void calc_material_umamusume_ps(
 							tangent_frame,
 							0,
 							sh);
+	float3 dyn_spec = 0;
+	float3 dyn_diff = 0;
+
 
 	calc_material_analytic_specular_umamusume_ps(
 		view_dir,
@@ -268,6 +272,16 @@ void calc_material_umamusume_ps(
 		effective_reflectance,
 		specular_analytical);
 
+	calc_simple_lights_uma(
+		fragment_position_world,
+		surface_normal,
+		view_reflect_dir_world,							// view direction = fragment to camera,   reflected around fragment normal
+        view_dir,
+		spatially_varying_material_parameters.w,
+        albedo,
+		dyn_diff,						// diffusely reflected light (not including diffuse surface color)
+		dyn_spec);
+
 	envmap_specular_reflectance_and_roughness=  0.0f;//float4(EnvBRDFApprox(fRough, rough, NdotV) * (max(sh.x, sh.y), sh.z) * /*prt_ravi_diff.z */ spatially_varying_material_parameters.x, rough);
 	envmap_area_specular_only = 0.0f;
 	/*if(clear_coat)
@@ -277,7 +291,7 @@ void calc_material_umamusume_ps(
 	//float ao_vert = 1 - ((1 - spatially_varying_material_parameters.x) * (1 - prt_ravi_diff.x));
 	diffuse_radiance= 0.0; //* prt_ravi_diff.x;
 		
-	specular_radiance.xyz=  specular_analytical;// * prt_ravi_diff.z;//EnvBRDFApprox(fRough, rough, NdotV)
+	specular_radiance.xyz=  specular_analytical + dyn_diff + dyn_spec;// * prt_ravi_diff.z;//EnvBRDFApprox(fRough, rough, NdotV)
 	
 	specular_radiance.w= 0.0f;
 	//diffuse_radiance = 0.0f;
