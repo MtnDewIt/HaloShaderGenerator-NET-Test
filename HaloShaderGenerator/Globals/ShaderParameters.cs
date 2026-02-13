@@ -198,6 +198,17 @@ namespace HaloShaderGenerator.Globals
             });
         }
 
+        public void AddFloatWithIntegerParameter(string parameterName, uint intBoolArgument, float floatArgument = 0.0f)
+        {
+            Parameters.Add(new ShaderOptionParameter 
+            {
+                ParameterName = parameterName,
+                CodeType = HLSLType.Float,
+                IntBoolArgument = intBoolArgument,
+                FloatArgument = floatArgument,
+            });
+        }
+
         public void AddFloatExternParameter(string parameterName, RenderMethodExtern rmExtern, float floatArgument = 0.0f) 
         {
             Parameters.Add(new ShaderOptionParameter

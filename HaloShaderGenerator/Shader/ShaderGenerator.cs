@@ -841,6 +841,115 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("analytical_anti_shadow_control");
                         rmopName = @"shaders\shader_options\material_cook_torrance_from_albedo";
                         break;
+                    case Material_Model.Pbr:
+                        result.AddBooleanParameter("convert_material");
+                        result.AddBooleanParameter("convert_spec_rough");
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddFloatParameter("roughness_bias");
+                        result.AddFloatParameter("roughness_multiplier", 1.0f);
+                        result.AddFloatParameter("metallic_bias");
+                        result.AddFloatParameter("metallic_multiplier", 1.0f);
+                        rmopName = @"shaders\shader_options\pbr";
+                        break;
+                    case Material_Model.Pbr_Advanced:
+                        result.AddBooleanParameter("convert_material");
+                        result.AddBooleanParameter("convert_spec_rough");
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddFloat3ColorParameter("normal_specular", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloat3ColorParameter("glancing_specular", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("roughness_bias");
+                        result.AddFloatParameter("roughness_multiplier", 1.0f);
+                        result.AddFloatParameter("metallic_bias");
+                        result.AddFloatParameter("metallic_multiplier", 1.0f);
+                        result.AddBooleanParameter("iridescent");
+                        result.AddBooleanParameter("aniso");
+                        result.AddFloatParameter("anisotropy");
+                        result.AddBooleanParameter("clear_coat");
+                        result.AddFloatParameter("cc_roughness", 0.3f);
+                        result.AddSamplerParameter("material_masks", @"shaders\default_bitmaps\bitmaps\alpha_grey50");
+                        rmopName = @"shaders\shader_options\pbr_advanced";
+                        break;
+                    case Material_Model.Pbr_Sss:
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddFloatParameter("roughness_bias");
+                        result.AddFloatParameter("roughness_multiplier", 1.0f);
+                        result.AddFloatWithIntegerParameter("normal_blur_mip", 2, 2.0f);
+                        result.AddSamplerAddressParameter("ss_lut", ShaderOptionParameter.ShaderAddressMode.Mirror, @"rasterizer\lut_direct");
+                        result.AddFloatParameter("ss_distortion", 0.5f);
+                        result.AddFloatParameter("ss_scale", 1.0f);
+                        result.AddFloat3ColorParameter("ss_colour", new ShaderColor(0, 255, 0, 0));
+                        result.AddFloatParameter("ss_power", 5.0f);
+                        rmopName = @"shaders\shader_options\pbr_sss";
+                        break;
+                    case Material_Model.H2a:
+                        result.AddFloat3ColorExternParameter("albedo_cc_col", RenderMethodExtern.object_change_color_primary);
+                        result.AddFloat3ColorExternParameter("specular_cc_col", RenderMethodExtern.object_change_color_tertiary);
+                        result.AddFloat3ColorExternParameter("albedo_cc_col_2", RenderMethodExtern.object_change_color_secondary);
+                        result.AddFloat3ColorExternParameter("specular_cc_col_2", RenderMethodExtern.object_change_color_quaternary);
+                        result.AddBooleanParameter("tag_colour_change");
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient", 1.0f);
+                        result.AddFloat4ColorParameter("mat_albedo_tint", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorParameter("metalness", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("gloss_scale", 1.0f);
+                        result.AddFloatParameter("gloss_bias");
+                        rmopName = @"shaders\shader_options\pbr_spec_gloss";
+                        break;
+                    case Material_Model.H2a_Advanced:
+                        result.AddFloat3ColorExternParameter("albedo_cc_col", RenderMethodExtern.object_change_color_primary);
+                        result.AddFloat3ColorExternParameter("specular_cc_col", RenderMethodExtern.object_change_color_tertiary);
+                        result.AddFloat3ColorExternParameter("albedo_cc_col_2", RenderMethodExtern.object_change_color_secondary);
+                        result.AddFloat3ColorExternParameter("specular_cc_col_2", RenderMethodExtern.object_change_color_quaternary);
+                        result.AddBooleanParameter("tag_colour_change");
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient", 1.0f);
+                        result.AddFloat4ColorParameter("mat_albedo_tint", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorParameter("metalness", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("gloss_scale", 1.0f);
+                        result.AddFloatParameter("gloss_bias");
+                        result.AddBooleanParameter("enable_carpaint");
+                        result.AddFloat4ColorParameter("paint_metalness", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("paint_gloss_scale", 1.0f);
+                        result.AddFloatParameter("paint_gloss_bias");
+                        result.AddBooleanParameter("enable_aniso");
+                        result.AddFloatParameter("anisotropy", 0.5f);
+                        rmopName = @"shaders\shader_options\pbr_spec_gloss_advanced";
+                        break;
+                    case Material_Model.H2a_Advanced_Mask:
+                        result.AddFloat3ColorExternParameter("albedo_cc_col", RenderMethodExtern.object_change_color_primary);
+                        result.AddFloat3ColorExternParameter("specular_cc_col", RenderMethodExtern.object_change_color_tertiary);
+                        result.AddFloat3ColorExternParameter("albedo_cc_col_2", RenderMethodExtern.object_change_color_secondary);
+                        result.AddFloat3ColorExternParameter("specular_cc_col_2", RenderMethodExtern.object_change_color_quaternary);
+                        result.AddBooleanParameter("tag_colour_change");
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\color_white");
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient", 1.0f);
+                        result.AddFloat4ColorParameter("mat_albedo_tint", new ShaderColor(255, 255, 255, 255));
+                        result.AddFloat4ColorParameter("metalness", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("gloss_scale", 1.0f);
+                        result.AddFloatParameter("gloss_bias");
+                        result.AddBooleanParameter("enable_carpaint");
+                        result.AddFloat4ColorParameter("paint_metalness", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("paint_gloss_scale", 1.0f);
+                        result.AddFloatParameter("paint_gloss_bias");
+                        result.AddBooleanParameter("enable_aniso");
+                        result.AddFloatParameter("anisotropy", 0.5f);
+                        result.AddFloat4ColorParameter("mask_metalness", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("mask_gloss_scale", 1.0f);
+                        result.AddFloatParameter("mask_gloss_bias");
+                        result.AddBooleanParameter("enable_mask_carpaint");
+                        result.AddFloat4ColorParameter("mask_paint_metalness", new ShaderColor(0, 255, 255, 255));
+                        result.AddFloatParameter("mask_paint_gloss_scale", 1.0f);
+                        result.AddFloatParameter("mask_paint_gloss_bias");
+                        result.AddFloatParameter("mask_anisotropy", 0.5f);
+                        result.AddBooleanParameter("enable_mask_aniso");
+                        rmopName = @"shaders\shader_options\pbr_spec_gloss_advanced_mask";
+                        break;
                     case Material_Model.Phong_H2:
                         result.AddFloatParameter("diffuse_coefficient", 1.0f);
                         result.AddFloatParameter("specular_coefficient");
@@ -951,6 +1060,14 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
                         result.AddFloatParameter("env_roughness_scale", 1.0f);
                         rmopName = @"shaders\shader_options\env_map_per_pixel";
+                        break;
+                    case Environment_Mapping.Dynamic_Expensive:
+                        result.AddFloat3ColorParameter("env_tint_color", new ShaderColor(0, 255, 255, 255));
+                        result.AddSamplerExternAddressParameter("dynamic_environment_map_0", RenderMethodExtern.texture_dynamic_environment_map_0, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddSamplerExternAddressParameter("dynamic_environment_map_1", RenderMethodExtern.texture_dynamic_environment_map_1, ShaderOptionParameter.ShaderAddressMode.Clamp);
+                        result.AddFloatParameter("env_roughness_scale", 1.0f);
+                        result.AddFloatParameter("env_roughness_offset", 0.5f);
+                        rmopName = @"shaders\shader_options\env_map_dynamic";
                         break;
                 }
             }
@@ -1133,6 +1250,12 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("height_scale", 0.1f);
                         result.AddSamplerParameter("height_scale_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
                         rmopName = @"shaders\shader_options\parallax_detail";
+                        break;
+                    case Parallax.Custom:
+                        result.AddSamplerParameter("height_map", @"shaders\default_bitmaps\bitmaps\gray_50_percent_linear");
+                        result.AddFloatParameter("height_scale", 0.01f);
+                        result.AddIntegerParameter("parallax_samples_max", 4);
+                        rmopName = @"shaders\shader_options\parallax_custom";
                         break;
                 }
             }
@@ -1515,6 +1638,12 @@ namespace HaloShaderGenerator.Shader
                     Material_Model.Cook_Torrance_Scrolling_Cube_Mask => "cook_torrance_scrolling_cube_mask",
                     Material_Model.Cook_Torrance_Scrolling_Cube => "cook_torrance_scrolling_cube",
                     Material_Model.Cook_Torrance_From_Albedo => "cook_torrance_from_albedo",
+                    Material_Model.Pbr => "pbr",
+                    Material_Model.Pbr_Advanced => "pbr_advanced",
+                    Material_Model.Pbr_Sss => "pbr_sss",
+                    Material_Model.H2a => "h2a",
+                    Material_Model.H2a_Advanced => "h2a_advanced",
+                    Material_Model.H2a_Advanced_Mask => "h2a_advanced_mask",
                     Material_Model.Phong_H2 => "phong_h2",
                     Material_Model.Umamusume => "umamusume",
                     Material_Model.Cartoon => "toon",
@@ -1530,6 +1659,7 @@ namespace HaloShaderGenerator.Shader
                     Environment_Mapping.Dynamic_Reach => "dynamic_reach",
                     Environment_Mapping.From_Flat_Texture_As_Cubemap => "from_flat_texture_as_cubemap",
                     Environment_Mapping.Per_Pixel_Mip => "per_pixel_mip",
+                    Environment_Mapping.Dynamic_Expensive => "dynamic_expensive",
                     _ => null,
                 },
                 ShaderMethods.Self_Illumination => (Self_Illumination)option switch
@@ -1568,6 +1698,7 @@ namespace HaloShaderGenerator.Shader
                     Parallax.Simple => "calc_parallax_simple_ps",
                     Parallax.Interpolated => "calc_parallax_interpolated_ps",
                     Parallax.Simple_Detail => "calc_parallax_simple_detail_ps",
+                    Parallax.Custom => "calc_parallax_custom_ps",
                     _ => null,
                 },
                 ShaderMethods.Misc => (Misc)option switch
@@ -1707,6 +1838,12 @@ namespace HaloShaderGenerator.Shader
                     Material_Model.Cook_Torrance_Scrolling_Cube_Mask => string.Empty,
                     Material_Model.Cook_Torrance_Scrolling_Cube => string.Empty,
                     Material_Model.Cook_Torrance_From_Albedo => string.Empty,
+                    Material_Model.Pbr => string.Empty,
+                    Material_Model.Pbr_Advanced => string.Empty,
+                    Material_Model.Pbr_Sss => string.Empty,
+                    Material_Model.H2a => string.Empty,
+                    Material_Model.H2a_Advanced => string.Empty,
+                    Material_Model.H2a_Advanced_Mask => string.Empty,
                     Material_Model.Phong_H2 => string.Empty,
                     Material_Model.Umamusume => string.Empty,
                     Material_Model.Cartoon => string.Empty,
@@ -1722,6 +1859,7 @@ namespace HaloShaderGenerator.Shader
                     Environment_Mapping.Dynamic_Reach => string.Empty,
                     Environment_Mapping.From_Flat_Texture_As_Cubemap => string.Empty,
                     Environment_Mapping.Per_Pixel_Mip => string.Empty,
+                    Environment_Mapping.Dynamic_Expensive => string.Empty,
                     _ => null,
                 },
                 ShaderMethods.Self_Illumination => (Self_Illumination)option switch
@@ -1760,6 +1898,7 @@ namespace HaloShaderGenerator.Shader
                     Parallax.Simple => "calc_parallax_simple_vs",
                     Parallax.Interpolated => "calc_parallax_interpolated_vs",
                     Parallax.Simple_Detail => "calc_parallax_simple_vs",
+                    Parallax.Custom => "calc_parallax_simple_vs", 
                     _ => null,
                 },
                 ShaderMethods.Misc => (Misc)option switch

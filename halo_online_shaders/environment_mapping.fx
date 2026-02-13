@@ -10,6 +10,7 @@
 #define ENVMAP_TYPE_dynamic_reach 5
 #define ENVMAP_TYPE_from_flat_texture_as_cubemap 6
 #define ENVMAP_TYPE_per_pixel_mip 7
+#define ENVMAP_TYPE_dynamic_expensive 8
 
 #define CALC_ENVMAP(env_map_type) calc_environment_map_##env_map_type##_ps
 
@@ -36,6 +37,9 @@ float3 calc_environment_map_none_ps(
 	in float3 reflect_dir,
 	in float4 specular_reflectance_and_roughness,
 	in float3 low_frequency_specular_color,
+#ifdef _PASS_EXTRA_PARAMETERS
+	in float4 misc,
+#endif
 	out float4 ssr_color)
 {
 	ssr_color = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -55,6 +59,9 @@ float3 calc_environment_map_per_pixel_ps(
 	in float3 reflect_dir,
 	in float4 specular_reflectance_and_roughness,
 	in float3 low_frequency_specular_color,
+#ifdef _PASS_EXTRA_PARAMETERS
+	in float4 misc,
+#endif
 	out float4 ssr_color)
 {
 	reflect_dir.y= -reflect_dir.y;
@@ -63,7 +70,11 @@ float3 calc_environment_map_per_pixel_ps(
 //#ifdef pc	
 //	reflection= sampleCUBE(environment_map, reflect_dir);
 //#else
-	reflection= sampleCUBElod(environment_map, reflect_dir, 0.0f);
+#if defined(_PBR_FX_)
+	reflection= sampleCUBElod(environment_map, reflect_dir, specular_reflectance_and_roughness.a * 8);
+#else
+	reflection= sampleCUBE(environment_map, reflect_dir);
+#endif
 //#endif
 
 	ssr_color.rgb = env_tint_color * specular_reflectance_and_roughness.xyz;
@@ -85,6 +96,9 @@ float3 calc_environment_map_per_pixel_mip_ps(
 	in float3 reflect_dir,
 	in float4 specular_reflectance_and_roughness,
 	in float3 low_frequency_specular_color,
+#ifdef _PASS_EXTRA_PARAMETERS
+	in float4 misc,
+#endif
 	out float4 ssr_color)
 {
     reflect_dir.y = -reflect_dir.y;
@@ -100,7 +114,7 @@ float3 calc_environment_map_per_pixel_mip_ps(
 }
 #endif // ENVMAP_TYPE_per_pixel_mip
 
-#if ENVMAP_TYPE(envmap_type) == ENVMAP_TYPE_dynamic
+#if (ENVMAP_TYPE(envmap_type) == ENVMAP_TYPE_dynamic || ENVMAP_TYPE(envmap_type == ENVMAP_TYPE_dynamic_expensive))
 
 #ifndef pc
 	samplerCUBE dynamic_environment_map_0 : register(s1);		// declared by shaders\shader_options\env_map_dynamic.render_method_option
@@ -119,6 +133,9 @@ float3 calc_environment_map_dynamic_ps(
 	in float3 reflect_dir,
 	in float4 specular_reflectance_and_roughness,
 	in float3 low_frequency_specular_color,
+#ifdef _PASS_EXTRA_PARAMETERS
+	in float4 misc,
+#endif
 	out float4 ssr_color)
 {
 	reflect_dir.y= -reflect_dir.y;
@@ -138,18 +155,50 @@ float3 calc_environment_map_dynamic_ps(
 	float grad_x= 0.0f;
 	float grad_y= 0.0f;
 	float base_lod= 0.0f;
-	float lod= max(base_lod, specular_reflectance_and_roughness.w * env_roughness_scale * 4);
+	#if  (defined(_PBR_FX_) || defined(_PBR_SPEC_GLOSS_FX_))
+		float lod= max(base_lod, pow(specular_reflectance_and_roughness.w, 1 / 2.2) * 8);
+	#else
+		float lod= max(base_lod, specular_reflectance_and_roughness.w * env_roughness_scale * 4);
+	#endif
 	
 	reflection_0= sampleCUBElod(dynamic_environment_map_0, reflect_dir, lod);
 	reflection_1= sampleCUBElod(dynamic_environment_map_1, reflect_dir, lod);
 #endif
 
+	// #TODO: HANDLE THIS LATER
 	ssr_color.rgb = env_tint_color * specular_reflectance_and_roughness.xyz;
 	ssr_color.a = specular_reflectance_and_roughness.w * env_roughness_scale;
+
+#if  (defined(_PBR_FX_) || defined(_PBR_SPEC_GLOSS_FX_))
+	float3 reflection=  (reflection_0.rgb * reflection_0.a * 256) * dynamic_environment_blend.rgb + 
+							(reflection_1.rgb * reflection_1.a * 256) * (1.0f-dynamic_environment_blend.rgb);
+	reflection *= specular_reflectance_and_roughness.xyz;
+
+	ssr_color = specular_reflectance_and_roughness;
+#if  (defined(PBR_ADVANCED) || defined(H2A_ADVANCED))
+	if(misc.y > 0.0f)
+	{
+		float cc_lod= max(base_lod, pow(misc.x, 1 / 2.2) * 8);
+
+		float4 reflection_cc_0= sampleCUBElod(dynamic_environment_map_0, reflect_dir, cc_lod);
+		float4 reflection_cc_1= sampleCUBElod(dynamic_environment_map_1, reflect_dir, cc_lod);
+
+		float3 reflection_cc=  	(reflection_cc_0.rgb * reflection_cc_0.a * 256) * dynamic_environment_blend.rgb + 
+								(reflection_cc_1.rgb * reflection_cc_1.a * 256) * (1.0f-dynamic_environment_blend.rgb);
+		reflection += reflection_cc * low_frequency_specular_color * misc.y;
+	}
+#endif
+	return reflection;
+#else
 
 	float3 reflection=  (reflection_0.rgb * reflection_0.a * 256) * dynamic_environment_blend.rgb + 
 						(reflection_1.rgb * reflection_1.a * 256) * (1.0f-dynamic_environment_blend.rgb);
 	return reflection * specular_reflectance_and_roughness.xyz * env_tint_color * low_frequency_specular_color;
+
+	ssr_color.rgb = env_tint_color * specular_reflectance_and_roughness.xyz;
+	ssr_color.a = specular_reflectance_and_roughness.w * env_roughness_scale;
+#endif
+
 	
 //	return float3(lod, lod, lod) / 6.0f;
 }
@@ -211,6 +260,9 @@ float3 calc_environment_map_from_flat_texture_ps(
 	in float3 reflect_dir,								// normalized
 	in float4 specular_reflectance_and_roughness,
 	in float3 low_frequency_specular_color,
+#ifdef _PASS_EXTRA_PARAMETERS
+	in float4 misc,
+#endif
 	out float4 ssr_color)
 {
 	float3 reflection= float3(1.0f, 0.0f, 0.0f);
@@ -263,6 +315,9 @@ float3 calc_environment_map_from_flat_texture_as_cubemap_ps(
 	in float3 reflect_dir,								// normalized
 	in float4 specular_reflectance_and_roughness,
 	in float3 low_frequency_specular_color,
+#ifdef _PASS_EXTRA_PARAMETERS
+	in float4 misc,
+#endif
 	out float4 ssr_color)
 {
 	return calc_environment_map_from_flat_texture_ps(
@@ -296,6 +351,9 @@ float3 calc_environment_map_custom_map_ps(
 	in float3 reflect_dir,
 	in float4 specular_reflectance_and_roughness,
 	in float3 low_frequency_specular_color,
+#ifdef _PASS_EXTRA_PARAMETERS
+	in float4 misc,
+#endif
 	out float4 ssr_color)
 {
 	reflect_dir.y = -reflect_dir.y;
@@ -351,6 +409,9 @@ float3 calc_environment_map_dynamic_reach_ps(
 	in float3 reflect_dir,
 	in float4 specular_reflectance_and_roughness,
 	in float3 low_frequency_specular_color,
+#ifdef _PASS_EXTRA_PARAMETERS
+	in float4 misc,
+#endif
 	out float4 ssr_color)
 {
 	reflect_dir.y= -reflect_dir.y;
@@ -405,3 +466,149 @@ float3 calc_environment_map_dynamic_reach_ps(
 	return reflection * specular_reflectance_and_roughness.xyz * env_tint_color * low_frequency_specular_color;
 }
 #endif // ENVMAP_TYPE_dynamic_reach
+
+#if ENVMAP_TYPE(envmap_type) == ENVMAP_TYPE_dynamic_expensive
+
+float3 calc_environment_map_dynamic_expensive_ps(
+	in float3 view_dir,
+	in float3 normal,
+	in float3 reflect_dir,
+	in float4 specular_reflectance_and_roughness,
+	in float3 low_frequency_specular_color,
+#ifdef _PASS_EXTRA_PARAMETERS
+	in float4 misc,
+#endif
+	out float4 ssr_color
+	)
+{
+	return calc_environment_map_dynamic_ps(
+		view_dir,
+		normal,
+		reflect_dir,
+		specular_reflectance_and_roughness,
+		low_frequency_specular_color,
+#ifdef _PASS_EXTRA_PARAMETERS
+		misc,
+#endif
+		ssr_color
+	);
+}
+/*
+#define PI                3.14159265358979323846264338327950
+
+half2 hammersley(uint i, uint N) {
+    uint bits = i;
+    bits = (bits << 16u) | (bits >> 16u);
+    bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
+    bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
+    bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
+    bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
+    float rdi = float(bits) * 2.3283064365386963e-10; // Divide by 0x100000000
+    return float2(float(i)/float(N), rdi);
+}
+
+#ifndef pc
+samplerCUBE dynamic_environment_map_0 : register(s1);
+samplerCUBE dynamic_environment_map_1 : register(s2);
+#elif DX_VERSION == 11
+PARAM_SAMPLER_CUBE(dynamic_environment_map_0);
+PARAM_SAMPLER_CUBE(dynamic_environment_map_1);
+#else
+LOCAL_SAMPLER_CUBE(dynamic_environment_map_0, 1);
+LOCAL_SAMPLER_CUBE(dynamic_environment_map_1, 2);
+#endif 
+
+// GGX importance sampling
+half3 importance_sample_GGX(float2 Xi, float roughness, float3 N, float3x3 TBN) {
+    float a = roughness * roughness;
+    float phi = 2.0 * PI * Xi.x;
+    float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a*a - 1.0) * Xi.y));
+    float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+    
+    // Spherical to tangent space
+    float3 H = float3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
+    // Transform to world space
+    H = mul(H, TBN);
+    return normalize(H);
+}
+
+// Construct tangent frame
+float3x3 construct_tangent_frame(float3 N) {
+    float3 up = abs(N.z) < 0.999 ? float3(0,0,1) : float3(1,0,0);
+    float3 tangent = normalize(cross(up, N));
+    float3 bitangent = cross(N, tangent);
+    return float3x3(tangent, bitangent, N);
+}
+
+float3 calc_environment_map_dynamic_expensive_ps(
+	in float3 view_dir,
+	in float3 normal,
+	in float3 reflect_dir,
+	in float4 envmap_specular_reflectance_and_roughness,
+	in float3 low_frequency_specular_color)
+{
+	const float roughness = envmap_specular_reflectance_and_roughness.w;
+	const float3 N = normalize(normal);
+	const float3 V = normalize(view_dir);
+	float NoV = max(dot(N, V), 0.0001);
+
+	// Precompute blend factors once (Optimization 1)
+	float3 blend0 = dynamic_environment_blend.rgb;
+	float3 blend1 = 1.0f - blend0;
+
+	// Precompute Schlick constant (Optimization 2)
+	float k = (roughness * roughness) / 2.0;
+
+	float3x3 tangent_space = construct_tangent_frame(N);
+
+	float3 accumulated_color = 0.0;
+	float weight_sum = 0.0;
+
+	float grad_x = length(ddx(reflect_dir));
+	float grad_y = length(ddy(reflect_dir));
+	float base_lod = 6.0f * sqrt(max(grad_x, grad_y)) - 0.6f;
+	float lod = max(base_lod, envmap_specular_reflectance_and_roughness.w * 8);
+
+	uint sample_count = uint(1 + 127 * lod * lod);
+	sample_count = clamp(sample_count, 1, 128);
+
+	for (uint i = 0; i < sample_count; i++)
+	{
+		half2 Xi = hammersley(i, sample_count);
+		half3 H = importance_sample_GGX(Xi, roughness, N, tangent_space);
+		float3 L = reflect(-V, H);
+
+		float NoL = max(dot(N, L), 0.0001);
+		float NoH = max(dot(N, H), 0.0);
+		float VoH = max(dot(V, H), 0.0);
+
+		float3 sample_dir = float3(L.x, -L.y, L.z);
+
+		float4 sample_0 = sampleCUBElod(dynamic_environment_map_0, sample_dir, lod);
+		float4 sample_1 = sampleCUBElod(dynamic_environment_map_0, sample_dir, lod);
+
+		// Use precomputed blend factors
+		float3 env_sample = (sample_0.rgb * sample_0.a * 256) * blend0 +
+			(sample_1.rgb * sample_1.a * 256) * blend1;
+
+		// Schlick-based G calculation (Optimization 2)
+		float G = (NoV / (NoV * (1.0 - k) + k)) *
+			(NoL / (NoL * (1.0 - k) + k));
+
+		float weight = (G * VoH) / (NoH * NoV);
+		weight = max(weight, 0.001);
+
+		accumulated_color += env_sample * weight;
+		weight_sum += weight;
+	}
+
+	float3 reflection = accumulated_color / max(weight_sum, 0.001);
+	//reflection = reflection / (reflection + 1);
+	//reflection = pow(reflection, (1.0/2.2));
+
+	reflection = reflection * envmap_specular_reflectance_and_roughness.xyz * low_frequency_specular_color;
+
+	return reflection;
+}
+*/
+#endif
