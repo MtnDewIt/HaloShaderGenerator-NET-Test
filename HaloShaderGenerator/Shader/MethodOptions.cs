@@ -104,6 +104,7 @@ namespace HaloShaderGenerator.Shader
         Pbr_Spec_Gloss,
         Phong_H2,
         Umamusume,
+        Cartoon,
     }
 
     public enum Environment_Mapping

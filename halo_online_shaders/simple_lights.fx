@@ -486,6 +486,75 @@ void calc_simple_lights_analytical(
 }
 #endif // DX_VERSION == 9
 
+void calc_toon_lights_analytical(
+		in float3 fragment_position_world,
+		in float3 normal_dir,
+		in float3 view_dir,							// view direction = fragment to camera,   reflected around fragment normal
+		in float roughness,
+		in float3 effective_reflectance,
+		in float3 specular_glancing_color,
+		out float ndotl_sum,
+		out float3 diffusely_reflected_light,						// diffusely reflected light (not including diffuse surface color)
+		out float3 specularly_reflected_light)						// specularly reflected light (not including specular surface color)
+{
+	diffusely_reflected_light= float3(0.0f, 0.0f, 0.0f);
+	specularly_reflected_light= float3(0.0f, 0.0f, 0.0f);
+	ndotl_sum = 0.0f;
+	float blinn_power = max(2/pow(max(roughness, 0.06),4)-2, 0.00001);
+	float blinn_power_sharp = max(2/pow(max(roughness - (0.6 * roughness * roughness), 0.06),4)-2, 0.00001);
+	float blinn_normalize = ((blinn_power + 2) / 8);
+	// add in simple lights
+//#ifndef pc	
+	[loop]
+//#endif
+	for (int light_index= 0; light_index < SIMPLE_LIGHT_COUNT; light_index++)
+	{
+		// Compute distance squared to light, to see if we can skip this light.
+		// Note: This is also computed in calculate_simple_light below, but the shader
+		// compiler will remove the second computation and share the results of this
+		// computation.
+		float3 fragment_to_light_test= LIGHT_POSITION - fragment_position_world;				// vector from fragment to light
+		float  light_dist2_test= dot(fragment_to_light_test, fragment_to_light_test);				// distance to the light, squared
+		if( light_dist2_test >= LIGHT_BOUNDING_RADIUS )
+		{
+			// debug: use a strong green tint to highlight area outside of the light's radius
+			//diffusely_reflected_light += float3( 0, 1, 0 );
+			//specularly_reflected_light += float3( 0, 1, 0 );
+			continue;
+		}
+		
+		float3 fragment_to_light;
+		float3 light_radiance;
+		calculate_simple_light(
+			light_index, fragment_position_world, light_radiance, fragment_to_light);
+		
+
+		float3 H = normalize(fragment_to_light + view_dir);
+		float NdotH = saturate(dot(normal_dir, H));
+		float NdotL = saturate(dot(normal_dir, fragment_to_light));
+		float NdotV = saturate(dot(normal_dir, view_dir));
+		float VdotH = saturate(dot(view_dir, H));
+
+		float NdotL_stepped = smoothstep(0, 0.01f, NdotL);
+
+		float3 fresnel = effective_reflectance + (specular_glancing_color - effective_reflectance) * pow(1 - VdotH, 5.0f);
+
+		float blinn_phong = blinn_normalize * pow(NdotH, blinn_power);
+		float blinn_phong_sharp = blinn_normalize * pow(NdotH, blinn_power_sharp);
+
+		float sharp_highlight = smoothstep(0.005f, 0.01f, saturate(blinn_phong_sharp))  * (1 - smoothstep(0.2, 0.8, roughness));
+		float widest_highlight = min(blinn_phong, 0.175f) * smoothstep(0.2, 0.8, roughness) * (1 - sharp_highlight);
+		float scale_factor = max(8 * roughness, 1);
+		float toon_blinn = sharp_highlight + widest_highlight;
+
+		diffusely_reflected_light  += (1 / PI) * (1 - fresnel) * NdotL_stepped * light_radiance;	
+		
+		specularly_reflected_light += toon_blinn * fresnel * NdotL * light_radiance;
+
+		ndotl_sum += (NdotL_stepped + toon_blinn) * light_radiance ;
+	}
+	ndotl_sum = saturate(ndotl_sum);
+}
 
 float calc_diffuse_lobe(
 	in float3 fragment_normal,

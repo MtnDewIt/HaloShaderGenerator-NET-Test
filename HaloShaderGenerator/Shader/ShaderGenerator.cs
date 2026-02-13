@@ -905,6 +905,23 @@ namespace HaloShaderGenerator.Shader
                         result.AddFloatParameter("eye_highlight_1");
                         rmopName = @"shaders\shader_options\umamusume";
                         break;
+                    case Material_Model.Cartoon:
+                        result.AddFloatParameter("diffuse_coefficient", 1.0f);
+                        result.AddFloatParameter("specular_coefficient");
+                        result.AddFloat3ColorParameter("specular_tint", new ShaderColor(0, 47, 47, 47));
+                        result.AddFloat3ColorParameter("fresnel_color", new ShaderColor(1, 255, 255, 255));
+                        result.AddFloatParameter("roughness", 0.4f);
+                        result.AddFloatParameter("area_specular_contribution", 0.5f);
+                        result.AddFloatParameter("analytical_specular_contribution", 0.5f);
+                        result.AddFloatParameter("environment_map_specular_contribution");
+                        result.AddBooleanParameter("use_material_texture");
+                        result.AddFloatParameter("roughness_minimum");
+                        result.AddFloatParameter("specular_shadowing_amount");
+                        result.AddSamplerParameter("material_texture", @"shaders\default_bitmaps\bitmaps\gray_50_percent");
+                        result.AddBooleanParameter("no_dynamic_lights");
+                        result.AddFloatParameter("albedo_blend");
+                        rmopName = @"shaders\shader_options\toon";
+                        break;
                 }
             }
 
@@ -1544,6 +1561,7 @@ namespace HaloShaderGenerator.Shader
                     Material_Model.Pbr_Spec_Gloss => "pbr_spec_gloss",
                     Material_Model.Phong_H2 => "phong_h2",
                     Material_Model.Umamusume => "umamusume",
+                    Material_Model.Cartoon => "toon",
                     _ => null,
                 },
                 ShaderMethods.Environment_Mapping => (Environment_Mapping)option switch
@@ -1738,6 +1756,7 @@ namespace HaloShaderGenerator.Shader
                     Material_Model.Pbr_Spec_Gloss => string.Empty,
                     Material_Model.Phong_H2 => string.Empty,
                     Material_Model.Umamusume => string.Empty,
+                    Material_Model.Cartoon => string.Empty,
                     _ => null,
                 },
                 ShaderMethods.Environment_Mapping => (Environment_Mapping)option switch

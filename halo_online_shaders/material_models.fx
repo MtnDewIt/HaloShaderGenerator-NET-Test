@@ -26,6 +26,7 @@
 #define MATERIAL_TYPE_pbr_spec_gloss 18
 #define MATERIAL_TYPE_phong_h2 19
 #define MATERIAL_TYPE_umamusume 20
+#define MATERIAL_TYPE_toon 21
 
 
 // all material models must define these 4 functions
@@ -267,9 +268,17 @@ PARAM(bool, no_dynamic_lights);
 #endif
 
 //*****************************************************************************
-// two lobe phong model with specular tint colors got from special texture
+// basically just the shader converted directly from umamusume
 //*****************************************************************************
 #if MATERIAL_TYPE(material_type) == MATERIAL_TYPE_umamusume
 #include "umamusume.fx"
+#define NO_ALPHA_TO_COVERAGE
+#endif
+
+//*****************************************************************************
+// Toon
+//*****************************************************************************
+#if MATERIAL_TYPE(material_type) == MATERIAL_TYPE_toon
+#include "toon.fx"
 #define NO_ALPHA_TO_COVERAGE
 #endif
