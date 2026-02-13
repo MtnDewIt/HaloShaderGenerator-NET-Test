@@ -117,9 +117,9 @@ namespace HaloShaderGenerator.Shared
         Specular,
         Translucent,
         Custom_Specular,
-        Pbr,
-        Pbr_Spec_Gloss,
         Phong_H2,
+        Umamusume,
+        Cartoon
     }
 
     public enum Environment_Mapping
@@ -131,8 +131,7 @@ namespace HaloShaderGenerator.Shared
         Custom_Map,
         From_Flat_Texture_As_Cubemap,
         Dynamic_Reach,
-        Per_Pixel_Mip,
-        Dynamic_Expensive
+        Per_Pixel_Mip
     }
 
     public enum Self_Illumination

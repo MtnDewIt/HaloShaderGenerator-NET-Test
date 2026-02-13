@@ -100,8 +100,6 @@ namespace HaloShaderGenerator.Shader
         Cook_Torrance_Scrolling_Cube_Mask,
         Cook_Torrance_Scrolling_Cube,
         Cook_Torrance_From_Albedo,
-        Pbr,
-        Pbr_Spec_Gloss,
         Phong_H2,
         Umamusume,
         Cartoon,
@@ -116,8 +114,7 @@ namespace HaloShaderGenerator.Shader
         Custom_Map,
         Dynamic_Reach,
         From_Flat_Texture_As_Cubemap,
-        Per_Pixel_Mip,
-        Dynamic_Expensive,
+        Per_Pixel_Mip
     }
 
     public enum Self_Illumination
