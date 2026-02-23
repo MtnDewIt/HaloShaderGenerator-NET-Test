@@ -152,8 +152,7 @@ namespace HaloShaderGenerator.TemplateGenerator
                 misc != Shader.Misc.First_Person_Never_With_Rotating_Bitmaps))
                 macros.Add(ShaderGeneratorBase.CreateMacro("maybe_calc_albedo", "1"));
 
-            if (misc == Shader.Misc.Always_Calc_Albedo ||
-                misc == Shader.Misc.Default)
+            if (misc == Shader.Misc.Always_Calc_Albedo)
                 macros.Add(ShaderGeneratorBase.CreateMacro("always_calc_albedo", "1"));
 
             if (alphaTest == Shared.Alpha_Test.From_Albedo_Alpha)
