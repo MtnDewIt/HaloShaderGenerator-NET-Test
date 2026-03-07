@@ -25,6 +25,13 @@ namespace HaloShaderGenerator.DirectX
             D3D_INCLUDE_FORCE_DWORD = 0x7fffffff
         }
 
+        public struct D3DXVECTOR3
+        {
+            public float X;
+            public float Y;
+            public float Z;
+        }
+
         /// <summary>
         /// C# wrapper for D3D9 shader macro
         /// </summary>
@@ -99,5 +106,46 @@ namespace HaloShaderGenerator.DirectX
             uint flags,
             [MarshalAs(UnmanagedType.LPStr)] string szComments,
             ref ID3DBlob ppDisassembly);
+
+        [PreserveSig]
+        [DllImport("d3dx9_43.dll", CallingConvention = CallingConvention.StdCall)]
+        public static extern int D3DXSHEvalConeLight(
+            uint order,
+            ref D3DXVECTOR3 dir,
+            float radius,
+            float rIntensity,
+            float gIntensity,
+            float bIntensity,
+            [Out] float[] outR,
+            [Out] float[] outG,
+            [Out] float[] outB);
+
+        [PreserveSig]
+        [DllImport("d3dx9_43.dll", CallingConvention = CallingConvention.StdCall)]
+        public static extern int D3DXSHEvalDirectionalLight(
+            uint order,
+            ref D3DXVECTOR3 dir,
+            float rIntensity,
+            float gIntensity,
+            float bIntensity,
+            [Out] float[] outR,
+            [Out] float[] outG,
+            [Out] float[] outB);
+
+        [PreserveSig]
+        [DllImport("d3dx9_43.dll", CallingConvention = CallingConvention.StdCall)]
+        public static extern int D3DXSHScale(
+            [Out] float[] output,
+            uint order,
+            [In] float[] input,
+            float scale);
+
+        [PreserveSig]
+        [DllImport("d3dx9_43.dll", CallingConvention = CallingConvention.StdCall)]
+        public static extern int D3DXSHAdd(
+            [Out] float[] output,
+            uint order,
+            [In] float[] inputA,
+            [In] float[] inputB);
     }
 }
