@@ -90,18 +90,8 @@ float3 decode_bpp16_luvw_reach(
 
 float sample_depth_reach(float2 texcoord)
 {
-	// fp32 depth buffer stores w, we need to convert to z
-//#ifdef pc
 	float depth = tex2D(depth_buffer, texcoord).r;
-	return 1.0f - (k_water_view_depth_constant.x / depth + k_water_view_depth_constant.y); // Zbuf = -FN/(F-N) / z + F/(F-N)
-//#else // xenon
-//	float4 result;
-//	asm
-//	{
-//		tfetch2D result, texcoord, depth_buffer, MagFilter= point, MinFilter= point, MipFilter= point, AnisoFilter= disabled, OffsetX= 0.5, OffsetY= 0.5
-//	};
-//	return result.r;
-//#endif // xenon
+	return 1.0f - k_water_view_depth_constant.y - k_water_view_depth_constant.x / depth;
 }
 
 accum_pixel water_shading_reach(s_water_interpolators INTERPOLATORS)
